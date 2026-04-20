@@ -1,0 +1,47 @@
+Wat betekent dit voor jullie opdracht?
+
+De opdracht is dus waarschijnlijk:
+
+Maak een app of website die hetzelfde doet als deze Excel, maar dan gebruiksvriendelijk, automatisch en uitbreidbaar.
+
+Met andere woorden:
+de Excel is het bewijs van concept, en jullie moeten daar een echte software-oplossing van maken.
+
+Wat jullie app dus zeker moet kunnen
+gebruikers/spelers beheren
+renners kiezen via draft
+vermijden dat 2 spelers dezelfde renner kiezen
+actieve renners + bankrenners
+per rit resultaten invoeren of ophalen
+automatisch punten berekenen
+truienbonus berekenen
+totaalstand per speler tonen
+eindafrekening maken
+historiek van ritten bewaren
+eventueel grafieken/leaderboard tonen
+Heel belangrijke conclusie
+
+De Excel bevestigt dat jullie eerdere samenvatting vrij goed zat.
+
+Jullie idee van:
+
+wielrenners-manager
+top 25 puntentelling
+truienbonus
+eindafrekening
+gebruikers met unieke renners
+leaderboard / historiek
+
+… klopt dus eigenlijk heel goed.
+
+Slimme interpretatie voor jullie project
+
+De app die jullie bouwen is eigenlijk:
+
+“Een digitale versie van de hardcoded Excel van de leerkracht, maar dan beter, gebruiksvriendelijker en uitbreidbaar.”
+
+Dus jullie mogen die Excel zien als:
+
+bron van de businesslogica
+voorbeeld van hoe punten werken
+basis voor database en schermen

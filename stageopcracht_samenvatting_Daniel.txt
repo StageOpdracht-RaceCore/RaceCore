@@ -1,0 +1,61 @@
+Een app of website systeem  voor wielrenners, gebruiker moet Namen ingeven en de punten komen vanzelf
+(tour, gyro , velta)
+
+
+-creatief
+
+-systeem frontend, handmatig 1 keer per jaar updaten 
+-programmeertaal naar keuze
+
+--Procyclingstats-- HIER VIND JE INFO
+--scorito HIER VIND JE INFO
+---------------------------
+
+
+-geditcht in scraper , manier vinden om eindgebruiker om op een gemakkelijker manier namen kan invoeren, zoals slepen of aanduiden, 
+
+
+
+-keuze systeem, keuze app of website, maakt niet uit , mag databanken ook
+
+
+--moet truien bereken, 4 truien
+elke truidrager van die rit krijgt bonuspunten
+
+
+-top 25 die punten scoort, 
+als die 10 ritten een trui aan heeft dat zijn 100 punten, 
+
+
+-systeem ontwikkel en als ik wil dat ik een template heb , voor een scoresysteem, zoals scoresysteem 1 of scoresysteem 2 ...
+
+-eindafrekeing hou je rekening met eindklasment 
+
+-top 25 voor jongeren en ook voor die 4 truien
+
+-eindafrekening met de ritten en totale punten
+
+-per gebruiker mag maar 1 renner hebben, dus als we met 4 gebruikers zijn en we kiezen allemaal zelfde renner, dan kan het in het systeem niet zijn, dus maar 1 renner per gebruiker
+(keuze van gebruiker voor renners is slangsgewijs, dus gebruiker 1 mag dan als eerste kiezen dan de tweede gebruiker, dan 3 de gebruiker , dan 4de gebruiker en dan weer 4de gebruiker en dan terug naar 3de gebruiker  en dan 2de en dan 1ste, dus slangsgewijs keuze)
+dus dan achteraf bij volgende ronde verandere de gebruikers van plaats, dus gebruiker 1 word dan gebruiker 4, gebruiker 2 is dan gebruike 1 enzovoort, dus als gebruiker 1 wint dan is die gebruiker 4 geworden enzovoort dus gebruikers dat winnen gaan naar voren, dat bedoel ik met slanggewijs 
+
+-kunnen aanduiden wie uitvalt of meedoet enzu
+
+-sporzawielrenner manager
+
+-systeem gevoelig aan fouten
+
+
+
+-renners die altijd meerijden in  een kleur
+-renners die op de 'bank' staan in een andere kleur, en daarna scoor je geen punten mee enzu
+-dus per 'groep' renners een andere kleur
+
+-als wielrenner tijdens koers uitvalt dan kan ik die vervangen met iemand anders
+-ik moet alleen renners uitkiezen die meerijden
+wielrenners die niet mee rijden , kunnen niet op de scoreblad zijn
+
+
+
+
+

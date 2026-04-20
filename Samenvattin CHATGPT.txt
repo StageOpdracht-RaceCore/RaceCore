@@ -1,0 +1,135 @@
+🚴‍♂️ Project Samenvatting – Wielrenners Manager App/Webapp
+🎯 Doel van het project
+
+Jullie moeten een applicatie of website ontwikkelen waarmee gebruikers een soort wielrenners-manager spel kunnen spelen, gebaseerd op echte wielerwedstrijden zoals:
+
+Tour de France
+Giro d’Italia
+Vuelta a España
+
+De applicatie berekent automatisch punten en klassementen op basis van geselecteerde renners en hun prestaties.
+
+🧠 Kernidee
+
+Gebruikers stellen hun eigen team samen van wielrenners.
+Tijdens de wedstrijden krijgen deze renners punten (automatisch berekend), en zo ontstaat een competitie tussen gebruikers.
+
+👉 Belangrijk: dit is vergelijkbaar met een fantasy sports game.
+
+⚙️ Belangrijkste Functionaliteiten
+1. 👤 Gebruikers & Teams
+Meerdere gebruikers kunnen deelnemen (bijv. 3–4 studenten)
+Elke gebruiker kiest zijn eigen renners
+Elke renner mag maar door één gebruiker gekozen worden
+2. 🔄 Draft / Keuzesysteem (Slanggewijs)
+Renners worden gekozen in een “snake draft” systeem:
+Gebruiker 1 → 2 → 3 → 4
+Daarna: 4 → 3 → 2 → 1
+Volgende ronde wisselt volgorde afhankelijk van ranking
+Winnaars mogen later kiezen (balans in spel)
+
+👉 Dit maakt het spel eerlijker en strategischer
+
+3. 🧩 Selectie van Renners
+Gebruikers kunnen:
+Namen invoeren
+Of renners selecteren via UI (bv. klik of drag & drop)
+Alleen renners die effectief deelnemen mogen gekozen worden
+4. 🏆 Puntensysteem
+Punten worden automatisch berekend
+Enkel Top 25 renners per rit krijgen punten
+Extra:
+Bonuspunten voor:
+Etappewinnaars
+Truien (klassementen)
+5. 👕 Truien (Belangrijk!)
+
+Het systeem moet automatisch klassementen berekenen:
+
+Gele trui (algemeen klassement)
+Groene trui (sprinters)
+Bolletjestrui (bergklassement)
+Witte trui (jongerenklassement)
+
+👉 Dragers van deze truien krijgen extra punten per rit
+
+6. 🪑 Basis- en Bankrenners
+Team bestaat uit:
+Actieve renners (scoren punten)
+Bankrenners (scoren niet)
+Visueel onderscheid:
+Actief = kleur
+Bank = grijs
+
+👉 Regel:
+
+Bankrenners krijgen geen punten (zelfs als ze winnen)
+7. ❌ Status van Renners
+Mogelijkheid om aan te duiden:
+Renner rijdt mee
+Renner is uitgevallen
+
+👉 Uitgevallen renners scoren niet meer
+
+8. 📊 Eindklassement
+Systeem berekent:
+Punten per rit
+Totaal punten
+Eindklassement van gebruikers
+
+👉 Zowel:
+
+Etappescores
+Eindklassement
+9. ⚙️ Flexibel Scoresysteem
+Mogelijkheid om:
+Verschillende score templates te maken
+Bijvoorbeeld:
+Score systeem 1
+Score systeem 2
+10. 📡 Data (optioneel / manueel)
+Data kan komen van:
+ProCyclingStats
+Maar:
+Mag ook manueel ingegeven worden
+Of 1x per jaar geüpdatet
+🖥️ Technische Vrijheid
+
+Jullie mogen zelf kiezen:
+
+App of website
+Programmeertaal
+Gebruik van database
+Design (volledig vrij)
+💡 Samenvatting in 1 zin
+
+👉
+Jullie bouwen een fantasy wielrenners-manager systeem waarin gebruikers teams samenstellen, punten verdienen via echte race-resultaten, en tegen elkaar strijden in een automatisch berekend klassement.
+
+🔥 Extra ideeën (niet verplicht maar slim)
+Mooie UI met drag & drop
+Leaderboard
+Historiek van ritten
+Live updates (later uitbreidbaar)
+Mobiele responsive design
+⚠️ Belangrijke aandachtspunten
+Systeem moet correct omgaan met:
+dubbele keuzes (NIET toegestaan)
+uitgevallen renners
+bank vs actieve renners
+Logica is belangrijker dan design
+Kans op fouten → goed testen!
+🚀 Conclusie
+
+Dit is geen simpele app, maar een volledig systeem met:
+
+logica
+gebruikersbeheer
+puntentelling
+competitie
+
+👉 Perfect als stage-opdracht omdat het:
+
+realistisch is
+uitbreidbaar is
+meerdere programmeerconcepten bevat

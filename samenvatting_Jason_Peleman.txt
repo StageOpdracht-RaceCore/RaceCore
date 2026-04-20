@@ -1,0 +1,20 @@
+app/website voor wielrenners
+Ik wil de namen ingeven en de puntentelling gebeurt vanzel van de top 25
+renners kunnen kiezen (misschien dragable items), enkel renners die meerijden
+score systeem blijft hetzelfde
+truien berekenen: wit, bolletjes, geel of rood en sprinters: is bonus punten
+de trui drager kan buite de 25 vallen, die moet er ook bij staan.
+eindafrekening
+bankrenners, in kleur zijn errste 12 die altijd meedoen, grijs zijn de bankrenners. als de bankrenner een vorige rit zou gewonnen hebben, die mag niet de punten krijgen.
+elke renner kan maar 1 keer gekozen worden over een hele groep, slangsgewijz. na een beurt MOET de volgende kiezen.
+diegene dat wint mag pas als 4de kiezen: de score is van hoogste naar laagste, dus de hoogste is de laatste en de laagste is de eerste.
+
+tijd over: template om een score systeem op te slagen.
+
+Design is vrij voor zelf te kiezen.
+
+de tour, giro, velta
+Roel, Casper, Jonas, Dries
+
+procylcingstats
+front-end of visual studio
