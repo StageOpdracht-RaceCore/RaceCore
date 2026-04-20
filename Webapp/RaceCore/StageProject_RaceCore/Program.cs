@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore
 {
@@ -11,8 +12,11 @@ namespace StageProject_RaceCore
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddDbContext<Models.AppDbContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // 🔥 Zorg dat DB altijd in Data folder zit
+            var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "racecore.db");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
 
             var app = builder.Build();
 
@@ -20,7 +24,6 @@ namespace StageProject_RaceCore
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -30,6 +33,7 @@ namespace StageProject_RaceCore
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
