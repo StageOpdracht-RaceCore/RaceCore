@@ -8,5 +8,6 @@ namespace StageProject_RaceCore.Models
         {
         }
         public DbSet<Cyclist> Cyclists { get; set; }
+        public DbSet<Player> Players { get; set; }
     }
 }
