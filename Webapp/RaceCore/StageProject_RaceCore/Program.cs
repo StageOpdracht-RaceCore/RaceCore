@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace StageProject_RaceCore
 {
     public class Program
@@ -8,6 +10,9 @@ namespace StageProject_RaceCore
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<Models.AppDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
