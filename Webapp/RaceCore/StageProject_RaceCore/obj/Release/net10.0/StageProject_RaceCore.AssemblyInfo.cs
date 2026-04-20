@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StageProject_RaceCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c287bec703e87ab29afc9bf790fba73b28da444")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd556e613aa9be4ec615bcd2502f4a13d50217a2")]
 [assembly: System.Reflection.AssemblyProductAttribute("StageProject_RaceCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StageProject_RaceCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
