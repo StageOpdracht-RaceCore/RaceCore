@@ -6,33 +6,48 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
-
-
 <style>
-    .team-card { --team-color: #ddd; background:#fff;border:1px solid #e1e1e1;border-radius:6px;padding:12px; transition:all 200ms ease; }
-    .team-header { display:flex;align-items:center;justify-content:space-between;gap:12px }
-    .team-meta { display:flex;align-items:center;gap:12px }
-    .swatch { width:18px;height:18px;border-radius:3px;border:1px solid #999;display:inline-block }
-    .tag { background:#f3f3f3;padding:2px 6px;border-radius:4px;font-size:0.85rem;color:#333 }
-    .badge { background:#0078d4;color:white;padding:6px 8px;border-radius:14px;font-weight:600 }
-    .composition { display:flex;gap:24px;margin-top:12px }
-    .column { flex:1 }
-    .column h4 { margin:0 0 8px 0 }
-    .cyclist-list { list-style:none;padding-left:0;margin:0 }
-    .cyclist-list li { padding:4px 0;border-bottom:1px solid #f0f0f0 }
-    .empty { color:#777;font-style:italic }
-    .teams-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px }
+    .team-card {
+        --team-color: #ddd;
+        background: #fff;
+        border: 1px solid #e1e1e1;
+        border-radius: 6px;
+        padding: 12px;
+        transition: all 200ms ease;
+    }
+
+    .team-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .team-meta { display: flex; align-items: center; gap: 12px; }
+    .swatch { width: 18px; height: 18px; border-radius: 3px; border: 1px solid #999; display: inline-block; }
+    .tag { background: #f3f3f3; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #333; }
+    .badge { background: #0078d4; color: white; padding: 6px 8px; border-radius: 14px; font-weight: 600; }
+    .composition { display: flex; gap: 24px; margin-top: 12px; }
+    .column { flex: 1; }
+    .column h4 { margin: 0 0 8px 0; }
+    .cyclist-list { list-style: none; padding-left: 0; margin: 0; }
+    .cyclist-list li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+    .empty { color: #777; font-style: italic; }
+    .teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
 
     /* Collapsible behavior */
     /* Keep card visuals consistent when collapsed so grid/layout doesn't jump */
-    .team-card.collapsed { background:#fff;border:1px solid #e1e1e1;padding:12px; }
-    .team-card:not(.collapsed) { border-left:6px solid var(--team-color); }
-    .team-card .team-body { display:block; }
-    .team-card.collapsed .team-body { display:none; }
-    .collapse-toggle { background:transparent;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:0.95rem }
-    .collapse-toggle:focus { outline:2px solid #0078d4; }
-    .collapse-toggle .arrow { display:inline-block;transition:transform 180ms ease; }
-    .team-card.collapsed .collapse-toggle .arrow { transform:rotate(-90deg); }
+    .team-card.collapsed { background: #fff; border: 1px solid #e1e1e1; padding: 12px; }
+    .team-card:not(.collapsed) { border-left: 6px solid var(--team-color); }
+    .team-card .team-body { display: block; }
+    .team-card.collapsed .team-body { display: none; }
+
+    .collapse-toggle {
+        background: transparent;
+        border: 0;
+        padding: 6px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .collapse-toggle:focus { outline: 2px solid #0078d4; }
+    .collapse-toggle .arrow { display: inline-block; transition: transform 180ms ease; }
+    .team-card.collapsed .collapse-toggle .arrow { transform: rotate(-90deg); }
 </style>
 
 <div class="page-card">
@@ -48,8 +63,94 @@
         <p>There are currently no teams in the system.</p>
     </div>
 }
+else
+{
+    <div class="teams-grid">
+        @foreach (var team in Model)
+        {
+            <div class="team-card collapsed" style="--team-color:@(team.Color ?? "#ddd");">
+                <div class="team-header">
+                    <div class="team-meta">
+                        <span class="swatch" style="background:var(--team-color)"></span>
+                        <div>
+                            <div style="font-size:1.05rem; font-weight:600">@team.Name <span class="tag">@team.Tag</span></div>
+                            <div style="font-size:0.85rem; color:#666">@(team.ActiveCyclistsCount + team.BenchCyclistsCount) cyclists</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="badge">@team.TeamPoints pts</div>
+                            <button type="button" class="collapse-toggle" aria-expanded="false" title="Toggle team">
+                                <span class="arrow">▾</span>
+                            </button>
+                        </div>
+                        <div style="font-size:0.85rem; color:#666;">Active: <strong>@team.ActiveCyclistsCount</strong> · Bench: <strong>@team.BenchCyclistsCount</strong></div>
+                    </div>
+                </div>
+
+                <div class="team-body">
+                    <div class="composition">
+                        <div class="column">
+                            <h4>Active</h4>
+
+                            @if (team.ActiveCyclists != null && team.ActiveCyclists.Any())
+                            {
+                                <ul class="cyclist-list">
+                                    @foreach (var c in team.ActiveCyclists)
+                                    {
+                                        <li>
+                                            <span>@c.FirstName @c.LastName</span>
+                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" style="display:inline; margin-left:8px;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cyclistId" value="@c.Id" />
+                                                <input type="hidden" name="isActive" value="false" />
+                                                <button type="submit" class="btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; color:#333;">Bench</button>
+                                            </form>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <div class="empty">No active cyclists</div>
+                            }
+                        </div>
+
+                        <div class="column">
+                            <h4>Bench</h4>
+
+                            @if (team.BenchCyclists != null && team.BenchCyclists.Any())
+                            {
+                                <ul class="cyclist-list">
+                                    @foreach (var c in team.BenchCyclists)
+                                    {
+                                        <li>
+                                            <span>@c.FirstName @c.LastName</span>
+                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" style="display:inline; margin-left:8px;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cyclistId" value="@c.Id" />
+                                                <input type="hidden" name="isActive" value="true" />
+                                                <button type="submit" class="btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #0a6; background:#0a6; color:#fff;">Activate</button>
+                                            </form>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <div class="empty">No cyclists on the bench</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
 <script>
-    (function(){
+    (function () {
         // Delegated click handler for collapse toggling
         document.addEventListener('click', function (e) {
             var btn = e.target.closest('.collapse-toggle');
@@ -73,85 +174,3 @@
         });
     })();
 </script>
-else
-{
-    <div class="teams-grid">
-        @foreach (var team in Model)
-        {
-            <div class="team-card collapsed" style="--team-color:@(team.Color ?? "#ddd");">
-                <div class="team-header">
-                    <div class="team-meta">
-                        <span class="swatch" style="background:var(--team-color)"></span>
-                        <div>
-                            <div style="font-size:1.05rem;font-weight:600">@team.Name <span class="tag">@team.Tag</span></div>
-                            <div style="font-size:0.85rem;color:#666">@(team.ActiveCyclistsCount + team.BenchCyclistsCount) cyclists</div>
-                        </div>
-                    </div>
-
-                    <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-                        <div style="display:flex;align-items:center;gap:8px">
-                            <div class="badge">@team.TeamPoints pts</div>
-                            <button type="button" class="collapse-toggle" aria-expanded="false" title="Toggle team">
-                                <span class="arrow">▾</span>
-                            </button>
-                        </div>
-                        <div style="font-size:0.85rem;color:#666;">Active: <strong>@team.ActiveCyclistsCount</strong> · Bench: <strong>@team.BenchCyclistsCount</strong></div>
-                    </div>
-                </div>
-
-                <div class="team-body">
-                    <div class="composition">
-                    <div class="column">
-                        <h4>Active</h4>
-                        @if (team.ActiveCyclists != null && team.ActiveCyclists.Any())
-                        {
-                            <ul class="cyclist-list">
-                                @foreach (var c in team.ActiveCyclists)
-                                {
-                                    <li>
-                                        <span>@c.FirstName @c.LastName</span>
-                                        <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" style="display:inline;margin-left:8px;">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="cyclistId" value="@c.Id" />
-                                            <input type="hidden" name="isActive" value="false" />
-                                            <button type="submit" class="btn" style="font-size:0.85rem;padding:4px 8px;border-radius:4px;border:1px solid #ddd;background:#fff;color:#333;">Bench</button>
-                                        </form>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <div class="empty">No active cyclists</div>
-                        }
-                    </div>
-
-                    <div class="column">
-                        <h4>Bench</h4>
-                        @if (team.BenchCyclists != null && team.BenchCyclists.Any())
-                        {
-                            <ul class="cyclist-list">
-                                @foreach (var c in team.BenchCyclists)
-                                {
-                                    <li>
-                                        <span>@c.FirstName @c.LastName</span>
-                                        <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" style="display:inline;margin-left:8px;">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="cyclistId" value="@c.Id" />
-                                            <input type="hidden" name="isActive" value="true" />
-                                            <button type="submit" class="btn" style="font-size:0.85rem;padding:4px 8px;border-radius:4px;border:1px solid #0a6;background:#0a6;color:#fff;">Activate</button>
-                                        </form>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <div class="empty">No cyclists on the bench</div>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
