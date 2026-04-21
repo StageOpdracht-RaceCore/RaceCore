@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<StageProject_RaceCore.Models.TeamViewModel>
 @using System.Linq
+
 @{
     ViewData["Title"] = "Teams";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
@@ -8,7 +9,7 @@
 <div class="page-card">
     <h2>Teams</h2>
     <p>This is the Team Overview</p>
-    <p>on this page you will be able to view the teams, and their points</p>
+    <p>On this page you will be able to view the teams and their points.</p>
 </div>
 
 @if (!(Model?.Any() ?? false))
@@ -25,9 +26,16 @@ else
         {
             <div class="team-card" style="border-left: 6px solid; padding: 8px; margin-bottom: 12px;">
                 <h3>@team.Name (@team.Tag)</h3>
-                
-                <p>Active cyclists: <strong>@team.ActiveCyclistsCount</strong> — Bench: <strong>@team.BenchCyclistsCount</strong></p>
-                <p>Team points (active tunics x @StageProject_RaceCore.Models.Team.TunicPoints): <strong>@team.TeamPoints</strong></p>
+
+                <p>
+                    Active cyclists: <strong>@team.ActiveCyclistsCount</strong> —
+                    Bench: <strong>@team.BenchCyclistsCount</strong>
+                </p>
+
+                <p>
+                    Team points (active tunics x @StageProject_RaceCore.Models.TeamViewModel.TunicPoints):
+                    <strong>@team.TeamPoints</strong>
+                </p>
 
                 <div class="team-composition">
                     <div class="active-list" style="margin-bottom:8px;">

@@ -68,7 +68,8 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.HasIndex("RaceId");
+                    b.HasIndex("RaceId", "TurnNumber")
+                        .IsUnique();
 
                     b.ToTable("DraftTurns");
                 });
@@ -95,7 +96,7 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("StageId");
 
-                    b.ToTable("Jerseys");
+                    b.ToTable("Jersey");
                 });
 
             modelBuilder.Entity("StageProject_RaceCore.Models.Player", b =>
@@ -173,9 +174,10 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("CyclistId");
 
-                    b.HasIndex("PlayerId");
-
                     b.HasIndex("RaceId");
+
+                    b.HasIndex("PlayerId", "RaceId", "CyclistId")
+                        .IsUnique();
 
                     b.ToTable("PlayerSelections");
                 });
@@ -197,6 +199,7 @@ namespace StageProject_RaceCore.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -215,6 +218,7 @@ namespace StageProject_RaceCore.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("StartDate")
@@ -224,6 +228,9 @@ namespace StageProject_RaceCore.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name", "Year")
+                        .IsUnique();
 
                     b.ToTable("Races");
                 });
@@ -251,9 +258,10 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("CyclistId");
 
-                    b.HasIndex("RaceId");
-
                     b.HasIndex("TeamId");
+
+                    b.HasIndex("RaceId", "CyclistId")
+                        .IsUnique();
 
                     b.ToTable("RaceEntries");
                 });
@@ -279,7 +287,8 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RaceId");
+                    b.HasIndex("RaceId", "StageNumber")
+                        .IsUnique();
 
                     b.ToTable("Stages");
                 });
@@ -307,7 +316,8 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("CyclistId");
 
-                    b.HasIndex("StageId");
+                    b.HasIndex("StageId", "CyclistId")
+                        .IsUnique();
 
                     b.ToTable("StageResults");
                 });
@@ -328,6 +338,9 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Tag")
+                        .IsUnique();
+
                     b.ToTable("Teams");
                 });
 
@@ -335,7 +348,8 @@ namespace StageProject_RaceCore.Migrations
                 {
                     b.HasOne("StageProject_RaceCore.Models.Team", "Team")
                         .WithMany("Cyclists")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Team");
                 });
@@ -343,17 +357,17 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.DraftTurn", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("DraftTurns")
                         .HasForeignKey("CyclistId");
 
                     b.HasOne("StageProject_RaceCore.Models.Player", "Player")
-                        .WithMany()
+                        .WithMany("DraftTurns")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Race", "Race")
-                        .WithMany()
+                        .WithMany("DraftTurns")
                         .HasForeignKey("RaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -368,13 +382,13 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.Jersey", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("Jerseys")
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
-                        .WithMany()
+                        .WithMany("Jerseys")
                         .HasForeignKey("StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -387,13 +401,13 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.PlayerPoints", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("PlayerPoints")
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Player", "Player")
-                        .WithMany()
+                        .WithMany("PlayerPoints")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -405,7 +419,7 @@ namespace StageProject_RaceCore.Migrations
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
-                        .WithMany()
+                        .WithMany("PlayerPoints")
                         .HasForeignKey("StageId");
 
                     b.Navigation("Cyclist");
@@ -420,19 +434,19 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.PlayerSelection", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("PlayerSelections")
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Player", "Player")
-                        .WithMany()
+                        .WithMany("Selections")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Race", "Race")
-                        .WithMany()
+                        .WithMany("PlayerSelections")
                         .HasForeignKey("RaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -447,20 +461,21 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.RaceEntry", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("RaceEntries")
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Race", "Race")
-                        .WithMany()
+                        .WithMany("RaceEntries")
                         .HasForeignKey("RaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId");
+                        .WithMany("RaceEntries")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Cyclist");
 
@@ -483,13 +498,13 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.StageResult", b =>
                 {
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
-                        .WithMany()
+                        .WithMany("StageResults")
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
-                        .WithMany()
+                        .WithMany("Results")
                         .HasForeignKey("StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -499,14 +514,55 @@ namespace StageProject_RaceCore.Migrations
                     b.Navigation("Stage");
                 });
 
+            modelBuilder.Entity("StageProject_RaceCore.Models.Cyclist", b =>
+                {
+                    b.Navigation("DraftTurns");
+
+                    b.Navigation("Jerseys");
+
+                    b.Navigation("PlayerPoints");
+
+                    b.Navigation("PlayerSelections");
+
+                    b.Navigation("RaceEntries");
+
+                    b.Navigation("StageResults");
+                });
+
+            modelBuilder.Entity("StageProject_RaceCore.Models.Player", b =>
+                {
+                    b.Navigation("DraftTurns");
+
+                    b.Navigation("PlayerPoints");
+
+                    b.Navigation("Selections");
+                });
+
             modelBuilder.Entity("StageProject_RaceCore.Models.Race", b =>
                 {
+                    b.Navigation("DraftTurns");
+
+                    b.Navigation("PlayerSelections");
+
+                    b.Navigation("RaceEntries");
+
                     b.Navigation("Stages");
+                });
+
+            modelBuilder.Entity("StageProject_RaceCore.Models.Stage", b =>
+                {
+                    b.Navigation("Jerseys");
+
+                    b.Navigation("PlayerPoints");
+
+                    b.Navigation("Results");
                 });
 
             modelBuilder.Entity("StageProject_RaceCore.Models.Team", b =>
                 {
                     b.Navigation("Cyclists");
+
+                    b.Navigation("RaceEntries");
                 });
 #pragma warning restore 612, 618
         }
