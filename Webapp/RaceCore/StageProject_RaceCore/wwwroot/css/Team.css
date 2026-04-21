@@ -1,0 +1,41 @@
+﻿.team-card {
+    --team-color: #ddd;
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 200ms ease;
+}
+
+.team-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.team-meta { display: flex; align-items: center; gap: 12px; }
+.swatch { width: 18px; height: 18px; border-radius: 3px; border: 1px solid #999; display: inline-block; }
+.tag { background: #f3f3f3; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #333; }
+.badge { background: #0078d4; color: white; padding: 6px 8px; border-radius: 14px; font-weight: 600; }
+.composition { display: flex; gap: 24px; margin-top: 12px; }
+.column { flex: 1; }
+.column h4 { margin: 0 0 8px 0; }
+.cyclist-list { list-style: none; padding-left: 0; margin: 0; }
+.cyclist-list li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+.empty { color: #777; font-style: italic; }
+.teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+
+/* Collapsible behavior */
+/* Keep card visuals consistent when collapsed so grid/layout doesn't jump */
+.team-card.collapsed { background: #fff; border: 1px solid #e1e1e1; padding: 12px; }
+.team-card:not(.collapsed) { border-left: 6px solid var(--team-color); }
+.team-card .team-body { display: block; }
+.team-card.collapsed .team-body { display: none; }
+
+.collapse-toggle {
+    background: transparent;
+    border: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.collapse-toggle:focus { outline: 2px solid #0078d4; }
+.collapse-toggle .arrow { display: inline-block; transition: transform 180ms ease; }
+.team-card.collapsed .collapse-toggle .arrow { transform: rotate(-90deg); }
