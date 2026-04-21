@@ -1,4 +1,4 @@
-﻿namespace StageProject_RaceCore.Models
+namespace StageProject_RaceCore.Models
 {
     public class RaceEntry
     {

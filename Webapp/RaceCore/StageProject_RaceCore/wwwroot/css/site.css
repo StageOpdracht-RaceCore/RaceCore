@@ -129,3 +129,31 @@ html, body {
     .page-card h2 {
         margin-top: 0;
     }
+
+.riders-table-wrapper {
+    border-radius: 12px;
+    overflow: hidden; /* SUPER BELANGRIJK */
+}
+.riders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;
+}
+
+    .riders-table th,
+    .riders-table td {
+        padding: 12px 8px;
+        text-align: left;
+    }
+
+        .riders-table th:last-child,
+        .riders-table td:last-child {
+            padding-right: 0;
+        }
+    .riders-table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .riders-table tbody tr:nth-child(even) {
+        background-color: #e5e7eb;
+    }

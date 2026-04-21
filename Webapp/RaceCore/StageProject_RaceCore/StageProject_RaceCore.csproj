@@ -21,6 +21,12 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Views\Draft\" />
+    <Folder Include="Views\Scoring\" />
+    <Folder Include="Views\Results\" />
+    <Folder Include="Views\Stages\" />
+    <Folder Include="Views\Races\" />
+    <Folder Include="Views\Players\" />
   </ItemGroup>
 
 </Project>
