@@ -21,7 +21,7 @@ namespace StageProject_RaceCore.Controllers
 
         public IActionResult Riders()
         {
-            return View();
+            return RedirectToAction("Index", "Cyclist");
         }
 
         public IActionResult Calendar()
