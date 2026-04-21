@@ -37,7 +37,6 @@ namespace StageProject_RaceCore.Controllers
                         Id = t.Id,
                         Name = t.Name,
                         Tag = t.Tag,
-                        Color = null, // Color column may not exist in DB schema; leave null to avoid projection errors
                         ActiveCyclistsCount = t.Cyclists.Count(c => c.IsActive),
                         BenchCyclistsCount = t.Cyclists.Count(c => !c.IsActive),
                         ActiveCyclists = t.Cyclists.Where(c => c.IsActive).Select(c => new CyclistSimple { Id = c.Id, FirstName = c.FirstName, LastName = c.LastName, IsActive = c.IsActive }).ToList(),
