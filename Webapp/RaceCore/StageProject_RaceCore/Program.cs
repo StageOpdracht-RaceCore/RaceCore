@@ -9,10 +9,8 @@ namespace StageProject_RaceCore
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Database path in Data folder
             var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "racecore.db");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -27,16 +25,13 @@ namespace StageProject_RaceCore
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
-
             app.UseAuthorization();
-
-            app.MapStaticAssets();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboard}/{action=Index}/{id?}")
-                .WithStaticAssets();
+                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
             app.Run();
         }
