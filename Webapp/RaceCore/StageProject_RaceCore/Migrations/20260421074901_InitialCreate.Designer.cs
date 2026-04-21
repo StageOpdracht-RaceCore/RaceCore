@@ -10,8 +10,8 @@ using StageProject_RaceCore.Models;
 namespace StageProject_RaceCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260420142123_PlayerClass")]
-    partial class PlayerClass
+    [Migration("20260421074901_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,10 +36,12 @@ namespace StageProject_RaceCore.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TeamId")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Cyclists");
                 });
@@ -57,6 +59,39 @@ namespace StageProject_RaceCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("StageProject_RaceCore.Models.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tag")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Team");
+                });
+
+            modelBuilder.Entity("StageProject_RaceCore.Models.Cyclist", b =>
+                {
+                    b.HasOne("StageProject_RaceCore.Models.Team", "Team")
+                        .WithMany("Cyclists")
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("StageProject_RaceCore.Models.Team", b =>
+                {
+                    b.Navigation("Cyclists");
                 });
 #pragma warning restore 612, 618
         }
