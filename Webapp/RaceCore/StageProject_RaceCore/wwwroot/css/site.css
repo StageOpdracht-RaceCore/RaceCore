@@ -29,3 +29,103 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+.dashboard-body {
+    margin: 0;
+    background-color: #f4f6f9;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #111827;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.sidebar-logo h2 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.sidebar-logo p {
+    margin-top: 5px;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.sidebar-nav {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .sidebar-nav a {
+        color: white;
+        text-decoration: none;
+        padding: 12px 14px;
+        border-radius: 10px;
+        transition: 0.2s;
+        background-color: transparent;
+    }
+
+        .sidebar-nav a:hover {
+            background-color: #1f2937;
+        }
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: 70px;
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    box-sizing: border-box;
+}
+
+    .topbar h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #111827;
+    }
+
+.topbar-right {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.content-window {
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.page-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+    .page-card h2 {
+        margin-top: 0;
+    }
