@@ -1,0 +1,12 @@
+﻿@model StageProject_RaceCore.Models.Player
+
+<h2>Speler verwijderen</h2>
+
+<p>Ben je zeker dat je <strong>@Model.Name</strong> wil verwijderen?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit" class="btn btn-danger">Verwijderen</button>
+    <a class="btn btn-secondary" asp-action="Index">Annuleren</a>
+</form>
