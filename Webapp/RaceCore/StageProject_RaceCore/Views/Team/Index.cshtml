@@ -1,4 +1,4 @@
-﻿@model IEnumerable<StageProject_RaceCore.Models.Team>
+﻿@model IEnumerable<StageProject_RaceCore.Models.TeamViewModel>
 @using System.Linq
 @{
     ViewData["Title"] = "Teams";
@@ -27,15 +27,15 @@ else
                 <h3>@team.Name (@team.Tag)</h3>
                 
                 <p>Active cyclists: <strong>@team.ActiveCyclistsCount</strong> — Bench: <strong>@team.BenchCyclistsCount</strong></p>
-                <p>Team points (active tunics x @StageProject_RaceCore.Models.Team.TunicPoints): <strong>@(team.ActiveCyclistsCount * StageProject_RaceCore.Models.Team.TunicPoints)</strong></p>
+                <p>Team points (active tunics x @StageProject_RaceCore.Models.Team.TunicPoints): <strong>@team.TeamPoints</strong></p>
 
                 <div class="team-composition">
                     <div class="active-list" style="margin-bottom:8px;">
                         <h4>Active</h4>
-                        @if (team.Cyclists != null && team.Cyclists.Any(c => c.IsActive))
+                        @if (team.ActiveCyclists != null && team.ActiveCyclists.Any())
                         {
                             <ul>
-                                @foreach (var c in team.Cyclists.Where(c => c.IsActive))
+                                @foreach (var c in team.ActiveCyclists)
                                 {
                                     <li>@c.FirstName @c.LastName</li>
                                 }
@@ -49,10 +49,10 @@ else
 
                     <div class="bench-list">
                         <h4>Bench</h4>
-                        @if (team.Cyclists != null && team.Cyclists.Any(c => !c.IsActive))
+                        @if (team.BenchCyclists != null && team.BenchCyclists.Any())
                         {
                             <ul>
-                                @foreach (var c in team.Cyclists.Where(c => !c.IsActive))
+                                @foreach (var c in team.BenchCyclists)
                                 {
                                     <li>@c.FirstName @c.LastName</li>
                                 }

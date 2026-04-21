@@ -17,7 +17,7 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        // Loads teams with their cyclists from the database and passes them to the view
+        // Loads teams with their cyclists from the database and passes a view model to the view
         public async Task<IActionResult> Index()
         {
             try
@@ -26,12 +26,22 @@ namespace StageProject_RaceCore.Controllers
                 if (!await _context.Database.CanConnectAsync())
                 {
                     // Return empty list to the view when DB is not available
-                    return View(new List<Team>());
+                    return View(new List<TeamViewModel>());
                 }
 
+                // Project teams and composition information using database queries.
                 var teams = await _context.Teams
-                    .Include(t => t.Cyclists)
                     .OrderBy(t => t.Name)
+                    .Select(t => new TeamViewModel
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Tag = t.Tag,
+                        ActiveCyclistsCount = t.Cyclists.Count(c => c.IsActive),
+                        BenchCyclistsCount = t.Cyclists.Count(c => !c.IsActive),
+                        ActiveCyclists = t.Cyclists.Where(c => c.IsActive).Select(c => new CyclistSimple { Id = c.Id, FirstName = c.FirstName, LastName = c.LastName, IsActive = c.IsActive }).ToList(),
+                        BenchCyclists = t.Cyclists.Where(c => !c.IsActive).Select(c => new CyclistSimple { Id = c.Id, FirstName = c.FirstName, LastName = c.LastName, IsActive = c.IsActive }).ToList()
+                    })
                     .ToListAsync();
 
                 return View(teams);
@@ -40,7 +50,7 @@ namespace StageProject_RaceCore.Controllers
             {
                 // Minimal logging and return an empty model to avoid crashing the app
                 Console.WriteLine(ex);
-                return View(new List<Team>());
+                return View(new List<TeamViewModel>());
             }
         }
     }
