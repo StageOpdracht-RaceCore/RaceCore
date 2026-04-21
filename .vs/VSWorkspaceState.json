@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Webapp",
+    "\\Webapp\\RaceCore"
   ],
-  "SelectedNode": "\\RaceCore.slnx",
+  "SelectedNode": "\\Webapp\\RaceCore\\RaceCore.slnx",
   "PreviewInSolutionExplorer": false
 }

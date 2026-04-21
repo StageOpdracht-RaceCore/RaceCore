@@ -12,7 +12,7 @@ namespace StageProject_RaceCore
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // 🔥 Zorg dat DB altijd in Data folder zit
+            // Database path in Data folder
             var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "racecore.db");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -20,10 +20,9 @@ namespace StageProject_RaceCore
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Dashboard/Error");
                 app.UseHsts();
             }
 
@@ -36,7 +35,7 @@ namespace StageProject_RaceCore
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Dashboard}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
