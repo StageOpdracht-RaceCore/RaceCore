@@ -9,3 +9,7 @@ obj/
 
 # Logs
 *.log
+
+# Database
+*.db-shm
+*.db-wal
