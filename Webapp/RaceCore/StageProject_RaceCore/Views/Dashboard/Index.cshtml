@@ -1,7 +1,10 @@
-﻿@{
+﻿@model StageProject_RaceCore.Models.DashboardViewModel
+
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
+
 @functions {
     public string GetPlayerColor(string playerName)
     {
@@ -21,6 +24,11 @@
             "#06b6d4"
         };
 
+        if (string.IsNullOrWhiteSpace(playerName))
+        {
+            return colors[0];
+        }
+
         int value = 0;
 
         foreach (char c in playerName.Trim().ToLower())
@@ -37,20 +45,20 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <h4>Playerss</h4>
-            <p>5</p>
+            <h4>Players</h4>
+            <p>@Model.PlayersCount</p>
         </div>
         <div class="stat-card">
             <h4>Cyclists</h4>
-            <p>120</p>
+            <p>@Model.CyclistsCount</p>
         </div>
         <div class="stat-card">
             <h4>Teams</h4>
-            <p>22</p>
+            <p>@Model.TeamsCount</p>
         </div>
         <div class="stat-card">
             <h4>Stages</h4>
-            <p>21</p>
+            <p>@Model.StagesCount</p>
         </div>
     </div>
 
@@ -58,45 +66,56 @@
 
         <div class="card">
             <h3>Player Ranking</h3>
-            <table class="ranking-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Player</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="background-color:@GetPlayerColor("Daniel");">
-                        <td>1</td>
-                        <td>Daniel</td>
-                        <td>245</td>
-                    </tr>
-                    <tr style="background-color:@GetPlayerColor("Alex");">
-                        <td>2</td>
-                        <td>Alex</td>
-                        <td>230</td>
-                    </tr>
-                    <tr style="background-color:@GetPlayerColor("John");">
-                        <td>3</td>
-                        <td>John</td>
-                        <td>210</td>
-                    </tr>
-                    <tr style="background-color:@GetPlayerColor("Mike");">
-                        <td>4</td>
-                        <td>Mike</td>
-                        <td>198</td>
-                    </tr>
-                </tbody>
-            </table>
+            @if (Model.PlayerRanking.Any())
+            {
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Player</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in Model.PlayerRanking)
+                        {
+                            <tr style="background-color:@GetPlayerColor(player.PlayerName);">
+                                <td>@player.Position</td>
+                                <td>@player.PlayerName</td>
+                                <td>@player.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No player ranking data available yet.</p>
+            }
         </div>
 
         <div class="card">
             <h3>Latest Stage</h3>
-            <p><strong>Stage 5</strong></p>
-            <p>1. Pogacar</p>
-            <p>2. Van Aert</p>
-            <p>3. Evenepoel</p>
+            @if (!string.IsNullOrWhiteSpace(Model.LatestStageTitle))
+            {
+                <p><strong>@Model.LatestStageTitle</strong></p>
+
+                @if (Model.LatestStageTop3.Any())
+                {
+                    @foreach (var item in Model.LatestStageTop3)
+                    {
+                        <p>@item</p>
+                    }
+                }
+                else
+                {
+                    <p>No stage results available yet.</p>
+                }
+            }
+            else
+            {
+                <p>No stage available yet.</p>
+            }
         </div>
 
     </div>
@@ -105,33 +124,51 @@
 
         <div class="card">
             <h3>Top Cyclists</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Pogacar</td><td>120</td></tr>
-                    <tr><td>Van Aert</td><td>110</td></tr>
-                    <tr><td>Evenepoel</td><td>105</td></tr>
-                </tbody>
-            </table>
+            @if (Model.TopCyclists.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cyclist in Model.TopCyclists)
+                        {
+                            <tr>
+                                <td>@cyclist.Name</td>
+                                <td>@cyclist.Points</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No cyclist points available yet.</p>
+            }
         </div>
 
         <div class="card">
             <h3>Jerseys</h3>
-            <p>Yellow: Pogacar</p>
-            <p>Green: Van Aert</p>
-            <p>Polka Dot: Ciccone</p>
-            <p>White: Evenepoel</p>
+            @if (Model.Jerseys.Any())
+            {
+                @foreach (var jersey in Model.Jerseys)
+                {
+                    <p>@jersey.Type: @jersey.CyclistName</p>
+                }
+            }
+            else
+            {
+                <p>No jersey data available yet.</p>
+            }
         </div>
 
         <div class="card">
             <h3>Draft</h3>
-            <p>Completed: Yes</p>
-            <p>Total picks: 50</p>
+            <p>Completed: @(Model.DraftCompleted ? "Yes" : "No")</p>
+            <p>Total picks: @Model.TotalDraftPicks</p>
         </div>
 
     </div>

@@ -18,6 +18,8 @@ namespace StageProject_RaceCore.Models
         public DbSet<DraftTurn> DraftTurns => Set<DraftTurn>();
         public DbSet<StageResult> StageResults => Set<StageResult>();
         public DbSet<PointsRule> PointsRules => Set<PointsRule>();
+        public DbSet<Jersey> Jerseys => Set<Jersey>();
+        public DbSet<PlayerPoints> PlayerPoints => Set<PlayerPoints>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
