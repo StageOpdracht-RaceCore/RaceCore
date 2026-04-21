@@ -9,7 +9,6 @@
 <body class="dashboard-body">
     <div class="dashboard-wrapper">
 
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <h2>RaceCore</h2>
@@ -18,25 +17,18 @@
 
             <nav class="sidebar-nav">
                 <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-
-                <a asp-controller="Dashboard" asp-action="Players">Players</a>
-                <a asp-controller="Dashboard" asp-action="Cyclists">Cyclists</a>
-                <a asp-controller="Dashboard" asp-action="Teams">Teams</a>
-
-                <a asp-controller="Dashboard" asp-action="Races">Races</a>
-                <a asp-controller="Dashboard" asp-action="Stages">Stages</a>
-
-                <a asp-controller="Dashboard" asp-action="Results">Results</a>
-                <a asp-controller="Dashboard" asp-action="Scoring">Scoring</a>
-
-                <a asp-controller="Dashboard" asp-action="Draft">Draft</a>
+                <a asp-controller="Player" asp-action="Index">Players</a>
+                <a asp-controller="Cyclist" asp-action="Index">Cyclists</a>
+                <a asp-controller="Team" asp-action="Index">Teams</a>
+                <a asp-controller="Race" asp-action="Index">Races</a>
+                <a asp-controller="Stage" asp-action="Index">Stages</a>
+                <a asp-controller="Result" asp-action="Index">Results</a>
+                <a asp-controller="Scoring" asp-action="Index">Scoring</a>
+                <a asp-controller="Draft" asp-action="Index">Draft</a>
             </nav>
         </aside>
 
-        <!-- Main area -->
         <div class="main-area">
-
-            <!-- Topbar -->
             <header class="topbar">
                 <div>
                     <h1>@ViewData["Title"]</h1>
@@ -46,7 +38,6 @@
                 </div>
             </header>
 
-            <!-- Page content window -->
             <main class="content-window">
                 @RenderBody()
             </main>
