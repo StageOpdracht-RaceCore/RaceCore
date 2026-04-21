@@ -18,13 +18,15 @@ namespace StageProject_RaceCore.Controllers
       {
       var dummyResultVM = new List<ResultVM>
           {
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 }
+            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 100 },
+            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 400 },
+            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 300 },
+            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 5000 }
           };
 
-          return View(dummyResultVM);
+      var rankedData = dummyResultVM.OrderByDescending(r => r.totalPoints).ToList();
+
+      return View(rankedData);
 
     }
 
