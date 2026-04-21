@@ -1,8 +1,9 @@
 
 @{
     @model IEnumerable<StageProject_RaceCore.Controllers.ResultVM>
-
-    <table border="1">
+    <section class="riders-page">
+    <div class="page-card">
+    <table class="riders-table">
         <thead>
             <tr>
                 <th>Positie</th>
@@ -28,7 +29,9 @@
                 pos++;
             }
         </tbody>
-    </table>
+    </table
+    </div>
+    </section>
 
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
