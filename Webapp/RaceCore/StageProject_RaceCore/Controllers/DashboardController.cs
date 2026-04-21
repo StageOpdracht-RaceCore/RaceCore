@@ -9,6 +9,11 @@ namespace StageProject_RaceCore.Controllers
             return View();
         }
 
+        public IActionResult Error()
+        {
+            return View();
+        }
+
         public IActionResult TeamOverview()
         {
             return View();

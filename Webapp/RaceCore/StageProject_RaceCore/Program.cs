@@ -22,7 +22,7 @@ namespace StageProject_RaceCore
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Dashboard/Error");
                 app.UseHsts();
             }
 
