@@ -26,7 +26,6 @@
     <Folder Include="Views\Results\" />
     <Folder Include="Views\Stages\" />
     <Folder Include="Views\Races\" />
-    <Folder Include="Views\Teams\" />
     <Folder Include="Views\Players\" />
   </ItemGroup>
 

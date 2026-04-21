@@ -8,5 +8,8 @@ namespace StageProject_RaceCore.Controllers
         {
             return View();
         }
+     
     }
 }
+    
+
