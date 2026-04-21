@@ -1,0 +1,27 @@
+﻿@model StageProject_RaceCore.Models.Player
+
+@{
+    ViewData["Title"] = "Teams";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<h2>Speler details</h2>
+
+<div class="card p-3">
+
+    <p><strong>Naam:</strong> @Model.Name</p>
+
+    <hr />
+
+    <h5>Selections</h5>
+    <p>@(Model.Selections?.Count ?? 0) items</p>
+
+    <h5>Draft turns</h5>
+    <p>@(Model.DraftTurns?.Count ?? 0) items</p>
+
+    <h5>Punten</h5>
+    <p>@(Model.PlayerPoints?.Count ?? 0) records</p>
+
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Terug</a>
