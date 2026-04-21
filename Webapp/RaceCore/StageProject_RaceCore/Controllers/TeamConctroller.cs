@@ -53,6 +53,31 @@ namespace StageProject_RaceCore.Controllers
                 return View(new List<TeamViewModel>());
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCyclistStatus(int cyclistId, bool isActive)
+        {
+            try
+            {
+                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
+                if (cyclist == null)
+                {
+                    return NotFound();
+                }
+
+                cyclist.IsActive = isActive;
+                _context.Cyclists.Update(cyclist);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }
 
