@@ -24,6 +24,8 @@ namespace StageProject_RaceCore.Controllers
             new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 }
           };
 
+
+
           return View(dummyResultVM);
 
     }
