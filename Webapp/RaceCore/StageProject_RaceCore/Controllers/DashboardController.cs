@@ -14,22 +14,42 @@ namespace StageProject_RaceCore.Controllers
             return View();
         }
 
-        public IActionResult TeamOverview()
+        public IActionResult Players()
         {
             return View();
         }
 
-        public IActionResult Riders()
-        {
-            return RedirectToAction("Index", "Cyclist");
-        }
-
-        public IActionResult Calendar()
+        public IActionResult Cyclists()
         {
             return View();
         }
 
-        public IActionResult Settings()
+        public IActionResult Teams()
+        {
+            return View();
+        }
+
+        public IActionResult Races()
+        {
+            return View();
+        }
+
+        public IActionResult Stages()
+        {
+            return View();
+        }
+
+        public IActionResult Results()
+        {
+            return View();
+        }
+
+        public IActionResult Scoring()
+        {
+            return View();
+        }
+
+        public IActionResult Draft()
         {
             return View();
         }
