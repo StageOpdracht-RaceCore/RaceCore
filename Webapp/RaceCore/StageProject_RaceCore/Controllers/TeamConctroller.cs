@@ -2,7 +2,7 @@
 
 namespace StageProject_RaceCore.Controllers
 {
-    public class TeamConctroller : Controller
+    public class TeamController : Controller
     {
         public IActionResult Index()
         {
