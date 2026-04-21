@@ -8,5 +8,7 @@
         public int? TeamId { get; set; }
         public Team Team { get; set; }
         public bool IsActive { get; set; }
+        // Read-only helper to get the name of the team this cyclist belongs to
+        public string TeamName => Team?.Name ?? "No team";
     }
 }
