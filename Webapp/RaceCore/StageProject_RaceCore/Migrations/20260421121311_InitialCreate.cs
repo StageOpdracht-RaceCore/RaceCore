@@ -6,27 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StageProject_RaceCore.Migrations
 {
     /// <inheritdoc />
-    public partial class AllOtherTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Cyclists_Team_TeamId",
-                table: "Cyclists");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Team",
-                table: "Team");
-
-            migrationBuilder.RenameTable(
-                name: "Team",
-                newName: "Teams");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Teams",
-                table: "Teams",
-                column: "Id");
+            migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "PointsRules",
@@ -61,6 +57,63 @@ namespace StageProject_RaceCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Tag = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StageNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stages_Races_RaceId",
+                        column: x => x.RaceId,
+                        principalTable: "Races",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cyclists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", nullable: false),
+                    TeamId = table.Column<int>(type: "INTEGER", nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cyclists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cyclists_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DraftTurns",
                 columns: table => new
                 {
@@ -87,95 +140,6 @@ namespace StageProject_RaceCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DraftTurns_Races_RaceId",
-                        column: x => x.RaceId,
-                        principalTable: "Races",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlayerSelections",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CyclistId = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayerSelections", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PlayerSelections_Cyclists_CyclistId",
-                        column: x => x.CyclistId,
-                        principalTable: "Cyclists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlayerSelections_Players_PlayerId",
-                        column: x => x.PlayerId,
-                        principalTable: "Players",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlayerSelections_Races_RaceId",
-                        column: x => x.RaceId,
-                        principalTable: "Races",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RaceEntries",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CyclistId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TeamId = table.Column<int>(type: "INTEGER", nullable: true),
-                    Status = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RaceEntries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RaceEntries_Cyclists_CyclistId",
-                        column: x => x.CyclistId,
-                        principalTable: "Cyclists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RaceEntries_Races_RaceId",
-                        column: x => x.RaceId,
-                        principalTable: "Races",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RaceEntries_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StageNumber = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Date = table.Column<DateTime>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Stages_Races_RaceId",
                         column: x => x.RaceId,
                         principalTable: "Races",
                         principalColumn: "Id",
@@ -251,6 +215,73 @@ namespace StageProject_RaceCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlayerSelections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CyclistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerSelections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlayerSelections_Cyclists_CyclistId",
+                        column: x => x.CyclistId,
+                        principalTable: "Cyclists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerSelections_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerSelections_Races_RaceId",
+                        column: x => x.RaceId,
+                        principalTable: "Races",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RaceEntries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RaceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CyclistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TeamId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Status = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RaceEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RaceEntries_Cyclists_CyclistId",
+                        column: x => x.CyclistId,
+                        principalTable: "Cyclists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RaceEntries_Races_RaceId",
+                        column: x => x.RaceId,
+                        principalTable: "Races",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RaceEntries_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StageResults",
                 columns: table => new
                 {
@@ -277,6 +308,11 @@ namespace StageProject_RaceCore.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cyclists_TeamId",
+                table: "Cyclists",
+                column: "TeamId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DraftTurns_CyclistId",
@@ -367,22 +403,11 @@ namespace StageProject_RaceCore.Migrations
                 name: "IX_Stages_RaceId",
                 table: "Stages",
                 column: "RaceId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cyclists_Teams_TeamId",
-                table: "Cyclists",
-                column: "TeamId",
-                principalTable: "Teams",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Cyclists_Teams_TeamId",
-                table: "Cyclists");
-
             migrationBuilder.DropTable(
                 name: "DraftTurns");
 
@@ -405,30 +430,19 @@ namespace StageProject_RaceCore.Migrations
                 name: "StageResults");
 
             migrationBuilder.DropTable(
+                name: "Players");
+
+            migrationBuilder.DropTable(
+                name: "Cyclists");
+
+            migrationBuilder.DropTable(
                 name: "Stages");
 
             migrationBuilder.DropTable(
+                name: "Teams");
+
+            migrationBuilder.DropTable(
                 name: "Races");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Teams",
-                table: "Teams");
-
-            migrationBuilder.RenameTable(
-                name: "Teams",
-                newName: "Team");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Team",
-                table: "Team",
-                column: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cyclists_Team_TeamId",
-                table: "Cyclists",
-                column: "TeamId",
-                principalTable: "Team",
-                principalColumn: "Id");
         }
     }
 }

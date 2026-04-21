@@ -15,55 +15,21 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> Index(string? searchString, string? activeFilter)
         {
-            var cyclists = new List<Cyclist>
-            {
-                new Cyclist
-                {
-                    Id = 1,
-                    FirstName = "Wout",
-                    LastName = "Van Aert",
-                    IsActive = true,
-                    Team = new Team { Name = "Visma | Lease a Bike" }
-                },
-                new Cyclist
-                {
-                    Id = 2,
-                    FirstName = "Tadej",
-                    LastName = "Pogacar",
-                    IsActive = true,
-                    Team = new Team { Name = "UAE Team Emirates" }
-                },
-                new Cyclist
-                {
-                    Id = 3,
-                    FirstName = "Tom",
-                    LastName = "Dumoulin",
-                    IsActive = false,
-                    Team = new Team { Name = "Retired" }
-                },
-                new Cyclist
-                {
-                    Id = 4,
-                    FirstName = "Bart",
-                    LastName = "Nogiets",
-                    IsActive = true,
-                    Team = new Team { Name = "OlaOle Vietske" }
-                }
-            };
+            var query = _context.Cyclists
+                .Include(c => c.Team)
+                .AsQueryable();
 
-            // HARD CODED LIJST FILTEREN
-            var query = cyclists.AsQueryable();
-
-            // Zoeken op voornaam, achternaam of team
+            // 🔍 Zoeken
             if (!string.IsNullOrWhiteSpace(searchString))
             {
                 query = query.Where(c =>
-                    c.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                    c.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-                    (c.Team != null && c.Team.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
+                    c.FirstName.Contains(searchString) ||
+                    c.LastName.Contains(searchString) ||
+                    (c.Team != null && c.Team.Name.Contains(searchString))
+                );
             }
 
-            // Filter op IsActive
+            // 🔘 Filter IsActive
             if (!string.IsNullOrWhiteSpace(activeFilter))
             {
                 switch (activeFilter.ToLower())
@@ -81,50 +47,12 @@ namespace StageProject_RaceCore.Controllers
             ViewBag.SearchString = searchString;
             ViewBag.ActiveFilter = activeFilter;
 
-            var filteredCyclists = query
-                .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
-                .ToList();
-
-            return View(filteredCyclists);
-
-            /*
-            // TOEKOMSTIGE DATABASECODE
-            var query = _context.Cyclists
-                .Include(c => c.Team)
-                .AsQueryable();
-
-            // Zoeken op voornaam, achternaam of team
-            if (!string.IsNullOrWhiteSpace(searchString))
-            {
-                query = query.Where(c =>
-                    c.FirstName.Contains(searchString) ||
-                    c.LastName.Contains(searchString) ||
-                    (c.Team != null && c.Team.Name.Contains(searchString)));
-            }
-
-            // Filter op IsActive
-            if (!string.IsNullOrWhiteSpace(activeFilter))
-            {
-                switch (activeFilter.ToLower())
-                {
-                    case "yes":
-                        query = query.Where(c => c.IsActive);
-                        break;
-
-                    case "no":
-                        query = query.Where(c => !c.IsActive);
-                        break;
-                }
-            }
-
-            var cyclistsFromDb = await query
+            var cyclists = await query
                 .OrderBy(c => c.LastName)
                 .ThenBy(c => c.FirstName)
                 .ToListAsync();
 
-            return View(cyclistsFromDb);
-            */
+            return View(cyclists);
         }
     }
 }

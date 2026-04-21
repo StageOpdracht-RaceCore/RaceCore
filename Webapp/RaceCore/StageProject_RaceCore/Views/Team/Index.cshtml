@@ -8,7 +8,7 @@
 <div class="page-card">
     <h2>Teams</h2>
     <p>This is the Team Overview</p>
-    <p>on this page you will be able to view the teams, their team colors, and their points</p>
+    <p>on this page you will be able to view the teams, and their points</p>
 </div>
 
 @if (!(Model?.Any() ?? false))
@@ -23,9 +23,9 @@ else
     <div class="teams-list">
         @foreach (var team in Model)
         {
-            <div class="team-card" style="border-left: 6px solid @team.Color; padding: 8px; margin-bottom: 12px;">
+            <div class="team-card" style="border-left: 6px solid; padding: 8px; margin-bottom: 12px;">
                 <h3>@team.Name (@team.Tag)</h3>
-                <p>Color: <span style="display:inline-block;width:16px;height:16px;background:@team.Color;border:1px solid #000;margin-right:6px;"></span> @team.Color</p>
+                
                 <p>Active cyclists: <strong>@team.ActiveCyclistsCount</strong> — Bench: <strong>@team.BenchCyclistsCount</strong></p>
                 <p>Team points (active tunics x @StageProject_RaceCore.Models.Team.TunicPoints): <strong>@(team.ActiveCyclistsCount * StageProject_RaceCore.Models.Team.TunicPoints)</strong></p>
 

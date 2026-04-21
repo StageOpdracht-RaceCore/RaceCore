@@ -11,8 +11,8 @@ using StageProject_RaceCore.Models;
 namespace StageProject_RaceCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260421075754_AllOtherTables")]
-    partial class AllOtherTables
+    [Migration("20260421121311_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
