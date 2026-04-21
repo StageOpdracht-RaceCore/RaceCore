@@ -1,0 +1,63 @@
+﻿@model List<StageProject_RaceCore.Models.Cyclist>
+
+@{
+    ViewData["Title"] = "Riders";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<section class="riders-page">
+    <div class="riders-toolbar">
+        <form asp-action="Index" method="get" class="riders-filter-form">
+            <input type="text"
+                   name="searchString"
+                   value="@ViewBag.SearchString"
+                   placeholder="Zoek op naam of team"
+                   class="search-input" />
+
+            <select name="activeFilter" class="filter-select">
+                <option value="">Alle</option>
+                <option value="yes" selected="@((string)ViewBag.ActiveFilter == "yes")">Actief</option>
+                <option value="no" selected="@((string)ViewBag.ActiveFilter == "no")">Niet actief</option>
+            </select>
+
+            <button type="submit" class="filter-button">Zoeken</button>
+        </form>
+    </div>
+
+    <div class="riders-table-wrapper">
+        <table class="riders-table">
+            <thead>
+                <tr>
+                    <th>Voornaam</th>
+                    <th>Achternaam</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var cyclist in Model)
+                    {
+                        <tr>
+                            <td>@cyclist.FirstName</td>
+                            <td>@cyclist.LastName</td>
+                            <td>@(cyclist.Team != null ? cyclist.Team.Name : "Geen team")</td>
+                            <td>
+                                <span class="status-badge @(cyclist.IsActive ? "active" : "inactive")">
+                                    @(cyclist.IsActive ? "Actief" : "Niet actief")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="empty-message">Geen renners gevonden.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
