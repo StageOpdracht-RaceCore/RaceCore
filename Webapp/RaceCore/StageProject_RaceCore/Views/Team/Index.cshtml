@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<StageProject_RaceCore.Models.Team>
+@{
     ViewData["Title"] = "Teams";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
@@ -7,4 +8,21 @@
     <h2>Teams</h2>
     <p>This is the Team Overview</p>
     <p>on this page you will be able to view the teams, their team colors, and their points</p>
+</div>
+
+<div class="teams-list">
+    @foreach (var team in Model ?? Enumerable.Empty<StageProject_RaceCore.Models.Team>())
+    {
+        <div class="team-card" style="border-left: 6px solid @team.Color; padding: 8px; margin-bottom: 12px;">
+            <h3>@team.Name (@team.Tag)</h3>
+            <p>Color: <span style="display:inline-block;width:16px;height:16px;background:@team.Color;border:1px solid #000;margin-right:6px;"></span> @team.Color</p>
+            <p>Active cyclists: @team.ActiveCyclistsCount — Bench: @team.BenchCyclistsCount</p>
+            <ul>
+                @foreach (var c in team.Cyclists ?? new List<StageProject_RaceCore.Models.Cyclist>())
+                {
+                    <li>@c.FirstName @c.LastName @if(!string.IsNullOrEmpty(c.TeamName)){<text>(@c.TeamName)</text>}</li>
+                }
+            </ul>
+        </div>
+    }
 </div>
