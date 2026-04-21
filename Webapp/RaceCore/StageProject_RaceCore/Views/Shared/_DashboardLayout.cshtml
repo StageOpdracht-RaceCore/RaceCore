@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RaceCore</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-wrapper">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>RaceCore</h2>
+                <p>Manager Panel</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-controller="Dashboard" asp-action="TeamOverview">Team Overview</a>
+                <a asp-controller="Dashboard" asp-action="Riders">Riders</a>
+                <a asp-controller="Dashboard" asp-action="Calendar">Calendar</a>
+                <a asp-controller="Dashboard" asp-action="Settings">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main area -->
+        <div class="main-area">
+
+            <!-- Topbar -->
+            <header class="topbar">
+                <div>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                <div class="topbar-right">
+                    <span>Welcome to RaceCore</span>
+                </div>
+            </header>
+
+            <!-- Page content window -->
+            <main class="content-window">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+</body>
+</html>
