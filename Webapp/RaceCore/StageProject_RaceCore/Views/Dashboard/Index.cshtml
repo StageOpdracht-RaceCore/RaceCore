@@ -7,17 +7,28 @@
     {
         var colors = new[]
         {
-            "#ef4444",
             "#3b82f6",
+            "#eab308",
             "#10b981",
-            "#f59e0b",
             "#8b5cf6",
+            "#ef4444",
+            "#f59e0b",
             "#ec4899",
             "#14b8a6",
-            "#eab308"
+            "#6366f1",
+            "#84cc16",
+            "#f97316",
+            "#06b6d4"
         };
 
-        int index = Math.Abs(playerName.GetHashCode()) % colors.Length;
+        int value = 0;
+
+        foreach (char c in playerName.Trim().ToLower())
+        {
+            value += c;
+        }
+
+        int index = value % colors.Length;
         return colors[index];
     }
 }

@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<StageProject_RaceCore.Models.TeamViewModel>
 @using System.Linq
+
 @{
     ViewData["Title"] = "Teams";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
@@ -24,6 +25,7 @@
 <div class="page-card">
     <h2>Teams</h2>
     <p>This is the Team Overview</p>
+    <p>On this page you will be able to view the teams and their points.</p>
 </div>
 
 @if (!(Model?.Any() ?? false))
