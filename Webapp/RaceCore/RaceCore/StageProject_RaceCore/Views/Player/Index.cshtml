@@ -8,6 +8,20 @@
 <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
 <div class="player-page">
+    @if (TempData["Success"] != null)
+    {
+        <div class="player-alert player-alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="player-alert player-alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
     <div class="player-header-card">
         <div>
             <p class="player-page-kicker">RaceCore Management</p>
