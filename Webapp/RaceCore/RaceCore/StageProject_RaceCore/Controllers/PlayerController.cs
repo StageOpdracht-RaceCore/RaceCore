@@ -94,6 +94,7 @@ namespace StageProject_RaceCore.Controllers
             _context.Players.Add(player);
             await _context.SaveChangesAsync();
 
+            TempData["Success"] = "Speler succesvol toegevoegd.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -130,6 +131,7 @@ namespace StageProject_RaceCore.Controllers
 
             await _context.SaveChangesAsync();
 
+            TempData["Success"] = "Speler succesvol bijgewerkt.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -150,14 +152,25 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var player = await _context.Players.FindAsync(id);
+            var player = await _context.Players
+                .Include(p => p.Selections)
+                .Include(p => p.DraftTurns)
+                .Include(p => p.PlayerPoints)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (player != null)
+            if (player == null)
+                return RedirectToAction(nameof(Index));
+
+            if (player.Selections.Any() || player.DraftTurns.Any() || player.PlayerPoints.Any())
             {
-                _context.Players.Remove(player);
-                await _context.SaveChangesAsync();
+                TempData["Error"] = "Deze speler kan niet verwijderd worden omdat er gekoppelde gegevens bestaan.";
+                return RedirectToAction(nameof(Index));
             }
 
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Speler succesvol verwijderd.";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -16,6 +16,8 @@
         </div>
 
         <form asp-action="Create" method="post" class="player-form-grid">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="player-form-group">
                 <label asp-for="Name">Naam</label>
                 <input asp-for="Name" class="player-form-input" />
