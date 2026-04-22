@@ -23,7 +23,17 @@
 }
 else
 {
-    <div class="teams-grid">
+    <div class="global-search-bar">
+        <input type="text"
+               id="globalSearchInput"
+               placeholder="Search by team or cyclist name..."
+               aria-label="Search teams and cyclists" />
+
+        <button type="button" id="globalSearchClear" title="Clear" hidden>Clear</button>
+        <span id="globalSearchCount"></span>
+    </div>
+
+    <div class="teams-grid" id="teamsGrid">
         @foreach (var team in Model.OrderByDescending(t => (t.ActiveCyclistsCount + t.BenchCyclistsCount)))
         {
             <div class="team-card collapsed" data-team-id="@team.Id" data-team-name="@team.Name.ToLower()" style="--team-color:@(team.Color ?? "#ddd");">
@@ -40,30 +50,14 @@ else
                         <div class="team-stats-top">
                             <div class="badge">@team.TeamPoints pts</div>
                             <button type="button" class="collapse-toggle" aria-expanded="false" title="Toggle team">
-                                <span class="arrow">▾</span>
+                                <span class="arrow">&#9662;</span>
                             </button>
                         </div>
-                        <div class="team-counts">Active: <strong>@team.ActiveCyclistsCount</strong> · Bench: <strong>@team.BenchCyclistsCount</strong></div>
+                        <div class="team-counts">Active: <strong>@team.ActiveCyclistsCount</strong> &middot; Bench: <strong>@team.BenchCyclistsCount</strong></div>
                     </div>
                 </div>
 
                 <div class="team-body">
-
-                    @* Search bar *@
-                    <div class="team-search-bar">
-                        <input type="text"
-                               class="team-search-input"
-                               placeholder="Search cyclist…"
-                               aria-label="Search cyclists in @team.Name" />
-                        <button type="button" class="team-search-btn" title="Search">
-                            🔍
-                        </button>
-                        <button type="button" class="team-search-clear" title="Clear" hidden>
-                            ✕
-                        </button>
-                        <span class="team-search-count"></span>
-                    </div>
-
                     <div class="composition">
                         <div class="column">
                             <h4>Active</h4>
@@ -87,7 +81,7 @@ else
                             }
                             else
                             {
-                                <div class="empty" data-static-empty="true">No active cyclists</div>
+                                <div class="empty">No active cyclists</div>
                             }
                         </div>
 
@@ -113,7 +107,7 @@ else
                             }
                             else
                             {
-                                <div class="empty" data-static-empty="true">No cyclists on the bench</div>
+                                <div class="empty">No cyclists on the bench</div>
                             }
                         </div>
                     </div>
@@ -127,7 +121,7 @@ else
     <script>
         (function () {
 
-            // ─── Collapse / expand ────────────────────────────────────────────────────
+            // --- Collapse / expand ---------------------------------------------------
             var STORAGE_KEY = 'teamsCollapseState';
 
             function readState() {
@@ -160,7 +154,7 @@ else
                 });
             }
 
-            // ─── Team colours ─────────────────────────────────────────────────────────
+            // --- Team colours --------------------------------------------------------
             function hashStringToInt(str) {
                 var h = 2166136261 >>> 0;
                 for (var i = 0; i < str.length; i++) {
@@ -172,8 +166,8 @@ else
 
             (function assignDistinctColors() {
                 var MIN_HUE_DIFF = 60;
-                var goldenAngle = 137.508;
-                var usedHues = [];
+                var goldenAngle  = 137.508;
+                var usedHues     = [];
 
                 function hueDistance(a, b) {
                     var d = Math.abs(a - b) % 360;
@@ -192,10 +186,10 @@ else
                         var m = saved.match(/hsl\(([-0-9.]+)\s*,\s*([0-9.]+)%\s*,\s*([0-9.]+)%\)/i);
                         if (m) { var h = parseFloat(m[1]); if (!isNaN(h)) usedHues.push(h); }
                     } else {
-                        var hash = hashStringToInt(String(id));
-                        var baseHue = hash % 360;
+                        var hash      = hashStringToInt(String(id));
+                        var baseHue   = hash % 360;
                         var candidate = (baseHue + i * goldenAngle) % 360;
-                        var attempts = 0;
+                        var attempts  = 0;
                         while (usedHues.some(function (uh) { return hueDistance(uh, candidate) < MIN_HUE_DIFF; })) {
                             candidate = (candidate + goldenAngle) % 360;
                             if (++attempts > 36) break;
@@ -210,7 +204,7 @@ else
 
             restoreAll();
 
-            // ─── Collapse click delegation ────────────────────────────────────────────
+            // --- Collapse click delegation -------------------------------------------
             document.addEventListener('click', function (e) {
                 var btn = e.target.closest('.collapse-toggle');
                 if (btn) {
@@ -234,7 +228,7 @@ else
                 }
             });
 
-            // Save state before bench/activate form submits
+            // Save collapse state before bench/activate form submits
             document.addEventListener('click', function (e) {
                 if (!e.target.closest('.bench-btn, .activate-btn')) return;
                 var state = {};
@@ -245,67 +239,65 @@ else
                 writeState(state);
             }, true);
 
-            // ─── Per-card search ──────────────────────────────────────────────────────
-            document.querySelectorAll('.team-card').forEach(function (card) {
-                var input    = card.querySelector('.team-search-input');
-                var searchBtn = card.querySelector('.team-search-btn');
-                var clearBtn = card.querySelector('.team-search-clear');
-                var countEl  = card.querySelector('.team-search-count');
-                var teamName = (card.dataset.teamName || '').toLowerCase();
+            // --- Global search -------------------------------------------------------
+            var searchInput = document.getElementById('globalSearchInput');
 
-                if (!input) return;
+            var clearBtn    = document.getElementById('globalSearchClear');
+            var countEl     = document.getElementById('globalSearchCount');
 
-                // All cyclist <li> elements inside this card
-                function getCyclistItems() {
-                    return Array.from(card.querySelectorAll('.cyclist-list li[data-cyclist-name]'));
+            if (!searchInput) return;
+
+            function clearDynamicEmpties() {
+                document.querySelectorAll('.search-empty').forEach(function (el) { el.remove(); });
+            }
+
+            function expandCard(card) {
+                if (card.classList.contains('collapsed')) {
+                    card.classList.remove('collapsed');
+                    var toggle = card.querySelector('.collapse-toggle');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'true');
+                    saveCardState(card);
                 }
+            }
 
-                // Dynamic "no results" messages injected by the search (not the static server-rendered ones)
-                function clearDynamicEmpties() {
-                    card.querySelectorAll('.search-empty').forEach(function (el) { el.remove(); });
-                }
+            function applyFilter(query) {
+                query = query.trim().toLowerCase();
+                clearDynamicEmpties();
 
-                function applyFilter(query) {
-                    query = query.trim().toLowerCase();
-                    clearDynamicEmpties();
+                var totalVisible = 0;
 
-                    var items = getCyclistItems();
+                document.querySelectorAll('.team-card[data-team-id]').forEach(function (card) {
+                    var teamName = (card.dataset.teamName || '').toLowerCase();
+                    var items    = Array.from(card.querySelectorAll('.cyclist-list li[data-cyclist-name]'));
 
                     if (query === '') {
-                        // Reset: show everything
                         items.forEach(function (li) { li.hidden = false; });
                         card.hidden = false;
-                        clearBtn.hidden = true;
-                        countEl.textContent = '';
+                        totalVisible += items.length;
                         return;
                     }
 
-                    // Check if the query matches the team name — if not, hide the whole card
                     var teamMatches = teamName.includes(query);
 
-                    // Filter individual cyclist rows
-                    var visibleCount = 0;
+                    var cyclistMatches = 0;
                     items.forEach(function (li) {
-                        var name = (li.dataset.cyclistName || '').toLowerCase();
-                        var match = name.includes(query);
+                        var match = (li.dataset.cyclistName || '').includes(query);
                         li.hidden = !match;
-                        if (match) visibleCount++;
+                        if (match) cyclistMatches++;
                     });
 
-                    // If query matches team name, show everything regardless of cyclist filter
                     if (teamMatches) {
+                        // Team name matches — show card with all cyclists
+                        card.hidden = false;
                         items.forEach(function (li) { li.hidden = false; });
+                        totalVisible += items.length;
+                        expandCard(card);
+                    } else if (cyclistMatches > 0) {
+                        // Cyclist match — show card, only matching rows visible
                         card.hidden = false;
-                        visibleCount = items.length;
-                    } else if (visibleCount === 0) {
-                        // No cyclists match and team name doesn't match → hide card
-                        card.hidden = true;
-                    } else {
-                        card.hidden = false;
-                    }
+                        totalVisible += cyclistMatches;
+                        expandCard(card);
 
-                    // Add "no results" hints inside columns when all cyclists in that column are hidden
-                    if (!card.hidden) {
                         card.querySelectorAll('.column').forEach(function (col) {
                             var list = col.querySelector('.cyclist-list');
                             if (!list) return;
@@ -317,39 +309,30 @@ else
                                 col.appendChild(msg);
                             }
                         });
+                    } else {
+                        // Nothing matches — hide the whole card
+                        card.hidden = true;
                     }
+                });
 
+                if (query === '') {
+                    clearBtn.hidden = true;
+                    countEl.textContent = '';
+                } else {
                     clearBtn.hidden = false;
-                    countEl.textContent = visibleCount > 0
-                        ? visibleCount + ' match' + (visibleCount !== 1 ? 'es' : '')
-                        : '';
+                    countEl.textContent = totalVisible > 0
+                        ? totalVisible + ' cyclist' + (totalVisible !== 1 ? 's' : '') + ' found'
+                        : 'No results';
                 }
+            }
 
-                // Trigger on button click
-                searchBtn.addEventListener('click', function () {
-                    applyFilter(input.value);
-                    // Auto-expand the card so results are visible
-                    if (!card.hidden && card.classList.contains('collapsed')) {
-                        card.classList.remove('collapsed');
-                        var toggle = card.querySelector('.collapse-toggle');
-                        if (toggle) toggle.setAttribute('aria-expanded', 'true');
-                        saveCardState(card);
-                    }
-                });
+            searchInput.addEventListener('input', function () {
+                applyFilter(searchInput.value);
+            });
 
-                // Trigger on Enter key
-                input.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        searchBtn.click();
-                    }
-                });
-
-                // Clear button resets filter
-                clearBtn.addEventListener('click', function () {
-                    input.value = '';
-                    applyFilter('');
-                });
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                applyFilter('');
             });
 
         })();
