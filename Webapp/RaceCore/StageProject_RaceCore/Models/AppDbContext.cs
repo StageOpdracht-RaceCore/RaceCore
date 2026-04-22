@@ -27,8 +27,7 @@ namespace StageProject_RaceCore.Models
 
             // TEAM
             modelBuilder.Entity<Team>()
-                .HasIndex(t => t.Tag)
-                .IsUnique();
+                .HasIndex(t => t.Tag);
 
             // RACE
             modelBuilder.Entity<Race>()
