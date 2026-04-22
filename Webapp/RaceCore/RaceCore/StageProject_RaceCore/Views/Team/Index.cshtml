@@ -10,8 +10,7 @@
 
 <div class="page-card page-summary">
     <h2>Teams</h2>
-    <p>This is the Team Overview</p>
-    <p>On this page you will be able to view the teams and their points.</p>
+    <p>Overview of all pro cycling teams, their rosters, and current points.</p>
 </div>
 
 @if (!(Model?.Any() ?? false))
@@ -23,16 +22,33 @@
 }
 else
 {
-    <div class="teams-grid">
-        @foreach (var team in Model.OrderByDescending(t => (t.ActiveCyclistsCount + t.BenchCyclistsCount)))
+    <div class="global-search-bar">
+        <input type="text"
+               id="globalSearchInput"
+               placeholder="Search by team or cyclist name&hellip;"
+               aria-label="Search teams and cyclists" />
+        <button type="button" id="globalSearchClear" title="Clear search" hidden>&#10005; Clear</button>
+        <span id="globalSearchCount" aria-live="polite"></span>
+    </div>
+
+    <div class="teams-grid" id="teamsGrid">
+        @foreach (var team in Model.OrderByDescending(t => t.ActiveCyclistsCount + t.BenchCyclistsCount))
         {
-            <div class="team-card collapsed" data-team-id="@team.Id" data-team-name="@team.Name.ToLower()" style="--team-color:@(team.Color ?? "#ddd");">
+            <div class="team-card collapsed"
+                 data-team-id="@team.Id"
+                 data-team-name="@team.Name.ToLower()">
+
                 <div class="team-header">
                     <div class="team-meta">
-                        <span class="swatch" style="background:var(--team-color)"></span>
+                        <span class="swatch"></span>
                         <div>
-                            <div style="font-size:1.05rem; font-weight:600">@team.Name <span class="tag">@team.Tag</span></div>
-                            <div style="font-size:0.85rem; color:#666">@(team.ActiveCyclistsCount + team.BenchCyclistsCount) cyclists</div>
+                            <div class="team-name">
+                                @team.Name
+                                <span class="tag">@team.Tag</span>
+                            </div>
+                            <div class="team-cyclist-count">
+                                @(team.ActiveCyclistsCount + team.BenchCyclistsCount) cyclists
+                            </div>
                         </div>
                     </div>
 
@@ -40,34 +56,22 @@ else
                         <div class="team-stats-top">
                             <div class="badge">@team.TeamPoints pts</div>
                             <button type="button" class="collapse-toggle" aria-expanded="false" title="Toggle team">
-                                <span class="arrow">▾</span>
+                                <span class="arrow">&#9662;</span>
                             </button>
                         </div>
-                        <div class="team-counts">Active: <strong>@team.ActiveCyclistsCount</strong> · Bench: <strong>@team.BenchCyclistsCount</strong></div>
+                        <div class="team-counts">
+                            Active: <strong>@team.ActiveCyclistsCount</strong>
+                            &middot;
+                            Bench: <strong>@team.BenchCyclistsCount</strong>
+                        </div>
                     </div>
                 </div>
 
                 <div class="team-body">
-
-                    @* Search bar *@
-                    <div class="team-search-bar">
-                        <input type="text"
-                               class="team-search-input"
-                               placeholder="Search cyclist…"
-                               aria-label="Search cyclists in @team.Name" />
-                        <button type="button" class="team-search-btn" title="Search">
-                            🔍
-                        </button>
-                        <button type="button" class="team-search-clear" title="Clear" hidden>
-                            ✕
-                        </button>
-                        <span class="team-search-count"></span>
-                    </div>
-
                     <div class="composition">
+
                         <div class="column">
                             <h4>Active</h4>
-
                             @if (team.ActiveCyclists != null && team.ActiveCyclists.Any())
                             {
                                 <ul class="cyclist-list">
@@ -75,11 +79,11 @@ else
                                     {
                                         <li data-cyclist-name="@($"{c.FirstName} {c.LastName}".ToLower())">
                                             <span>@c.FirstName @c.LastName</span>
-                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form" style="display:inline; margin-left:8px;">
+                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cyclistId" value="@c.Id" />
                                                 <input type="hidden" name="isActive" value="false" />
-                                                <button type="submit" class="btn bench-btn">Bench</button>
+                                                <button type="submit" class="bench-btn">Bench</button>
                                             </form>
                                         </li>
                                     }
@@ -87,13 +91,12 @@ else
                             }
                             else
                             {
-                                <div class="empty" data-static-empty="true">No active cyclists</div>
+                                <div class="empty">No active cyclists</div>
                             }
                         </div>
 
                         <div class="column">
                             <h4>Bench</h4>
-
                             @if (team.BenchCyclists != null && team.BenchCyclists.Any())
                             {
                                 <ul class="cyclist-list">
@@ -101,11 +104,11 @@ else
                                     {
                                         <li data-cyclist-name="@($"{c.FirstName} {c.LastName}".ToLower())">
                                             <span>@c.FirstName @c.LastName</span>
-                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form" style="display:inline; margin-left:8px;">
+                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cyclistId" value="@c.Id" />
                                                 <input type="hidden" name="isActive" value="true" />
-                                                <button type="submit" class="btn activate-btn">Activate</button>
+                                                <button type="submit" class="activate-btn">Activate</button>
                                             </form>
                                         </li>
                                     }
@@ -113,9 +116,10 @@ else
                             }
                             else
                             {
-                                <div class="empty" data-static-empty="true">No cyclists on the bench</div>
+                                <div class="empty">No cyclists on the bench</div>
                             }
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -127,7 +131,7 @@ else
     <script>
         (function () {
 
-            // ─── Collapse / expand ────────────────────────────────────────────────────
+            // ── Collapse state (localStorage) ────────────────────────────────────────
             var STORAGE_KEY = 'teamsCollapseState';
 
             function readState() {
@@ -160,8 +164,8 @@ else
                 });
             }
 
-            // ─── Team colours ─────────────────────────────────────────────────────────
-            function hashStringToInt(str) {
+            // ── Team accent colours (stable per id, saved to localStorage) ───────────
+            function hashToInt(str) {
                 var h = 2166136261 >>> 0;
                 for (var i = 0; i < str.length; i++) {
                     h ^= str.charCodeAt(i);
@@ -170,71 +174,73 @@ else
                 return h >>> 0;
             }
 
-            (function assignDistinctColors() {
-                var MIN_HUE_DIFF = 60;
-                var goldenAngle = 137.508;
-                var usedHues = [];
+            (function assignColors() {
+                var MIN_DIFF    = 60;
+                var GOLDEN      = 137.508;
+                var usedHues    = [];
 
-                function hueDistance(a, b) {
+                function hueDist(a, b) {
                     var d = Math.abs(a - b) % 360;
                     return d > 180 ? 360 - d : d;
                 }
 
                 document.querySelectorAll('.team-card[data-team-id]').forEach(function (card, i) {
-                    var id = card.dataset.teamId;
-                    if (!id) return;
-                    var storageKey = 'teamColor_' + id;
+                    var id  = card.dataset.teamId;
+                    var key = 'teamColor_' + id;
                     var saved = null;
-                    try { saved = localStorage.getItem(storageKey); } catch (e) {}
+                    try { saved = localStorage.getItem(key); } catch (e) {}
 
                     if (saved) {
                         card.style.setProperty('--team-color', saved);
-                        var m = saved.match(/hsl\(([-0-9.]+)\s*,\s*([0-9.]+)%\s*,\s*([0-9.]+)%\)/i);
-                        if (m) { var h = parseFloat(m[1]); if (!isNaN(h)) usedHues.push(h); }
+                        var m = saved.match(/hsl\(([-\d.]+)/i);
+                        if (m) usedHues.push(parseFloat(m[1]));
                     } else {
-                        var hash = hashStringToInt(String(id));
-                        var baseHue = hash % 360;
-                        var candidate = (baseHue + i * goldenAngle) % 360;
-                        var attempts = 0;
-                        while (usedHues.some(function (uh) { return hueDistance(uh, candidate) < MIN_HUE_DIFF; })) {
-                            candidate = (candidate + goldenAngle) % 360;
-                            if (++attempts > 36) break;
+                        var candidate = (hashToInt(String(id)) % 360 + i * GOLDEN) % 360;
+                        var tries = 0;
+                        while (usedHues.some(function (h) { return hueDist(h, candidate) < MIN_DIFF; })) {
+                            candidate = (candidate + GOLDEN) % 360;
+                            if (++tries > 36) break;
                         }
-                        var accent = 'hsl(' + candidate.toFixed(2) + ',70%,60%)';
-                        card.style.setProperty('--team-color', accent);
-                        try { localStorage.setItem(storageKey, accent); } catch (e) {}
+                        var color = 'hsl(' + candidate.toFixed(1) + ',65%,55%)';
+                        card.style.setProperty('--team-color', color);
+                        try { localStorage.setItem(key, color); } catch (e) {}
                         usedHues.push(candidate);
                     }
+
+                    // Mirror color to the swatch
+                    var swatch = card.querySelector('.swatch');
+                    if (swatch) swatch.style.background = 'var(--team-color)';
                 });
             })();
 
             restoreAll();
 
-            // ─── Collapse click delegation ────────────────────────────────────────────
+            // ── Collapse / expand on header click ────────────────────────────────────
             document.addEventListener('click', function (e) {
-                var btn = e.target.closest('.collapse-toggle');
-                if (btn) {
-                    var card = btn.closest('.team-card');
+                // Arrow button
+                var toggleBtn = e.target.closest('.collapse-toggle');
+                if (toggleBtn) {
+                    var card = toggleBtn.closest('.team-card');
                     if (!card) return;
-                    var isCollapsed = card.classList.toggle('collapsed');
-                    btn.setAttribute('aria-expanded', String(!isCollapsed));
+                    var collapsed = card.classList.toggle('collapsed');
+                    toggleBtn.setAttribute('aria-expanded', String(!collapsed));
                     saveCardState(card);
                     return;
                 }
 
+                // Clicking anywhere on the header (but not on interactive children)
                 var header = e.target.closest('.team-header');
-                if (header) {
-                    if (e.target.closest('button, a, form')) return;
+                if (header && !e.target.closest('button, a, form')) {
                     var card = header.closest('.team-card');
                     if (!card) return;
-                    var toggle = card.querySelector('.collapse-toggle');
-                    var isCollapsed = card.classList.toggle('collapsed');
-                    if (toggle) toggle.setAttribute('aria-expanded', String(!isCollapsed));
+                    var collapsed = card.classList.toggle('collapsed');
+                    var btn = card.querySelector('.collapse-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
                     saveCardState(card);
                 }
             });
 
-            // Save state before bench/activate form submits
+            // Save state just before a bench/activate form submits (so the page restores correctly)
             document.addEventListener('click', function (e) {
                 if (!e.target.closest('.bench-btn, .activate-btn')) return;
                 var state = {};
@@ -245,67 +251,66 @@ else
                 writeState(state);
             }, true);
 
-            // ─── Per-card search ──────────────────────────────────────────────────────
-            document.querySelectorAll('.team-card').forEach(function (card) {
-                var input    = card.querySelector('.team-search-input');
-                var searchBtn = card.querySelector('.team-search-btn');
-                var clearBtn = card.querySelector('.team-search-clear');
-                var countEl  = card.querySelector('.team-search-count');
-                var teamName = (card.dataset.teamName || '').toLowerCase();
+            // ── Global search ─────────────────────────────────────────────────────────
+            var searchInput = document.getElementById('globalSearchInput');
+            var clearBtn    = document.getElementById('globalSearchClear');
+            var countEl     = document.getElementById('globalSearchCount');
 
-                if (!input) return;
+            if (!searchInput) return;
 
-                // All cyclist <li> elements inside this card
-                function getCyclistItems() {
-                    return Array.from(card.querySelectorAll('.cyclist-list li[data-cyclist-name]'));
-                }
+            function removeDynamicEmpties() {
+                document.querySelectorAll('.search-empty').forEach(function (el) { el.remove(); });
+            }
 
-                // Dynamic "no results" messages injected by the search (not the static server-rendered ones)
-                function clearDynamicEmpties() {
-                    card.querySelectorAll('.search-empty').forEach(function (el) { el.remove(); });
-                }
+            function expandCard(card) {
+                if (!card.classList.contains('collapsed')) return;
+                card.classList.remove('collapsed');
+                var btn = card.querySelector('.collapse-toggle');
+                if (btn) btn.setAttribute('aria-expanded', 'true');
+                saveCardState(card);
+            }
 
-                function applyFilter(query) {
-                    query = query.trim().toLowerCase();
-                    clearDynamicEmpties();
+            function applyFilter(query) {
+                query = query.trim().toLowerCase();
+                removeDynamicEmpties();
 
-                    var items = getCyclistItems();
+                var totalVisible = 0;
 
+                document.querySelectorAll('.team-card[data-team-id]').forEach(function (card) {
+                    var teamName = (card.dataset.teamName || '');
+                    var items    = Array.from(card.querySelectorAll('.cyclist-list li[data-cyclist-name]'));
+
+                    // ── Reset ──
                     if (query === '') {
-                        // Reset: show everything
                         items.forEach(function (li) { li.hidden = false; });
                         card.hidden = false;
-                        clearBtn.hidden = true;
-                        countEl.textContent = '';
+                        totalVisible += items.length;
                         return;
                     }
 
-                    // Check if the query matches the team name — if not, hide the whole card
-                    var teamMatches = teamName.includes(query);
+                    var teamMatches    = teamName.includes(query);
+                    var cyclistMatches = 0;
 
-                    // Filter individual cyclist rows
-                    var visibleCount = 0;
                     items.forEach(function (li) {
-                        var name = (li.dataset.cyclistName || '').toLowerCase();
-                        var match = name.includes(query);
+                        var match = (li.dataset.cyclistName || '').includes(query);
                         li.hidden = !match;
-                        if (match) visibleCount++;
+                        if (match) cyclistMatches++;
                     });
 
-                    // If query matches team name, show everything regardless of cyclist filter
                     if (teamMatches) {
+                        // Whole team matches — show all cyclists
+                        card.hidden = false;
                         items.forEach(function (li) { li.hidden = false; });
-                        card.hidden = false;
-                        visibleCount = items.length;
-                    } else if (visibleCount === 0) {
-                        // No cyclists match and team name doesn't match → hide card
-                        card.hidden = true;
-                    } else {
-                        card.hidden = false;
-                    }
+                        totalVisible += items.length;
+                        expandCard(card);
 
-                    // Add "no results" hints inside columns when all cyclists in that column are hidden
-                    if (!card.hidden) {
+                    } else if (cyclistMatches > 0) {
+                        // Some cyclists match — show card, only matching rows
+                        card.hidden = false;
+                        totalVisible += cyclistMatches;
+                        expandCard(card);
+
+                        // Add "No matches" hint in columns that are fully filtered out
                         card.querySelectorAll('.column').forEach(function (col) {
                             var list = col.querySelector('.cyclist-list');
                             if (!list) return;
@@ -317,39 +322,30 @@ else
                                 col.appendChild(msg);
                             }
                         });
-                    }
 
+                    } else {
+                        // Nothing matches — hide the whole card
+                        card.hidden = true;
+                    }
+                });
+
+                if (query === '') {
+                    clearBtn.hidden = true;
+                    countEl.textContent = '';
+                } else {
                     clearBtn.hidden = false;
-                    countEl.textContent = visibleCount > 0
-                        ? visibleCount + ' match' + (visibleCount !== 1 ? 'es' : '')
-                        : '';
+                    countEl.textContent = totalVisible > 0
+                        ? totalVisible + ' cyclist' + (totalVisible !== 1 ? 's' : '') + ' found'
+                        : 'No results';
                 }
+            }
 
-                // Trigger on button click
-                searchBtn.addEventListener('click', function () {
-                    applyFilter(input.value);
-                    // Auto-expand the card so results are visible
-                    if (!card.hidden && card.classList.contains('collapsed')) {
-                        card.classList.remove('collapsed');
-                        var toggle = card.querySelector('.collapse-toggle');
-                        if (toggle) toggle.setAttribute('aria-expanded', 'true');
-                        saveCardState(card);
-                    }
-                });
+            searchInput.addEventListener('input', function () { applyFilter(searchInput.value); });
 
-                // Trigger on Enter key
-                input.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        searchBtn.click();
-                    }
-                });
-
-                // Clear button resets filter
-                clearBtn.addEventListener('click', function () {
-                    input.value = '';
-                    applyFilter('');
-                });
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                applyFilter('');
+                searchInput.focus();
             });
 
         })();
