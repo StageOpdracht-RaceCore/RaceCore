@@ -1,276 +1,115 @@
-﻿/* ── Team card base ─────────────────────────────────────────────────────── */
-.team-card {
-    --team-color: #ddd;
-    background: #fff;
-    border-radius: 22px;
-    padding: 22px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
-    transition: all 200ms ease;
-    display: flex;
-    flex-direction: column;
+﻿/* =============================================================================
+   Team.css — RaceCore Teams page
+   ============================================================================= */
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+:root {
+    --rc-blue: #0078d4;
+    --rc-blue-dark: #005fa3;
+    --rc-blue-glow: rgba(0, 120, 212, 0.14);
+    --rc-green: #00875a;
+    --rc-green-dark: #006644;
+    --rc-surface: #ffffff;
+    --rc-border: #e5e7eb;
+    --rc-border-soft: #f0f0f0;
+    --rc-text: #111827;
+    --rc-text-muted: #6b7280;
+    --rc-radius-lg: 20px;
+    --rc-radius-md: 10px;
+    --rc-radius-sm: 6px;
+    --rc-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    --rc-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────── */
-.team-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+/* ── Page summary card ───────────────────────────────────────────────────── */
+.page-summary {
+    width: calc(100% - 2rem);
+    margin: 0 auto 1.5rem auto;
+    padding: 24px 28px;
+    background: var(--rc-surface);
+    border-radius: var(--rc-radius-lg);
+    border: 1px solid var(--rc-border);
+    box-shadow: var(--rc-shadow);
+    box-sizing: border-box;
 }
 
-.team-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+    .page-summary h2 {
+        margin: 0 0 4px 0;
+        font-size: 1.4rem;
+        color: var(--rc-text);
+    }
 
-.swatch {
-    width: 18px;
-    height: 18px;
-    border-radius: 3px;
-    border: 1px solid #999;
-    display: inline-block;
-    flex-shrink: 0;
-}
+    .page-summary p {
+        margin: 0;
+        color: var(--rc-text-muted);
+        font-size: 0.9rem;
+    }
 
-.tag {
-    background: #f3f3f3;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    color: #333;
-}
-
-/* ── Stats (right side of header) ───────────────────────────────────────── */
-.team-stats {
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    min-width: 0;
-}
-
-.team-stats-top {
+/* ── Global search bar ───────────────────────────────────────────────────── */
+.global-search-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    width: calc(100% - 2rem);
+    margin: 0 auto 1.5rem auto;
+    padding: 12px 16px;
+    background: var(--rc-surface);
+    border-radius: var(--rc-radius-lg);
+    border: 1px solid var(--rc-border);
+    box-shadow: var(--rc-shadow-sm);
 }
 
-.team-counts {
-    font-size: 0.85rem;
-    color: #666;
-    white-space: nowrap;
-}
-
-.badge {
-    flex: 0 0 auto;
-    background: #0078d4;
-    color: white;
-    padding: 6px 8px;
-    border-radius: 14px;
-    font-weight: 600;
-}
-
-/* ── Collapse toggle ─────────────────────────────────────────────────────── */
-.collapse-toggle {
-    background: transparent;
-    border: 0;
-    padding: 6px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.95rem;
-}
-
-    .collapse-toggle:focus {
-        outline: 2px solid #0078d4;
+    .global-search-bar input[type="text"] {
+        flex: 1;
+        padding: 8px 14px;
+        border: 1px solid var(--rc-border);
+        border-radius: var(--rc-radius-md);
+        font-size: 0.9rem;
+        color: var(--rc-text);
+        background: #f9fafb;
+        outline: none;
+        transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
     }
 
-    .collapse-toggle .arrow {
-        display: inline-block;
-        transition: transform 180ms ease;
-    }
-
-.team-card.collapsed .collapse-toggle .arrow {
-    transform: rotate(-90deg);
-}
-
-/* ── Collapsible body ────────────────────────────────────────────────────── */
-.team-card.collapsed {
-    background: #fff;
-    border: 1px solid #e1e1e1;
-    padding: 12px;
-}
-
-.team-card:not(.collapsed) {
-    border-left: 6px solid var(--team-color);
-    max-height: 50ch;
-    overflow: hidden;
-}
-
-.team-card .team-body {
-    display: block;
-    flex: 1 1 auto;
-    overflow: auto;
-    min-height: 0;
-}
-
-.team-card.collapsed .team-body {
-    display: none;
-}
-
-/* ── Search bar ──────────────────────────────────────────────────────────── */
-.team-search-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 12px 0 10px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.team-search-input {
-    flex: 1;
-    padding: 6px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    outline: none;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-    .team-search-input:focus {
-        border-color: #0078d4;
-        box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.12);
-    }
-
-.team-search-btn {
-    padding: 6px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #f9fafb;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 150ms ease;
-}
-
-    .team-search-btn:hover {
-        background: #e5e7eb;
-    }
-
-    .team-search-btn:focus {
-        outline: 2px solid #0078d4;
-    }
-
-.team-search-clear {
-    padding: 4px 8px;
-    border: none;
-    background: transparent;
-    color: #6b7280;
-    cursor: pointer;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    transition: color 150ms ease;
-}
-
-    .team-search-clear:hover {
-        color: #111;
-    }
-
-.team-search-count {
-    font-size: 0.78rem;
-    color: #6b7280;
-    white-space: nowrap;
-    min-width: 56px; /* reserve space so layout doesn't jump */
-    text-align: right;
-}
-
-/* ── Composition columns ─────────────────────────────────────────────────── */
-.composition {
-    display: flex;
-    gap: 24px;
-    margin-top: 12px;
-}
-
-.column {
-    flex: 1;
-}
-
-    .column h4 {
-        margin: 0 0 8px 0;
-    }
-
-/* ── Typography inside cards ─────────────────────────────────────────────── */
-.team-card h4,
-.team-card h3,
-.team-card h2 {
-    margin: 4px 0 0 0;
-    color: #111827;
-}
-
-.team-card p {
-    margin: 0;
-    color: #6b7280;
-}
-
-/* ── Cyclist list ────────────────────────────────────────────────────────── */
-.cyclist-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-    .cyclist-list li {
-        padding: 4px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-        /* Hidden cyclist rows (filtered out) */
-        .cyclist-list li[hidden] {
-            display: none;
+        .global-search-bar input[type="text"]:focus {
+            background: var(--rc-surface);
+            border-color: var(--rc-blue);
+            box-shadow: 0 0 0 3px var(--rc-blue-glow);
         }
 
-.empty {
-    color: #777;
-    font-style: italic;
-}
+        .global-search-bar input[type="text"]::placeholder {
+            color: #9ca3af;
+        }
 
-/* ── Buttons ─────────────────────────────────────────────────────────────── */
-.bench-btn {
+#globalSearchClear {
+    padding: 7px 14px;
+    border: 1px solid var(--rc-border);
+    border-radius: var(--rc-radius-md);
+    background: transparent;
+    color: var(--rc-text-muted);
     font-size: 0.85rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    background: #fff;
-    color: #333;
     cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
 }
 
-.activate-btn {
-    font-size: 0.85rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #0a6;
-    background: #0a6;
-    color: #fff;
-    cursor: pointer;
+    #globalSearchClear:hover {
+        background: #f3f4f6;
+        color: var(--rc-text);
+    }
+
+#globalSearchCount {
+    font-size: 0.8rem;
+    color: var(--rc-text-muted);
+    white-space: nowrap;
+    min-width: 100px;
+    text-align: right;
 }
 
-.bench-btn:hover {
-    background: #f3f3f3;
-}
-
-.activate-btn:hover {
-    background: #088;
-    border-color: #088;
-}
-
-/* ── Grid layout ─────────────────────────────────────────────────────────── */
+/* ── Teams grid ──────────────────────────────────────────────────────────── */
 .teams-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px 10ch;
+    gap: 16px;
     align-items: start;
     width: calc(100% - 2rem);
     margin: 0 auto;
@@ -282,19 +121,257 @@
     }
 }
 
-/* ── Page summary card ───────────────────────────────────────────────────── */
-.page-card + .teams-grid {
-    margin-top: 5ch;
+/* ── Team card ───────────────────────────────────────────────────────────── */
+.team-card {
+    --team-color: #ddd;
+    background: var(--rc-surface);
+    border-radius: var(--rc-radius-lg);
+    border: 1px solid var(--rc-border);
+    box-shadow: var(--rc-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+    overflow: hidden;
 }
 
-.page-summary {
-    display: block;
-    width: calc(100% - 2rem);
-    margin: 0 auto 1.5ch auto;
-    box-sizing: border-box;
-    background: #fff;
-    border-radius: 22px;
-    padding: 22px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
+    .team-card:hover {
+        box-shadow: var(--rc-shadow);
+    }
+
+    .team-card.collapsed {
+        border-color: var(--rc-border);
+    }
+
+    .team-card:not(.collapsed) {
+        border-top: 4px solid var(--team-color);
+        max-height: 520px;
+    }
+
+/* ── Team header ─────────────────────────────────────────────────────────── */
+.team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
 }
+
+    .team-header:hover {
+        background: #fafafa;
+    }
+
+.team-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.team-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--rc-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-cyclist-count {
+    font-size: 0.8rem;
+    color: var(--rc-text-muted);
+    margin-top: 2px;
+}
+
+.swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.12);
+    flex-shrink: 0;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: #f0f4ff;
+    color: var(--rc-blue);
+    border: 1px solid #d0e2ff;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* ── Team stats (right of header) ────────────────────────────────────────── */
+.team-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.team-stats-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--rc-blue);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.team-counts {
+    font-size: 0.78rem;
+    color: var(--rc-text-muted);
+    white-space: nowrap;
+}
+
+/* ── Collapse toggle ─────────────────────────────────────────────────────── */
+.collapse-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f3f4f6;
+    border: 1px solid var(--rc-border);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--rc-text-muted);
+    transition: background 150ms ease;
+    flex-shrink: 0;
+}
+
+    .collapse-toggle:hover {
+        background: #e5e7eb;
+        color: var(--rc-text);
+    }
+
+    .collapse-toggle:focus {
+        outline: 2px solid var(--rc-blue);
+        outline-offset: 2px;
+    }
+
+    .collapse-toggle .arrow {
+        display: inline-block;
+        transition: transform 220ms ease;
+    }
+
+.team-card.collapsed .collapse-toggle .arrow {
+    transform: rotate(-90deg);
+}
+
+/* ── Team body ───────────────────────────────────────────────────────────── */
+.team-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 0 20px 16px 20px;
+    border-top: 1px solid var(--rc-border-soft);
+}
+
+.team-card.collapsed .team-body {
+    display: none;
+}
+
+/* ── Composition columns ─────────────────────────────────────────────────── */
+.composition {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.column {
+    flex: 1;
+    min-width: 0;
+}
+
+    .column h4 {
+        margin: 0 0 8px 0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--rc-text-muted);
+    }
+
+/* ── Cyclist list ────────────────────────────────────────────────────────── */
+.cyclist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .cyclist-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px;
+        border-radius: var(--rc-radius-sm);
+        font-size: 0.875rem;
+        color: var(--rc-text);
+        transition: background 120ms ease;
+    }
+
+        .cyclist-list li:hover {
+            background: #f9fafb;
+        }
+
+        .cyclist-list li[hidden] {
+            display: none;
+        }
+
+/* ── Empty / no-results ──────────────────────────────────────────────────── */
+.empty {
+    padding: 8px 0;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* ── Bench / Activate buttons ────────────────────────────────────────────── */
+.bench-btn,
+.activate-btn {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    white-space: nowrap;
+}
+
+.bench-btn {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+    .bench-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
+
+.activate-btn {
+    background: var(--rc-green);
+    color: #fff;
+    border: 1px solid var(--rc-green);
+}
+
+    .activate-btn:hover {
+        background: var(--rc-green-dark);
+        border-color: var(--rc-green-dark);
+    }
