@@ -18,22 +18,22 @@ namespace StageProject_RaceCore.Controllers
     public class ResultController : Controller
     {
 
-    private readonly AppDbContext _appDbContext;
+    private readonly AppDbContext _context;
 
     public ResultController(AppDbContext appDbContext)
     {
-      _appDbContext = appDbContext;
+      _context = appDbContext;
     }
 
         public async Task<IActionResult>index()
       {
-      var rankData = await _appDbContext.PlayerPoints
-        .Include(pp => pp.Cyclist)
-        .GroupBy(pp => pp.Points)
-        .Select(g => new ResultVM
+      var rankData = await _context.PlayerPoints
+        .Include(pp => pp.Player)
+        .GroupBy(pp => pp.Player.Name)
+        .Select(group => new ResultVM
         {
-           CyclistName = Group.key,
-           totalPoints = Group.Sum(pp => pp.Points),
+           CyclistName = group.Key,
+          totalPoints = group.Sum(pp => pp.Points),
            JerseyType = "Leader"
         })
          .OrderByDescending(r => r.totalPoints).ToListAsync();
