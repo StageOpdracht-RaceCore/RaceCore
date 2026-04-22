@@ -1,9 +1,11 @@
 ﻿.team-card {
     --team-color: #ddd;
+    /* Match dashboard .card appearance */
     background: #fff;
-    border: 1px solid #e1e1e1;
-    border-radius: 6px;
-    padding: 12px;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
     transition: all 200ms ease;
     display: flex;
     flex-direction: column;
@@ -80,6 +82,17 @@
 
 .column h4 { margin: 0 0 8px 0; }
 
+/* Make headings and text match dashboard card styles */
+.team-card h4, .team-card h3, .team-card h2 {
+    margin: 4px 0 0 0;
+    color: #111827;
+}
+
+.team-card p {
+    margin: 0;
+    color: #6b7280;
+}
+
 .cyclist-list {
     list-style: none;
     padding-left: 0;
@@ -93,23 +106,43 @@
 
 .empty { color: #777; font-style: italic; }
 
+
 .teams-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 12px;
+    /* Force two columns layout. Each column shares available space equally. */
+    grid-template-columns: repeat(2, 1fr);
+    /* row-gap then column-gap: keep rows tight but widen the column gap */
+    gap: 12px 10ch;
+    align-items: start; /* keep items independent in height */
+        /* keep grid width aligned with the summary card */
+        width: calc(100% - 2rem);
+        margin: 0 auto;
+}
+
+/* Collapse to single column on narrow viewports */
+@media (max-width: 700px) {
+    .teams-grid { grid-template-columns: 1fr; }
 }
 
 /* Add extra spacing between the page summary (.page-card) and the first row of team cards */
 .page-card + .teams-grid {
-    margin-top: 3ch;
+    margin-top: 5ch;
+}
+.page-summary {
+    display: block;
+    width: calc(100% - 2rem);
+    margin: 0 auto 1.5ch auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid #e1e1e1;
 }
 
 /* Prevent grid items from stretching to the tallest item in the row.
    This keeps each card's background/height independent so expanding one
    card doesn't force others to grow. */
-.teams-grid {
-    align-items: start;
-}
+/* align-items set above on .teams-grid */
 
 /* Collapsible behavior */
 /* Keep card visuals consistent when collapsed so grid/layout doesn't jump */
