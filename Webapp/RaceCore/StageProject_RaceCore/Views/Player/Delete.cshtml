@@ -6,13 +6,10 @@
 
 <h2>Speler verwijderen</h2>
 
-<div class="alert alert-danger">
-    Ben je zeker dat je <strong>@Model.Name</strong> wil verwijderen?
-</div>
+<p>Ben je zeker dat je <strong>@Model.Name</strong> wil verwijderen?</p>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="Id" />
 
     <button type="submit" class="btn btn-danger">Verwijderen</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
 </form>

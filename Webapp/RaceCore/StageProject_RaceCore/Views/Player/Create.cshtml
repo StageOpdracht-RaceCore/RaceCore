@@ -1,17 +1,22 @@
 ﻿@model StageProject_RaceCore.Models.Player
-@{
-    ViewData["Title"] = "Teams";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
-}
+
 <h2>Nieuwe speler</h2>
 
 <form asp-action="Create" method="post">
-
-    <div class="mb-3">
-        <label class="form-label">Naam</label>
+    <div class="form-group">
+        <label>Naam</label>
         <input asp-for="Name" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-success">Opslaan</button>
-    <a asp-action="Index" class="btn btn-secondary">Terug</a>
+    <div class="form-group mt-2">
+        <label>Draft positie</label>
+        <input asp-for="PositionInDraft" class="form-control" />
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Punten</label>
+        <input asp-for="TotalPoints" class="form-control" value="0" />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Opslaan</button>
 </form>
