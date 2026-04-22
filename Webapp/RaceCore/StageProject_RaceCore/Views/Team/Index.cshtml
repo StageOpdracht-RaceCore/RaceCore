@@ -26,7 +26,7 @@ else
     <div class="teams-grid">
         @foreach (var team in Model)
         {
-            <div class="team-card collapsed" style="--team-color:@(team.Color ?? "#ddd");">
+            <div class="team-card collapsed" data-team-id="@team.Id" style="--team-color:@(team.Color ?? "#ddd");">
                 <div class="team-header">
                     <div class="team-meta">
                         <span class="swatch" style="background:var(--team-color)"></span>
@@ -63,7 +63,7 @@ else
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cyclistId" value="@c.Id" />
                                                 <input type="hidden" name="isActive" value="false" />
-                                                <button type="submit" class="btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; color:#333;">Bench</button>
+                                                <button type="submit" class="btn bench-btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; color:#333;">Bench</button>
                                             </form>
                                         </li>
                                     }
@@ -89,7 +89,7 @@ else
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cyclistId" value="@c.Id" />
                                                 <input type="hidden" name="isActive" value="true" />
-                                                <button type="submit" class="btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #0a6; background:#0a6; color:#fff;">Activate</button>
+                                                <button type="submit" class="btn activate-btn" style="font-size:0.85rem; padding:4px 8px; border-radius:4px; border:1px solid #0a6; background:#0a6; color:#fff;">Activate</button>
                                             </form>
                                         </li>
                                     }
@@ -109,14 +109,63 @@ else
 
 <script>
     (function () {
-        // Delegated click handler for collapse toggling
+        var STORAGE_KEY = 'teamsCollapseState';
+
+        function readState() {
+            try {
+                var raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function writeState(state) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        function saveCardState(card) {
+            var id = card.getAttribute('data-team-id');
+            if (!id) return;
+            var state = readState();
+            state[id] = card.classList.contains('collapsed');
+            writeState(state);
+        }
+
+        function restoreAll() {
+            var state = readState();
+            document.querySelectorAll('.team-card[data-team-id]').forEach(function (card) {
+                var id = card.getAttribute('data-team-id');
+                if (!id) return;
+                var collapsed = state.hasOwnProperty(id) ? state[id] : true; // default collapsed
+                if (collapsed) {
+                    card.classList.add('collapsed');
+                    var btn = card.querySelector('.collapse-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    card.classList.remove('collapsed');
+                    var btn = card.querySelector('.collapse-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        // Restore state on load
+        restoreAll();
+
+        // Delegated click handler for collapse toggling and saving state
         document.addEventListener('click', function (e) {
             var btn = e.target.closest('.collapse-toggle');
             if (btn) {
                 var cardBtn = btn.closest('.team-card');
                 if (!cardBtn) return;
-                var isNowCollapsedBtn = cardBtn.classList.toggle('collapsed');
-                btn.setAttribute('aria-expanded', String(!isNowCollapsedBtn));
+                var isCollapsed = cardBtn.classList.toggle('collapsed');
+                btn.setAttribute('aria-expanded', String(!isCollapsed));
+                saveCardState(cardBtn);
                 return;
             }
 
@@ -126,9 +175,25 @@ else
                 var cardHeader = header.closest('.team-card');
                 if (!cardHeader) return;
                 var toggle = cardHeader.querySelector('.collapse-toggle');
-                var isNowCollapsedHeader = cardHeader.classList.toggle('collapsed');
-                if (toggle) toggle.setAttribute('aria-expanded', String(!isNowCollapsedHeader));
+                var isCollapsedHeader = cardHeader.classList.toggle('collapsed');
+                if (toggle) toggle.setAttribute('aria-expanded', String(!isCollapsedHeader));
+                saveCardState(cardHeader);
             }
         });
+
+        // Before any bench/activate form submission, ensure current state is persisted.
+        // Intercept clicks on bench/activate buttons to write current state (defensive)
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.bench-btn, .activate-btn');
+            if (!btn) return;
+            // write full state snapshot
+            var state = {};
+            document.querySelectorAll('.team-card[data-team-id]').forEach(function (card) {
+                var id = card.getAttribute('data-team-id');
+                if (!id) return;
+                state[id] = card.classList.contains('collapsed');
+            });
+            writeState(state);
+        }, true);
     })();
 </script>
