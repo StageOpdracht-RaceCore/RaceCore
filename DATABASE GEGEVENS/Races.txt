@@ -1,0 +1,4 @@
+INSERT INTO Races (Name, Year, StartDate, EndDate) VALUES 
+('Giro d''Italia', 2026, '2026-05-08', '2026-05-31'),
+('Tour de France', 2026, '2026-07-04', '2026-07-26'),
+('Vuelta a España', 2026, '2026-08-22', '2026-09-13');

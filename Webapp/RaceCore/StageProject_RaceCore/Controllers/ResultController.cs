@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StageProject_RaceCore.Models;
+using System.Text.RegularExpressions;
 
 namespace StageProject_RaceCore.Controllers
 {
@@ -14,17 +17,28 @@ namespace StageProject_RaceCore.Controllers
 
     public class ResultController : Controller
     {
-        public IActionResult Index()
-      {
-      var dummyResultVM = new List<ResultVM>
-          {
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 50 }
-          };
 
-          return View(dummyResultVM);
+    private readonly AppDbContext _context;
+
+    public ResultController(AppDbContext appDbContext)
+    {
+      _context = appDbContext;
+    }
+
+        public async Task<IActionResult>index()
+      {
+      var rankData = await _context.PlayerPoints
+        .Include(pp => pp.Player)
+        .GroupBy(pp => pp.Player.Name)
+        .Select(group => new ResultVM
+        {
+           CyclistName = group.Key,
+          totalPoints = group.Sum(pp => pp.Points),
+           JerseyType = "Leader"
+        })
+         .OrderByDescending(r => r.totalPoints).ToListAsync();
+
+      return View(rankData);
 
     }
 

@@ -1,0 +1,5 @@
+INSERT INTO Players (Name) VALUES 
+('Dries'),
+('Roel'),
+('Casper'),
+('Jonas');

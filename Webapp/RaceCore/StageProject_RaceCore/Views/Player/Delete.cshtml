@@ -1,4 +1,8 @@
 ﻿@model StageProject_RaceCore.Models.Player
+@{
+    ViewData["Title"] = "Teams";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
 
 <h2>Speler verwijderen</h2>
 
@@ -8,5 +12,4 @@
     <input type="hidden" asp-for="Id" />
 
     <button type="submit" class="btn btn-danger">Verwijderen</button>
-    <a class="btn btn-secondary" asp-action="Index">Annuleren</a>
 </form>
