@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StageProject_RaceCore.Models;
+using System.Text.RegularExpressions;
 
 namespace StageProject_RaceCore.Controllers
 {
@@ -14,19 +17,28 @@ namespace StageProject_RaceCore.Controllers
 
     public class ResultController : Controller
     {
-        public IActionResult Index()
+
+    private readonly AppDbContext _appDbContext;
+
+    public ResultController(AppDbContext appDbContext)
+    {
+      _appDbContext = appDbContext;
+    }
+
+        public async Task<IActionResult>index()
       {
-      var dummyResultVM = new List<ResultVM>
-          {
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 100 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 400 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 300 },
-            new ResultVM { CyclistName = "John Doe", StageName = "Stage 1", points = 10, JerseyType = "Yellow", totalPoints = 5000 }
-          };
+      var rankData = await _appDbContext.PlayerPoints
+        .Include(pp => pp.Cyclist)
+        .GroupBy(pp => pp.Points)
+        .Select(g => new ResultVM
+        {
+           CyclistName = Group.key,
+           totalPoints = Group.Sum(pp => pp.Points),
+           JerseyType = "Leader"
+        })
+         .OrderByDescending(r => r.totalPoints).ToListAsync();
 
-      var rankedData = dummyResultVM.OrderByDescending(r => r.totalPoints).ToList();
-
-      return View(rankedData);
+      return View(rankData);
 
     }
 
