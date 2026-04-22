@@ -12,6 +12,7 @@
         <div class="cyclists-section-kicker">Filters</div>
         <h3 class="cyclists-filter-title">Zoek cyclists</h3>
 
+        @* Zoekbalk *@
         <form method="get" class="cyclists-form">
             <div class="form-group">
                 <label for="search">Zoeken</label>
@@ -23,6 +24,7 @@
                        placeholder="Zoek op naam of team" />
             </div>
 
+            @* Active filter *@
             <div class="form-group">
                 <label for="active">Status</label>
                 <select id="active" name="active" class="cyclists-select">
@@ -32,6 +34,7 @@
                 </select>
             </div>
 
+            @* Zoeken en Reset knop *@
             <div class="form-group button-group">
                 <button type="submit" class="cyclists-btn">Zoeken</button>
                 <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
