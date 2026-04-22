@@ -9,7 +9,7 @@
 <body class="dashboard-body">
     <div class="dashboard-wrapper">
 
-        <aside class="sidebar">
+        <aside class="sidebar" id="mobileSidebar">
             <div class="sidebar-logo">
                 <h2>RaceCore</h2>
                 <p>Manager Panel</p>
@@ -28,20 +28,44 @@
             </nav>
         </aside>
 
-        <div class="main-area">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-area">
             <header class="topbar">
-                <div>
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" type="button" onclick="toggleSidebar()">
+                        ☰
+                    </button>
                     <h1>@ViewData["Title"]</h1>
                 </div>
+
                 <div class="topbar-right">
-                    <span>Welcome to RaceCore</span>
+                    Welcome to RaceCore
                 </div>
             </header>
 
-            <main class="content-window">
+            <div class="content-window">
                 @RenderBody()
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
+
+    <script>
+            function toggleSidebar() {
+                document.getElementById("mobileSidebar").classList.toggle("open");
+                document.getElementById("sidebarOverlay").classList.toggle("show");
+            }
+
+            function closeSidebarOnDesktopResize() {
+                if (window.innerWidth > 768) {
+                    document.getElementById("mobileSidebar").classList.remove("open");
+                    document.getElementById("sidebarOverlay").classList.remove("show");
+                }
+            }
+
+            window.addEventListener("resize", closeSidebarOnDesktopResize);
+    </script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
