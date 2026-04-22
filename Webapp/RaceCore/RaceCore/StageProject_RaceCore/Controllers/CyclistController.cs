@@ -13,7 +13,7 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 25)
         {
             var query = _context.Cyclists
                 .Include(c => c.Team)

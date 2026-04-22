@@ -114,7 +114,7 @@
                                asp-route-page="1"
                                asp-route-pageSize="@ViewBag.PageSize"
                                class="pagination-btn">
-                            ⏮ Eerste
+                            &lt;&lt; Eerste
                         </a>
                     }
 
@@ -127,7 +127,7 @@
                                asp-route-page="@(currentPage - 1)"
                                asp-route-pageSize="@ViewBag.PageSize"
                                class="pagination-btn">
-                            ← Vorige
+                            &lt; Vorige
                         </a>
                     }
 
@@ -153,7 +153,7 @@
                                asp-route-page="@(currentPage + 1)"
                                asp-route-pageSize="@ViewBag.PageSize"
                                class="pagination-btn">
-                            Volgende →
+                            Volgende &gt;
                         </a>
                     }
 
@@ -166,7 +166,7 @@
                                asp-route-page="@totalPages"
                                asp-route-pageSize="@ViewBag.PageSize"
                                class="pagination-btn">
-                            Laatste ⏭
+                            Laatste &gt;&gt;
                         </a>
                     }
 
