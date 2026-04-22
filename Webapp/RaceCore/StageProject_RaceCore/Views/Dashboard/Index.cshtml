@@ -211,21 +211,7 @@
             </div>
         </div>
     </section>
-    <section class="hero-section">
-
-        
-        <div class="hero-side-card">
-            <div class="hero-side-top">
-                <span>Draft Status</span>
-                <strong class="@(Model.DraftCompleted ? "status-done" : "status-live")">
-                    @(Model.DraftCompleted ? "Completed" : "In progress")
-                </strong>
-            </div>
-
-            <div class="hero-side-number">@Model.TotalDraftPicks</div>
-            <div class="hero-side-label">Total draft picks made</div>
-        </div>
-    </section>
+    
 
     <section class="bottom-grid">
         <div class="card">
@@ -285,6 +271,22 @@
             {
                 <div class="empty-box">Nog geen truidragers beschikbaar.</div>
             }
+        </div>
+
+    </section>
+    <section class="hero-section">
+
+        
+        <div class="hero-side-card">
+            <div class="hero-side-top">
+                <span>Draft Status</span>
+                <strong class="@(Model.DraftCompleted ? "status-done" : "status-live")">
+                    @(Model.DraftCompleted ? "Completed" : "In progress")
+                </strong>
+            </div>
+
+            <div class="hero-side-number">@Model.TotalDraftPicks</div>
+            <div class="hero-side-label">Total draft picks made</div>
         </div>
     </section>
 

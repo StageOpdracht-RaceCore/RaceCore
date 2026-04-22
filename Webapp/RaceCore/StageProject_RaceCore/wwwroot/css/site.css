@@ -43,7 +43,7 @@ body {
 
 .dashboard-body {
     margin: 0;
-    background: linear-gradient(180deg, #e9f1fb 0%, #f4f7fb 250px);
+    background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 28%), linear-gradient(180deg, #edf3fa 0%, #f6f9fc 260px);
     overflow: hidden;
 }
 
@@ -56,55 +56,59 @@ body {
 .sidebar {
     width: 248px;
     min-width: 248px;
-    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    background: linear-gradient(180deg, #081224 0%, #0f172a 45%, #111827 100%);
     color: white;
-    padding: 18px 16px;
+    padding: 20px 16px;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
     overflow-y: auto;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 14px 0 36px rgba(15, 23, 42, 0.16);
     z-index: 1000;
 }
 
 .sidebar-logo {
-    margin-bottom: 22px;
+    margin-bottom: 24px;
 }
 
     .sidebar-logo h2 {
         margin: 0;
         font-size: 24px;
         color: #ffffff;
+        letter-spacing: 0.2px;
     }
 
     .sidebar-logo p {
-        margin-top: 5px;
+        margin-top: 6px;
         color: #94a3b8;
         font-size: 13px;
     }
 
 .sidebar-nav {
-    margin-top: 16px;
+    margin-top: 18px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
     .sidebar-nav a {
-        color: #e5e7eb;
+        color: #dbe7f5;
         text-decoration: none;
-        padding: 11px 13px;
-        border-radius: 10px;
-        transition: 0.2s ease;
+        padding: 12px 14px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
         font-weight: 600;
         font-size: 15px;
         display: block;
+        border: 1px solid transparent;
     }
 
         .sidebar-nav a:hover {
-            background-color: #1f2937;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.06);
             color: #ffffff;
+            transform: translateX(2px);
         }
 
 /* OVERLAY */
@@ -123,15 +127,15 @@ body {
 }
 
 .topbar {
-    height: 72px;
-    min-height: 72px;
-    background: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid #dbe4ee;
+    height: 74px;
+    min-height: 74px;
+    background: rgba(255, 255, 255, 0.82);
+    border-bottom: 1px solid #dde6f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 24px;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
 }
 
 .topbar-left {
@@ -142,14 +146,15 @@ body {
 
 .topbar h1 {
     margin: 0;
-    font-size: 24px;
-    color: #111827;
+    font-size: 26px;
+    color: #0f172a;
+    letter-spacing: -0.4px;
 }
 
 .topbar-right {
-    color: #6b7280;
+    color: #667085;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .mobile-menu-btn {
@@ -169,16 +174,18 @@ body {
 .content-window {
     flex: 1;
     overflow-y: auto;
-    padding: 18px;
+    padding: 20px;
 }
 
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
     width: 100%;
+    max-width: 1600px;
 }
 
+/* OPTIONAL SMALL HERO / SUMMARY */
 .hero-section {
     width: 100%;
     display: flex;
@@ -187,12 +194,12 @@ body {
 
 .hero-side-card {
     width: 100%;
-    max-width: 320px;
-    background: white;
-    border-radius: 18px;
+    max-width: 340px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 20px;
     padding: 18px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e4ebf3;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -243,24 +250,36 @@ body {
     color: #1d4ed8;
 }
 
+/* STATS */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
     align-items: stretch;
 }
 
 .stat-card {
-    border-radius: 14px;
-    padding: 14px 16px;
+    border-radius: 20px;
+    padding: 16px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-height: 104px;
+    gap: 14px;
+    min-height: 110px;
     color: white;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
     overflow: hidden;
+    position: relative;
 }
+
+    .stat-card::after {
+        content: "";
+        position: absolute;
+        inset: auto -30px -30px auto;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+    }
 
     .stat-card.blue {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
@@ -279,16 +298,18 @@ body {
     }
 
 .stat-icon {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    border-radius: 16px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.14);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .stat-card h4 {
@@ -296,77 +317,88 @@ body {
     font-size: 13px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.92);
+    position: relative;
+    z-index: 1;
 }
 
 .stat-card p {
     margin: 0;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     line-height: 1;
     color: white;
+    position: relative;
+    z-index: 1;
 }
 
+/* MAIN CONTENT LAYOUT */
 .main-grid {
     display: grid;
-    grid-template-columns: 1.5fr 0.9fr;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.95fr);
+    gap: 18px;
+    align-items: start;
 }
 
 .side-column {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
 
 .bottom-grid {
     display: grid;
-    grid-template-columns: 1.12fr 0.88fr;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+    gap: 18px;
+    align-items: start;
 }
 
+/* CARDS */
 .card {
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+    border: 1px solid #e5edf5;
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
+    gap: 14px;
 }
 
 .card h3 {
     margin: 2px 0 0 0;
-    color: #111827;
-    font-size: 20px;
+    color: #0f172a;
+    font-size: 22px;
+    letter-spacing: -0.3px;
 }
 
 .section-kicker {
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.8px;
     color: #3b82f6;
-    font-weight: 700;
+    font-weight: 800;
 }
 
+/* LISTS */
 .ranking-list,
 .cyclist-list,
 .jersey-list,
 .podium-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .ranking-row {
-    background: #f8fbff;
+    background: linear-gradient(180deg, #f8fbff 0%, #f5f9fe 100%);
     border: 1px solid #dfe8f3;
-    border-radius: 15px;
-    padding: 12px 14px;
+    border-radius: 18px;
+    padding: 14px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -382,9 +414,9 @@ body {
 }
 
 .ranking-pos {
-    min-width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    min-width: 44px;
+    height: 44px;
+    border-radius: 13px;
     background: #e0ecff;
     color: #1d4ed8;
     display: flex;
@@ -392,11 +424,12 @@ body {
     justify-content: center;
     font-weight: 800;
     font-size: 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
 }
 
 .player-avatar {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     color: white;
     font-weight: 800;
@@ -422,7 +455,8 @@ body {
 }
 
     .ranking-name-row strong {
-        font-size: 14px;
+        font-size: 15px;
+        color: #111827;
     }
 
 .player-dot {
@@ -450,23 +484,25 @@ body {
     font-weight: 800;
     color: #111827;
     white-space: nowrap;
+    padding-left: 6px;
 }
 
+/* SIDE / STAGE / DRAFT */
 .stage-title {
     background: linear-gradient(135deg, #eff6ff, #dbeafe);
     color: #1e3a8a;
-    border-radius: 14px;
-    padding: 12px 14px;
+    border-radius: 16px;
+    padding: 13px 15px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     font-size: 14px;
 }
 
 .podium-row {
     background: #f8fafc;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 11px 13px;
+    border-radius: 14px;
+    padding: 12px 14px;
     font-weight: 600;
     font-size: 14px;
 }
@@ -474,14 +510,14 @@ body {
 .draft-status-box {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
 }
 
 .draft-status-item {
-    background: #f8fafc;
+    background: linear-gradient(180deg, #f8fafc 0%, #f3f7fb 100%);
     border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 16px;
+    padding: 15px;
 }
 
     .draft-status-item span {
@@ -492,7 +528,7 @@ body {
     }
 
     .draft-status-item strong {
-        font-size: 18px;
+        font-size: 19px;
         color: #111827;
     }
 
@@ -504,15 +540,16 @@ body {
     color: #2563eb !important;
 }
 
+/* CYCLISTS */
 .cyclist-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    padding: 12px 14px;
-    background: #f8fbff;
+    padding: 13px 15px;
+    background: linear-gradient(180deg, #f8fbff 0%, #f5f9fe 100%);
     border: 1px solid #dfe8f3;
-    border-radius: 14px;
+    border-radius: 16px;
 }
 
 .cyclist-main {
@@ -546,15 +583,16 @@ body {
     font-size: 15px;
 }
 
+/* JERSEYS */
 .jersey-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    padding: 11px 13px;
+    padding: 12px 14px;
     background: #f9fafb;
     border: 1px solid #e5e7eb;
-    border-radius: 14px;
+    border-radius: 16px;
     font-size: 14px;
 }
 
@@ -593,9 +631,10 @@ body {
         color: #1d4ed8;
     }
 
+/* EMPTY / TABLE */
 .empty-box {
-    padding: 16px;
-    border-radius: 14px;
+    padding: 18px;
+    border-radius: 16px;
     background: #f8fafc;
     border: 1px dashed #cbd5e1;
     color: #6b7280;
@@ -625,14 +664,24 @@ td {
     color: #111827;
 }
 
-@media (max-width: 1300px) {
-    .main-grid,
-    .bottom-grid {
+/* LARGE TABLET */
+@media (max-width: 1400px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .main-grid {
         grid-template-columns: 1fr;
     }
 
-    .stats-grid {
+    .side-column {
+        display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr;
     }
 
     .hero-section {
@@ -644,6 +693,26 @@ td {
     }
 }
 
+/* TABLET */
+@media (max-width: 992px) {
+    .content-window {
+        padding: 16px;
+    }
+
+    .side-column {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+        padding: 18px;
+    }
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
     .dashboard-body {
         overflow: auto;
@@ -718,13 +787,43 @@ td {
         padding: 14px;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .dashboard-container {
+        gap: 14px;
     }
 
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        min-height: 92px;
+        border-radius: 18px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        border-radius: 16px;
+        font-size: 22px;
+    }
+
+    .main-grid,
+    .bottom-grid,
+    .side-column,
     .draft-status-box {
         grid-template-columns: 1fr;
     }
+
+    .card {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+        .card h3 {
+            font-size: 20px;
+        }
 
     .ranking-row,
     .cyclist-row,
@@ -740,5 +839,36 @@ td {
     .ranking-points,
     .cyclist-points {
         margin-top: 6px;
+    }
+}
+
+/* SMALL MOBILE */
+@media (max-width: 480px) {
+    .content-window {
+        padding: 12px;
+    }
+
+    .topbar {
+        padding: 12px 14px;
+    }
+
+        .topbar h1 {
+            font-size: 18px;
+        }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+        .stat-card p {
+            font-size: 22px;
+        }
+
+    .ranking-row,
+    .cyclist-row,
+    .jersey-row,
+    .podium-row,
+    .draft-status-item {
+        padding: 12px;
     }
 }
