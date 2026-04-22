@@ -37,13 +37,15 @@
             @* Zoeken en Reset knop *@
             <div class="form-group button-group">
                 <button type="submit" class="cyclists-btn">Zoeken</button>
-                <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
             </div>
         </form>
-
-        <div class="cyclists-count">
-            Aantal cyclists: @ViewBag.CyclistCount
+        <div class="countAndReset">
+            <div class="cyclists-count">
+                Aantal cyclists: @ViewBag.CyclistCount
+            </div>
+            <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
         </div>
+        
     </div>
 
     <div class="cyclists-table-card">
