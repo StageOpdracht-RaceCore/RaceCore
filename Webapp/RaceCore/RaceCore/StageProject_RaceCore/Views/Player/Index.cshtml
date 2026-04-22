@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Players";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+@model List<StageProject_RaceCore.Models.Player>
+
+<h2>Spelers</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Nieuwe speler</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Selections</th>
+            <th>Draft turns</th>
+            <th>Punten records</th>
+            <th>Acties</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td>@(p.Selections?.Count ?? 0)</td>
+                <td>@(p.DraftTurns?.Count ?? 0)</td>
+                <td>@(p.PlayerPoints?.Count ?? 0)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@p.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@p.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@p.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

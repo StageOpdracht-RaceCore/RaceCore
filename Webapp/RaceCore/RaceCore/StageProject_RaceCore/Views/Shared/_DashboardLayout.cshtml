@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RaceCore</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-wrapper">
+
+        <aside class="sidebar" id="mobileSidebar">
+            <div class="sidebar-logo">
+                <h2>RaceCore</h2>
+                <p>Manager Panel</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a asp-controller="Player" asp-action="Index">Players</a>
+                <a asp-controller="Cyclist" asp-action="Index">Cyclists</a>
+                <a asp-controller="Team" asp-action="Index">Teams</a>
+                <a asp-controller="Race" asp-action="Index">Races</a>
+                <a asp-controller="Stage" asp-action="Index">Stages</a>
+                <a asp-controller="Result" asp-action="Index">Results</a>
+                <a asp-controller="Scoring" asp-action="Index">Scoring</a>
+                <a asp-controller="Draft" asp-action="Index">Draft</a>
+            </nav>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" type="button" onclick="toggleSidebar()">
+                        ☰
+                    </button>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+
+                <div class="topbar-right">
+                    Welcome to RaceCore
+                </div>
+            </header>
+
+            <div class="content-window">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script>
+            function toggleSidebar() {
+                document.getElementById("mobileSidebar").classList.toggle("open");
+                document.getElementById("sidebarOverlay").classList.toggle("show");
+            }
+
+            function closeSidebarOnDesktopResize() {
+                if (window.innerWidth > 768) {
+                    document.getElementById("mobileSidebar").classList.remove("open");
+                    document.getElementById("sidebarOverlay").classList.remove("show");
+                }
+            }
+
+            window.addEventListener("resize", closeSidebarOnDesktopResize);
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

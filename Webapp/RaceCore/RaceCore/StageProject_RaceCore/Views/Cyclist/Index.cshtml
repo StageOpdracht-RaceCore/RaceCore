@@ -1,0 +1,100 @@
+﻿@model List<StageProject_RaceCore.Models.Cyclist>
+
+@{
+    ViewData["Title"] = "Cyclists";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Cyclist.css" />
+
+<div class="cyclists-page">
+    <div class="cyclists-filter-card">
+        <div class="cyclists-section-kicker">Filters</div>
+        <h3 class="cyclists-filter-title">Zoek cyclists</h3>
+
+        @* Zoekbalk *@
+        <form method="get" class="cyclists-form">
+            <div class="form-group">
+                <label for="search">Zoeken</label>
+                <input id="search"
+                       type="text"
+                       name="search"
+                       class="cyclists-input"
+                       value="@Context.Request.Query["search"]"
+                       placeholder="Zoek op naam of team" />
+            </div>
+
+            @* Active filter *@
+            <div class="form-group">
+                <label for="active">Status</label>
+                <select id="active" name="active" class="cyclists-select">
+                    <option value="">Alle</option>
+                    <option value="true" selected="@(Context.Request.Query["active"] == "true")">Actief</option>
+                    <option value="false" selected="@(Context.Request.Query["active"] == "false")">Niet actief</option>
+                </select>
+            </div>
+
+            @* Zoeken en Reset knop *@
+            <div class="form-group button-group">
+                <button type="submit" class="cyclists-btn">Zoeken</button>
+            </div>
+        </form>
+        <div class="countAndReset">
+            <div class="cyclists-count">
+                Aantal cyclists: @ViewBag.CyclistCount
+            </div>
+            <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
+        </div>
+        
+    </div>
+
+    <div class="cyclists-table-card">
+        <div class="cyclists-table-header">
+            <div class="cyclists-section-kicker">Overzicht</div>
+            <h3 class="cyclists-card-title">Cyclists lijst</h3>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="cyclists-table-wrapper">
+                <table class="cyclists-table">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cyclist in Model)
+                        {
+                            <tr>
+                                <td class="cyclist-name">@cyclist.FirstName</td>
+                                <td class="cyclist-name">@cyclist.LastName</td>
+                                <td class="cyclist-team">@cyclist.Team?.Name</td>
+                                <td>
+                                    @if (cyclist.IsActive)
+                                    {
+                                        <span class="status-badge status-active">Actief</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-inactive">Niet actief</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-box">
+                Geen cyclists gevonden.
+            </div>
+        }
+    </div>
+
+</div>
