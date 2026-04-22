@@ -132,11 +132,12 @@
     display: block;
     width: calc(100% - 2rem);
     margin: 0 auto 1.5ch auto;
-    padding: 1rem;
     box-sizing: border-box;
-    border-radius: 6px;
     background: #fff;
-    border: 1px solid #e1e1e1;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
 }
 
 /* Prevent grid items from stretching to the tallest item in the row.
