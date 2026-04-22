@@ -1,0 +1,300 @@
+﻿/* ── Team card base ─────────────────────────────────────────────────────── */
+.team-card {
+    --team-color: #ddd;
+    background: #fff;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 200ms ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.team-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #999;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.tag {
+    background: #f3f3f3;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+/* ── Stats (right side of header) ───────────────────────────────────────── */
+.team-stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 0;
+}
+
+.team-stats-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-counts {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.badge {
+    flex: 0 0 auto;
+    background: #0078d4;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 14px;
+    font-weight: 600;
+}
+
+/* ── Collapse toggle ─────────────────────────────────────────────────────── */
+.collapse-toggle {
+    background: transparent;
+    border: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+    .collapse-toggle:focus {
+        outline: 2px solid #0078d4;
+    }
+
+    .collapse-toggle .arrow {
+        display: inline-block;
+        transition: transform 180ms ease;
+    }
+
+.team-card.collapsed .collapse-toggle .arrow {
+    transform: rotate(-90deg);
+}
+
+/* ── Collapsible body ────────────────────────────────────────────────────── */
+.team-card.collapsed {
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    padding: 12px;
+}
+
+.team-card:not(.collapsed) {
+    border-left: 6px solid var(--team-color);
+    max-height: 50ch;
+    overflow: hidden;
+}
+
+.team-card .team-body {
+    display: block;
+    flex: 1 1 auto;
+    overflow: auto;
+    min-height: 0;
+}
+
+.team-card.collapsed .team-body {
+    display: none;
+}
+
+/* ── Search bar ──────────────────────────────────────────────────────────── */
+.team-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0 10px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.team-search-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+    .team-search-input:focus {
+        border-color: #0078d4;
+        box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.12);
+    }
+
+.team-search-btn {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 150ms ease;
+}
+
+    .team-search-btn:hover {
+        background: #e5e7eb;
+    }
+
+    .team-search-btn:focus {
+        outline: 2px solid #0078d4;
+    }
+
+.team-search-clear {
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    transition: color 150ms ease;
+}
+
+    .team-search-clear:hover {
+        color: #111;
+    }
+
+.team-search-count {
+    font-size: 0.78rem;
+    color: #6b7280;
+    white-space: nowrap;
+    min-width: 56px; /* reserve space so layout doesn't jump */
+    text-align: right;
+}
+
+/* ── Composition columns ─────────────────────────────────────────────────── */
+.composition {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+}
+
+.column {
+    flex: 1;
+}
+
+    .column h4 {
+        margin: 0 0 8px 0;
+    }
+
+/* ── Typography inside cards ─────────────────────────────────────────────── */
+.team-card h4,
+.team-card h3,
+.team-card h2 {
+    margin: 4px 0 0 0;
+    color: #111827;
+}
+
+.team-card p {
+    margin: 0;
+    color: #6b7280;
+}
+
+/* ── Cyclist list ────────────────────────────────────────────────────────── */
+.cyclist-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+    .cyclist-list li {
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        /* Hidden cyclist rows (filtered out) */
+        .cyclist-list li[hidden] {
+            display: none;
+        }
+
+.empty {
+    color: #777;
+    font-style: italic;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.bench-btn {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+}
+
+.activate-btn {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #0a6;
+    background: #0a6;
+    color: #fff;
+    cursor: pointer;
+}
+
+.bench-btn:hover {
+    background: #f3f3f3;
+}
+
+.activate-btn:hover {
+    background: #088;
+    border-color: #088;
+}
+
+/* ── Grid layout ─────────────────────────────────────────────────────────── */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 10ch;
+    align-items: start;
+    width: calc(100% - 2rem);
+    margin: 0 auto;
+}
+
+@media (max-width: 700px) {
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Page summary card ───────────────────────────────────────────────────── */
+.page-card + .teams-grid {
+    margin-top: 5ch;
+}
+
+.page-summary {
+    display: block;
+    width: calc(100% - 2rem);
+    margin: 0 auto 1.5ch auto;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+}

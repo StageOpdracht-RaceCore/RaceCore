@@ -5,30 +5,25 @@ namespace StageProject_RaceCore.Controllers
 {
     public class PlayerController : Controller
     {
-        private readonly AppDbContext _context;
-
-        public PlayerController(AppDbContext context)
+        // tijdelijke opslag (mock)
+        private static List<Player> players = new List<Player>
         {
-            _context = context;
-        }
+            new Player { Id = 1, Name = "Roel" },
+            new Player { Id = 2, Name = "Casper" },
+            new Player { Id = 3, Name = "Jonas" }
+        };
 
-        // LIST
+        // INDEX
         public IActionResult Index()
         {
-            var players = _context.Players
-                .OrderBy(p => p.PositionInDraft)
-                .ToList();
-
             return View(players);
         }
 
         // DETAILS
         public IActionResult Details(int id)
         {
-            var player = _context.Players.FirstOrDefault(p => p.Id == id);
-
-            if (player == null)
-                return NotFound();
+            var player = players.FirstOrDefault(p => p.Id == id);
+            if (player == null) return NotFound();
 
             return View(player);
         }
@@ -46,8 +41,8 @@ namespace StageProject_RaceCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Players.Add(player);
-                _context.SaveChanges();
+                player.Id = players.Any() ? players.Max(p => p.Id) + 1 : 1;
+                players.Add(player);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -57,10 +52,8 @@ namespace StageProject_RaceCore.Controllers
         // EDIT (GET)
         public IActionResult Edit(int id)
         {
-            var player = _context.Players.Find(id);
-
-            if (player == null)
-                return NotFound();
+            var player = players.FirstOrDefault(p => p.Id == id);
+            if (player == null) return NotFound();
 
             return View(player);
         }
@@ -68,25 +61,28 @@ namespace StageProject_RaceCore.Controllers
         // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Player player)
+        public IActionResult Edit(int id, Player updatedPlayer)
         {
+            if (id != updatedPlayer.Id) return NotFound();
+
+            var player = players.FirstOrDefault(p => p.Id == id);
+            if (player == null) return NotFound();
+
             if (ModelState.IsValid)
             {
-                _context.Players.Update(player);
-                _context.SaveChanges();
+                player.Name = updatedPlayer.Name;
+                // relaties niet overschrijven hier (Selections etc.)
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(player);
+            return View(updatedPlayer);
         }
 
         // DELETE (GET)
         public IActionResult Delete(int id)
         {
-            var player = _context.Players.Find(id);
-
-            if (player == null)
-                return NotFound();
+            var player = players.FirstOrDefault(p => p.Id == id);
+            if (player == null) return NotFound();
 
             return View(player);
         }
@@ -96,12 +92,10 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var player = _context.Players.Find(id);
-
+            var player = players.FirstOrDefault(p => p.Id == id);
             if (player != null)
             {
-                _context.Players.Remove(player);
-                _context.SaveChanges();
+                players.Remove(player);
             }
 
             return RedirectToAction(nameof(Index));
