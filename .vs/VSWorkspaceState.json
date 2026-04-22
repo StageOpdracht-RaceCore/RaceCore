@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Webapp",
-    "\\Webapp\\RaceCore"
+    "\\Webapp\\RaceCore",
+    "\\Webapp\\RaceCore\\StageProject_RaceCore",
+    "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot",
+    "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot\\css"
   ],
-  "SelectedNode": "\\Webapp\\RaceCore\\RaceCore.slnx",
+  "SelectedNode": "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot\\css\\Player.css",
   "PreviewInSolutionExplorer": false
 }

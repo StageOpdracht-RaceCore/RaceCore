@@ -5,26 +5,131 @@
     border-radius: 6px;
     padding: 12px;
     transition: all 200ms ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.team-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.team-meta { display: flex; align-items: center; gap: 12px; }
-.swatch { width: 18px; height: 18px; border-radius: 3px; border: 1px solid #999; display: inline-block; }
-.tag { background: #f3f3f3; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #333; }
-.badge { background: #0078d4; color: white; padding: 6px 8px; border-radius: 14px; font-weight: 600; }
-.composition { display: flex; gap: 24px; margin-top: 12px; }
+.team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.team-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #999;
+    display: inline-block;
+}
+
+.tag {
+    background: #f3f3f3;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.badge {
+    background: #0078d4;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 14px;
+    font-weight: 600;
+}
+
+/* Right side header area: keep badge and counts on single line when possible */
+.team-stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 0; /* allow shrinking within grid column */
+}
+
+.team-stats-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-counts {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap; /* prevent 'Bench' from wrapping to next line */
+}
+
+.badge { flex: 0 0 auto; }
+
+.composition {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+}
+
 .column { flex: 1; }
+
 .column h4 { margin: 0 0 8px 0; }
-.cyclist-list { list-style: none; padding-left: 0; margin: 0; }
-.cyclist-list li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+
+.cyclist-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.cyclist-list li {
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
 .empty { color: #777; font-style: italic; }
-.teams-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+}
+
+/* Add extra spacing between the page summary (.page-card) and the first row of team cards */
+.page-card + .teams-grid {
+    margin-top: 3ch;
+}
+
+/* Prevent grid items from stretching to the tallest item in the row.
+   This keeps each card's background/height independent so expanding one
+   card doesn't force others to grow. */
+.teams-grid {
+    align-items: start;
+}
 
 /* Collapsible behavior */
 /* Keep card visuals consistent when collapsed so grid/layout doesn't jump */
 .team-card.collapsed { background: #fff; border: 1px solid #e1e1e1; padding: 12px; }
-.team-card:not(.collapsed) { border-left: 6px solid var(--team-color); }
-.team-card .team-body { display: block; }
+.team-card:not(.collapsed) {
+    border-left: 6px solid var(--team-color);
+    /* limit overall card height and clip overflow so the body can scroll */
+    max-height: 50ch;
+    overflow: hidden;
+}
+
+/* team-body fills remaining card space and scrolls when content exceeds the area */
+.team-card .team-body {
+    display: block;
+    flex: 1 1 auto;
+    overflow: auto;
+    /* allow flex children to shrink so overflow works correctly inside flex container */
+    min-height: 0;
+}
+
 .team-card.collapsed .team-body { display: none; }
 
 .collapse-toggle {
