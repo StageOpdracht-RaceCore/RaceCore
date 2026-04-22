@@ -5,42 +5,94 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
-<h2>Cyclists</h2>
-<form method="get" class="mb-3">
-    <input type="text" name="search"
-           value="@Context.Request.Query["search"]"
-           placeholder="Zoek op naam of team" />
+<link rel="stylesheet" href="~/css/Cyclist.css" />
 
-    
-    <select name="active" class="form-select">
-        <option value="">Alle</option>
-        <option value="true" selected="@(Context.Request.Query["active"] == "true")">Actief</option>
-        <option value="false" selected="@(Context.Request.Query["active"] == "false")">Niet actief</option>
-    </select>
+<div class="cyclists-page">
+    <div class="cyclists-filter-card">
+        <div class="cyclists-section-kicker">Filters</div>
+        <h3 class="cyclists-filter-title">Zoek cyclists</h3>
 
-    <button type="submit">Zoeken</button>
+        @* Zoekbalk *@
+        <form method="get" class="cyclists-form">
+            <div class="form-group">
+                <label for="search">Zoeken</label>
+                <input id="search"
+                       type="text"
+                       name="search"
+                       class="cyclists-input"
+                       value="@Context.Request.Query["search"]"
+                       placeholder="Zoek op naam of team" />
+            </div>
 
-    <p>Aantal cyclists: @ViewBag.CyclistCount</p>
+            @* Active filter *@
+            <div class="form-group">
+                <label for="active">Status</label>
+                <select id="active" name="active" class="cyclists-select">
+                    <option value="">Alle</option>
+                    <option value="true" selected="@(Context.Request.Query["active"] == "true")">Actief</option>
+                    <option value="false" selected="@(Context.Request.Query["active"] == "false")">Niet actief</option>
+                </select>
+            </div>
 
-</form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Team ID</th>
-            <th>Is Active</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var cyclist in Model)
+            @* Zoeken en Reset knop *@
+            <div class="form-group button-group">
+                <button type="submit" class="cyclists-btn">Zoeken</button>
+                <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
+            </div>
+        </form>
+
+        <div class="cyclists-count">
+            Aantal cyclists: @ViewBag.CyclistCount
+        </div>
+    </div>
+
+    <div class="cyclists-table-card">
+        <div class="cyclists-table-header">
+            <div class="cyclists-section-kicker">Overzicht</div>
+            <h3 class="cyclists-card-title">Cyclists lijst</h3>
+        </div>
+
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>@cyclist.FirstName</td>
-                <td>@cyclist.LastName</td>
-                <td>@cyclist.Team?.Name</td>
-                <td>@cyclist.IsActive</td>
-            </tr>
+            <div class="cyclists-table-wrapper">
+                <table class="cyclists-table">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cyclist in Model)
+                        {
+                            <tr>
+                                <td class="cyclist-name">@cyclist.FirstName</td>
+                                <td class="cyclist-name">@cyclist.LastName</td>
+                                <td class="cyclist-team">@cyclist.Team?.Name</td>
+                                <td>
+                                    @if (cyclist.IsActive)
+                                    {
+                                        <span class="status-badge status-active">Actief</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-inactive">Niet actief</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <div class="empty-box">
+                Geen cyclists gevonden.
+            </div>
+        }
+    </div>
+
+</div>
