@@ -13,46 +13,30 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? searchString, string? activeFilter)
+        public async Task<IActionResult> Index(string? search, string? active)
         {
             var query = _context.Cyclists
                 .Include(c => c.Team)
                 .AsQueryable();
 
-            // 🔍 Zoeken
-            if (!string.IsNullOrWhiteSpace(searchString))
+            if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(c =>
-                    c.FirstName.Contains(searchString) ||
-                    c.LastName.Contains(searchString) ||
-                    (c.Team != null && c.Team.Name.Contains(searchString))
+                    c.FirstName.ToLower().Contains(search) ||
+                    c.LastName.ToLower().Contains(search) ||
+                    c.Team.Name.ToLower().Contains(search)
                 );
             }
-
-            // 🔘 Filter IsActive
-            if (!string.IsNullOrWhiteSpace(activeFilter))
-            {
-                switch (activeFilter.ToLower())
-                {
-                    case "yes":
-                        query = query.Where(c => c.IsActive);
-                        break;
-
-                    case "no":
-                        query = query.Where(c => !c.IsActive);
-                        break;
-                }
+            if (!string.IsNullOrEmpty(active)) { 
+                bool isActive = active.ToLower() == "true";
+                query = query.Where(c => c.IsActive == isActive);
             }
 
-            ViewBag.SearchString = searchString;
-            ViewBag.ActiveFilter = activeFilter;
+            var cyclistList = await query.ToListAsync();
 
-            var cyclists = await query
-                .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
-                .ToListAsync();
+            ViewBag.CyclistCount = cyclistList.Count;
 
-            return View(cyclists);
+            return View(cyclistList);
         }
     }
 }
