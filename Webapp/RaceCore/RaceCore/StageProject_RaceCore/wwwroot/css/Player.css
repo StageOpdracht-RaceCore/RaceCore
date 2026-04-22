@@ -17,6 +17,26 @@
     border: 1px solid #e5e7eb;
 }
 
+.player-alert {
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.player-alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.player-alert-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
 .player-header-card {
     display: flex;
     justify-content: space-between;
@@ -381,6 +401,10 @@
 
 .text-end {
     text-align: right;
+}
+
+.text-danger {
+    color: #dc2626;
 }
 
 @media (max-width: 1100px) {
