@@ -1,6 +1,161 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using StageProject_RaceCore.Models
+
 @{
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Draft";
+
+    var players = new List<Player>
+    {
+        new Player { Id = 1, Name = "Casper" },
+        new Player { Id = 2, Name = "Dries" },
+        new Player { Id = 3, Name = "Jonas" }
+    };
+
+    var cyclists = new List<Cyclist>
+    {
+        new Cyclist { Id = 1, FirstName = "Tadej", LastName = "Pogacar" },
+        new Cyclist { Id = 2, FirstName = "Jonas", LastName = "Vingegaard" },
+        new Cyclist { Id = 3, FirstName = "Mathieu", LastName = "van der Poel" },
+        new Cyclist { Id = 4, FirstName = "Wout", LastName = "van Aert" }
+    };
+
+    var currentPlayer = players[0];
+    var pickedCyclists = new List<int>();
 }
+
+<div class="dashboard-container">
+
+    <!-- HEADER STATS -->
+    <section class="stats-grid">
+
+        <div class="stat-card blue">
+            <div class="stat-icon">⏱</div>
+            <div>
+                <h4>Current Turn</h4>
+                <p>@currentPlayer.Name</p>
+            </div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-icon">🚴</div>
+            <div>
+                <h4>Available Cyclists</h4>
+                <p>@cyclists.Count(c => !pickedCyclists.Contains(c.Id))</p>
+            </div>
+        </div>
+
+        <div class="stat-card orange">
+            <div class="stat-icon">📋</div>
+            <div>
+                <h4>Total Picks</h4>
+                <p>@pickedCyclists.Count</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- MAIN GRID -->
+    <section class="main-grid">
+
+        <!-- CYCLISTS -->
+        <div class="card ranking-card">
+
+            <div class="card-header">
+                <div>
+                    <span class="section-kicker">Draft</span>
+                    <h3>Available Cyclists</h3>
+                </div>
+            </div>
+
+            <div class="cyclist-list">
+
+                @foreach (var c in cyclists)
+                {
+                    bool picked = pickedCyclists.Contains(c.Id);
+
+                    <div class="ranking-row">
+
+                        <!-- LEFT -->
+                        <div class="ranking-left" style="flex:1;">
+
+                            <div class="ranking-info" style="width:100%;">
+
+                                <div class="ranking-name-row">
+                                    <strong>@c.FirstName @c.LastName</strong>
+                                </div>
+
+                                <div class="progress-line">
+                                    <div class="progress-fill"
+                                         style="width:@(picked ? 100 : 45)%;">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT -->
+                        <div class="ranking-points">
+
+                            @if (picked)
+                            {
+                                <span class="badge bg-danger">Picked</span>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary btn-sm">
+                                    Select
+                                </button>
+                            }
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+        <!-- DRAFT BOARD -->
+        <div class="card">
+
+            <div class="card-header">
+                <div>
+                    <span class="section-kicker">Overview</span>
+                    <h3>Draft Board</h3>
+                </div>
+            </div>
+
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th>Turn</th>
+                        <th>Player</th>
+                        <th>Cyclist</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Casper</td>
+                        <td class="text-muted">Not selected</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Dries</td>
+                        <td class="text-muted">Not selected</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Jonas</td>
+                        <td class="text-muted">Not selected</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
