@@ -154,7 +154,65 @@ else
             });
         }
 
-        // Restore state on load
+        // Assign or restore a stable accent color per team id using localStorage so colors persist across refreshes
+        function hashStringToInt(str) {
+            var h = 2166136261 >>> 0;
+            for (var i = 0; i < str.length; i++) {
+                h ^= str.charCodeAt(i);
+                h = Math.imul(h, 16777619) >>> 0;
+            }
+            return h >>> 0;
+        }
+
+        // Ensure visually distinct colors: keep saved colors, for new ones pick hues
+        // that are at least MIN_HUE_DIFF apart using golden angle stepping.
+        (function assignDistinctColors() {
+            var MIN_HUE_DIFF = 60; // degrees
+            var goldenAngle = 137.508;
+            var usedHues = [];
+
+            // helper to compute minimal circular hue distance
+            function hueDistance(a, b) {
+                var d = Math.abs(a - b) % 360;
+                return d > 180 ? 360 - d : d;
+            }
+
+            document.querySelectorAll('.team-card[data-team-id]').forEach(function (card, i) {
+                var id = card.getAttribute('data-team-id');
+                if (!id) return;
+                var storageKey = 'teamColor_' + id;
+                var saved = null;
+                try { saved = localStorage.getItem(storageKey); } catch (e) { saved = null; }
+
+                if (saved) {
+                    // try to parse saved hue and remember it
+                    card.style.setProperty('--team-color', saved);
+                    var m = saved && saved.match(/hsl\(([-0-9.]+)\s*,\s*([0-9.]+)%\s*,\s*([0-9.]+)%\)/i);
+                    if (m) {
+                        var h = parseFloat(m[1]);
+                        if (!Number.isNaN(h)) usedHues.push(h);
+                    }
+                } else {
+                    // base hue from stable hash of id
+                    var hash = hashStringToInt(String(id));
+                    var baseHue = hash % 360;
+                    // start candidate and step until distance constraint met
+                    var candidate = (baseHue + (i * goldenAngle)) % 360;
+                    var attempts = 0;
+                    while (usedHues.some(function (uh) { return hueDistance(uh, candidate) < MIN_HUE_DIFF; })) {
+                        candidate = (candidate + goldenAngle) % 360;
+                        attempts++;
+                        if (attempts > 36) break; // safety: after full wheel give up
+                    }
+                    var accent = 'hsl(' + candidate.toFixed(2) + ',70%,60%)';
+                    card.style.setProperty('--team-color', accent);
+                    try { localStorage.setItem(storageKey, accent); } catch (e) { /* ignore */ }
+                    usedHues.push(candidate);
+                }
+            });
+        })();
+
+        // Restore collapse state after assigning colors
         restoreAll();
 
         // Delegated click handler for collapse toggling and saving state

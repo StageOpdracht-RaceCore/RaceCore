@@ -93,23 +93,30 @@
 
 .empty { color: #777; font-style: italic; }
 
+
 .teams-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 12px;
+    /* Force two columns layout. Each column shares available space equally. */
+    grid-template-columns: repeat(2, 1fr);
+    /* row-gap then column-gap: keep rows tight but widen the column gap */
+    gap: 12px 10ch;
+    align-items: start; /* keep items independent in height */
+}
+
+/* Collapse to single column on narrow viewports */
+@media (max-width: 700px) {
+    .teams-grid { grid-template-columns: 1fr; }
 }
 
 /* Add extra spacing between the page summary (.page-card) and the first row of team cards */
 .page-card + .teams-grid {
-    margin-top: 3ch;
+    margin-top: 5ch;
 }
 
 /* Prevent grid items from stretching to the tallest item in the row.
    This keeps each card's background/height independent so expanding one
    card doesn't force others to grow. */
-.teams-grid {
-    align-items: start;
-}
+/* align-items set above on .teams-grid */
 
 /* Collapsible behavior */
 /* Keep card visuals consistent when collapsed so grid/layout doesn't jump */
