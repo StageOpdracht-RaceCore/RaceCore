@@ -13,30 +13,36 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, string? active)
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
         {
             var query = _context.Cyclists
                 .Include(c => c.Team)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(c =>
-                    c.FirstName.ToLower().Contains(search) ||
-                    c.LastName.ToLower().Contains(search) ||
-                    c.Team.Name.ToLower().Contains(search)
-                );
-            }
-            if (!string.IsNullOrEmpty(active)) { 
-                bool isActive = active.ToLower() == "true";
-                query = query.Where(c => c.IsActive == isActive);
+                    c.FirstName.Contains(search) ||
+                    c.LastName.Contains(search) ||
+                    c.Team.Name.Contains(search));
             }
 
-            var cyclistList = await query.ToListAsync();
+            var totalItems = await query.CountAsync();
 
-            ViewBag.CyclistCount = cyclistList.Count;
+            var cyclists = await query
+                .OrderBy(c => c.LastName)
+                .ThenBy(c => c.FirstName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            return View(cyclistList);
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.PageSize = pageSize;
+            ViewBag.Search = search;
+
+            return View(cyclists);
         }
+
     }
 }
