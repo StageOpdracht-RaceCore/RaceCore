@@ -1,15 +1,17 @@
 ﻿@model List<StageProject_RaceCore.Models.Cyclist>
+@using StageProject_RaceCore.Models
 
 @{
     ViewData["Title"] = "Cyclists";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     string currentSearch = ViewBag.Search as string ?? "";
-    bool? currentActive = ViewBag.Active as bool?;
+    string currentStatus = ViewBag.Status as string ?? "";
     int currentPage = ViewBag.CurrentPage ?? 1;
     int totalPages = ViewBag.TotalPages ?? 1;
     int pageSize = ViewBag.PageSize ?? 25;
     int cyclistCount = ViewBag.CyclistCount ?? 0;
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
 
     int startPage = Math.Max(1, currentPage - 2);
     int endPage = Math.Min(totalPages, startPage + 4);
@@ -40,11 +42,19 @@
             </div>
 
             <div class="form-group">
-                <label for="active">Status</label>
-                <select id="active" name="active" class="cyclists-select">
-                    <option value="" selected="@(currentActive == null)">Alle</option>
-                    <option value="true" selected="@(currentActive == true)">Actief</option>
-                    <option value="false" selected="@(currentActive == false)">Niet actief</option>
+                <label for="status">Status</label>
+                <select id="status" name="status" class="cyclists-select">
+                    <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">Alle</option>
+                    <option value="active" selected="@(currentStatus == "active")">Actief</option>
+                    <option value="inactive" selected="@(currentStatus == "inactive")">Niet actief</option>
+
+                    @foreach (var race in races)
+                    {
+                        var raceValue = $"race-{race.Id}";
+                        <option value="@raceValue" selected="@(currentStatus == raceValue)">
+                            @race.Name
+                        </option>
+                    }
                 </select>
             </div>
 
@@ -82,6 +92,10 @@
                             <th>Last Name</th>
                             <th>Team</th>
                             <th>Status</th>
+                            @foreach (var race in races)
+                            {
+                                <th>@race.Name</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -101,6 +115,22 @@
                                         <span class="status-badge status-inactive">Niet actief</span>
                                     }
                                 </td>
+
+                                @foreach (var race in races)
+                                {
+                                    bool doetMee = cyclist.RaceEntries.Any(re => re.RaceId == race.Id);
+
+                                    <td>
+                                        @if (doetMee)
+                                        {
+                                            <span class="race-badge race-yes">Ja</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="race-badge race-no">Nee</span>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
@@ -111,7 +141,7 @@
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="1"
                                asp-route-pageSize="@pageSize"
                                class="pagination-btn">
@@ -120,7 +150,7 @@
 
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage - 1)"
                                asp-route-pageSize="@pageSize"
                                class="pagination-btn">
@@ -132,7 +162,7 @@
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@i"
                                asp-route-pageSize="@pageSize"
                                class="pagination-btn @(i == currentPage ? "active" : "")">
@@ -144,7 +174,7 @@
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage + 1)"
                                asp-route-pageSize="@pageSize"
                                class="pagination-btn">
@@ -153,7 +183,7 @@
 
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@totalPages"
                                asp-route-pageSize="@pageSize"
                                class="pagination-btn">

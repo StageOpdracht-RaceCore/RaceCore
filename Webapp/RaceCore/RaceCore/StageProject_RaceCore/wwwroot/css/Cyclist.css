@@ -265,6 +265,30 @@
     color: #991b1b;
     border-color: #fecaca;
 }
+.race-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.race-yes {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.race-no {
+    background: #f3f4f6;
+    color: #6b7280;
+    border-color: #e5e7eb;
+}
 
 /* Empty state */
 .empty-box {
