@@ -1,0 +1,99 @@
+﻿@model List<StageProject_RaceCore.Controllers.ResultVM>
+
+@{
+    ViewData["Title"] = "Stage resultaten";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var stageName = Model.FirstOrDefault()?.StageName ?? "Stage resultaten";
+}
+
+<link rel="stylesheet" href="~/css/StageResult.css" />
+
+<div class="results-page">
+
+    <div class="results-filter-card">
+        <span class="results-section-kicker">Overzicht</span>
+        <h2 class="results-filter-title">@stageName</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="results-table-card">
+            <div class="empty-box">
+                Er zijn nog geen punten berekend voor deze rit.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-table-card">
+            <div class="results-table-header">
+                <span class="results-section-kicker">Punten</span>
+                <h3 class="results-card-title">Punten per speler</h3>
+            </div>
+
+            <div class="results-table-wrapper">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Speler</th>
+                            <th>Punten</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="result-name">@item.CyclistName</td>
+                                <td class="result-points">@item.points</td>
+                                <td>
+                                    <span class="result-type">@item.JerseyType</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="results-table-card">
+            <div class="results-table-header">
+                <span class="results-section-kicker">Totaal</span>
+                <h3 class="results-card-title">Totaal per speler</h3>
+            </div>
+
+            <div class="results-table-wrapper">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Speler</th>
+                            <th>Totaal punten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var speler in Model
+                            .GroupBy(x => x.CyclistName)
+                            .Select(g => new
+                            {
+                                Naam = g.Key,
+                                Totaal = g.Sum(x => x.points)
+                            })
+                            .OrderByDescending(x => x.Totaal))
+                        {
+                            <tr>
+                                <td class="result-name">@speler.Naam</td>
+                                <td class="result-points">@speler.Totaal</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="results-actions" style="padding: 24px;">
+                <a asp-action="Index" class="results-btn secondary">Terug naar klassement</a>
+                <a asp-action="ManageStageInput" class="results-btn primary">Terug naar invoer</a>
+            </div>
+        </div>
+    }
+
+</div>
