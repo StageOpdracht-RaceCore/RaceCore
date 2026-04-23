@@ -47,6 +47,13 @@
         </div>
     </div>
 
+    @if (TempData["Error"] != null)
+    {
+        <div class="draft-alert draft-alert-error">
+            @TempData["Error"]
+        </div>
+    }
+
     <div class="draft-stats-grid">
         <div class="draft-stat-card">
             <div class="draft-stat-icon">🎯</div>
@@ -146,17 +153,38 @@
                                 {
                                     if (isActive)
                                     {
-                                        <form asp-action="PickCyclist" method="post" class="draft-pick-form">
+                                        <form asp-action="PickCyclist" method="post" class="draft-pick-form js-draft-pick-form">
                                             <input type="hidden" name="draftTurnId" value="@turn.Id" />
                                             <input type="hidden" name="raceId" value="@ViewBag.RaceId" />
+                                            <input type="hidden" name="cyclistId" class="js-cyclist-id" required />
 
-                                            <select name="cyclistId" class="draft-select" required>
-                                                <option value="">Kies een renner...</option>
-                                                @foreach (var cyclist in availableCyclists)
-                                                {
-                                                    <option value="@cyclist.Id">@cyclist.FullName</option>
-                                                }
-                                            </select>
+                                            <div class="draft-search-select js-search-select">
+                                                <div class="draft-search-select-input-wrap">
+                                                    <input type="text"
+                                                           class="draft-search-input js-search-input"
+                                                           placeholder="Typ om een renner te zoeken..."
+                                                           autocomplete="off" />
+                                                    <button type="button" class="draft-search-toggle js-search-toggle" tabindex="-1">
+                                                        ▾
+                                                    </button>
+                                                </div>
+
+                                                <div class="draft-search-dropdown js-search-dropdown">
+                                                    <div class="draft-search-empty js-search-empty">
+                                                        Geen renners gevonden.
+                                                    </div>
+
+                                                    @foreach (var cyclist in availableCyclists)
+                                                    {
+                                                        <button type="button"
+                                                                class="draft-search-option js-search-option"
+                                                                data-id="@cyclist.Id"
+                                                                data-name="@cyclist.FullName">
+                                                            <span class="draft-search-option-name">@cyclist.FullName</span>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
 
                                             <button type="submit" class="draft-pick-button">
                                                 Pick
@@ -249,3 +277,107 @@
         </aside>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchSelects = document.querySelectorAll(".js-search-select");
+
+        searchSelects.forEach(function (select) {
+            const input = select.querySelector(".js-search-input");
+            const hiddenId = select.closest("form").querySelector(".js-cyclist-id");
+            const dropdown = select.querySelector(".js-search-dropdown");
+            const options = Array.from(select.querySelectorAll(".js-search-option"));
+            const emptyState = select.querySelector(".js-search-empty");
+            const toggle = select.querySelector(".js-search-toggle");
+            const form = select.closest("form");
+
+            function normalize(value) {
+                return (value || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+            }
+
+            function filterOptions() {
+                const term = normalize(input.value);
+                let visibleCount = 0;
+
+                options.forEach(function (option) {
+                    const name = normalize(option.dataset.name);
+                    const matches = term === "" || name.includes(term);
+
+                    option.style.display = matches ? "flex" : "none";
+
+                    if (matches) {
+                        visibleCount++;
+                    }
+                });
+
+                emptyState.style.display = visibleCount === 0 ? "flex" : "none";
+            }
+
+            function openDropdown() {
+                select.classList.add("open");
+                filterOptions();
+            }
+
+            function closeDropdown() {
+                select.classList.remove("open");
+            }
+
+            function clearSelectionIfTypedDifferent() {
+                const currentSelectedName = options.find(o => o.dataset.id === hiddenId.value)?.dataset.name || "";
+
+                if (normalize(input.value) !== normalize(currentSelectedName)) {
+                    hiddenId.value = "";
+                }
+            }
+
+            input.addEventListener("focus", function () {
+                openDropdown();
+            });
+
+            input.addEventListener("input", function () {
+                clearSelectionIfTypedDifferent();
+                openDropdown();
+                filterOptions();
+            });
+
+            toggle.addEventListener("click", function () {
+                if (select.classList.contains("open")) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
+                    input.focus();
+                }
+            });
+
+            options.forEach(function (option) {
+                option.addEventListener("click", function () {
+                    input.value = option.dataset.name;
+                    hiddenId.value = option.dataset.id;
+                    closeDropdown();
+                });
+            });
+
+            form.addEventListener("submit", function (e) {
+                if (!hiddenId.value) {
+                    e.preventDefault();
+                    input.focus();
+                    input.classList.add("draft-search-input-error");
+
+                    setTimeout(function () {
+                        input.classList.remove("draft-search-input-error");
+                    }, 1600);
+                }
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!select.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+        });
+    });
+</script>
