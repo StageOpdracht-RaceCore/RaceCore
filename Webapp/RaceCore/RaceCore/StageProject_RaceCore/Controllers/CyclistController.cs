@@ -13,7 +13,7 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 25)
+        public async Task<IActionResult> Index(string? search, bool? active, int page = 1, int pageSize = 25)
         {
             var query = _context.Cyclists
                 .Include(c => c.Team)
@@ -25,6 +25,11 @@ namespace StageProject_RaceCore.Controllers
                     c.FirstName.Contains(search) ||
                     c.LastName.Contains(search) ||
                     c.Team.Name.Contains(search));
+            }
+
+            if (active.HasValue)
+            {
+                query = query.Where(c => c.IsActive == active.Value);
             }
 
             var totalItems = await query.CountAsync();
