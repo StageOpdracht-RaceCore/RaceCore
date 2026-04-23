@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -13,6 +12,7 @@ namespace StageProject_RaceCore.Models
     public class TeamViewModel
     {
         public const int TunicPoints = 10;
+<<<<<<< HEAD
 
         private const string DefaultTeamColor = "#6b7280";
 
@@ -80,30 +80,40 @@ namespace StageProject_RaceCore.Models
             ("totalenergies", "#69be28"),
             ("uno-x", "#d61f45")
         };
+=======
+>>>>>>> parent of eaae2e9 (each team now has a set color)
 
         public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 
         public string Tag { get; set; } = string.Empty;
+<<<<<<< HEAD
 
         public string Color { get; set; } = DefaultTeamColor;
+=======
+        public string Color { get; set; } = string.Empty;
+>>>>>>> parent of eaae2e9 (each team now has a set color)
 
         public int ActiveCyclistsCount { get; set; }
 
         public int BenchCyclistsCount { get; set; }
 
         public int TeamPoints => ActiveCyclistsCount * TunicPoints;
+<<<<<<< HEAD
 
         public string ColorSoft => ToRgba(Color, 0.14);
 
         public string ColorSoftBorder => ToRgba(Color, 0.3);
 
         public string ColorContrast => GetReadableTextColor(Color);
+=======
+>>>>>>> parent of eaae2e9 (each team now has a set color)
 
         public List<CyclistSimple> ActiveCyclists { get; set; } = new();
 
         public List<CyclistSimple> BenchCyclists { get; set; } = new();
+<<<<<<< HEAD
 
         public static string ResolveBrandColor(string? tag, string? name)
         {
@@ -303,6 +313,8 @@ namespace StageProject_RaceCore.Models
                 CultureInfo.InvariantCulture,
                 out blue);
         }
+=======
+>>>>>>> parent of eaae2e9 (each team now has a set color)
     }
 
     public class CyclistSimple

@@ -132,11 +132,15 @@
 
 /* Team card */
 .team-card {
+<<<<<<< HEAD
     --team-color: #6b7280;
     --team-color-soft: rgba(107, 114, 128, 0.14);
     --team-color-soft-border: rgba(107, 114, 128, 0.3);
     --team-color-contrast: #ffffff;
 
+=======
+    --team-color: #ddd;
+>>>>>>> parent of eaae2e9 (each team now has a set color)
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -181,6 +185,7 @@
     padding: 16px 20px;
     cursor: pointer;
     user-select: none;
+<<<<<<< HEAD
     background: linear-gradient(
         90deg,
         var(--team-color-soft) 0%,
@@ -196,6 +201,12 @@
             rgba(255, 255, 255, 0) 58%
         ),
         #fafafa;
+=======
+}
+
+.team-header:hover {
+    background: #fafafa;
+>>>>>>> parent of eaae2e9 (each team now has a set color)
 }
 
 .team-meta {
@@ -224,7 +235,6 @@
     flex-shrink: 0;
     width: 16px;
     height: 16px;
-    background: var(--team-color);
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 4px;
 }
@@ -237,9 +247,9 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     vertical-align: middle;
-    color: var(--team-color);
-    background: var(--team-color-soft);
-    border: 1px solid var(--team-color-soft-border);
+    color: var(--rc-blue);
+    background: #f0f4ff;
+    border: 1px solid #d0e2ff;
     border-radius: 20px;
 }
 
@@ -263,8 +273,8 @@
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.02em;
-    color: var(--team-color-contrast);
-    background: var(--team-color);
+    color: #fff;
+    background: var(--rc-blue);
     border-radius: 20px;
 }
 

@@ -60,8 +60,12 @@ else
             <div
                 class="team-card collapsed"
                 data-team-id="@team.Id"
+<<<<<<< HEAD
                 data-team-name="@team.Name.ToLower()"
                 style="@GetTeamStyle(team)">
+=======
+                data-team-name="@team.Name.ToLower()">
+>>>>>>> parent of eaae2e9 (each team now has a set color)
                 <div class="team-header">
                     <div class="team-meta">
                         <span class="swatch"></span>
@@ -323,6 +327,134 @@ else
                 });
             }
 
+<<<<<<< HEAD
+=======
+            function hashToInt(str) {
+                var hash = 2166136261 >>> 0;
+
+                for (var i = 0; i < str.length; i++) {
+                    hash ^= str.charCodeAt(i);
+                    hash = Math.imul(hash, 16777619) >>> 0;
+                }
+
+                return hash >>> 0;
+            }
+
+            (function assignColors() {
+                var minDiff = 60;
+                var golden = 137.508;
+                var usedHues = [];
+
+                function hueDist(a, b) {
+                    var distance = Math.abs(a - b) % 360;
+                    return distance > 180 ? 360 - distance : distance;
+                }
+
+                getTeamCards().forEach(function (card, index) {
+                    var id = card.dataset.teamId;
+                    var key = "teamColor_" + id;
+                    var saved = null;
+
+                    try {
+                        saved = localStorage.getItem(key);
+                    } catch (e) {
+                    }
+
+                    if (saved) {
+                        card.style.setProperty("--team-color", saved);
+
+                        var match = saved.match(/hsl\(([-\d.]+)/i);
+                        if (match) {
+                            usedHues.push(parseFloat(match[1]));
+                        }
+                    } else {
+                        var candidate = (hashToInt(String(id)) % 360 + index * golden) % 360;
+                        var tries = 0;
+
+                        while (
+                            usedHues.some(function (hue) {
+                                return hueDist(hue, candidate) < minDiff;
+                            })
+                        ) {
+                            candidate = (candidate + golden) % 360;
+                            if (++tries > 36) {
+                                break;
+                            }
+                        }
+
+                        var color = "hsl(" + candidate.toFixed(1) + ",65%,55%)";
+                        card.style.setProperty("--team-color", color);
+
+                        try {
+                            localStorage.setItem(key, color);
+                        } catch (e) {
+                        }
+
+                        usedHues.push(candidate);
+                    }
+
+                    var swatch = card.querySelector(".swatch");
+                    if (swatch) {
+                        swatch.style.background = "var(--team-color)";
+                    }
+                });
+            })();
+
+            restoreAll();
+
+            document.addEventListener("click", function (e) {
+                var toggleBtn = e.target.closest(".collapse-toggle");
+                if (toggleBtn) {
+                    var toggleCard = toggleBtn.closest(".team-card");
+                    if (!toggleCard) {
+                        return;
+                    }
+
+                    var isCollapsed = toggleCard.classList.toggle("collapsed");
+                    toggleBtn.setAttribute("aria-expanded", String(!isCollapsed));
+                    saveCardState(toggleCard);
+                    return;
+                }
+
+                var header = e.target.closest(".team-header");
+                if (header && !e.target.closest("button, a, form")) {
+                    var headerCard = header.closest(".team-card");
+                    if (!headerCard) {
+                        return;
+                    }
+
+                    var collapsed = headerCard.classList.toggle("collapsed");
+                    var btn = headerCard.querySelector(".collapse-toggle");
+
+                    if (btn) {
+                        btn.setAttribute("aria-expanded", String(!collapsed));
+                    }
+
+                    saveCardState(headerCard);
+                }
+            });
+
+            document.addEventListener(
+                "click",
+                function (e) {
+                    if (!e.target.closest(".bench-btn, .activate-btn, .remove-btn, .add-cyclist-btn")) {
+                        return;
+                    }
+
+                    persistAllCardStates();
+                },
+                true
+            );
+
+            var searchInput = document.getElementById("globalSearchInput");
+            var clearBtn = document.getElementById("globalSearchClear");
+            var countEl = document.getElementById("globalSearchCount");
+
+            if (!searchInput) {
+                return;
+            }
+
+>>>>>>> parent of eaae2e9 (each team now has a set color)
             function removeDynamicEmpties() {
                 document.querySelectorAll(".search-empty").forEach(function (element) {
                     element.remove();
