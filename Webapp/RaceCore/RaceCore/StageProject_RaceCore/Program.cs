@@ -11,24 +11,20 @@ namespace StageProject_RaceCore
 
             builder.Services.AddControllersWithViews();
 
-            var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "racecore.db");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+                options.UseMySql(
+                    connectionString,
+                    ServerVersion.AutoDetect(connectionString)
+                ));
 
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                db.Database.EnsureCreated();
-
-                // Eerst alles van WAL wegschrijven
-                db.Database.ExecuteSqlRaw("PRAGMA wal_checkpoint(FULL);");
-
-                // Daarna WAL uitschakelen
-                db.Database.ExecuteSqlRaw("PRAGMA journal_mode=DELETE;");
+                //db.Database.EnsureCreated();
             }
 
             if (!app.Environment.IsDevelopment())
