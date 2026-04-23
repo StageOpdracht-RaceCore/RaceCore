@@ -68,6 +68,17 @@ body {
     z-index: 1000;
 }
 
+/* Ensure the logo remains visible above overlays and navigation highlights */
+.sidebar-logo {
+    position: relative;
+    z-index: 1100; /* above the sidebar and overlay */
+}
+
+.sidebar-logo h2,
+.sidebar-logo p {
+    color: #ffffff !important;
+}
+
 .sidebar-logo {
     margin-bottom: 22px;
 }
