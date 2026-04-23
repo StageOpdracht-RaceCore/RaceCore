@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
 
 namespace StageProject_RaceCore.Controllers
 {
@@ -17,19 +16,17 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        // Loads teams with their cyclists from the database and passes a view model to the view
+        // Loads teams with their cyclists from the database and passes a view model to the view.
         public async Task<IActionResult> Index()
         {
             try
             {
-                // Ensure the database is reachable before querying
+                // Return an empty page when the database is unavailable.
                 if (!await _context.Database.CanConnectAsync())
                 {
-                    // Return empty list to the view when DB is not available
-                    return View(new List<TeamViewModel>());
+                    return View(new TeamIndexViewModel());
                 }
 
-                // Project teams and composition information using database queries.
                 var teams = await _context.Teams
                     .OrderBy(t => t.Name)
                     .Select(t => new TeamViewModel
@@ -37,20 +34,118 @@ namespace StageProject_RaceCore.Controllers
                         Id = t.Id,
                         Name = t.Name,
                         Tag = t.Tag,
+                        Color = TeamViewModel.ResolveBrandColor(t.Tag, t.Name),
                         ActiveCyclistsCount = t.Cyclists.Count(c => c.IsActive),
                         BenchCyclistsCount = t.Cyclists.Count(c => !c.IsActive),
-                        ActiveCyclists = t.Cyclists.Where(c => c.IsActive).Select(c => new CyclistSimple { Id = c.Id, FirstName = c.FirstName, LastName = c.LastName, IsActive = c.IsActive }).ToList(),
-                        BenchCyclists = t.Cyclists.Where(c => !c.IsActive).Select(c => new CyclistSimple { Id = c.Id, FirstName = c.FirstName, LastName = c.LastName, IsActive = c.IsActive }).ToList()
+                        ActiveCyclists = t.Cyclists
+                            .Where(c => c.IsActive)
+                            .Select(c => new CyclistSimple
+                            {
+                                Id = c.Id,
+                                FirstName = c.FirstName,
+                                LastName = c.LastName,
+                                IsActive = c.IsActive
+                            })
+                            .ToList(),
+                        BenchCyclists = t.Cyclists
+                            .Where(c => !c.IsActive)
+                            .Select(c => new CyclistSimple
+                            {
+                                Id = c.Id,
+                                FirstName = c.FirstName,
+                                LastName = c.LastName,
+                                IsActive = c.IsActive
+                            })
+                            .ToList()
                     })
                     .ToListAsync();
 
-                return View(teams);
+                var availableCyclists = await _context.Cyclists
+                    .Where(c => c.TeamId == null)
+                    .OrderBy(c => c.LastName)
+                    .ThenBy(c => c.FirstName)
+                    .ToListAsync();
+
+                var model = new TeamIndexViewModel
+                {
+                    Teams = teams,
+                    AvailableCyclists = availableCyclists
+                };
+
+                return View(model);
             }
             catch (Exception ex)
             {
-                // Minimal logging and return an empty model to avoid crashing the app
                 Console.WriteLine(ex);
-                return View(new List<TeamViewModel>());
+                return View(new TeamIndexViewModel());
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCyclistToTeam(
+            int teamId,
+            int cyclistId,
+            bool isActive)
+        {
+            try
+            {
+                var team = await _context.Teams.FindAsync(teamId);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+
+                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
+                if (cyclist == null)
+                {
+                    return NotFound();
+                }
+
+                if (cyclist.TeamId.HasValue && cyclist.TeamId != teamId)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                cyclist.TeamId = teamId;
+                cyclist.IsActive = isActive;
+
+                _context.Cyclists.Update(cyclist);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveCyclistFromTeam(int cyclistId)
+        {
+            try
+            {
+                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
+                if (cyclist == null)
+                {
+                    return NotFound();
+                }
+
+                cyclist.TeamId = null;
+                cyclist.IsActive = false;
+
+                _context.Cyclists.Update(cyclist);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -67,6 +162,7 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 cyclist.IsActive = isActive;
+
                 _context.Cyclists.Update(cyclist);
                 await _context.SaveChangesAsync();
 
@@ -80,4 +176,3 @@ namespace StageProject_RaceCore.Controllers
         }
     }
 }
-
