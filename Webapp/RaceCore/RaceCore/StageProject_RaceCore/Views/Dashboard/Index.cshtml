@@ -70,8 +70,6 @@
 
 <div class="dashboard-container">
 
-    
-
     <section class="stats-grid">
         <div class="stat-card blue">
             <div class="stat-icon">👤</div>
@@ -117,7 +115,7 @@
 
             @if (Model.PlayerRanking.Any())
             {
-                <div class="ranking-list">
+                <div class="ranking-list ranking-list-scroll">
                     @foreach (var player in Model.PlayerRanking)
                     {
                         var width = Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100));
@@ -211,7 +209,6 @@
             </div>
         </div>
     </section>
-    
 
     <section class="bottom-grid">
         <div class="card">
@@ -273,9 +270,8 @@
             }
         </div>
     </section>
-    <section class="hero-section">
 
-        
+    <section class="hero-section">
         <div class="hero-side-card">
             <div class="hero-side-top">
                 <span>Draft Status</span>
