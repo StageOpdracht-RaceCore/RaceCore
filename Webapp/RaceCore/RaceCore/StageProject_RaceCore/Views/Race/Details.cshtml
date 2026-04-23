@@ -1,0 +1,76 @@
+@model StageProject_RaceCore.Models.Race
+
+@{
+    ViewData["Title"] = "Race Details";
+}
+
+<h1>Race Details</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4 class="card-title">@Model.Name (@Model.Year)</h4>
+        <p class="card-text"><strong>Start:</strong> @(Model.StartDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p class="card-text"><strong>End:</strong> @(Model.EndDate?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p class="card-text"><strong>Stages:</strong> @(Model.Stages?.Count ?? 0)</p>
+        <p class="card-text"><strong>Entries:</strong> @(Model.RaceEntries?.Count ?? 0)</p>
+    </div>
+</div>
+
+<h3>Stages</h3>
+@if (Model.Stages != null && Model.Stages.Any())
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model.Stages)
+            {
+                <tr>
+                    <td>@s.Id</td>
+                    <td>@s.Name</td>
+                    <td>@(s.Date?.ToString("yyyy-MM-dd") ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No stages for this race.</p>
+}
+
+<h3>Entries</h3>
+@if (Model.RaceEntries != null && Model.RaceEntries.Any())
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>Rider Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model.RaceEntries)
+            {
+                <tr>
+                    <td>@e.Id</td>
+                    <td>@e.Team?.Name</td>
+                    <td>@(e.Team?.Cyclists?.Count ?? (e.Cyclist != null ? 1 : 0))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No entries for this race.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary ms-2">Edit</a>
