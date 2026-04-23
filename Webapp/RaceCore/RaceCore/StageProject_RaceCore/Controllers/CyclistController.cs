@@ -13,7 +13,7 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, bool? active, int page = 1, int pageSize = 25)
+        public async Task<IActionResult> Index(string? search, string? status, int page = 1, int pageSize = 25)
         {
             if (page < 1)
             {
@@ -25,8 +25,15 @@ namespace StageProject_RaceCore.Controllers
                 pageSize = 25;
             }
 
+            var races = await _context.Races
+                .OrderBy(r => r.StartDate)
+                .ThenBy(r => r.Name)
+                .Take(3)
+                .ToListAsync();
+
             var query = _context.Cyclists
                 .Include(c => c.Team)
+                .Include(c => c.RaceEntries)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -39,9 +46,20 @@ namespace StageProject_RaceCore.Controllers
                     (c.Team != null && c.Team.Name.Contains(search)));
             }
 
-            if (active.HasValue)
+            if (!string.IsNullOrWhiteSpace(status))
             {
-                query = query.Where(c => c.IsActive == active.Value);
+                if (status == "active")
+                {
+                    query = query.Where(c => c.IsActive);
+                }
+                else if (status == "inactive")
+                {
+                    query = query.Where(c => !c.IsActive);
+                }
+                else if (status.StartsWith("race-") && int.TryParse(status.Replace("race-", ""), out int raceId))
+                {
+                    query = query.Where(c => c.RaceEntries.Any(re => re.RaceId == raceId));
+                }
             }
 
             var totalItems = await query.CountAsync();
@@ -57,8 +75,9 @@ namespace StageProject_RaceCore.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Search = search;
-            ViewBag.Active = active;
+            ViewBag.Status = status;
             ViewBag.CyclistCount = totalItems;
+            ViewBag.Races = races;
 
             return View(cyclists);
         }
