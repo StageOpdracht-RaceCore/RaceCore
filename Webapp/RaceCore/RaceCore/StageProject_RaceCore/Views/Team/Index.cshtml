@@ -52,7 +52,8 @@ else
             <div
                 class="team-card collapsed"
                 data-team-id="@team.Id"
-                data-team-name="@team.Name.ToLower()">
+                data-team-name="@team.Name.ToLower()"
+                style="--team-color: @team.Color; --team-color-soft: @team.ColorSoft; --team-color-soft-border: @team.ColorSoftBorder; --team-color-contrast: @team.ColorContrast;">
                 <div class="team-header">
                     <div class="team-meta">
                         <span class="swatch"></span>
@@ -299,77 +300,6 @@ else
                     }
                 });
             }
-
-            function hashToInt(str) {
-                var hash = 2166136261 >>> 0;
-
-                for (var i = 0; i < str.length; i++) {
-                    hash ^= str.charCodeAt(i);
-                    hash = Math.imul(hash, 16777619) >>> 0;
-                }
-
-                return hash >>> 0;
-            }
-
-            (function assignColors() {
-                var minDiff = 60;
-                var golden = 137.508;
-                var usedHues = [];
-
-                function hueDist(a, b) {
-                    var distance = Math.abs(a - b) % 360;
-                    return distance > 180 ? 360 - distance : distance;
-                }
-
-                getTeamCards().forEach(function (card, index) {
-                    var id = card.dataset.teamId;
-                    var key = "teamColor_" + id;
-                    var saved = null;
-
-                    try {
-                        saved = localStorage.getItem(key);
-                    } catch (e) {
-                    }
-
-                    if (saved) {
-                        card.style.setProperty("--team-color", saved);
-
-                        var match = saved.match(/hsl\(([-\d.]+)/i);
-                        if (match) {
-                            usedHues.push(parseFloat(match[1]));
-                        }
-                    } else {
-                        var candidate = (hashToInt(String(id)) % 360 + index * golden) % 360;
-                        var tries = 0;
-
-                        while (
-                            usedHues.some(function (hue) {
-                                return hueDist(hue, candidate) < minDiff;
-                            })
-                        ) {
-                            candidate = (candidate + golden) % 360;
-                            if (++tries > 36) {
-                                break;
-                            }
-                        }
-
-                        var color = "hsl(" + candidate.toFixed(1) + ",65%,55%)";
-                        card.style.setProperty("--team-color", color);
-
-                        try {
-                            localStorage.setItem(key, color);
-                        } catch (e) {
-                        }
-
-                        usedHues.push(candidate);
-                    }
-
-                    var swatch = card.querySelector(".swatch");
-                    if (swatch) {
-                        swatch.style.background = "var(--team-color)";
-                    }
-                });
-            })();
 
             restoreAll();
 

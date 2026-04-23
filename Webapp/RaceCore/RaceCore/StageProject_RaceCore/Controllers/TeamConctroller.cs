@@ -60,6 +60,11 @@ namespace StageProject_RaceCore.Controllers
                     })
                     .ToListAsync();
 
+                foreach (var team in teams)
+                {
+                    team.Color = TeamViewModel.ResolveBrandColor(team.Tag, team.Name);
+                }
+
                 var availableCyclists = await _context.Cyclists
                     .Where(c => c.TeamId == null)
                     .OrderBy(c => c.LastName)
