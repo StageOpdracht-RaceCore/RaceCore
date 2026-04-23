@@ -27,6 +27,7 @@ namespace StageProject_RaceCore.Controllers
                     c.Team.Name.Contains(search));
             }
 
+
             var totalItems = await query.CountAsync();
 
             var cyclists = await query
