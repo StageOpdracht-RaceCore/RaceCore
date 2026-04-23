@@ -1,4 +1,5 @@
-﻿body {
+﻿
+body {
     background: #f3f6fb;
 }
 
@@ -10,14 +11,19 @@
 .draft-page-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 20px;
-    margin-bottom: 24px;
-    padding: 28px 30px;
+    padding: 28px;
+    margin-bottom: 20px;
     border-radius: 24px;
-    background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
-    border: 1px solid #e4ebf5;
-    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.06);
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.18);
+}
+
+.draft-page-header-left {
+    flex: 1;
+    min-width: 0;
 }
 
 .draft-page-kicker {
@@ -27,28 +33,29 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #2563eb;
+    color: rgba(255, 255, 255, 0.78);
 }
 
 .draft-page-header h1 {
     margin: 0;
     font-size: 2rem;
     font-weight: 800;
-    color: #111827;
+    color: #ffffff;
 }
 
 .draft-page-header p {
     margin: 10px 0 0;
     max-width: 760px;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.88);
     font-size: 0.98rem;
     line-height: 1.6;
 }
 
 .draft-page-header-right {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .draft-status-pill {
@@ -60,19 +67,20 @@
     font-size: 0.9rem;
     font-weight: 700;
     white-space: nowrap;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
 }
 
     .draft-status-pill.live {
-        color: #166534;
-        background: #ecfdf3;
-        border-color: #bbf7d0;
+        color: #ffffff;
+        background: rgba(34, 197, 94, 0.18);
+        border-color: rgba(134, 239, 172, 0.35);
     }
 
     .draft-status-pill.done {
-        color: #1e3a8a;
-        background: #eff6ff;
-        border-color: #bfdbfe;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.22);
     }
 
 .draft-status-dot {
@@ -81,7 +89,6 @@
     border-radius: 50%;
     background: currentColor;
 }
-
 .draft-alert {
     margin-bottom: 18px;
     padding: 14px 18px;
@@ -709,62 +716,15 @@
     .draft-page-header {
         padding: 20px;
         flex-direction: column;
+        align-items: flex-start;
     }
 
         .draft-page-header h1 {
             font-size: 1.6rem;
         }
 
-    .draft-stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .draft-card-header {
-        padding: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .draft-table-head {
-        display: none;
-    }
-
-    .draft-row {
-        grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 18px 20px;
-    }
-
-        .draft-row.active {
-            padding-left: 15px;
-        }
-
-    .draft-position-cell {
+    .draft-page-header-right {
+        width: 100%;
         justify-content: flex-start;
-    }
-
-    .draft-pick-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .draft-search-select {
-        width: 100%;
-    }
-
-    .draft-search-dropdown {
-        position: static;
-        margin-top: 8px;
-        max-height: 220px;
-        box-shadow: none;
-        border-radius: 14px;
-    }
-
-    .draft-pick-button {
-        width: 100%;
-    }
-
-    .draft-side-card {
-        padding: 18px;
     }
 }
