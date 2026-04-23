@@ -33,17 +33,17 @@
     box-shadow: var(--rc-shadow);
 }
 
-.page-summary h2 {
-    margin: 0 0 4px;
-    font-size: 1.4rem;
-    color: var(--rc-text);
-}
+    .page-summary h2 {
+        margin: 0 0 4px;
+        font-size: 1.4rem;
+        color: var(--rc-text);
+    }
 
-.page-summary p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--rc-text-muted);
-}
+    .page-summary p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--rc-text-muted);
+    }
 
 /* Search */
 .global-search-bar {
@@ -59,30 +59,27 @@
     box-shadow: var(--rc-shadow-sm);
 }
 
-.global-search-bar input[type="text"] {
-    flex: 1;
-    padding: 8px 14px;
-    font-size: 0.9rem;
-    color: var(--rc-text);
-    background: #f9fafb;
-    border: 1px solid var(--rc-border);
-    border-radius: var(--rc-radius-md);
-    outline: none;
-    transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease,
-        background 150ms ease;
-}
+    .global-search-bar input[type="text"] {
+        flex: 1;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        color: var(--rc-text);
+        background: #f9fafb;
+        border: 1px solid var(--rc-border);
+        border-radius: var(--rc-radius-md);
+        outline: none;
+        transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
 
-.global-search-bar input[type="text"]:focus {
-    background: var(--rc-surface);
-    border-color: var(--rc-blue);
-    box-shadow: 0 0 0 3px var(--rc-blue-glow);
-}
+        .global-search-bar input[type="text"]:focus {
+            background: var(--rc-surface);
+            border-color: var(--rc-blue);
+            box-shadow: 0 0 0 3px var(--rc-blue-glow);
+        }
 
-.global-search-bar input[type="text"]::placeholder {
-    color: #9ca3af;
-}
+        .global-search-bar input[type="text"]::placeholder {
+            color: #9ca3af;
+        }
 
 #globalSearchClear {
     padding: 7px 14px;
@@ -92,15 +89,13 @@
     background: transparent;
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-md);
-    transition:
-        background 150ms ease,
-        color 150ms ease;
+    transition: background 150ms ease, color 150ms ease;
 }
 
-#globalSearchClear:hover {
-    color: var(--rc-text);
-    background: #f3f4f6;
-}
+    #globalSearchClear:hover {
+        color: var(--rc-text);
+        background: #f3f4f6;
+    }
 
 #globalSearchCount {
     min-width: 100px;
@@ -108,6 +103,45 @@
     color: var(--rc-text-muted);
     text-align: right;
     white-space: nowrap;
+}
+
+/* =============================================================================
+   Team card — white text on coloured background
+   ============================================================================= */
+.team-card .team-name,
+.team-card .team-cyclist-count,
+.team-card .team-counts,
+.team-card .team-management-title,
+.team-card .column h4,
+.team-card .empty {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.team-card .collapse-toggle {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+    .team-card .collapse-toggle:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+.team-card .cyclist-list li {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+    .team-card .cyclist-list li:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+.team-card .team-body {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.team-card .team-management {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Grid */
@@ -132,15 +166,10 @@
 
 /* Team card */
 .team-card {
-<<<<<<< HEAD
     --team-color: #6b7280;
     --team-color-soft: rgba(107, 114, 128, 0.14);
     --team-color-soft-border: rgba(107, 114, 128, 0.3);
     --team-color-contrast: #ffffff;
-
-=======
-    --team-color: #ddd;
->>>>>>> parent of eaae2e9 (each team now has a set color)
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -148,33 +177,27 @@
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-lg);
     box-shadow: var(--rc-shadow-sm);
-    transition:
-        box-shadow 200ms ease,
-        border-color 200ms ease;
+    transition: box-shadow 200ms ease, border-color 200ms ease;
 }
 
-.team-card:hover {
-    box-shadow: var(--rc-shadow);
-}
+    .team-card:hover {
+        box-shadow: var(--rc-shadow);
+    }
 
-.team-card.team-card-search-hidden {
-    display: none !important;
-}
+    .team-card.team-card-search-hidden {
+        display: none !important;
+    }
 
-.team-card.collapsed {
-    border-color: var(--rc-border);
-}
+    .team-card.collapsed {
+        border-top: 4px solid var(--team-color);
+        background: linear-gradient( 90deg, var(--team-color) 0%, var(--team-color-dark) 100% );
+    }
 
-.team-card:not(.collapsed) {
-    max-height: 520px;
-    border-top: 4px solid var(--team-color);
-    background: linear-gradient(
-        90deg,
-        var(--team-color-soft) 0%,
-        rgba(255, 255, 255, 0.96) 32%,
-        var(--rc-surface) 60%
-    );
-}
+    .team-card:not(.collapsed) {
+        max-height: 520px;
+        border-top: 4px solid var(--team-color);
+        background: linear-gradient( 90deg, var(--team-color) 0%, var(--team-color-dark) 100% );
+    }
 
 /* Header */
 .team-header {
@@ -185,29 +208,12 @@
     padding: 16px 20px;
     cursor: pointer;
     user-select: none;
-<<<<<<< HEAD
-    background: linear-gradient(
-        90deg,
-        var(--team-color-soft) 0%,
-        rgba(255, 255, 255, 0) 58%
-    );
+    background: transparent;
 }
 
-.team-header:hover {
-    background:
-        linear-gradient(
-            90deg,
-            var(--team-color-soft) 0%,
-            rgba(255, 255, 255, 0) 58%
-        ),
-        #fafafa;
-=======
-}
-
-.team-header:hover {
-    background: #fafafa;
->>>>>>> parent of eaae2e9 (each team now has a set color)
-}
+    .team-header:hover {
+        background: rgba(0, 0, 0, 0.12);
+    }
 
 .team-meta {
     display: flex;
@@ -235,6 +241,7 @@
     flex-shrink: 0;
     width: 16px;
     height: 16px;
+    background: var(--team-color);
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 4px;
 }
@@ -301,20 +308,20 @@
     transition: background 150ms ease;
 }
 
-.collapse-toggle:hover {
-    color: var(--rc-text);
-    background: #e5e7eb;
-}
+    .collapse-toggle:hover {
+        color: var(--rc-text);
+        background: #e5e7eb;
+    }
 
-.collapse-toggle:focus {
-    outline: 2px solid var(--rc-blue);
-    outline-offset: 2px;
-}
+    .collapse-toggle:focus {
+        outline: 2px solid var(--rc-blue);
+        outline-offset: 2px;
+    }
 
-.collapse-toggle .arrow {
-    display: inline-block;
-    transition: transform 220ms ease;
-}
+    .collapse-toggle .arrow {
+        display: inline-block;
+        transition: transform 220ms ease;
+    }
 
 .team-card.collapsed .collapse-toggle .arrow {
     transform: rotate(-90deg);
@@ -372,9 +379,7 @@
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-md);
     outline: none;
-    transition:
-        border-color 150ms ease,
-        box-shadow 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .add-cyclist-select {
@@ -385,11 +390,11 @@
     flex: 0 0 110px;
 }
 
-.add-cyclist-select:focus,
-.add-cyclist-status:focus {
-    border-color: var(--rc-blue);
-    box-shadow: 0 0 0 3px var(--rc-blue-glow);
-}
+    .add-cyclist-select:focus,
+    .add-cyclist-status:focus {
+        border-color: var(--rc-blue);
+        box-shadow: 0 0 0 3px var(--rc-blue-glow);
+    }
 
 /* Composition */
 .composition {
@@ -403,14 +408,14 @@
     min-width: 0;
 }
 
-.column h4 {
-    margin: 0 0 8px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--rc-text-muted);
-}
+    .column h4 {
+        margin: 0 0 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--rc-text-muted);
+    }
 
 /* Cyclist list */
 .cyclist-list {
@@ -419,25 +424,25 @@
     list-style: none;
 }
 
-.cyclist-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 8px;
-    font-size: 0.875rem;
-    color: var(--rc-text);
-    border-radius: var(--rc-radius-sm);
-    transition: background 120ms ease;
-}
+    .cyclist-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 8px;
+        font-size: 0.875rem;
+        color: var(--rc-text);
+        border-radius: var(--rc-radius-sm);
+        transition: background 120ms ease;
+    }
 
-.cyclist-list li:hover {
-    background: #f9fafb;
-}
+        .cyclist-list li:hover {
+            background: #f9fafb;
+        }
 
-.cyclist-list li[hidden] {
-    display: none;
-}
+        .cyclist-list li[hidden] {
+            display: none;
+        }
 
 .cyclist-name-text {
     flex: 1 1 auto;
@@ -483,10 +488,7 @@
     white-space: nowrap;
     cursor: pointer;
     border-radius: 20px;
-    transition:
-        background 150ms ease,
-        border-color 150ms ease,
-        color 150ms ease;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .add-cyclist-btn {
@@ -499,15 +501,13 @@
     background: var(--rc-blue);
     border: 1px solid var(--rc-blue);
     border-radius: 20px;
-    transition:
-        background 150ms ease,
-        border-color 150ms ease;
+    transition: background 150ms ease, border-color 150ms ease;
 }
 
-.add-cyclist-btn:hover {
-    background: var(--rc-blue-dark);
-    border-color: var(--rc-blue-dark);
-}
+    .add-cyclist-btn:hover {
+        background: var(--rc-blue-dark);
+        border-color: var(--rc-blue-dark);
+    }
 
 .bench-btn {
     color: #374151;
@@ -515,10 +515,10 @@
     border: 1px solid #d1d5db;
 }
 
-.bench-btn:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-}
+    .bench-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
 
 .activate-btn {
     color: #fff;
@@ -526,10 +526,10 @@
     border: 1px solid var(--rc-green);
 }
 
-.activate-btn:hover {
-    background: var(--rc-green-dark);
-    border-color: var(--rc-green-dark);
-}
+    .activate-btn:hover {
+        background: var(--rc-green-dark);
+        border-color: var(--rc-green-dark);
+    }
 
 .remove-btn {
     color: #b42318;
@@ -537,7 +537,7 @@
     border: 1px solid #f0b4ad;
 }
 
-.remove-btn:hover {
-    background: #fef3f2;
-    border-color: #e58f87;
-}
+    .remove-btn:hover {
+        background: #fef3f2;
+        border-color: #e58f87;
+    }

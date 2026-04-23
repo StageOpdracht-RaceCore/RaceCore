@@ -34,6 +34,7 @@ namespace StageProject_RaceCore.Controllers
                         Id = t.Id,
                         Name = t.Name,
                         Tag = t.Tag,
+                        Color = TeamViewModel.ResolveBrandColor(t.Tag, t.Name),
                         ActiveCyclistsCount = t.Cyclists.Count(c => c.IsActive),
                         BenchCyclistsCount = t.Cyclists.Count(c => !c.IsActive),
                         ActiveCyclists = t.Cyclists

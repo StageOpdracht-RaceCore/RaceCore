@@ -12,7 +12,6 @@ namespace StageProject_RaceCore.Models
     public class TeamViewModel
     {
         public const int TunicPoints = 10;
-<<<<<<< HEAD
 
         private const string DefaultTeamColor = "#6b7280";
 
@@ -80,40 +79,33 @@ namespace StageProject_RaceCore.Models
             ("totalenergies", "#69be28"),
             ("uno-x", "#d61f45")
         };
-=======
->>>>>>> parent of eaae2e9 (each team now has a set color)
 
         public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 
         public string Tag { get; set; } = string.Empty;
-<<<<<<< HEAD
 
         public string Color { get; set; } = DefaultTeamColor;
-=======
-        public string Color { get; set; } = string.Empty;
->>>>>>> parent of eaae2e9 (each team now has a set color)
 
         public int ActiveCyclistsCount { get; set; }
 
         public int BenchCyclistsCount { get; set; }
 
         public int TeamPoints => ActiveCyclistsCount * TunicPoints;
-<<<<<<< HEAD
 
         public string ColorSoft => ToRgba(Color, 0.14);
 
         public string ColorSoftBorder => ToRgba(Color, 0.3);
 
         public string ColorContrast => GetReadableTextColor(Color);
-=======
->>>>>>> parent of eaae2e9 (each team now has a set color)
+
+        /// <summary>Darkened version of the team color used as the gradient end-stop.</summary>
+        public string ColorDark => DarkenColor(Color, 0.45);
 
         public List<CyclistSimple> ActiveCyclists { get; set; } = new();
 
         public List<CyclistSimple> BenchCyclists { get; set; } = new();
-<<<<<<< HEAD
 
         public static string ResolveBrandColor(string? tag, string? name)
         {
@@ -160,6 +152,25 @@ namespace StageProject_RaceCore.Models
 
             var hue = (int)(hash % 360);
             return HslToHex(hue, 65, 46);
+        }
+
+        /// <summary>
+        /// Returns a darkened hex color by mixing it toward black.
+        /// <paramref name="amount"/> 0 = original, 1 = black.
+        /// </summary>
+        private static string DarkenColor(string color, double amount)
+        {
+            if (!TryParseHexColor(color, out var red, out var green, out var blue))
+            {
+                return "#374151";
+            }
+
+            var factor = 1.0 - amount;
+            var r = (int)Math.Round(red * factor);
+            var g = (int)Math.Round(green * factor);
+            var b = (int)Math.Round(blue * factor);
+
+            return $"#{r:X2}{g:X2}{b:X2}";
         }
 
         private static string ToRgba(string color, double alpha)
@@ -313,8 +324,6 @@ namespace StageProject_RaceCore.Models
                 CultureInfo.InvariantCulture,
                 out blue);
         }
-=======
->>>>>>> parent of eaae2e9 (each team now has a set color)
     }
 
     public class CyclistSimple
