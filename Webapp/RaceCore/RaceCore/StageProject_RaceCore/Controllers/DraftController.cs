@@ -14,24 +14,23 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        // =========================
-        // DRAFT OVERVIEW
-        // =========================
         public async Task<IActionResult> Index(int raceId)
         {
             var draftTurnsDb = await _context.DraftTurns
                 .Where(d => d.RaceId == raceId)
                 .Include(d => d.Player)
                 .Include(d => d.Cyclist)
+                .OrderBy(d => d.TurnNumber)
                 .ToListAsync();
 
             var cyclists = await _context.Cyclists.ToListAsync();
 
+            cyclists = cyclists
+                .OrderBy(c => c.FullName)
+                .ToList();
+
             List<DraftTurnViewModel> viewModel;
 
-            // =========================
-            // TEMP FALLBACK (als DB leeg is)
-            // =========================
             if (!draftTurnsDb.Any())
             {
                 viewModel = new List<DraftTurnViewModel>
@@ -48,7 +47,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     Id = d.Id,
                     TurnNumber = d.TurnNumber,
-                    PlayerName = d.Player?.Name ?? "Unknown",
+                    PlayerName = d.Player != null ? d.Player.Name : "Unknown",
                     CyclistId = d.CyclistId,
                     CyclistName = d.Cyclist != null ? d.Cyclist.FullName : null
                 }).ToList();
@@ -60,21 +59,50 @@ namespace StageProject_RaceCore.Controllers
             return View(viewModel);
         }
 
-        // =========================
-        // PICK CYCLIST
-        // =========================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PickCyclist(int draftTurnId, int cyclistId, int raceId)
         {
+            if (cyclistId <= 0)
+            {
+                TempData["Error"] = "Kies eerst een geldige renner.";
+                return RedirectToAction("Index", new { raceId });
+            }
+
             var turn = await _context.DraftTurns
-                .FirstOrDefaultAsync(t => t.Id == draftTurnId);
+                .FirstOrDefaultAsync(t => t.Id == draftTurnId && t.RaceId == raceId);
 
             if (turn == null)
-                return NotFound();
+            {
+                TempData["Error"] = "Draft beurt niet gevonden.";
+                return RedirectToAction("Index", new { raceId });
+            }
 
-            // check dubbele pick
+            if (turn.CyclistId.HasValue)
+            {
+                TempData["Error"] = "Voor deze beurt is al een renner gekozen.";
+                return RedirectToAction("Index", new { raceId });
+            }
+
+            var currentTurn = await _context.DraftTurns
+                .Where(t => t.RaceId == raceId && t.CyclistId == null)
+                .OrderBy(t => t.TurnNumber)
+                .FirstOrDefaultAsync();
+
+            if (currentTurn == null)
+            {
+                TempData["Error"] = "De draft is al afgerond.";
+                return RedirectToAction("Index", new { raceId });
+            }
+
+            if (currentTurn.Id != draftTurnId)
+            {
+                TempData["Error"] = "Je kan alleen kiezen voor de huidige beurt.";
+                return RedirectToAction("Index", new { raceId });
+            }
+
             bool alreadyPicked = await _context.DraftTurns
-                .AnyAsync(t => t.CyclistId == cyclistId && t.RaceId == raceId);
+                .AnyAsync(t => t.RaceId == raceId && t.CyclistId == cyclistId);
 
             if (alreadyPicked)
             {
@@ -82,8 +110,16 @@ namespace StageProject_RaceCore.Controllers
                 return RedirectToAction("Index", new { raceId });
             }
 
-            turn.CyclistId = cyclistId;
+            var cyclistExists = await _context.Cyclists
+                .AnyAsync(c => c.Id == cyclistId);
 
+            if (!cyclistExists)
+            {
+                TempData["Error"] = "De gekozen renner bestaat niet.";
+                return RedirectToAction("Index", new { raceId });
+            }
+
+            turn.CyclistId = cyclistId;
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", new { raceId });
