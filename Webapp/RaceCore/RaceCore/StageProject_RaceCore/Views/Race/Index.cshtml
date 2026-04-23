@@ -1,6 +1,60 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model IEnumerable<StageProject_RaceCore.Models.Race>
+
 @{
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Races";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Races</h1>
+    <a class="btn btn-primary" asp-action="Create">Create New Race</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Year</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Stages</th>
+            <th>Entries</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var race in Model)
+            {
+                <tr>
+                    <td>@race.Name</td>
+                    <td>@race.Year</td>
+                    <td>@(race.StartDate.HasValue ? race.StartDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                    <td>@(race.EndDate.HasValue ? race.EndDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                    <td>@(race.Stages?.Count ?? 0)</td>
+                    <td>@(race.RaceEntries?.Count ?? 0)</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-secondary me-1" asp-action="Edit" asp-route-id="@race.Id">Edit</a>
+                        <a class="btn btn-sm btn-info text-white me-1" asp-action="Details" asp-route-id="@race.Id">Details</a>
+                        <form asp-action="Delete" asp-route-id="@race.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this race?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            @Html.AntiForgeryToken()
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7">No races found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        // Placeholder for future client-side enhancements
+    </script>
 }
