@@ -2,213 +2,250 @@
 
 @{
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Draft";
 
     var cyclists = ViewBag.Cyclists as List<StageProject_RaceCore.Models.Cyclist>
                    ?? new List<StageProject_RaceCore.Models.Cyclist>();
 
-    var pickedIds = Model.Where(t => t.CyclistId != null).Select(t => t.CyclistId!.Value).ToList();
-    var availableCyclists = cyclists.Where(c => !pickedIds.Contains(c.Id)).ToList();
+    var pickedIds = Model
+        .Where(t => t.CyclistId != null)
+        .Select(t => t.CyclistId!.Value)
+        .ToList();
+
+    var availableCyclists = cyclists
+        .Where(c => !pickedIds.Contains(c.Id))
+        .OrderBy(c => c.FullName)
+        .ToList();
+
     var currentTurn = Model.FirstOrDefault(t => t.CyclistId == null);
+
+    var totalTurns = Model.Count;
+    var pickedCount = Model.Count(t => t.CyclistId != null);
+    var remainingTurns = Model.Count(t => t.CyclistId == null);
+    var draftIsLive = remainingTurns > 0;
 }
 
-<style>
-    /* Hoofdcontainer */
-    .draft-wrapper {
-        padding: 20px;
-        background-color: #f8f9fa;
-        min-height: 100vh;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<link rel="stylesheet" href="~/css/Draft.css" asp-append-version="true" />
 
-    /* Statistieken Rij */
-    .stats-container {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-
-    .stat-box {
-        flex: 1;
-        min-width: 180px;
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        border-bottom: 5px solid #ddd;
-    }
-
-    .stat-status { border-bottom-color: #0d6efd; }
-    .stat-turns { border-bottom-color: #198754; }
-    .stat-picked { border-bottom-color: #ffc107; }
-    .stat-left { border-bottom-color: #0dcaf0; }
-
-    .stat-icon {
-        font-size: 2.5rem;
-        margin-right: 15px;
-    }
-
-    .stat-info .label {
-        display: block;
-        font-size: 0.8rem;
-        color: #6c757d;
-        text-transform: uppercase;
-        font-weight: bold;
-    }
-
-    .stat-info .value {
-        display: block;
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: #212529;
-    }
-
-    /* Main Grid Layout */
-    .draft-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-    }
-
-    .content-card {
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
-    .turn-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        transition: 0.3s;
-    }
-
-    .turn-row.active {
-        background: #f0f7ff;
-        border-left: 5px solid #0d6efd;
-        transform: scale(1.01);
-    }
-
-    .player-circle {
-        width: 40px;
-        height: 40px;
-        background: #495057;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        margin-right: 15px;
-    }
-
-    .btn-pick {
-        background: #0d6efd;
-        color: white;
-        border: none;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-weight: 600;
-    }
-
-    @@media (max-width: 992px) {
-        .draft-grid { grid-template-columns: 1fr; }
-    }
-</style>
-
-<div class="draft-wrapper">
-    <div class="stats-container">
-        <div class="stat-box stat-status">
-            <div class="stat-icon">🎯</div>
-            <div class="stat-info">
-                <span class="label">Status</span>
-                <span class="value">@(Model.Any(t => t.CyclistId == null) ? "Live" : "Done")</span>
-            </div>
+<div class="draft-page">
+    <div class="draft-page-header">
+        <div class="draft-page-header-left">
+            <span class="draft-page-kicker">RaceCore Draft Center</span>
+            <h1>Live Draft</h1>
+            <p>
+                Beheer de draft op een duidelijke en professionele manier.
+                Zie meteen wie aan de beurt is, welke renners nog beschikbaar zijn
+                en welke keuzes al gemaakt werden.
+            </p>
         </div>
 
-        <div class="stat-box stat-turns">
-            <div class="stat-icon">👥</div>
-            <div class="stat-info">
-                <span class="label">Turns</span>
-                <span class="value">@Model.Count</span>
-            </div>
-        </div>
-
-        <div class="stat-box stat-picked">
-            <div class="stat-icon">🚴</div>
-            <div class="stat-info">
-                <span class="label">Picked</span>
-                <span class="value">@Model.Count(t => t.CyclistId != null)</span>
-            </div>
-        </div>
-
-        <div class="stat-box stat-left">
-            <div class="stat-icon">⚡</div>
-            <div class="stat-info">
-                <span class="label">Remaining</span>
-                <span class="value">@Model.Count(t => t.CyclistId == null)</span>
+        <div class="draft-page-header-right">
+            <div class="draft-status-pill @(draftIsLive ? "live" : "done")">
+                <span class="draft-status-dot"></span>
+                @(draftIsLive ? "Draft Live" : "Draft Afgerond")
             </div>
         </div>
     </div>
 
-    <div class="draft-grid">
-        <div class="content-card">
-            <h4 class="fw-bold mb-4">Draft Order</h4>
-            @foreach (var turn in Model)
-            {
-                var isActive = (currentTurn != null && turn.Id == currentTurn.Id);
-                <div class="turn-row @(isActive ? "active" : "")">
-                    <div class="d-flex align-items-center">
-                        <span class="text-muted fw-bold me-3">#@turn.TurnNumber</span>
-                        <div class="player-circle">
-                            @(string.IsNullOrWhiteSpace(turn.PlayerName) ? "?" : turn.PlayerName.Substring(0, 1).ToUpper())
+    <div class="draft-stats-grid">
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">🎯</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Status</span>
+                <strong class="draft-stat-value">@(draftIsLive ? "LIVE" : "DONE")</strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">👥</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Totale beurten</span>
+                <strong class="draft-stat-value">@totalTurns</strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">🚴</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Gekozen renners</span>
+                <strong class="draft-stat-value">@pickedCount</strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">📋</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Resterende beurten</span>
+                <strong class="draft-stat-value">@remainingTurns</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="draft-layout">
+        <section class="draft-main-card">
+            <div class="draft-card-header">
+                <div>
+                    <h2>Draft Volgorde</h2>
+                    <p>Overzicht van alle spelers, beurtpositie en selectie.</p>
+                </div>
+
+                <div class="draft-card-header-badge">
+                    @totalTurns spelers
+                </div>
+            </div>
+
+            <div class="draft-table">
+                <div class="draft-table-head">
+                    <div>Speler</div>
+                    <div>Positie</div>
+                    <div>Selectie</div>
+                </div>
+
+                <div class="draft-table-body">
+                    @foreach (var turn in Model)
+                    {
+                        var isActive = currentTurn != null && turn.Id == currentTurn.Id;
+                        var initial = !string.IsNullOrWhiteSpace(turn.PlayerName)
+                            ? turn.PlayerName.Substring(0, 1).ToUpper()
+                            : "?";
+
+                        <div class="draft-row @(isActive ? "active" : "") @(turn.CyclistId != null ? "completed" : "")">
+                            <div class="draft-player-cell">
+                                <div class="draft-player-avatar">
+                                    @initial
+                                </div>
+
+                                <div class="draft-player-meta">
+                                    <div class="draft-player-name-row">
+                                        <span class="draft-player-name">@turn.PlayerName</span>
+
+                                        @if (isActive)
+                                        {
+                                            <span class="draft-inline-badge active">Aan de beurt</span>
+                                        }
+                                        else if (turn.CyclistId != null)
+                                        {
+                                            <span class="draft-inline-badge picked">Gekozen</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="draft-inline-badge waiting">Wacht</span>
+                                        }
+                                    </div>
+
+                                    <span class="draft-player-subtitle">Draft turn ID: @turn.Id</span>
+                                </div>
+                            </div>
+
+                            <div class="draft-position-cell">
+                                <span class="draft-position-badge">#@turn.TurnNumber</span>
+                            </div>
+
+                            <div class="draft-selection-cell">
+                                @if (turn.CyclistId == null)
+                                {
+                                    if (isActive)
+                                    {
+                                        <form asp-action="PickCyclist" method="post" class="draft-pick-form">
+                                            <input type="hidden" name="draftTurnId" value="@turn.Id" />
+                                            <input type="hidden" name="raceId" value="@ViewBag.RaceId" />
+
+                                            <select name="cyclistId" class="draft-select" required>
+                                                <option value="">Kies een renner...</option>
+                                                @foreach (var cyclist in availableCyclists)
+                                                {
+                                                    <option value="@cyclist.Id">@cyclist.FullName</option>
+                                                }
+                                            </select>
+
+                                            <button type="submit" class="draft-pick-button">
+                                                Pick
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <div class="draft-empty-state">
+                                            Waiting for previous pick...
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="draft-picked-name">
+                                        <span class="draft-picked-icon">✔</span>
+                                        <span>@turn.CyclistName</span>
+                                    </div>
+                                }
+                            </div>
                         </div>
-                        <div>
-                            <div class="fw-bold">@turn.PlayerName</div>
-                            <small class="text-muted">@(turn.CyclistName ?? (isActive ? "Picking..." : "Waiting"))</small>
-                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <aside class="draft-sidebar">
+            <div class="draft-side-card draft-side-highlight">
+                <div class="draft-side-card-header">
+                    <h3>Live Draft Info</h3>
+                    <span class="draft-mini-status @(draftIsLive ? "live" : "done")">
+                        @(draftIsLive ? "Live" : "Done")
+                    </span>
+                </div>
+
+                <div class="draft-current-turn-box">
+                    <span class="draft-current-turn-label">Nu aan de beurt</span>
+                    <strong class="draft-current-turn-name">
+                        @(currentTurn?.PlayerName ?? "Einde Draft")
+                    </strong>
+                </div>
+
+                <div class="draft-info-list">
+                    <div class="draft-info-item">
+                        <span>Beschikbare renners</span>
+                        <strong>@availableCyclists.Count</strong>
                     </div>
 
-                    <div>
-                        @if (turn.CyclistId == null)
-                        {
-                            <form asp-action="PickCyclist" method="post" class="d-flex gap-2">
-                                <input type="hidden" name="draftTurnId" value="@turn.Id" />
-                                <input type="hidden" name="raceId" value="@ViewBag.RaceId" />
-                                <select name="cyclistId" class="form-select form-select-sm">
-                                    <option value="">Kies een renner...</option>
-                                    @foreach (var c in availableCyclists)
-                                    {
-                                        <option value="@c.Id">@c.FullName</option>
-                                    }
-                                </select>
-                                <button type="submit" class="btn-pick">Pick</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <span class="badge bg-light text-success border">Done</span>
-                        }
+                    <div class="draft-info-item">
+                        <span>Gekozen renners</span>
+                        <strong>@pickedCount</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Resterende beurten</span>
+                        <strong>@remainingTurns</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Totale draft beurten</span>
+                        <strong>@totalTurns</strong>
                     </div>
                 </div>
-            }
-        </div>
-
-        <div class="content-card">
-            <h4 class="fw-bold mb-3">Live Info</h4>
-            <div class="p-3 rounded bg-dark text-white mb-3">
-                <small class="d-block opacity-75">Current Turn</small>
-                <strong>@(currentTurn?.PlayerName ?? "Finished")</strong>
             </div>
-            <p class="text-muted small">
-                Select a cyclist from the list to assign them to your team.
-                The list updates automatically.
-            </p>
-        </div>
+
+            <div class="draft-side-card">
+                <div class="draft-side-card-header">
+                    <h3>Draft Progress</h3>
+                </div>
+
+                <div class="draft-progress-wrap">
+                    <div class="draft-progress-bar">
+                        <div class="draft-progress-fill" style="width:@(totalTurns == 0 ? 0 : (pickedCount * 100 / totalTurns))%;"></div>
+                    </div>
+
+                    <div class="draft-progress-text">
+                        @pickedCount / @totalTurns picks completed
+                    </div>
+                </div>
+            </div>
+
+            <div class="draft-side-card draft-tip-card">
+                <div class="draft-tip-title">💡 Draft Tip</div>
+                <p>
+                    Vergeet niet je team gebalanceerd samen te stellen voor de komende races.
+                    Denk aan sprinters, klimmers en allrounders.
+                </p>
+            </div>
+        </aside>
     </div>
 </div>
