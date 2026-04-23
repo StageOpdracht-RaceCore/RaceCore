@@ -1,4 +1,4 @@
-@model IEnumerable<StageProject_RaceCore.Models.TeamViewModel>
+@model StageProject_RaceCore.Models.TeamIndexViewModel
 @using System.Linq
 @using StageProject_RaceCore.Models
 
@@ -6,12 +6,11 @@
     ViewData["Title"] = "Teams";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
-    var teams = (Model ?? Enumerable.Empty<TeamViewModel>())
+    var teams = (Model?.Teams ?? Enumerable.Empty<TeamViewModel>())
         .OrderByDescending(t => t.ActiveCyclistsCount + t.BenchCyclistsCount)
         .ToList();
 
-    var availableCyclists = ((ViewBag.AvailableCyclists as IEnumerable<Cyclist>)
-        ?? Enumerable.Empty<Cyclist>())
+    var availableCyclists = (Model?.AvailableCyclists ?? Enumerable.Empty<Cyclist>())
         .ToList();
 }
 

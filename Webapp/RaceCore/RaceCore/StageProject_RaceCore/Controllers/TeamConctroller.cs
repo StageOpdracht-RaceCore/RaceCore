@@ -25,8 +25,7 @@ namespace StageProject_RaceCore.Controllers
                 // Return an empty page when the database is unavailable.
                 if (!await _context.Database.CanConnectAsync())
                 {
-                    ViewBag.AvailableCyclists = new List<Cyclist>();
-                    return View(new List<TeamViewModel>());
+                    return View(new TeamIndexViewModel());
                 }
 
                 var teams = await _context.Teams
@@ -67,15 +66,16 @@ namespace StageProject_RaceCore.Controllers
                     .ThenBy(c => c.FirstName)
                     .ToListAsync();
 
-                ViewBag.AvailableCyclists = availableCyclists;
-
-                return View(teams);
+                return View(new TeamIndexViewModel
+                {
+                    Teams = teams,
+                    AvailableCyclists = availableCyclists
+                });
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                ViewBag.AvailableCyclists = new List<Cyclist>();
-                return View(new List<TeamViewModel>());
+                return View(new TeamIndexViewModel());
             }
         }
 

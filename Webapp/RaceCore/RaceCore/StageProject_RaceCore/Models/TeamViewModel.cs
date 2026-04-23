@@ -2,6 +2,12 @@ using System.Collections.Generic;
 
 namespace StageProject_RaceCore.Models
 {
+    public class TeamIndexViewModel
+    {
+        public List<TeamViewModel> Teams { get; set; } = new();
+        public List<Cyclist> AvailableCyclists { get; set; } = new();
+    }
+
     public class TeamViewModel
     {
         public const int TunicPoints = 10;
