@@ -36,8 +36,15 @@
                     <input type="hidden" asp-for="Results[i].Position" />
 
                     <div class="px-3">
-                        <input type="text" list="cyclistList" class="player-search-input"
-                               placeholder="Zoek renner..." oninput="syncId(this)" autocomplete="off" />
+                        @* AANPASSING: value="@Model.Results[i].CyclistName" toegevoegd zodat namen blijven staan bij herladen *@
+                        <input type="text"
+                               list="cyclistList"
+                               class="player-search-input"
+                               value="@Model.Results[i].CyclistName"
+                               placeholder="Zoek renner..."
+                               oninput="syncId(this)"
+                               autocomplete="off" />
+                        
                         <input type="hidden" asp-for="Results[i].CyclistId" />
                     </div>
 
@@ -67,17 +74,28 @@
 
 @section Scripts {
     <script>
+        // Voer syncId uit voor alle inputs bij het laden van de pagina
+        // zodat de groene randjes verschijnen bij opgeslagen renners
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.player-search-input').forEach(input => {
+                if (input.value !== "") {
+                    syncId(input);
+                }
+            });
+        });
+
         function syncId(input) {
             const list = document.getElementById('cyclistList');
             const hidden = input.nextElementSibling;
             const option = Array.from(list.options).find(o => o.value === input.value);
+            
             if (option) {
                 hidden.value = option.getAttribute('data-id');
-                input.style.borderColor = "#10b981";
+                input.style.borderColor = "#10b981"; // Groen
                 input.style.backgroundColor = "#f0fdf4";
             } else {
                 hidden.value = "";
-                input.style.borderColor = "#d1d5db";
+                input.style.borderColor = "#d1d5db"; // Grijs
                 input.style.backgroundColor = "#f9fafb";
             }
         }

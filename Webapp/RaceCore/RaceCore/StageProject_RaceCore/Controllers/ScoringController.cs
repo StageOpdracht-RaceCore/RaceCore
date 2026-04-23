@@ -1,52 +1,127 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore; 
+using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
     public class ScoringController : Controller
     {
-        // GET: Scoring/Index
-        public IActionResult Index(int stageId)
+        private readonly AppDbContext _context;
+
+        public ScoringController(AppDbContext context)
         {
-            // In een echte app haal je deze data uit de DB via je context
+            _context = context;
+        }
+
+        // AANPASSING: stageId = 1 toegevoegd als standaardwaarde. 
+        // Dit voorkomt de 404 als je via de navigatie op 'Scoring' klikt zonder parameters.
+        public async Task<IActionResult> Index(int stageId = 1)
+        {
+            // 1. Controleer of de etappe bestaat
+            var stage = await _context.Stages.FindAsync(stageId);
+
+            // Als etappe 1 ook niet bestaat (bijv. lege database), sturen we niet naar 404 maar tonen we een melding of pakken de eerste de beste
+            if (stage == null)
+            {
+                stage = await _context.Stages.OrderBy(s => s.Id).FirstOrDefaultAsync();
+                if (stage == null) return NotFound("Geen etappes gevonden in de database.");
+                stageId = stage.Id;
+            }
+
+            // 2. Haal alle renners op voor de autocomplete
+            var cyclists = await _context.Cyclists
+                .OrderBy(c => c.LastName)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.FirstName + " " + c.LastName
+                }).ToListAsync();
+
+            // 3. Haal bestaande data op
+            var existingResults = await _context.StageResults
+                .Where(r => r.StageId == stageId)
+                .Include(r => r.Cyclist)
+                .ToListAsync();
+
+            var existingJerseys = await _context.Jerseys
+                .Where(j => j.StageId == stageId)
+                .ToListAsync();
+
+            // 4. MAAK HET VIEWMODEL AAN
             var viewModel = new ScoringViewModel
             {
                 StageId = stageId,
-                StageName = "Rit " + stageId,
-                // We bereiden 25 rijen voor zoals in de Excel
-                Results = Enumerable.Range(1, 25).Select(i => new StageResultInput { Position = i }).ToList(),
-                AvailableCyclists = GetDummyCyclists() // Vervang door database call
+                AvailableCyclists = cyclists,
+                Results = new List<StageResultViewModel>()
             };
+
+            // 5. Vul de lijst met 25 rijen
+            for (int i = 1; i <= 25; i++)
+            {
+                var res = existingResults.FirstOrDefault(r => r.Position == i);
+
+                viewModel.Results.Add(new StageResultViewModel
+                {
+                    Position = i,
+                    CyclistId = res?.CyclistId,
+                    // Belangrijk: CyclistName vullen zodat de View de naam kan tonen bij herladen
+                    CyclistName = res != null ? $"{res.Cyclist.FirstName} {res.Cyclist.LastName}" : "",
+                    HasYellowJersey = existingJerseys.Any(j => j.CyclistId == res?.CyclistId && j.Type == "Yellow"),
+                    HasGreenJersey = existingJerseys.Any(j => j.CyclistId == res?.CyclistId && j.Type == "Green"),
+                    HasPolkaJersey = existingJerseys.Any(j => j.CyclistId == res?.CyclistId && j.Type == "Polka"),
+                    HasWhiteJersey = existingJerseys.Any(j => j.CyclistId == res?.CyclistId && j.Type == "White")
+                });
+            }
 
             return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult SaveScores(ScoringViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveScores(ScoringViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                // Hier komt de "Score Engine" logica:
-                // 1. Loop door model.Results
-                // 2. Ken punten toe op basis van positie (bijv. 1ste = 100pt, etc.)
-                // 3. Voeg trui-bonussen toe
-                // 4. Sla op in de database tabel 'StageResults'
+            if (model.Results == null) return RedirectToAction("Index", new { stageId = model.StageId });
 
-                return RedirectToAction("Index", "Leaderboard");
+            var oldResults = _context.StageResults.Where(r => r.StageId == model.StageId);
+            var oldJerseys = _context.Jerseys.Where(j => j.StageId == model.StageId);
+
+            _context.StageResults.RemoveRange(oldResults);
+            _context.Jerseys.RemoveRange(oldJerseys);
+
+            foreach (var row in model.Results)
+            {
+                if (row.CyclistId.HasValue && row.CyclistId > 0)
+                {
+                    var result = new StageResult
+                    {
+                        StageId = model.StageId,
+                        CyclistId = row.CyclistId.Value,
+                        Position = row.Position,
+                        Status = "Finished"
+                    };
+                    _context.StageResults.Add(result);
+
+                    if (row.HasYellowJersey) AddJersey(model.StageId, row.CyclistId.Value, "Yellow");
+                    if (row.HasGreenJersey) AddJersey(model.StageId, row.CyclistId.Value, "Green");
+                    if (row.HasPolkaJersey) AddJersey(model.StageId, row.CyclistId.Value, "Polka");
+                    if (row.HasWhiteJersey) AddJersey(model.StageId, row.CyclistId.Value, "White");
+                }
             }
-            return View("Index", model);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", new { stageId = model.StageId });
         }
 
-        private List<SelectListItem> GetDummyCyclists()
+        private void AddJersey(int sId, int cId, string type)
         {
-            // Simuleert de data van 'TOUR PUNTEN' tabblad
-            return new List<SelectListItem>
+            _context.Jerseys.Add(new Jersey
             {
-                new SelectListItem { Value = "1", Text = "Tadej Pogačar" },
-                new SelectListItem { Value = "2", Text = "Jonas Vingegaard" },
-                new SelectListItem { Value = "3", Text = "Remco Evenepoel" }
-            };
+                StageId = sId,
+                CyclistId = cId,
+                Type = type
+            });
         }
     }
 }
