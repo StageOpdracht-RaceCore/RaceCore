@@ -13,30 +13,54 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, string? active)
+        public async Task<IActionResult> Index(string? search, bool? active, int page = 1, int pageSize = 25)
         {
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 25;
+            }
+
             var query = _context.Cyclists
                 .Include(c => c.Team)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(search))
             {
+                search = search.Trim();
+
                 query = query.Where(c =>
-                    c.FirstName.ToLower().Contains(search) ||
-                    c.LastName.ToLower().Contains(search) ||
-                    c.Team.Name.ToLower().Contains(search)
-                );
-            }
-            if (!string.IsNullOrEmpty(active)) { 
-                bool isActive = active.ToLower() == "true";
-                query = query.Where(c => c.IsActive == isActive);
+                    c.FirstName.Contains(search) ||
+                    c.LastName.Contains(search) ||
+                    (c.Team != null && c.Team.Name.Contains(search)));
             }
 
-            var cyclistList = await query.ToListAsync();
+            if (active.HasValue)
+            {
+                query = query.Where(c => c.IsActive == active.Value);
+            }
 
-            ViewBag.CyclistCount = cyclistList.Count;
+            var totalItems = await query.CountAsync();
 
-            return View(cyclistList);
+            var cyclists = await query
+                .OrderBy(c => c.LastName)
+                .ThenBy(c => c.FirstName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.PageSize = pageSize;
+            ViewBag.Search = search;
+            ViewBag.Active = active;
+            ViewBag.CyclistCount = totalItems;
+
+            return View(cyclists);
         }
     }
 }

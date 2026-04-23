@@ -1,27 +1,74 @@
 ﻿@model StageProject_RaceCore.Models.Player
 
 @{
-    ViewData["Title"] = "Teams";
+    ViewData["Title"] = "Player details";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
-<h2>Speler details</h2>
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
-<div class="card p-3">
+<div class="player-details-page">
+    <div class="player-details-hero">
+        <div class="player-details-avatar">
+            @(string.IsNullOrWhiteSpace(Model.Name) ? "?" : Model.Name.Substring(0, 1).ToUpper())
+        </div>
 
-    <p><strong>Naam:</strong> @Model.Name</p>
+        <div>
+            <p class="player-page-kicker">Player overview</p>
+            <h1>@Model.Name</h1>
+            <p class="player-page-subtitle">
+                Overzicht van draft positie, punten en gekoppelde records.
+            </p>
+        </div>
+    </div>
 
-    <hr />
+    <div class="player-stats-grid">
+        <div class="player-stat-card">
+            <span class="player-stat-label">Draft positie</span>
+            <strong class="player-stat-value">#@Model.PositionInDraft</strong>
+        </div>
+        <div class="player-stat-card">
+            <span class="player-stat-label">Totale punten</span>
+            <strong class="player-stat-value">@Model.TotalPoints</strong>
+        </div>
+        <div class="player-stat-card">
+            <span class="player-stat-label">Selections</span>
+            <strong class="player-stat-value">@(Model.Selections?.Count ?? 0)</strong>
+        </div>
+        <div class="player-stat-card">
+            <span class="player-stat-label">Draft turns</span>
+            <strong class="player-stat-value">@(Model.DraftTurns?.Count ?? 0)</strong>
+        </div>
+        <div class="player-stat-card">
+            <span class="player-stat-label">Punten records</span>
+            <strong class="player-stat-value">@(Model.PlayerPoints?.Count ?? 0)</strong>
+        </div>
+    </div>
 
-    <h5>Selections</h5>
-    <p>@(Model.Selections?.Count ?? 0) items</p>
+    <div class="player-details-grid">
+        <div class="player-detail-card">
+            <h3>Basisinformatie</h3>
+            <div class="player-detail-list">
+                <div><span>Naam</span><strong>@Model.Name</strong></div>
+                <div><span>Player ID</span><strong>@Model.Id</strong></div>
+                <div><span>Draft positie</span><strong>#@Model.PositionInDraft</strong></div>
+                <div><span>Total points</span><strong>@Model.TotalPoints</strong></div>
+            </div>
+        </div>
 
-    <h5>Draft turns</h5>
-    <p>@(Model.DraftTurns?.Count ?? 0) items</p>
+        <div class="player-detail-card">
+            <h3>Activiteit</h3>
+            <div class="player-detail-list">
+                <div><span>Selections</span><strong>@(Model.Selections?.Count ?? 0)</strong></div>
+                <div><span>Draft turns</span><strong>@(Model.DraftTurns?.Count ?? 0)</strong></div>
+                <div><span>Punten records</span><strong>@(Model.PlayerPoints?.Count ?? 0)</strong></div>
+            </div>
+        </div>
+    </div>
 
-    <h5>Punten</h5>
-    <p>@(Model.PlayerPoints?.Count ?? 0) records</p>
-
+    <div class="player-form-actions">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="player-btn player-btn-primary">Bewerken</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="player-btn player-btn-danger">Verwijderen</a>
+        <a asp-action="Index" class="player-btn player-btn-light">Terug</a>
+    </div>
 </div>
-
-<a asp-action="Index" class="btn btn-secondary mt-3">Terug</a>

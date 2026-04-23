@@ -1,29 +1,78 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
+using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
     public class PlayerController : Controller
     {
-        // tijdelijke opslag (mock)
-        private static List<Player> players = new List<Player>
+        private readonly AppDbContext _context;
+
+        public PlayerController(AppDbContext context)
         {
-            new Player { Id = 1, Name = "Roel" },
-            new Player { Id = 2, Name = "Casper" },
-            new Player { Id = 3, Name = "Jonas" }
-        };
+            _context = context;
+        }
 
         // INDEX
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchTerm = "")
         {
-            return View(players);
+            var playersQuery = _context.Players
+                .Select(p => new PlayerIndexViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    PositionInDraft = p.PositionInDraft,
+                    TotalPoints = p.TotalPoints,
+                    SelectionsCount = p.Selections.Count(),
+                    DraftTurnsCount = p.DraftTurns.Count(),
+                    PointsRecordsCount = p.PlayerPoints.Count()
+                });
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                playersQuery = playersQuery.Where(p => p.Name.Contains(searchTerm));
+            }
+
+            var players = await playersQuery
+                .OrderBy(p => p.PositionInDraft)
+                .ThenBy(p => p.Name)
+                .ToListAsync();
+
+            var summary = new PlayerPageViewModel
+            {
+                SearchTerm = searchTerm,
+                Players = players,
+                TotalPlayers = players.Count,
+                TotalPoints = players.Sum(p => p.TotalPoints),
+                TotalSelections = players.Sum(p => p.SelectionsCount),
+                TotalDraftTurns = players.Sum(p => p.DraftTurnsCount),
+                TotalPointRecords = players.Sum(p => p.PointsRecordsCount)
+            };
+
+            return View(summary);
         }
 
         // DETAILS
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var player = players.FirstOrDefault(p => p.Id == id);
-            if (player == null) return NotFound();
+            var player = await _context.Players
+                .Include(p => p.Selections)
+                    .ThenInclude(s => s.Cyclist)
+                .Include(p => p.Selections)
+                    .ThenInclude(s => s.Race)
+                .Include(p => p.DraftTurns)
+                    .ThenInclude(d => d.Race)
+                .Include(p => p.PlayerPoints)
+                    .ThenInclude(pp => pp.Race)
+                .Include(p => p.PlayerPoints)
+                    .ThenInclude(pp => pp.Stage)
+                .Include(p => p.PlayerPoints)
+                    .ThenInclude(pp => pp.Cyclist)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (player == null)
+                return NotFound();
 
             return View(player);
         }
@@ -31,29 +80,31 @@ namespace StageProject_RaceCore.Controllers
         // CREATE (GET)
         public IActionResult Create()
         {
-            return View();
+            return View(new Player());
         }
 
         // CREATE (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Player player)
+        public async Task<IActionResult> Create(Player player)
         {
-            if (ModelState.IsValid)
-            {
-                player.Id = players.Any() ? players.Max(p => p.Id) + 1 : 1;
-                players.Add(player);
-                return RedirectToAction(nameof(Index));
-            }
+            if (!ModelState.IsValid)
+                return View(player);
 
-            return View(player);
+            _context.Players.Add(player);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Speler succesvol toegevoegd.";
+            return RedirectToAction(nameof(Index));
         }
 
         // EDIT (GET)
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var player = players.FirstOrDefault(p => p.Id == id);
-            if (player == null) return NotFound();
+            var player = await _context.Players.FindAsync(id);
+
+            if (player == null)
+                return NotFound();
 
             return View(player);
         }
@@ -61,28 +112,37 @@ namespace StageProject_RaceCore.Controllers
         // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Player updatedPlayer)
+        public async Task<IActionResult> Edit(int id, Player updatedPlayer)
         {
-            if (id != updatedPlayer.Id) return NotFound();
+            if (id != updatedPlayer.Id)
+                return NotFound();
 
-            var player = players.FirstOrDefault(p => p.Id == id);
-            if (player == null) return NotFound();
+            if (!ModelState.IsValid)
+                return View(updatedPlayer);
 
-            if (ModelState.IsValid)
-            {
-                player.Name = updatedPlayer.Name;
-                // relaties niet overschrijven hier (Selections etc.)
-                return RedirectToAction(nameof(Index));
-            }
+            var existingPlayer = await _context.Players.FindAsync(id);
 
-            return View(updatedPlayer);
+            if (existingPlayer == null)
+                return NotFound();
+
+            existingPlayer.Name = updatedPlayer.Name;
+            existingPlayer.PositionInDraft = updatedPlayer.PositionInDraft;
+            existingPlayer.TotalPoints = updatedPlayer.TotalPoints;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Speler succesvol bijgewerkt.";
+            return RedirectToAction(nameof(Index));
         }
 
         // DELETE (GET)
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var player = players.FirstOrDefault(p => p.Id == id);
-            if (player == null) return NotFound();
+            var player = await _context.Players
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (player == null)
+                return NotFound();
 
             return View(player);
         }
@@ -90,14 +150,27 @@ namespace StageProject_RaceCore.Controllers
         // DELETE (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var player = players.FirstOrDefault(p => p.Id == id);
-            if (player != null)
+            var player = await _context.Players
+                .Include(p => p.Selections)
+                .Include(p => p.DraftTurns)
+                .Include(p => p.PlayerPoints)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (player == null)
+                return RedirectToAction(nameof(Index));
+
+            if (player.Selections.Any() || player.DraftTurns.Any() || player.PlayerPoints.Any())
             {
-                players.Remove(player);
+                TempData["Error"] = "Deze speler kan niet verwijderd worden omdat er gekoppelde gegevens bestaan.";
+                return RedirectToAction(nameof(Index));
             }
 
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Speler succesvol verwijderd.";
             return RedirectToAction(nameof(Index));
         }
     }
