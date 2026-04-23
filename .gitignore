@@ -14,3 +14,4 @@ obj/
 *.db-shm
 *.db-wal
 /Webapp/RaceCore/RaceCore/StageProject_RaceCore/Data/racecore.db
+/Webapp/RaceCore/RaceCore/StageProject_RaceCore/Data/racecore.db
