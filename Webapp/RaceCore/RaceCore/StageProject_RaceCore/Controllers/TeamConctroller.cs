@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -71,11 +70,13 @@ namespace StageProject_RaceCore.Controllers
                     .ThenBy(c => c.FirstName)
                     .ToListAsync();
 
-                return View(new TeamIndexViewModel
+                var model = new TeamIndexViewModel
                 {
                     Teams = teams,
                     AvailableCyclists = availableCyclists
-                });
+                };
+
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -86,7 +87,10 @@ namespace StageProject_RaceCore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCyclistToTeam(int teamId, int cyclistId, bool isActive)
+        public async Task<IActionResult> AddCyclistToTeam(
+            int teamId,
+            int cyclistId,
+            bool isActive)
         {
             try
             {

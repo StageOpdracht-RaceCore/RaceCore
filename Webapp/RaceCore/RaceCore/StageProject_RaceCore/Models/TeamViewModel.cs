@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace StageProject_RaceCore.Models
 {
@@ -12,40 +13,42 @@ namespace StageProject_RaceCore.Models
     public class TeamViewModel
     {
         public const int TunicPoints = 10;
+
         private const string DefaultTeamColor = "#6b7280";
 
-        private static readonly Dictionary<string, string> BrandColorsByTag = new(StringComparer.OrdinalIgnoreCase)
-        {
-            ["ADC"] = "#00a7e1",
-            ["ARK"] = "#00a651",
-            ["AST"] = "#00a3e0",
-            ["BOH"] = "#56b947",
-            ["COF"] = "#e11d48",
-            ["DAT"] = "#2563eb",
-            ["DQT"] = "#0054a6",
-            ["DSM"] = "#ff6f00",
-            ["IGD"] = "#b91c1c",
-            ["INS"] = "#b91c1c",
-            ["IPT"] = "#2563eb",
-            ["IWA"] = "#f59e0b",
-            ["JAY"] = "#2563eb",
-            ["LOT"] = "#d61f45",
-            ["LTK"] = "#d62d20",
-            ["MOV"] = "#0047ab",
-            ["Q36"] = "#334155",
-            ["RBH"] = "#1e3a8a",
-            ["SOQ"] = "#0054a6",
-            ["TBV"] = "#c81e1e",
-            ["TDE"] = "#69be28",
-            ["TDT"] = "#69be28",
-            ["TFS"] = "#d62d20",
-            ["TJV"] = "#facc15",
-            ["TUD"] = "#8b1e2d",
-            ["UAE"] = "#c81e1e",
-            ["UXM"] = "#d61f45",
-            ["UXT"] = "#d61f45",
-            ["VIS"] = "#facc15"
-        };
+        private static readonly Dictionary<string, string> BrandColorsByTag =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["ADC"] = "#00a7e1",
+                ["ARK"] = "#00a651",
+                ["AST"] = "#00a3e0",
+                ["BOH"] = "#56b947",
+                ["COF"] = "#e11d48",
+                ["DAT"] = "#2563eb",
+                ["DQT"] = "#0054a6",
+                ["DSM"] = "#ff6f00",
+                ["IGD"] = "#b91c1c",
+                ["INS"] = "#b91c1c",
+                ["IPT"] = "#2563eb",
+                ["IWA"] = "#f59e0b",
+                ["JAY"] = "#2563eb",
+                ["LOT"] = "#d61f45",
+                ["LTK"] = "#d62d20",
+                ["MOV"] = "#0047ab",
+                ["Q36"] = "#334155",
+                ["RBH"] = "#1e3a8a",
+                ["SOQ"] = "#0054a6",
+                ["TBV"] = "#c81e1e",
+                ["TDE"] = "#69be28",
+                ["TDT"] = "#69be28",
+                ["TFS"] = "#d62d20",
+                ["TJV"] = "#facc15",
+                ["TUD"] = "#8b1e2d",
+                ["UAE"] = "#c81e1e",
+                ["UXM"] = "#d61f45",
+                ["UXT"] = "#d61f45",
+                ["VIS"] = "#facc15"
+            };
 
         private static readonly (string Fragment, string Color)[] BrandColorsByName =
         {
@@ -79,19 +82,27 @@ namespace StageProject_RaceCore.Models
         };
 
         public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
+
         public string Tag { get; set; } = string.Empty;
+
         public string Color { get; set; } = DefaultTeamColor;
 
         public int ActiveCyclistsCount { get; set; }
+
         public int BenchCyclistsCount { get; set; }
 
         public int TeamPoints => ActiveCyclistsCount * TunicPoints;
+
         public string ColorSoft => ToRgba(Color, 0.14);
+
         public string ColorSoftBorder => ToRgba(Color, 0.3);
+
         public string ColorContrast => GetReadableTextColor(Color);
 
         public List<CyclistSimple> ActiveCyclists { get; set; } = new();
+
         public List<CyclistSimple> BenchCyclists { get; set; } = new();
 
         public static string ResolveBrandColor(string? tag, string? name)
@@ -105,16 +116,20 @@ namespace StageProject_RaceCore.Models
                 }
             }
 
-            var normalizedName = (name ?? string.Empty).Trim();
-            foreach (var brandColor in BrandColorsByName)
+            var normalizedName = name?.Trim() ?? string.Empty;
+
+            foreach (var (fragment, color) in BrandColorsByName)
             {
-                if (normalizedName.Contains(brandColor.Fragment, StringComparison.OrdinalIgnoreCase))
+                if (normalizedName.Contains(fragment, StringComparison.OrdinalIgnoreCase))
                 {
-                    return brandColor.Color;
+                    return color;
                 }
             }
 
-            var fallbackKey = string.IsNullOrWhiteSpace(tag) ? normalizedName : tag!;
+            var fallbackKey = string.IsNullOrWhiteSpace(tag)
+                ? normalizedName
+                : tag.Trim();
+
             return BuildFallbackColor(fallbackKey);
         }
 
@@ -126,6 +141,7 @@ namespace StageProject_RaceCore.Models
             }
 
             uint hash = 2166136261;
+
             foreach (var character in key.ToUpperInvariant())
             {
                 hash ^= character;
@@ -164,12 +180,16 @@ namespace StageProject_RaceCore.Models
         private static double ToLinear(int channel)
         {
             var value = channel / 255d;
+
             return value <= 0.03928
                 ? value / 12.92
                 : Math.Pow((value + 0.055) / 1.055, 2.4);
         }
 
-        private static string HslToHex(double hue, double saturationPercent, double lightnessPercent)
+        private static string HslToHex(
+            double hue,
+            double saturationPercent,
+            double lightnessPercent)
         {
             var saturation = saturationPercent / 100d;
             var lightness = lightnessPercent / 100d;
@@ -221,7 +241,11 @@ namespace StageProject_RaceCore.Models
             return $"#{red:X2}{green:X2}{blue:X2}";
         }
 
-        private static bool TryParseHexColor(string? color, out int red, out int green, out int blue)
+        private static bool TryParseHexColor(
+            string? color,
+            out int red,
+            out int green,
+            out int blue)
         {
             red = 0;
             green = 0;
@@ -233,6 +257,7 @@ namespace StageProject_RaceCore.Models
             }
 
             var value = color.Trim();
+
             if (value.StartsWith("#", StringComparison.Ordinal))
             {
                 value = value[1..];
@@ -240,7 +265,13 @@ namespace StageProject_RaceCore.Models
 
             if (value.Length == 3)
             {
-                value = string.Concat(value[0], value[0], value[1], value[1], value[2], value[2]);
+                value = string.Concat(
+                    value[0],
+                    value[0],
+                    value[1],
+                    value[1],
+                    value[2],
+                    value[2]);
             }
 
             if (value.Length != 6)
@@ -248,25 +279,40 @@ namespace StageProject_RaceCore.Models
                 return false;
             }
 
-            if (!int.TryParse(value[..2], System.Globalization.NumberStyles.HexNumber, null, out red))
+            if (!int.TryParse(
+                    value[..2],
+                    NumberStyles.HexNumber,
+                    CultureInfo.InvariantCulture,
+                    out red))
             {
                 return false;
             }
 
-            if (!int.TryParse(value.Substring(2, 2), System.Globalization.NumberStyles.HexNumber, null, out green))
+            if (!int.TryParse(
+                    value.Substring(2, 2),
+                    NumberStyles.HexNumber,
+                    CultureInfo.InvariantCulture,
+                    out green))
             {
                 return false;
             }
 
-            return int.TryParse(value.Substring(4, 2), System.Globalization.NumberStyles.HexNumber, null, out blue);
+            return int.TryParse(
+                value.Substring(4, 2),
+                NumberStyles.HexNumber,
+                CultureInfo.InvariantCulture,
+                out blue);
         }
     }
 
     public class CyclistSimple
     {
         public int Id { get; set; }
+
         public string FirstName { get; set; } = string.Empty;
+
         public string LastName { get; set; } = string.Empty;
+
         public bool IsActive { get; set; }
     }
 }

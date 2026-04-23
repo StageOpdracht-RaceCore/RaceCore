@@ -7,11 +7,17 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     var teams = (Model?.Teams ?? Enumerable.Empty<TeamViewModel>())
-        .OrderByDescending(t => t.ActiveCyclistsCount + t.BenchCyclistsCount)
+        .OrderByDescending(team => team.ActiveCyclistsCount + team.BenchCyclistsCount)
         .ToList();
 
     var availableCyclists = (Model?.AvailableCyclists ?? Enumerable.Empty<Cyclist>())
         .ToList();
+
+    string GetTeamStyle(TeamViewModel team) =>
+        $"--team-color: {team.Color}; " +
+        $"--team-color-soft: {team.ColorSoft}; " +
+        $"--team-color-soft-border: {team.ColorSoftBorder}; " +
+        $"--team-color-contrast: {team.ColorContrast};";
 }
 
 <link rel="stylesheet" href="~/css/Team.css" />
@@ -49,11 +55,13 @@ else
     <div class="teams-grid teams-grid-wide-gap" id="teamsGrid">
         @foreach (var team in teams)
         {
+            var totalCyclists = team.ActiveCyclistsCount + team.BenchCyclistsCount;
+
             <div
                 class="team-card collapsed"
                 data-team-id="@team.Id"
                 data-team-name="@team.Name.ToLower()"
-                style="--team-color: @team.Color; --team-color-soft: @team.ColorSoft; --team-color-soft-border: @team.ColorSoftBorder; --team-color-contrast: @team.ColorContrast;">
+                style="@GetTeamStyle(team)">
                 <div class="team-header">
                     <div class="team-meta">
                         <span class="swatch"></span>
@@ -65,7 +73,7 @@ else
                             </div>
 
                             <div class="team-cyclist-count">
-                                @(team.ActiveCyclistsCount + team.BenchCyclistsCount) cyclists
+                                @totalCyclists cyclists
                             </div>
                         </div>
                     </div>
@@ -112,7 +120,9 @@ else
                                     <option value="">Select cyclist</option>
                                     @foreach (var cyclist in availableCyclists)
                                     {
-                                        <option value="@cyclist.Id">@cyclist.FirstName @cyclist.LastName</option>
+                                        <option value="@cyclist.Id">
+                                            @cyclist.FirstName @cyclist.LastName
+                                        </option>
                                     }
                                 </select>
 
@@ -129,7 +139,9 @@ else
                         }
                         else
                         {
-                            <div class="empty team-management-empty">No unassigned cyclists available</div>
+                            <div class="empty team-management-empty">
+                                No unassigned cyclists available
+                            </div>
                         }
                     </div>
 
@@ -142,10 +154,10 @@ else
                                 <ul class="cyclist-list">
                                     @foreach (var cyclist in team.ActiveCyclists)
                                     {
-                                        <li data-cyclist-name="@($"{cyclist.FirstName} {cyclist.LastName}".ToLower())">
-                                            <span class="cyclist-name-text">
-                                                @cyclist.FirstName @cyclist.LastName
-                                            </span>
+                                        var cyclistFullName = $"{cyclist.FirstName} {cyclist.LastName}";
+
+                                        <li data-cyclist-name="@cyclistFullName.ToLower()">
+                                            <span class="cyclist-name-text">@cyclistFullName</span>
 
                                             <div class="cyclist-actions">
                                                 <form
@@ -187,10 +199,10 @@ else
                                 <ul class="cyclist-list">
                                     @foreach (var cyclist in team.BenchCyclists)
                                     {
-                                        <li data-cyclist-name="@($"{cyclist.FirstName} {cyclist.LastName}".ToLower())">
-                                            <span class="cyclist-name-text">
-                                                @cyclist.FirstName @cyclist.LastName
-                                            </span>
+                                        var cyclistFullName = $"{cyclist.FirstName} {cyclist.LastName}";
+
+                                        <li data-cyclist-name="@cyclistFullName.ToLower()">
+                                            <span class="cyclist-name-text">@cyclistFullName</span>
 
                                             <div class="cyclist-actions">
                                                 <form
@@ -235,6 +247,7 @@ else
         (function () {
             var STORAGE_KEY = "teamsCollapseState";
             var TEAM_CARD_SELECTOR = ".team-card[data-team-id]";
+            var SEARCH_HIDDEN_CLASS = "team-card-search-hidden";
 
             function getTeamCards() {
                 return document.querySelectorAll(TEAM_CARD_SELECTOR);
@@ -279,6 +292,20 @@ else
                 writeState(state);
             }
 
+            function setCardExpanded(card, isExpanded) {
+                card.classList.toggle("collapsed", !isExpanded);
+
+                var button = card.querySelector(".collapse-toggle");
+                if (button) {
+                    button.setAttribute("aria-expanded", String(isExpanded));
+                }
+            }
+
+            function toggleCardExpanded(card) {
+                setCardExpanded(card, card.classList.contains("collapsed"));
+                saveCardState(card);
+            }
+
             function restoreAll() {
                 var state = readState();
 
@@ -288,77 +315,24 @@ else
                         return;
                     }
 
-                    var collapsed = Object.prototype.hasOwnProperty.call(state, id)
+                    var isCollapsed = Object.prototype.hasOwnProperty.call(state, id)
                         ? state[id]
                         : true;
 
-                    card.classList.toggle("collapsed", collapsed);
-
-                    var btn = card.querySelector(".collapse-toggle");
-                    if (btn) {
-                        btn.setAttribute("aria-expanded", String(!collapsed));
-                    }
+                    setCardExpanded(card, !isCollapsed);
                 });
-            }
-
-            restoreAll();
-
-            document.addEventListener("click", function (e) {
-                var toggleBtn = e.target.closest(".collapse-toggle");
-                if (toggleBtn) {
-                    var toggleCard = toggleBtn.closest(".team-card");
-                    if (!toggleCard) {
-                        return;
-                    }
-
-                    var isCollapsed = toggleCard.classList.toggle("collapsed");
-                    toggleBtn.setAttribute("aria-expanded", String(!isCollapsed));
-                    saveCardState(toggleCard);
-                    return;
-                }
-
-                var header = e.target.closest(".team-header");
-                if (header && !e.target.closest("button, a, form")) {
-                    var headerCard = header.closest(".team-card");
-                    if (!headerCard) {
-                        return;
-                    }
-
-                    var collapsed = headerCard.classList.toggle("collapsed");
-                    var btn = headerCard.querySelector(".collapse-toggle");
-
-                    if (btn) {
-                        btn.setAttribute("aria-expanded", String(!collapsed));
-                    }
-
-                    saveCardState(headerCard);
-                }
-            });
-
-            document.addEventListener(
-                "click",
-                function (e) {
-                    if (!e.target.closest(".bench-btn, .activate-btn, .remove-btn, .add-cyclist-btn")) {
-                        return;
-                    }
-
-                    persistAllCardStates();
-                },
-                true
-            );
-
-            var searchInput = document.getElementById("globalSearchInput");
-            var clearBtn = document.getElementById("globalSearchClear");
-            var countEl = document.getElementById("globalSearchCount");
-
-            if (!searchInput) {
-                return;
             }
 
             function removeDynamicEmpties() {
-                document.querySelectorAll(".search-empty").forEach(function (el) {
-                    el.remove();
+                document.querySelectorAll(".search-empty").forEach(function (element) {
+                    element.remove();
                 });
+            }
+
+            function setCardVisibility(card, isVisible) {
+                card.classList.toggle(SEARCH_HIDDEN_CLASS, !isVisible);
+                card.hidden = !isVisible;
+                card.setAttribute("aria-hidden", String(!isVisible));
             }
 
             function expandCard(card) {
@@ -366,13 +340,7 @@ else
                     return;
                 }
 
-                card.classList.remove("collapsed");
-
-                var btn = card.querySelector(".collapse-toggle");
-                if (btn) {
-                    btn.setAttribute("aria-expanded", "true");
-                }
-
+                setCardExpanded(card, true);
                 saveCardState(card);
             }
 
@@ -389,11 +357,11 @@ else
                     );
 
                     if (query === "") {
-                        items.forEach(function (li) {
-                            li.hidden = false;
+                        items.forEach(function (item) {
+                            item.hidden = false;
                         });
 
-                        card.hidden = false;
+                        setCardVisibility(card, true);
                         totalVisible += items.length;
                         return;
                     }
@@ -401,61 +369,113 @@ else
                     var teamMatches = teamName.includes(query);
                     var cyclistMatches = 0;
 
-                    items.forEach(function (li) {
-                        var match = (li.dataset.cyclistName || "").includes(query);
-                        li.hidden = !match;
+                    items.forEach(function (item) {
+                        var isMatch = (item.dataset.cyclistName || "").includes(query);
+                        item.hidden = !isMatch;
 
-                        if (match) {
+                        if (isMatch) {
                             cyclistMatches++;
                         }
                     });
 
                     if (teamMatches) {
-                        card.hidden = false;
+                        setCardVisibility(card, true);
 
-                        items.forEach(function (li) {
-                            li.hidden = false;
+                        items.forEach(function (item) {
+                            item.hidden = false;
                         });
 
                         totalVisible += items.length;
                         expandCard(card);
-                    } else if (cyclistMatches > 0) {
-                        card.hidden = false;
+                        return;
+                    }
+
+                    if (cyclistMatches > 0) {
+                        setCardVisibility(card, true);
                         totalVisible += cyclistMatches;
                         expandCard(card);
 
-                        card.querySelectorAll(".column").forEach(function (col) {
-                            var list = col.querySelector(".cyclist-list");
+                        card.querySelectorAll(".column").forEach(function (column) {
+                            var list = column.querySelector(".cyclist-list");
                             if (!list) {
                                 return;
                             }
 
-                            var allHidden = Array.from(list.querySelectorAll("li")).every(function (li) {
-                                return li.hidden;
-                            });
+                            var allHidden = Array.from(list.querySelectorAll("li")).every(
+                                function (item) {
+                                    return item.hidden;
+                                }
+                            );
 
-                            if (allHidden) {
-                                var msg = document.createElement("div");
-                                msg.className = "empty search-empty";
-                                msg.textContent = "No matches";
-                                col.appendChild(msg);
+                            if (!allHidden) {
+                                return;
                             }
+
+                            var message = document.createElement("div");
+                            message.className = "empty search-empty";
+                            message.textContent = "No matches";
+                            column.appendChild(message);
                         });
-                    } else {
-                        card.hidden = true;
+
+                        return;
                     }
+
+                    setCardVisibility(card, false);
                 });
 
                 if (query === "") {
                     clearBtn.hidden = true;
                     countEl.textContent = "";
-                } else {
-                    clearBtn.hidden = false;
-                    countEl.textContent =
-                        totalVisible > 0
-                            ? totalVisible + " cyclist" + (totalVisible !== 1 ? "s" : "") + " found"
-                            : "No results";
+                    return;
                 }
+
+                clearBtn.hidden = false;
+                countEl.textContent =
+                    totalVisible > 0
+                        ? totalVisible + " cyclist" + (totalVisible !== 1 ? "s" : "") + " found"
+                        : "No results";
+            }
+
+            restoreAll();
+
+            document.addEventListener("click", function (event) {
+                var toggleButton = event.target.closest(".collapse-toggle");
+                if (toggleButton) {
+                    var toggleCard = toggleButton.closest(".team-card");
+                    if (toggleCard) {
+                        toggleCardExpanded(toggleCard);
+                    }
+
+                    return;
+                }
+
+                var header = event.target.closest(".team-header");
+                if (header && !event.target.closest("button, a, form")) {
+                    var headerCard = header.closest(".team-card");
+                    if (headerCard) {
+                        toggleCardExpanded(headerCard);
+                    }
+                }
+            });
+
+            document.addEventListener(
+                "click",
+                function (event) {
+                    if (!event.target.closest(".bench-btn, .activate-btn, .remove-btn, .add-cyclist-btn")) {
+                        return;
+                    }
+
+                    persistAllCardStates();
+                },
+                true
+            );
+
+            var searchInput = document.getElementById("globalSearchInput");
+            var clearBtn = document.getElementById("globalSearchClear");
+            var countEl = document.getElementById("globalSearchCount");
+
+            if (!searchInput) {
+                return;
             }
 
             searchInput.addEventListener("input", function () {

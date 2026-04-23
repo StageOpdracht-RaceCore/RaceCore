@@ -68,7 +68,10 @@
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-md);
     outline: none;
-    transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        background 150ms ease;
 }
 
 .global-search-bar input[type="text"]:focus {
@@ -89,7 +92,9 @@
     background: transparent;
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-md);
-    transition: background 150ms ease, color 150ms ease;
+    transition:
+        background 150ms ease,
+        color 150ms ease;
 }
 
 #globalSearchClear:hover {
@@ -131,6 +136,7 @@
     --team-color-soft: rgba(107, 114, 128, 0.14);
     --team-color-soft-border: rgba(107, 114, 128, 0.3);
     --team-color-contrast: #ffffff;
+
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -138,11 +144,17 @@
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-lg);
     box-shadow: var(--rc-shadow-sm);
-    transition: box-shadow 200ms ease, border-color 200ms ease;
+    transition:
+        box-shadow 200ms ease,
+        border-color 200ms ease;
 }
 
 .team-card:hover {
     box-shadow: var(--rc-shadow);
+}
+
+.team-card.team-card-search-hidden {
+    display: none !important;
 }
 
 .team-card.collapsed {
@@ -152,6 +164,12 @@
 .team-card:not(.collapsed) {
     max-height: 520px;
     border-top: 4px solid var(--team-color);
+    background: linear-gradient(
+        90deg,
+        var(--team-color-soft) 0%,
+        rgba(255, 255, 255, 0.96) 32%,
+        var(--rc-surface) 60%
+    );
 }
 
 /* Header */
@@ -163,11 +181,21 @@
     padding: 16px 20px;
     cursor: pointer;
     user-select: none;
-    background: linear-gradient(90deg, var(--team-color-soft) 0%, rgba(255, 255, 255, 0) 58%);
+    background: linear-gradient(
+        90deg,
+        var(--team-color-soft) 0%,
+        rgba(255, 255, 255, 0) 58%
+    );
 }
 
 .team-header:hover {
-    background: linear-gradient(90deg, var(--team-color-soft) 0%, rgba(255, 255, 255, 0) 58%), #fafafa;
+    background:
+        linear-gradient(
+            90deg,
+            var(--team-color-soft) 0%,
+            rgba(255, 255, 255, 0) 58%
+        ),
+        #fafafa;
 }
 
 .team-meta {
@@ -288,6 +316,7 @@
     min-height: 0;
     overflow-y: auto;
     padding: 0 20px 16px;
+    background: transparent;
     border-top: 1px solid var(--rc-border-soft);
 }
 
@@ -333,7 +362,9 @@
     border: 1px solid var(--rc-border);
     border-radius: var(--rc-radius-md);
     outline: none;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
 }
 
 .add-cyclist-select {
@@ -442,7 +473,10 @@
     white-space: nowrap;
     cursor: pointer;
     border-radius: 20px;
-    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease;
 }
 
 .add-cyclist-btn {
@@ -455,7 +489,9 @@
     background: var(--rc-blue);
     border: 1px solid var(--rc-blue);
     border-radius: 20px;
-    transition: background 150ms ease, border-color 150ms ease;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease;
 }
 
 .add-cyclist-btn:hover {
