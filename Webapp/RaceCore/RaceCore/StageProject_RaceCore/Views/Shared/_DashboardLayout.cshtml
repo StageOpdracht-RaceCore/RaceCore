@@ -46,6 +46,11 @@
             </header>
 
             <div class="content-window">
+                @if (TempData["DatabaseError"] != null)
+                {
+                    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:16px;">@TempData["DatabaseError"]</div>
+                }
+
                 @RenderBody()
             </div>
         </main>
