@@ -3,61 +3,183 @@
 @{
     ViewData["Title"] = "New Game";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    int selectedPlayersCount = Model.AvailablePlayers.Count(p => p.IsSelected);
 }
 
-<div class="player-page">
-    <div class="player-header-card">
-        <div>
-            <p class="player-page-kicker">RaceCore Game Setup</p>
-            <h1 class="player-page-title">Start New Game</h1>
-            <p class="player-page-subtitle">
-                Maak een nieuwe wieler fantasy game, voeg spelers toe en start direct de snake draft.
-            </p>
-        </div>
-    </div>
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
+<div class="player-page">
     @if (TempData["Error"] != null)
     {
         <div class="player-alert player-alert-danger">@TempData["Error"]</div>
     }
 
-    <div class="player-form-card">
-        <form asp-action="New" method="post">
-            @Html.AntiForgeryToken()
+    @if (TempData["Success"] != null)
+    {
+        <div class="player-alert player-alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Game Setup</p>
+            <h1 class="player-page-title">Start New Game</h1>
+            <p class="player-page-subtitle">
+                Kies een bestaande race en selecteer de spelers die meedoen.
+                Daarna wordt automatisch een fair snake draft gemaakt.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            <a asp-controller="Race" asp-action="Index" class="player-btn player-btn-light">Races beheren</a>
+            <a asp-controller="Player" asp-action="Index" class="player-btn player-btn-light">Players beheren</a>
+        </div>
+    </div>
+
+    <div class="player-stats-grid">
+        <div class="player-stat-card">
+            <span class="player-stat-label">Beschikbare races</span>
+            <strong class="player-stat-value">@Model.AvailableRaces.Count</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Spelers</span>
+            <strong class="player-stat-value">@Model.AvailablePlayers.Count</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Geselecteerd</span>
+            <strong class="player-stat-value">@selectedPlayersCount</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Actieve renners</span>
+            <strong class="player-stat-value">@Model.TotalCyclists</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Ritten</span>
+            <strong class="player-stat-value">@Model.TotalStages</strong>
+        </div>
+    </div>
+
+    <form asp-action="New" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="player-form-card" style="max-width:none;">
+            <div class="player-form-header">
+                <h1>Game instellingen</h1>
+                <p>Kies hier uit bestaande data. Je hoeft niets opnieuw te typen.</p>
+            </div>
 
             <div class="player-form-grid">
                 <div class="player-form-group">
-                    <label asp-for="RaceName">Race naam</label>
-                    <input asp-for="RaceName" class="player-form-input" />
-                    <span asp-validation-for="RaceName" class="text-danger"></span>
+                    <label asp-for="RaceId">Race</label>
+                    <select asp-for="RaceId" asp-items="Model.AvailableRaces" class="player-form-input">
+                        <option value="">-- Kies een race --</option>
+                    </select>
+                    <span asp-validation-for="RaceId" class="text-danger"></span>
                 </div>
 
-                <div class="player-form-group">
-                    <label asp-for="Year">Jaar</label>
-                    <input asp-for="Year" class="player-form-input" type="number" />
-                </div>
+                @if (!Model.AvailableRaces.Any())
+                {
+                    <div class="player-alert player-alert-danger">
+                        Er zijn nog geen races. Maak eerst een race aan via de Race pagina.
+                    </div>
+                }
 
-                <div class="player-form-group">
-                    <label asp-for="NumberOfStages">Aantal ritten</label>
-                    <input asp-for="NumberOfStages" class="player-form-input" type="number" min="1" max="30" />
-                </div>
+                @if (!Model.AvailablePlayers.Any())
+                {
+                    <div class="player-alert player-alert-danger">
+                        Er zijn nog geen players. Maak eerst spelers aan via de Players pagina.
+                    </div>
+                }
+            </div>
+        </div>
 
-                <div class="player-form-group">
-                    <label asp-for="PlayerNamesRaw">Spelers</label>
-                    <textarea asp-for="PlayerNamesRaw"
-                              class="player-form-input"
-                              style="height:180px;padding-top:14px;"
-                              placeholder="Daniel&#10;Jason&#10;Sander&#10;Lars"></textarea>
-                    <span asp-validation-for="PlayerNamesRaw" class="text-danger"></span>
-                    <p style="color:#6b7280;margin-top:8px;">
-                        Zet elke speler op een nieuwe lijn. Je mag zoveel spelers toevoegen als je wil.
+        <div class="player-table-card" style="margin-top:20px;">
+            <div class="player-form-header" style="margin-bottom:18px;">
+                <h1>Spelers kiezen</h1>
+                <p>Selecteer de players die meedoen aan deze game. De draftvolgorde volgt hun draft positie.</p>
+            </div>
+
+            <div class="player-table-responsive">
+                <table class="player-table">
+                    <thead>
+                        <tr>
+                            <th>Meedoen</th>
+                            <th>Speler</th>
+                            <th>Draft positie</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.AvailablePlayers.Any())
+                        {
+                            foreach (var player in Model.AvailablePlayers)
+                            {
+                                <tr>
+                                    <td style="width:110px;">
+                                        <input type="checkbox"
+                                               name="SelectedPlayerIds"
+                                               value="@player.Id"
+                                        @(player.IsSelected ? "checked" : "")
+                                               style="width:20px;height:20px;" />
+                                    </td>
+
+                                    <td>
+                                        <div class="player-name-cell">
+                                            <div class="player-avatar">
+                                                @(string.IsNullOrWhiteSpace(player.Name) ? "?" : player.Name.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div>
+                                                <div class="player-name">@player.Name</div>
+                                                <div class="player-meta">Player ID: @player.Id</div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="player-badge player-badge-draft">#@player.PositionInDraft</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <div class="player-empty-state">
+                                        <h3>Geen spelers gevonden.</h3>
+                                        <p>Voeg eerst spelers toe voordat je een game start.</p>
+                                        <a asp-controller="Player" asp-action="Create" class="player-btn player-btn-primary">
+                                            Nieuwe speler toevoegen
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <span asp-validation-for="SelectedPlayerIds" class="text-danger"></span>
+        </div>
+
+        <div class="player-toolbar-card" style="margin-top:20px;">
+            <div class="player-search-form">
+                <div>
+                    <strong>Wat gebeurt er bij Start Game?</strong>
+                    <p style="margin:6px 0 0;color:#6b7280;">
+                        Voor de gekozen race worden oude draft picks, scores en resultaten gewist.
+                        Daarna wordt automatisch een nieuwe fair snake draft gemaakt met de geselecteerde spelers.
                     </p>
                 </div>
 
-                <div class="player-form-actions">
+                <div class="player-toolbar-actions">
                     <button type="submit"
                             class="player-btn player-btn-primary"
-                            onclick="return confirm('Nieuwe game starten? Oude game-data wordt verwijderd.');">
+                            onclick="return confirm('Nieuwe game starten voor deze race? Oude draft en scores van deze race worden verwijderd.');">
                         Start Game
                     </button>
 
@@ -66,8 +188,8 @@
                     </a>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {

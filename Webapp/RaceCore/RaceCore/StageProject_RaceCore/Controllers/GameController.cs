@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
@@ -14,138 +15,227 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public IActionResult New()
+        public async Task<IActionResult> New()
         {
-            return View(new NewGameViewModel());
+            var model = await BuildNewGameViewModelSafe();
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewGameViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var playerNames = model.PlayerNamesRaw
-                .Split(new[] { "\r\n", "\n", ",", ";" }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+            model.SelectedPlayerIds = model.SelectedPlayerIds
+                .Distinct()
                 .ToList();
 
-            if (playerNames.Count < 2)
+            if (model.RaceId <= 0)
             {
-                ModelState.AddModelError(nameof(model.PlayerNamesRaw), "Voeg minstens 2 spelers toe.");
-                return View(model);
+                ModelState.AddModelError(nameof(model.RaceId), "Kies een race.");
+            }
+
+            if (model.SelectedPlayerIds.Count < 2)
+            {
+                ModelState.AddModelError(nameof(model.SelectedPlayerIds), "Kies minstens 2 spelers.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
             }
 
             try
             {
-                using var transaction = await _context.Database.BeginTransactionAsync();
+                var race = await _context.Races
+                    .FirstOrDefaultAsync(r => r.Id == model.RaceId);
 
-                _context.PlayerPoints.RemoveRange(_context.PlayerPoints);
-                _context.PlayerSelections.RemoveRange(_context.PlayerSelections);
-                _context.DraftTurns.RemoveRange(_context.DraftTurns);
-                _context.Jerseys.RemoveRange(_context.Jerseys);
-                _context.StageResults.RemoveRange(_context.StageResults);
-                _context.Stages.RemoveRange(_context.Stages);
-                _context.RaceEntries.RemoveRange(_context.RaceEntries);
-                _context.Races.RemoveRange(_context.Races);
-                _context.Players.RemoveRange(_context.Players);
-
-                await _context.SaveChangesAsync();
-
-                var race = new Race
+                if (race == null)
                 {
-                    Name = model.RaceName,
-                    Year = model.Year,
-                    StartDate = DateTime.Today,
-                    EndDate = DateTime.Today.AddDays(model.NumberOfStages - 1)
-                };
-
-                _context.Races.Add(race);
-                await _context.SaveChangesAsync();
-
-                for (int i = 1; i <= model.NumberOfStages; i++)
-                {
-                    _context.Stages.Add(new Stage
-                    {
-                        RaceId = race.Id,
-                        StageNumber = i,
-                        Name = $"Rit {i}",
-                        Date = DateTime.Today.AddDays(i - 1)
-                    });
+                    TempData["Error"] = "Race niet gevonden.";
+                    return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
                 }
-
-                int position = 1;
-
-                foreach (var name in playerNames)
-                {
-                    _context.Players.Add(new Player
-                    {
-                        Name = name,
-                        PositionInDraft = position,
-                        TotalPoints = 0
-                    });
-
-                    position++;
-                }
-
-                await _context.SaveChangesAsync();
 
                 var players = await _context.Players
+                    .Where(p => model.SelectedPlayerIds.Contains(p.Id))
                     .OrderBy(p => p.PositionInDraft)
                     .ThenBy(p => p.Id)
                     .ToListAsync();
 
-                const int totalRounds = 15;
-                var draftTurns = new List<DraftTurn>();
-                int turnNumber = 1;
-                int playerCount = players.Count;
-
-                for (int round = 1; round <= totalRounds; round++)
+                if (players.Count < 2)
                 {
-                    int pairIndex = (round - 1) / 2;
-                    int startIndex = pairIndex % playerCount;
-
-                    var roundPlayers = players
-                        .Skip(startIndex)
-                        .Concat(players.Take(startIndex))
-                        .ToList();
-
-                    if (round % 2 == 0)
-                    {
-                        roundPlayers.Reverse();
-                    }
-
-                    foreach (var player in roundPlayers)
-                    {
-                        draftTurns.Add(new DraftTurn
-                        {
-                            RaceId = race.Id,
-                            PlayerId = player.Id,
-                            TurnNumber = turnNumber
-                        });
-
-                        turnNumber++;
-                    }
+                    TempData["Error"] = "Kies minstens 2 geldige spelers.";
+                    return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
                 }
+
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var stageIds = await _context.Stages
+                    .Where(s => s.RaceId == model.RaceId)
+                    .Select(s => s.Id)
+                    .ToListAsync();
+
+                var oldDraftTurns = await _context.DraftTurns
+                    .Where(d => d.RaceId == model.RaceId)
+                    .ToListAsync();
+
+                var oldSelections = await _context.PlayerSelections
+                    .Where(ps => ps.RaceId == model.RaceId)
+                    .ToListAsync();
+
+                var oldPlayerPoints = await _context.PlayerPoints
+                    .Where(pp => pp.RaceId == model.RaceId)
+                    .ToListAsync();
+
+                var oldStageResults = await _context.StageResults
+                    .Where(sr => stageIds.Contains(sr.StageId))
+                    .ToListAsync();
+
+                var oldJerseys = await _context.Jerseys
+                    .Where(j => stageIds.Contains(j.StageId))
+                    .ToListAsync();
+
+                _context.DraftTurns.RemoveRange(oldDraftTurns);
+                _context.PlayerSelections.RemoveRange(oldSelections);
+                _context.PlayerPoints.RemoveRange(oldPlayerPoints);
+                _context.StageResults.RemoveRange(oldStageResults);
+                _context.Jerseys.RemoveRange(oldJerseys);
+
+                foreach (var player in players)
+                {
+                    player.TotalPoints = 0;
+                }
+
+                await _context.SaveChangesAsync();
+
+                const int totalRounds = 15;
+                var draftTurns = GenerateFairSnakeDraft(model.RaceId, players, totalRounds);
 
                 _context.DraftTurns.AddRange(draftTurns);
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                TempData["Success"] = "Nieuwe game gestart. De snake draft is klaar.";
-                return RedirectToAction("Index", "Draft", new { raceId = race.Id });
+                TempData["Success"] = $"Nieuwe game gestart voor {race.Name} {race.Year}.";
+                return RedirectToAction("Index", "Draft", new { raceId = model.RaceId });
             }
             catch
             {
                 TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
-                return View(model);
+                return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
             }
+        }
+
+        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(int selectedRaceId = 0, List<int>? selectedPlayerIds = null)
+        {
+            try
+            {
+                return await BuildNewGameViewModel(selectedRaceId, selectedPlayerIds);
+            }
+            catch
+            {
+                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om races en spelers te laden.";
+
+                return new NewGameViewModel
+                {
+                    RaceId = selectedRaceId,
+                    SelectedPlayerIds = selectedPlayerIds ?? new List<int>(),
+                    AvailableRaces = new List<SelectListItem>(),
+                    AvailablePlayers = new List<PlayerSelectItemViewModel>(),
+                    TotalStages = 0,
+                    TotalCyclists = 0
+                };
+            }
+        }
+
+        private async Task<NewGameViewModel> BuildNewGameViewModel(int selectedRaceId = 0, List<int>? selectedPlayerIds = null)
+        {
+            selectedPlayerIds ??= new List<int>();
+
+            var races = await _context.Races
+                .Include(r => r.Stages)
+                .OrderByDescending(r => r.Year)
+                .ThenBy(r => r.Name)
+                .ToListAsync();
+
+            var players = await _context.Players
+                .OrderBy(p => p.PositionInDraft)
+                .ThenBy(p => p.Name)
+                .ToListAsync();
+
+            var selectedRace = selectedRaceId > 0
+                ? races.FirstOrDefault(r => r.Id == selectedRaceId)
+                : races.FirstOrDefault();
+
+            int raceId = selectedRace?.Id ?? 0;
+
+            if (!selectedPlayerIds.Any())
+            {
+                selectedPlayerIds = players.Select(p => p.Id).ToList();
+            }
+
+            int totalCyclists = await _context.Cyclists
+                .CountAsync(c => c.IsActive);
+
+            return new NewGameViewModel
+            {
+                RaceId = raceId,
+                SelectedPlayerIds = selectedPlayerIds,
+                TotalStages = selectedRace?.Stages.Count ?? 0,
+                TotalCyclists = totalCyclists,
+
+                AvailableRaces = races.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.Name} {r.Year} ({r.Stages.Count} ritten)",
+                    Selected = r.Id == raceId
+                }).ToList(),
+
+                AvailablePlayers = players.Select(p => new PlayerSelectItemViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    PositionInDraft = p.PositionInDraft,
+                    IsSelected = selectedPlayerIds.Contains(p.Id)
+                }).ToList()
+            };
+        }
+
+        private static List<DraftTurn> GenerateFairSnakeDraft(int raceId, List<Player> players, int totalRounds)
+        {
+            var draftTurns = new List<DraftTurn>();
+
+            int turnNumber = 1;
+            int playerCount = players.Count;
+
+            for (int round = 1; round <= totalRounds; round++)
+            {
+                int pairIndex = (round - 1) / 2;
+                int startIndex = pairIndex % playerCount;
+
+                var roundPlayers = players
+                    .Skip(startIndex)
+                    .Concat(players.Take(startIndex))
+                    .ToList();
+
+                if (round % 2 == 0)
+                {
+                    roundPlayers.Reverse();
+                }
+
+                foreach (var player in roundPlayers)
+                {
+                    draftTurns.Add(new DraftTurn
+                    {
+                        RaceId = raceId,
+                        PlayerId = player.Id,
+                        TurnNumber = turnNumber
+                    });
+
+                    turnNumber++;
+                }
+            }
+
+            return draftTurns;
         }
     }
 }
