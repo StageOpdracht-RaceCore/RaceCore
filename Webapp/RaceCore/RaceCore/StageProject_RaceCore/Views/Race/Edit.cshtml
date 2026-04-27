@@ -1,0 +1,52 @@
+@model StageProject_RaceCore.Models.Race
+
+@{
+    ViewData["Title"] = "Race Bewerken";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
+
+<div class="player-form-page">
+    <div class="player-form-card">
+        <div class="player-form-header">
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1>Race Bewerken</h1>
+            <p>Pas de details van de race aan.</p>
+        </div>
+
+        <form asp-action="Edit" method="post" class="player-form-grid">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
+            <div class="player-form-group">
+                <label asp-for="Name">Naam</label>
+                <input asp-for="Name" class="player-form-input" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="player-form-group">
+                <label asp-for="Year">Jaar</label>
+                <input asp-for="Year" class="player-form-input" type="number" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+
+            <div class="player-form-group">
+                <label asp-for="StartDate">Startdatum</label>
+                <input asp-for="StartDate" class="player-form-input" type="date" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="player-form-group">
+                <label asp-for="EndDate">Einddatum</label>
+                <input asp-for="EndDate" class="player-form-input" type="date" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+
+            <div class="player-form-actions">
+                <button type="submit" class="player-btn player-btn-primary">Opslaan</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Annuleren</a>
+            </div>
+        </form>
+    </div>
+</div>

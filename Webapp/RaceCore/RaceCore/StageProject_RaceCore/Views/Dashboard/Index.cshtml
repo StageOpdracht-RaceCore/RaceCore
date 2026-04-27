@@ -7,6 +7,12 @@
     int maxPlayerPoints = Model.PlayerRanking.Any() ? Model.PlayerRanking.Max(x => x.Points) : 1;
     int maxCyclistPoints = Model.TopCyclists.Any() ? Model.TopCyclists.Max(x => x.Points) : 1;
 }
+@if (ViewBag.DatabaseOnline == false)
+{
+    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:20px;">
+        ⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.
+    </div>
+}
 
 @functions {
     public string GetPlayerColor(string playerName)
@@ -70,8 +76,6 @@
 
 <div class="dashboard-container">
 
-    
-
     <section class="stats-grid">
         <div class="stat-card blue">
             <div class="stat-icon">👤</div>
@@ -117,7 +121,7 @@
 
             @if (Model.PlayerRanking.Any())
             {
-                <div class="ranking-list">
+                <div class="ranking-list ranking-list-scroll">
                     @foreach (var player in Model.PlayerRanking)
                     {
                         var width = Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100));
@@ -211,7 +215,6 @@
             </div>
         </div>
     </section>
-    
 
     <section class="bottom-grid">
         <div class="card">
@@ -273,9 +276,8 @@
             }
         </div>
     </section>
-    <section class="hero-section">
 
-        
+    <section class="hero-section">
         <div class="hero-side-card">
             <div class="hero-side-top">
                 <span>Draft Status</span>

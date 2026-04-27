@@ -1,6 +1,103 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model StageProject_RaceCore.ViewModels.ScoringViewModel
+
 @{
+    ViewData["Title"] = "Etappe Resultaten";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Scoring.css" asp-append-version="true" />
+
+<div class="scoring-page">
+    <form asp-action="SaveScores" method="post">
+        <input type="hidden" asp-for="StageId" />
+
+        <div class="player-header-card">
+            <div>
+                <h1 class="player-page-title">Etappe @Model.StageId Resultaten</h1>
+                <p class="player-page-subtitle">Beheer hier de uitslag en truidragers van deze rit.</p>
+            </div>
+            <button type="submit" class="player-btn-white">
+                Scores Publiceren
+            </button>
+        </div>
+
+        <datalist id="cyclistList">
+            @foreach (var item in Model.AvailableCyclists)
+            {
+                <option value="@item.Text" data-id="@item.Value"></option>
+            }
+        </datalist>
+
+        <div class="results-list">
+            @for (int i = 0; i < Model.Results.Count; i++)
+            {
+                <div class="result-item-card">
+                    <div class="pos-badge">@Model.Results[i].Position</div>
+                    <input type="hidden" asp-for="Results[i].Position" />
+
+                    <div class="px-3">
+                        @* AANPASSING: value="@Model.Results[i].CyclistName" toegevoegd zodat namen blijven staan bij herladen *@
+                        <input type="text"
+                               list="cyclistList"
+                               class="player-search-input"
+                               value="@Model.Results[i].CyclistName"
+                               placeholder="Zoek renner..."
+                               oninput="syncId(this)"
+                               autocomplete="off" />
+                        
+                        <input type="hidden" asp-for="Results[i].CyclistId" />
+                    </div>
+
+                    <div class="jersey-flex">
+                        <label title="Geel">
+                            <input type="checkbox" asp-for="Results[i].HasYellowJersey" class="d-none" />
+                            <span class="jersey-dot dot-yellow"></span>
+                        </label>
+                        <label title="Groen">
+                            <input type="checkbox" asp-for="Results[i].HasGreenJersey" class="d-none" />
+                            <span class="jersey-dot dot-green"></span>
+                        </label>
+                        <label title="Bollen">
+                            <input type="checkbox" asp-for="Results[i].HasPolkaJersey" class="d-none" />
+                            <span class="jersey-dot dot-red"></span>
+                        </label>
+                        <label title="Wit">
+                            <input type="checkbox" asp-for="Results[i].HasWhiteJersey" class="d-none" />
+                            <span class="jersey-dot dot-white"></span>
+                        </label>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // Voer syncId uit voor alle inputs bij het laden van de pagina
+        // zodat de groene randjes verschijnen bij opgeslagen renners
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.player-search-input').forEach(input => {
+                if (input.value !== "") {
+                    syncId(input);
+                }
+            });
+        });
+
+        function syncId(input) {
+            const list = document.getElementById('cyclistList');
+            const hidden = input.nextElementSibling;
+            const option = Array.from(list.options).find(o => o.value === input.value);
+            
+            if (option) {
+                hidden.value = option.getAttribute('data-id');
+                input.style.borderColor = "#10b981"; // Groen
+                input.style.backgroundColor = "#f0fdf4";
+            } else {
+                hidden.value = "";
+                input.style.borderColor = "#d1d5db"; // Grijs
+                input.style.backgroundColor = "#f9fafb";
+            }
+        }
+    </script>
 }

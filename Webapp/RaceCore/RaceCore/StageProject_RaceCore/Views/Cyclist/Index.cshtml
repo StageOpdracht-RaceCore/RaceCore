@@ -1,51 +1,79 @@
 ﻿@model List<StageProject_RaceCore.Models.Cyclist>
+@using StageProject_RaceCore.Models
 
 @{
     ViewData["Title"] = "Cyclists";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    string currentSearch = ViewBag.Search as string ?? "";
+    string currentStatus = ViewBag.Status as string ?? "";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int pageSize = ViewBag.PageSize ?? 25;
+    int cyclistCount = ViewBag.CyclistCount ?? 0;
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+
+    int startPage = Math.Max(1, currentPage - 2);
+    int endPage = Math.Min(totalPages, startPage + 4);
+
+    if (endPage - startPage < 4)
+    {
+        startPage = Math.Max(1, endPage - 4);
+    }
 }
 
 <link rel="stylesheet" href="~/css/Cyclist.css" />
 
 <div class="cyclists-page">
+
     <div class="cyclists-filter-card">
         <div class="cyclists-section-kicker">Filters</div>
         <h3 class="cyclists-filter-title">Zoek cyclists</h3>
 
-        @* Zoekbalk *@
-        <form method="get" class="cyclists-form">
+        <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclists-form">
             <div class="form-group">
                 <label for="search">Zoeken</label>
                 <input id="search"
                        type="text"
                        name="search"
                        class="cyclists-input"
-                       value="@Context.Request.Query["search"]"
+                       value="@currentSearch"
                        placeholder="Zoek op naam of team" />
             </div>
 
-            @* Active filter *@
             <div class="form-group">
-                <label for="active">Status</label>
-                <select id="active" name="active" class="cyclists-select">
-                    <option value="">Alle</option>
-                    <option value="true" selected="@(Context.Request.Query["active"] == "true")">Actief</option>
-                    <option value="false" selected="@(Context.Request.Query["active"] == "false")">Niet actief</option>
+                <label for="status">Status</label>
+                <select id="status" name="status" class="cyclists-select">
+                    <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">Alle</option>
+                    <option value="active" selected="@(currentStatus == "active")">Actief</option>
+                    <option value="inactive" selected="@(currentStatus == "inactive")">Niet actief</option>
+
+                    @foreach (var race in races)
+                    {
+                        var raceValue = $"race-{race.Id}";
+                        <option value="@raceValue" selected="@(currentStatus == raceValue)">
+                            @race.Name
+                        </option>
+                    }
                 </select>
             </div>
 
-            @* Zoeken en Reset knop *@
             <div class="form-group button-group">
                 <button type="submit" class="cyclists-btn">Zoeken</button>
             </div>
         </form>
+
         <div class="countAndReset">
             <div class="cyclists-count">
-                Aantal cyclists: @ViewBag.CyclistCount
+                Aantal cyclists: <strong>@cyclistCount</strong>
             </div>
-            <a href="@Url.Action("Index", "Cyclist")" class="cyclists-btn reset-btn">Reset</a>
+
+            <a asp-action="Index"
+                   asp-controller="Cyclist"
+                   class="cyclists-btn reset-btn">
+                Reset
+            </a>
         </div>
-        
     </div>
 
     <div class="cyclists-table-card">
@@ -64,6 +92,10 @@
                             <th>Last Name</th>
                             <th>Team</th>
                             <th>Status</th>
+                            @foreach (var race in races)
+                            {
+                                <th>@race.Name</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -72,7 +104,7 @@
                             <tr>
                                 <td class="cyclist-name">@cyclist.FirstName</td>
                                 <td class="cyclist-name">@cyclist.LastName</td>
-                                <td class="cyclist-team">@cyclist.Team?.Name</td>
+                                <td class="cyclist-team">@(cyclist.Team?.Name ?? "Geen team")</td>
                                 <td>
                                     @if (cyclist.IsActive)
                                     {
@@ -83,93 +115,81 @@
                                         <span class="status-badge status-inactive">Niet actief</span>
                                     }
                                 </td>
+
+                                @foreach (var race in races)
+                                {
+                                    bool doetMee = cyclist.RaceEntries.Any(re => re.RaceId == race.Id);
+
+                                    <td>
+                                        @if (doetMee)
+                                        {
+                                            <span class="race-badge race-yes">Ja</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="race-badge race-no">Nee</span>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
                 </table>
-                @{
-                    int currentPage = ViewBag.CurrentPage ?? 1;
-                    int totalPages = ViewBag.TotalPages ?? 1;
-
-                    int startPage = Math.Max(1, currentPage - 2);
-                    int endPage = Math.Min(totalPages, startPage + 4);
-
-                    if (endPage - startPage < 4)
-                    {
-                        startPage = Math.Max(1, endPage - 4);
-                    }
-
-                    var currentSearch = Context.Request.Query["search"].ToString();
-                    var currentActive = Context.Request.Query["active"].ToString();
-                }
 
                 <div class="pagination-container">
-
-                    @* Eerste pagina *@
                     @if (currentPage > 1)
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="1"
-                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-pageSize="@pageSize"
                                class="pagination-btn">
                             &lt;&lt; Eerste
                         </a>
-                    }
 
-                    @* Vorige *@
-                    @if (currentPage > 1)
-                    {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage - 1)"
-                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-pageSize="@pageSize"
                                class="pagination-btn">
                             &lt; Vorige
                         </a>
                     }
 
-                    @* Paginanummers (max 5) *@
                     @for (int i = startPage; i <= endPage; i++)
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@i"
-                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-pageSize="@pageSize"
                                class="pagination-btn @(i == currentPage ? "active" : "")">
                             @i
                         </a>
                     }
 
-                    @* Volgende *@
                     @if (currentPage < totalPages)
                     {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage + 1)"
-                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-pageSize="@pageSize"
                                class="pagination-btn">
                             Volgende &gt;
                         </a>
-                    }
 
-                    @* Laatste pagina *@
-                    @if (currentPage < totalPages)
-                    {
                         <a asp-action="Index"
                                asp-route-search="@currentSearch"
-                               asp-route-active="@currentActive"
+                               asp-route-status="@currentStatus"
                                asp-route-page="@totalPages"
-                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-pageSize="@pageSize"
                                class="pagination-btn">
                             Laatste &gt;&gt;
                         </a>
                     }
-
                 </div>
             </div>
         }
@@ -180,5 +200,4 @@
             </div>
         }
     </div>
-
 </div>

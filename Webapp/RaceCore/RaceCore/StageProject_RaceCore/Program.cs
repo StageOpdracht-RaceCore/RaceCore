@@ -11,25 +11,16 @@ namespace StageProject_RaceCore
 
             builder.Services.AddControllersWithViews();
 
-            var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Data", "racecore.db");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+                options.UseMySql(
+                    connectionString,
+                    new MariaDbServerVersion(new Version(10, 11, 0)) // GEEN AutoDetect!
+                )
+            );
 
             var app = builder.Build();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                db.Database.EnsureCreated();
-
-                // Eerst alles van WAL wegschrijven
-                db.Database.ExecuteSqlRaw("PRAGMA wal_checkpoint(FULL);");
-
-                // Daarna WAL uitschakelen
-                db.Database.ExecuteSqlRaw("PRAGMA journal_mode=DELETE;");
-            }
 
             if (!app.Environment.IsDevelopment())
             {
@@ -39,6 +30,7 @@ namespace StageProject_RaceCore
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             app.UseRouting();
             app.UseAuthorization();
 

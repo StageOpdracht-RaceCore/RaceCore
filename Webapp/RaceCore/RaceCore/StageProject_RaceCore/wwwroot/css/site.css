@@ -68,6 +68,17 @@ body {
     z-index: 1000;
 }
 
+/* Ensure the logo remains visible above overlays and navigation highlights */
+.sidebar-logo {
+    position: relative;
+    z-index: 1100; /* above the sidebar and overlay */
+}
+
+.sidebar-logo h2,
+.sidebar-logo p {
+    color: #ffffff !important;
+}
+
 .sidebar-logo {
     margin-bottom: 22px;
 }
@@ -310,6 +321,7 @@ body {
     display: grid;
     grid-template-columns: 1.5fr 0.9fr;
     gap: 16px;
+    align-items: start;
 }
 
 .side-column {
@@ -361,6 +373,30 @@ body {
     flex-direction: column;
     gap: 10px;
 }
+
+.ranking-list-scroll {
+    max-height: 470px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+    .ranking-list-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-track {
+        background: #edf2f7;
+        border-radius: 999px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+
+        .ranking-list-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
 
 .ranking-row {
     background: #f8fbff;
@@ -740,5 +776,10 @@ td {
     .ranking-points,
     .cyclist-points {
         margin-top: 6px;
+    }
+
+    .ranking-list-scroll {
+        max-height: 430px;
+        padding-right: 2px;
     }
 }
