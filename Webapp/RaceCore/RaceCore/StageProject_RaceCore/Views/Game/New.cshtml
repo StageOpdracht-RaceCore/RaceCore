@@ -1,0 +1,75 @@
+﻿@model StageProject_RaceCore.ViewModels.NewGameViewModel
+
+@{
+    ViewData["Title"] = "New Game";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="player-page">
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Game Setup</p>
+            <h1 class="player-page-title">Start New Game</h1>
+            <p class="player-page-subtitle">
+                Maak een nieuwe wieler fantasy game, voeg spelers toe en start direct de snake draft.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="player-alert player-alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="player-form-card">
+        <form asp-action="New" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="player-form-grid">
+                <div class="player-form-group">
+                    <label asp-for="RaceName">Race naam</label>
+                    <input asp-for="RaceName" class="player-form-input" />
+                    <span asp-validation-for="RaceName" class="text-danger"></span>
+                </div>
+
+                <div class="player-form-group">
+                    <label asp-for="Year">Jaar</label>
+                    <input asp-for="Year" class="player-form-input" type="number" />
+                </div>
+
+                <div class="player-form-group">
+                    <label asp-for="NumberOfStages">Aantal ritten</label>
+                    <input asp-for="NumberOfStages" class="player-form-input" type="number" min="1" max="30" />
+                </div>
+
+                <div class="player-form-group">
+                    <label asp-for="PlayerNamesRaw">Spelers</label>
+                    <textarea asp-for="PlayerNamesRaw"
+                              class="player-form-input"
+                              style="height:180px;padding-top:14px;"
+                              placeholder="Daniel&#10;Jason&#10;Sander&#10;Lars"></textarea>
+                    <span asp-validation-for="PlayerNamesRaw" class="text-danger"></span>
+                    <p style="color:#6b7280;margin-top:8px;">
+                        Zet elke speler op een nieuwe lijn. Je mag zoveel spelers toevoegen als je wil.
+                    </p>
+                </div>
+
+                <div class="player-form-actions">
+                    <button type="submit"
+                            class="player-btn player-btn-primary"
+                            onclick="return confirm('Nieuwe game starten? Oude game-data wordt verwijderd.');">
+                        Start Game
+                    </button>
+
+                    <a asp-controller="Dashboard" asp-action="Index" class="player-btn player-btn-light">
+                        Annuleren
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
