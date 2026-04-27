@@ -1,16 +1,33 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace StageProject_RaceCore.ViewModels
 {
     public class NewGameViewModel
     {
-        [Required]
-        public string RaceName { get; set; } = "Tour de France";
+        [Required(ErrorMessage = "Kies een race.")]
+        public int RaceId { get; set; }
 
-        public int Year { get; set; } = DateTime.Now.Year;
+        [Required(ErrorMessage = "Kies minstens 2 spelers.")]
+        public List<int> SelectedPlayerIds { get; set; } = new();
 
-        public int NumberOfStages { get; set; } = 21;
+        public List<SelectListItem> AvailableRaces { get; set; } = new();
 
-        public string PlayerNamesRaw { get; set; } = "";
+        public List<PlayerSelectItemViewModel> AvailablePlayers { get; set; } = new();
+
+        public int TotalStages { get; set; }
+
+        public int TotalCyclists { get; set; }
+    }
+
+    public class PlayerSelectItemViewModel
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = "";
+
+        public int PositionInDraft { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 }

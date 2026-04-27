@@ -16,7 +16,15 @@ namespace StageProject_RaceCore
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySql(
                     connectionString,
-                    new MariaDbServerVersion(new Version(10, 11, 0))
+                    new MariaDbServerVersion(new Version(10, 11, 0)),
+                    mySqlOptions =>
+                    {
+                        mySqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(5),
+                            errorNumbersToAdd: null
+                        );
+                    }
                 )
             );
 
@@ -32,7 +40,6 @@ namespace StageProject_RaceCore
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(
