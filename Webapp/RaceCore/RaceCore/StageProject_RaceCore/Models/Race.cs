@@ -19,5 +19,6 @@ namespace StageProject_RaceCore.Models
         public ICollection<RaceEntry> RaceEntries { get; set; } = new List<RaceEntry>();
         public ICollection<PlayerSelection> PlayerSelections { get; set; } = new List<PlayerSelection>();
         public ICollection<DraftTurn> DraftTurns { get; set; } = new List<DraftTurn>();
+        public List<PlayerPoints> PlayerPoints { get; set; } = new();
     }
 }

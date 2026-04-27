@@ -61,7 +61,12 @@ namespace StageProject_RaceCore.Controllers
                 return View(new PlayerPageViewModel
                 {
                     SearchTerm = searchTerm,
-                    Players = new List<PlayerIndexViewModel>()
+                    Players = new List<PlayerIndexViewModel>(),
+                    TotalPlayers = 0,
+                    TotalPoints = 0,
+                    TotalSelections = 0,
+                    TotalDraftTurns = 0,
+                    TotalPointRecords = 0
                 });
             }
         }
@@ -79,7 +84,12 @@ namespace StageProject_RaceCore.Controllers
                     .Include(p => p.PlayerPoints).ThenInclude(pp => pp.Cyclist)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
-                if (player == null) return RedirectToAction(nameof(Index));
+                if (player == null)
+                {
+                    TempData["Error"] = "Speler niet gevonden.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 return View(player);
             }
             catch
@@ -98,21 +108,24 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Player player)
         {
-            if (!ModelState.IsValid) return View(player);
+            if (!ModelState.IsValid)
+            {
+                return View(player);
+            }
 
             try
             {
                 _context.Players.Add(player);
                 await _context.SaveChangesAsync();
+
                 TempData["Success"] = "Speler succesvol toegevoegd.";
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
                 TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return View(player);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -120,7 +133,13 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var player = await _context.Players.FindAsync(id);
-                if (player == null) return RedirectToAction(nameof(Index));
+
+                if (player == null)
+                {
+                    TempData["Error"] = "Speler niet gevonden.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 return View(player);
             }
             catch
@@ -134,36 +153,59 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Player updatedPlayer)
         {
-            if (id != updatedPlayer.Id) return RedirectToAction(nameof(Index));
-            if (!ModelState.IsValid) return View(updatedPlayer);
+            if (id != updatedPlayer.Id)
+            {
+                TempData["Error"] = "Ongeldige speler.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(updatedPlayer);
+            }
 
             try
             {
                 var existingPlayer = await _context.Players.FindAsync(id);
-                if (existingPlayer == null) return RedirectToAction(nameof(Index));
+
+                if (existingPlayer == null)
+                {
+                    TempData["Error"] = "Speler niet gevonden.";
+                    return RedirectToAction(nameof(Index));
+                }
 
                 existingPlayer.Name = updatedPlayer.Name;
                 existingPlayer.PositionInDraft = updatedPlayer.PositionInDraft;
                 existingPlayer.TotalPoints = updatedPlayer.TotalPoints;
 
                 await _context.SaveChangesAsync();
+
                 TempData["Success"] = "Speler succesvol bijgewerkt.";
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
                 TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return View(updatedPlayer);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var player = await _context.Players.FirstOrDefaultAsync(p => p.Id == id);
-                if (player == null) return RedirectToAction(nameof(Index));
+                var player = await _context.Players
+                    .Include(p => p.Selections)
+                    .Include(p => p.DraftTurns)
+                    .Include(p => p.PlayerPoints)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (player == null)
+                {
+                    TempData["Error"] = "Speler niet gevonden.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 return View(player);
             }
             catch
@@ -180,26 +222,22 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var player = await _context.Players
-                    .Include(p => p.Selections)
-                    .Include(p => p.DraftTurns)
-                    .Include(p => p.PlayerPoints)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
-                if (player == null) return RedirectToAction(nameof(Index));
-
-                if (player.Selections.Any() || player.DraftTurns.Any() || player.PlayerPoints.Any())
+                if (player == null)
                 {
-                    TempData["Error"] = "Deze speler kan niet verwijderd worden omdat er gekoppelde gegevens bestaan.";
+                    TempData["Error"] = "Speler niet gevonden.";
                     return RedirectToAction(nameof(Index));
                 }
 
                 _context.Players.Remove(player);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Speler succesvol verwijderd.";
+
+                TempData["Success"] = "Speler en alle gekoppelde gegevens zijn succesvol verwijderd.";
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Speler kon niet verwijderd worden: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));

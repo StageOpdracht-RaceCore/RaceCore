@@ -13,6 +13,7 @@
         public ICollection<PlayerSelection> Selections { get; set; } = new List<PlayerSelection>();
 
         public ICollection<DraftTurn> DraftTurns { get; set; } = new List<DraftTurn>();
+
         public ICollection<PlayerPoints> PlayerPoints { get; set; } = new List<PlayerPoints>();
     }
 }
