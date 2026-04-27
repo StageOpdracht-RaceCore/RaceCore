@@ -67,43 +67,16 @@ namespace StageProject_RaceCore.Controllers
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
                 }
 
-                using var transaction = await _context.Database.BeginTransactionAsync();
-
-                var stageIds = await _context.Stages
-                    .Where(s => s.RaceId == model.RaceId)
-                    .Select(s => s.Id)
-                    .ToListAsync();
-
-                var oldDraftTurns = await _context.DraftTurns
-                    .Where(d => d.RaceId == model.RaceId)
-                    .ToListAsync();
-
-                var oldSelections = await _context.PlayerSelections
+                var oldPlayerSelections = await _context.PlayerSelections
                     .Where(ps => ps.RaceId == model.RaceId)
                     .ToListAsync();
 
-                var oldPlayerPoints = await _context.PlayerPoints
-                    .Where(pp => pp.RaceId == model.RaceId)
+                var oldDraftTurns = await _context.DraftTurns
+                    .Where(dt => dt.RaceId == model.RaceId)
                     .ToListAsync();
 
-                var oldStageResults = await _context.StageResults
-                    .Where(sr => stageIds.Contains(sr.StageId))
-                    .ToListAsync();
-
-                var oldJerseys = await _context.Jerseys
-                    .Where(j => stageIds.Contains(j.StageId))
-                    .ToListAsync();
-
+                _context.PlayerSelections.RemoveRange(oldPlayerSelections);
                 _context.DraftTurns.RemoveRange(oldDraftTurns);
-                _context.PlayerSelections.RemoveRange(oldSelections);
-                _context.PlayerPoints.RemoveRange(oldPlayerPoints);
-                _context.StageResults.RemoveRange(oldStageResults);
-                _context.Jerseys.RemoveRange(oldJerseys);
-
-                foreach (var player in players)
-                {
-                    player.TotalPoints = 0;
-                }
 
                 await _context.SaveChangesAsync();
 
@@ -113,14 +86,12 @@ namespace StageProject_RaceCore.Controllers
                 _context.DraftTurns.AddRange(draftTurns);
                 await _context.SaveChangesAsync();
 
-                await transaction.CommitAsync();
-
                 TempData["Success"] = $"Nieuwe game gestart voor {race.Name} {race.Year}.";
                 return RedirectToAction("Index", "Draft", new { raceId = model.RaceId });
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Start Game fout: " + ex.Message;
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
             }
         }

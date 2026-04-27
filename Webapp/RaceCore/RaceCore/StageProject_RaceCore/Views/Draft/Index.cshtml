@@ -25,10 +25,11 @@
         .FirstOrDefault();
 
     var playerRows = Model
-        .GroupBy(t => t.PlayerName)
+        .GroupBy(t => new { t.PlayerId, t.PlayerName })
         .Select(g => new
         {
-            PlayerName = g.Key,
+            PlayerId = g.Key.PlayerId,
+            PlayerName = g.Key.PlayerName,
             TotalTurns = g.Count(),
             PickedCount = g.Count(x => x.CyclistId != null),
             NextTurn = g.Where(x => x.CyclistId == null).OrderBy(x => x.TurnNumber).FirstOrDefault(),
@@ -44,7 +45,6 @@
     var remainingTurns = Model.Count(t => t.CyclistId == null);
     var draftIsLive = totalTurns > 0 && remainingTurns > 0;
     var draftIsDone = totalTurns > 0 && remainingTurns == 0;
-    var draftIsEmpty = totalTurns == 0;
 }
 
 <link rel="stylesheet" href="~/css/Draft.css" asp-append-version="true" />
@@ -55,8 +55,8 @@
             <span class="draft-page-kicker">RaceCore Draft Center</span>
             <h1>Live Draft</h1>
             <p>
-                Hier zie je enkel de spelers die meedoen. Elke speler komt om de beurt aan bod
-                en bouwt stap voor stap zijn team van wielrenners.
+                Kies om de beurt wielrenners. De eerste 10 picks worden actieve renners,
+                de laatste 5 zijn bankrenners.
             </p>
         </div>
 
@@ -70,9 +70,7 @@
 
     @if (TempData["Error"] != null)
     {
-        <div class="draft-alert draft-alert-error">
-            @TempData["Error"]
-        </div>
+        <div class="draft-alert draft-alert-error">@TempData["Error"]</div>
     }
 
     @if (TempData["Success"] != null)
@@ -84,21 +82,20 @@
 
     @if (TempData["DatabaseError"] != null)
     {
-        <div class="draft-alert draft-alert-error">
-            @TempData["DatabaseError"]
-        </div>
+        <div class="draft-alert draft-alert-error">@TempData["DatabaseError"]</div>
     }
 
-    <form asp-action="GenerateDraft" method="post" style="margin-bottom:18px;">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="raceId" value="@raceId" />
+    @if (!Model.Any())
+    {
+        <form asp-action="GenerateDraft" method="post" style="margin-bottom:18px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="raceId" value="@raceId" />
 
-        <button type="submit"
-                class="draft-pick-button"
-                onclick="return confirm('Ben je zeker? Dit verwijdert de huidige draft en maakt een nieuwe fair snake draft.');">
-            Generate Fair Snake Draft
-        </button>
-    </form>
+            <button type="submit" class="draft-pick-button">
+                Generate Fair Snake Draft
+            </button>
+        </form>
+    }
 
     <div class="draft-stats-grid">
         <div class="draft-stat-card">
@@ -141,7 +138,7 @@
             <div class="draft-card-header">
                 <div class="draft-card-header-text">
                     <h2>Spelers in deze draft</h2>
-                    <p>Je ziet hier alleen de spelers, niet alle 105 draftbeurten.</p>
+                    <p>Je ziet enkel de spelers. De renner-keuze staat duidelijk zichtbaar in de actieve rij.</p>
                 </div>
 
                 <div class="draft-card-header-badge">
@@ -161,12 +158,12 @@
                         @if (!playerRows.Any())
                         {
                             <div class="draft-empty-state" style="padding:24px;">
-                                Nog geen draft aangemaakt. Klik op <strong>Generate Fair Snake Draft</strong>.
+                                Nog geen draft aangemaakt. Start eerst een New Game.
                             </div>
                         }
                         else
                         {
-                            @foreach (var player in playerRows)
+                            foreach (var player in playerRows)
                             {
                                 var isActive = currentTurn != null && player.NextTurn != null && player.NextTurn.Id == currentTurn.Id;
                                 var initial = !string.IsNullOrWhiteSpace(player.PlayerName)
@@ -175,9 +172,7 @@
 
                                 <div class="draft-row @(isActive ? "active" : "")">
                                     <div class="draft-cell draft-player-cell" data-label="Speler">
-                                        <div class="draft-player-avatar">
-                                            @initial
-                                        </div>
+                                        <div class="draft-player-avatar">@initial</div>
 
                                         <div class="draft-player-meta">
                                             <div class="draft-player-name-row">
@@ -219,40 +214,19 @@
                                     <div class="draft-cell draft-selection-cell" data-label="Actie">
                                         @if (isActive && currentTurn != null)
                                         {
-                                            <form asp-action="PickCyclist" method="post" class="draft-pick-form js-draft-pick-form">
+                                            <form asp-action="PickCyclist" method="post" class="draft-pick-form" style="width:100%;">
                                                 @Html.AntiForgeryToken()
 
                                                 <input type="hidden" name="draftTurnId" value="@currentTurn.Id" />
                                                 <input type="hidden" name="raceId" value="@raceId" />
-                                                <input type="hidden" name="cyclistId" class="js-cyclist-id" required />
 
-                                                <div class="draft-search-select js-search-select">
-                                                    <div class="draft-search-select-input-wrap">
-                                                        <input type="text"
-                                                               class="draft-search-input js-search-input"
-                                                               placeholder="Typ om een renner te zoeken..."
-                                                               autocomplete="off" />
-                                                        <button type="button" class="draft-search-toggle js-search-toggle" tabindex="-1">
-                                                            ▾
-                                                        </button>
-                                                    </div>
-
-                                                    <div class="draft-search-dropdown js-search-dropdown">
-                                                        <div class="draft-search-empty js-search-empty">
-                                                            Geen renners gevonden.
-                                                        </div>
-
-                                                        @foreach (var cyclist in availableCyclists)
-                                                        {
-                                                            <button type="button"
-                                                                    class="draft-search-option js-search-option"
-                                                                    data-id="@cyclist.Id"
-                                                                    data-name="@cyclist.FullName">
-                                                                <span class="draft-search-option-name">@cyclist.FullName</span>
-                                                            </button>
-                                                        }
-                                                    </div>
-                                                </div>
+                                                <select name="cyclistId" class="draft-search-input" required>
+                                                    <option value="">Kies een renner...</option>
+                                                    @foreach (var cyclist in availableCyclists)
+                                                    {
+                                                        <option value="@cyclist.Id">@cyclist.FullName</option>
+                                                    }
+                                                </select>
 
                                                 <button type="submit" class="draft-pick-button">
                                                     Pick
@@ -335,116 +309,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="draft-side-card draft-tip-card">
-                <div class="draft-tip-title">💡 Snake Draft</div>
-                <p>
-                    Je ziet alleen de spelers. Intern staan er meerdere beurten klaar, maar die worden niet allemaal als aparte rijen getoond.
-                </p>
-            </div>
         </aside>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchSelects = document.querySelectorAll(".js-search-select");
-
-        searchSelects.forEach(function (select) {
-            const input = select.querySelector(".js-search-input");
-            const hiddenId = select.closest("form").querySelector(".js-cyclist-id");
-            const options = Array.from(select.querySelectorAll(".js-search-option"));
-            const emptyState = select.querySelector(".js-search-empty");
-            const toggle = select.querySelector(".js-search-toggle");
-            const form = select.closest("form");
-
-            function normalize(value) {
-                return (value || "")
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .trim();
-            }
-
-            function filterOptions() {
-                const term = normalize(input.value);
-                let visibleCount = 0;
-
-                options.forEach(function (option) {
-                    const name = normalize(option.dataset.name);
-                    const matches = term === "" || name.includes(term);
-
-                    option.style.display = matches ? "flex" : "none";
-
-                    if (matches) {
-                        visibleCount++;
-                    }
-                });
-
-                emptyState.style.display = visibleCount === 0 ? "flex" : "none";
-            }
-
-            function openDropdown() {
-                select.classList.add("open");
-                filterOptions();
-            }
-
-            function closeDropdown() {
-                select.classList.remove("open");
-            }
-
-            function clearSelectionIfTypedDifferent() {
-                const currentSelectedName = options.find(o => o.dataset.id === hiddenId.value)?.dataset.name || "";
-
-                if (normalize(input.value) !== normalize(currentSelectedName)) {
-                    hiddenId.value = "";
-                }
-            }
-
-            input.addEventListener("focus", function () {
-                openDropdown();
-            });
-
-            input.addEventListener("input", function () {
-                clearSelectionIfTypedDifferent();
-                openDropdown();
-                filterOptions();
-            });
-
-            toggle.addEventListener("click", function () {
-                if (select.classList.contains("open")) {
-                    closeDropdown();
-                } else {
-                    openDropdown();
-                    input.focus();
-                }
-            });
-
-            options.forEach(function (option) {
-                option.addEventListener("click", function () {
-                    input.value = option.dataset.name;
-                    hiddenId.value = option.dataset.id;
-                    closeDropdown();
-                });
-            });
-
-            form.addEventListener("submit", function (e) {
-                if (!hiddenId.value) {
-                    e.preventDefault();
-                    input.focus();
-                    input.classList.add("draft-search-input-error");
-
-                    setTimeout(function () {
-                        input.classList.remove("draft-search-input-error");
-                    }, 1600);
-                }
-            });
-
-            document.addEventListener("click", function (e) {
-                if (!select.contains(e.target)) {
-                    closeDropdown();
-                }
-            });
-        });
-    });
-</script>
