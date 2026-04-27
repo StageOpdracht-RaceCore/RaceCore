@@ -26,10 +26,12 @@ namespace StageProject_RaceCore.Controllers
         {
             var rankData = await _context.PlayerPoints
                 .Include(pp => pp.Player)
+                .Where(pp => pp.Player != null)
                 .GroupBy(pp => pp.Player.Name)
                 .Select(group => new ResultVM
                 {
                     CyclistName = group.Key,
+                    points = group.Sum(pp => pp.Points),
                     totalPoints = group.Sum(pp => pp.Points),
                     JerseyType = "Leader"
                 })
@@ -49,6 +51,7 @@ namespace StageProject_RaceCore.Controllers
             if (!races.Any())
             {
                 ViewBag.Races = races;
+                ViewBag.SelectedRaceId = 0;
                 ViewBag.StageTables = new List<object>();
                 return View();
             }
@@ -89,35 +92,31 @@ namespace StageProject_RaceCore.Controllers
                     int normalPoints = rules
                         .Where(pr =>
                             pr.Type == "Rit" &&
-                            sr.Position != null &&
                             pr.FromPosition <= sr.Position &&
                             pr.ToPosition >= sr.Position)
                         .Sum(pr => pr.Points);
 
-                    int jerseyPoints = jerseys
-                    .Where(j => j.CyclistId == sr.CyclistId)
-                    .Sum(j =>
-                    {
-                        var ruleType = j.Type switch
+                    var cyclistJerseys = jerseys
+                        .Where(j => j.CyclistId == sr.CyclistId)
+                        .ToList();
+
+                    int jerseyPoints = cyclistJerseys
+                        .Sum(j =>
                         {
-                            "Yellow" => "RodeTrui",
-                            "Green" => "GroeneTrui",
-                            "Polka" => "BlauweTrui",
-                            "White" => "WitteTrui",
-                            _ => j.Type
-                        };
+                            string ruleType = GetRuleTypeForJersey(j.Type);
 
-        return rules
-            .Where(pr => pr.Type == ruleType)
-            .Sum(pr => pr.Points);
-    });
+                            return rules
+                                .Where(pr => pr.Type == ruleType)
+                                .Sum(pr => pr.Points);
+                        });
 
-                    string jerseyTypes = string.Join(", ", cyclistJerseys.Select(j => GetJerseyName(j.Type)));
+                    string jerseyTypes = string.Join(", ",
+                        cyclistJerseys.Select(j => GetJerseyName(j.Type)));
 
                     return new
                     {
-                        Position = sr.Position,
-                        CyclistName = sr.Cyclist.FullName,
+                        Position = sr.Position.ToString(),
+                        CyclistName = sr.Cyclist != null ? sr.Cyclist.FullName : "Onbekend",
                         Points = normalPoints,
                         JerseyTypes = jerseyTypes,
                         JerseyPoints = jerseyPoints,
@@ -129,14 +128,16 @@ namespace StageProject_RaceCore.Controllers
                     .Where(j => !top25CyclistIds.Contains(j.CyclistId))
                     .Select(j =>
                     {
+                        string ruleType = GetRuleTypeForJersey(j.Type);
+
                         int jerseyPoints = rules
-                            .Where(pr => pr.Type == j.Type)
+                            .Where(pr => pr.Type == ruleType)
                             .Sum(pr => pr.Points);
 
                         return new
                         {
                             Position = "-",
-                            CyclistName = j.Cyclist.FullName,
+                            CyclistName = j.Cyclist != null ? j.Cyclist.FullName : "Onbekend",
                             Points = 0,
                             JerseyTypes = GetJerseyName(j.Type),
                             JerseyPoints = jerseyPoints,
@@ -158,6 +159,18 @@ namespace StageProject_RaceCore.Controllers
             return View();
         }
 
+        private static string GetRuleTypeForJersey(string jerseyType)
+        {
+            return jerseyType switch
+            {
+                "Yellow" => "RodeTrui",
+                "Green" => "GroeneTrui",
+                "Polka" => "BlauweTrui",
+                "White" => "WitteTrui",
+                _ => jerseyType
+            };
+        }
+
         private static string GetJerseyName(string type)
         {
             return type switch
@@ -166,6 +179,10 @@ namespace StageProject_RaceCore.Controllers
                 "Green" => "Groene trui",
                 "Polka" => "Bolletjestrui",
                 "White" => "Witte trui",
+                "RodeTrui" => "Gele trui",
+                "GroeneTrui" => "Groene trui",
+                "BlauweTrui" => "Bolletjestrui",
+                "WitteTrui" => "Witte trui",
                 _ => type
             };
         }
