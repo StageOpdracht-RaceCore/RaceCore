@@ -63,6 +63,8 @@ namespace StageProject_RaceCore.Controllers
                 .OrderBy(s => s.StageNumber)
                 .ToListAsync();
 
+            var rules = await _context.PointsRules.ToListAsync();
+
             var stageTables = new List<object>();
 
             foreach (var stage in stages)
@@ -74,10 +76,13 @@ namespace StageProject_RaceCore.Controllers
                     .ToListAsync();
 
                 var jerseys = await _context.Jerseys
+                    .Include(j => j.Cyclist)
                     .Where(j => j.StageId == stage.Id)
                     .ToListAsync();
 
-                var rules = await _context.PointsRules.ToListAsync();
+                var top25CyclistIds = results
+                    .Select(r => r.CyclistId)
+                    .ToHashSet();
 
                 var rows = results.Select(sr =>
                 {
@@ -89,26 +94,53 @@ namespace StageProject_RaceCore.Controllers
                             pr.ToPosition >= sr.Position)
                         .Sum(pr => pr.Points);
 
-                    int jerseyPoints = jerseys
+                    var cyclistJerseys = jerseys
                         .Where(j => j.CyclistId == sr.CyclistId)
+                        .ToList();
+
+                    int jerseyPoints = cyclistJerseys
                         .Sum(j => rules
                             .Where(pr => pr.Type == j.Type)
                             .Sum(pr => pr.Points));
+
+                    string jerseyTypes = string.Join(", ", cyclistJerseys.Select(j => GetJerseyName(j.Type)));
 
                     return new
                     {
                         Position = sr.Position,
                         CyclistName = sr.Cyclist.FullName,
                         Points = normalPoints,
+                        JerseyTypes = jerseyTypes,
                         JerseyPoints = jerseyPoints,
                         Total = normalPoints + jerseyPoints
                     };
                 }).ToList();
 
+                var outsideJerseyRows = jerseys
+                    .Where(j => !top25CyclistIds.Contains(j.CyclistId))
+                    .Select(j =>
+                    {
+                        int jerseyPoints = rules
+                            .Where(pr => pr.Type == j.Type)
+                            .Sum(pr => pr.Points);
+
+                        return new
+                        {
+                            Position = "-",
+                            CyclistName = j.Cyclist.FullName,
+                            Points = 0,
+                            JerseyTypes = GetJerseyName(j.Type),
+                            JerseyPoints = jerseyPoints,
+                            Total = jerseyPoints
+                        };
+                    })
+                    .ToList();
+
                 stageTables.Add(new
                 {
                     StageName = $"Rit {stage.StageNumber}: {stage.Name}",
-                    Rows = rows
+                    Rows = rows,
+                    OutsideJerseyRows = outsideJerseyRows
                 });
             }
 
@@ -117,5 +149,16 @@ namespace StageProject_RaceCore.Controllers
             return View();
         }
 
+        private static string GetJerseyName(string type)
+        {
+            return type switch
+            {
+                "Yellow" => "Gele trui",
+                "Green" => "Groene trui",
+                "Polka" => "Bolletjestrui",
+                "White" => "Witte trui",
+                _ => type
+            };
+        }
     }
 }

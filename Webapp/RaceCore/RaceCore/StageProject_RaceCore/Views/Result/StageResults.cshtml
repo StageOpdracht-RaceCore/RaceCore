@@ -4,7 +4,7 @@
     ViewData["Title"] = "Stage Results";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
-    var races = ViewBag.Races as List<Race>;
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
 }
@@ -15,7 +15,9 @@
     <section class="result-header-card">
         <p class="result-page-kicker">RaceCore</p>
         <h1 class="result-page-title">Rituitslagen</h1>
-        <p class="result-page-subtitle">Bekijk per wedstrijd alle ritten met punten en truipunten.</p>
+        <p class="result-page-subtitle">
+            Bekijk per wedstrijd alle ritten met punten, truipunten en truidragers buiten de top 25.
+        </p>
     </section>
 
     <section class="result-race-card">
@@ -55,10 +57,12 @@
                                 <th>Positie</th>
                                 <th>Naam</th>
                                 <th>Punten</th>
+                                <th>Trui</th>
                                 <th>Trui punten</th>
                                 <th>Totaal</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach (var row in stage.Rows)
                             {
@@ -66,6 +70,7 @@
                                     <td class="result-position">@row.Position</td>
                                     <td class="result-name">@row.CyclistName</td>
                                     <td class="result-points">@row.Points</td>
+                                    <td>@(!string.IsNullOrWhiteSpace(row.JerseyTypes) ? row.JerseyTypes : "-")</td>
                                     <td>@row.JerseyPoints</td>
                                     <td class="result-total">@row.Total</td>
                                 </tr>
@@ -73,6 +78,42 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
+                {
+                    <div style="margin-top:22px;">
+                        <h3 style="margin-bottom:12px;">Truidragers buiten Top 25</h3>
+
+                        <div class="result-table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Positie</th>
+                                        <th>Naam</th>
+                                        <th>Punten</th>
+                                        <th>Trui</th>
+                                        <th>Trui punten</th>
+                                        <th>Totaal</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var row in stage.OutsideJerseyRows)
+                                    {
+                                        <tr>
+                                            <td class="result-position">@row.Position</td>
+                                            <td class="result-name">@row.CyclistName</td>
+                                            <td class="result-points">@row.Points</td>
+                                            <td>@row.JerseyTypes</td>
+                                            <td>@row.JerseyPoints</td>
+                                            <td class="result-total">@row.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
             </section>
         }
     }
