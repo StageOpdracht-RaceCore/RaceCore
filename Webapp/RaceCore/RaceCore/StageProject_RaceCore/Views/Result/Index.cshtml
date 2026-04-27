@@ -1,37 +1,75 @@
+@model IEnumerable<StageProject_RaceCore.Controllers.ResultVM>
 
 @{
-    @model IEnumerable<StageProject_RaceCore.Controllers.ResultVM>
-    <section class="riders-page">
-    <div class="page-card">
-    <table class="riders-table">
-        <thead>
-            <tr>
-                <th>Positie</th>
-                <th>Naam</th>
-                <th>Punten</th>
-                <th>Truien</th>
-                <th>Totaal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                int pos = 1;
-            }
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@pos</td>
-                    <td>@item.CyclistName</td>
-                    <td>@item.points</td>
-                    <td>@item.JerseyType</td>
-                    <td>@item.totalPoints</td>
-                </tr>
-                pos++;
-            }
-        </tbody>
-    </table
-    </div>
-    </section>
-
+    // Move the Layout out of the HTML blocks so it actually runs
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Leaderboard";
 }
+
+@* Link the CSS file you found *@
+<link rel="stylesheet" href="~/css/Results.css" asp-append-version="true" />
+
+<div class="player-page">
+    @* Header using the blue gradient style from Results.css *@
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">Competitie Overzicht</p>
+            <h1 class="player-page-title">Resultaat</h1>
+            <p class="player-page-subtitle">Hier staat de scoorboard</p>
+        </div>
+    </div>
+
+    @* Results Table using the professional card and table styles *@
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Positie</th>
+                        <th>Renner</th>
+                        <th>Punten</th>
+                        <th>Trui</th>
+                        <th>Totaal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int pos = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="player-badge @(pos <= 3 ? "player-badge-draft" : "")">
+                                    #@pos
+                                </span>
+                            </td>
+                            <td>
+                                <div class="player-name-cell">
+                                    @* Uses the avatar circle for the first letter of the name *@
+                                    <div class="player-avatar">@item.CyclistName.Substring(0, 1).ToUpper()</div>
+                                    <div class="player-name">@item.CyclistName</div>
+                                </div>
+                            </td>
+                            <td>@item.points</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.JerseyType))
+                                {
+                                    <span class="player-meta">@item.JerseyType</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="player-points">@item.totalPoints</span>
+                            </td>
+                        </tr>
+                        pos++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
