@@ -141,7 +141,7 @@ namespace StageProject_RaceCore.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CyclistId")
+                    b.Property<int?>("CyclistId")
                         .HasColumnType("int");
 
                     b.Property<int>("PlayerId")
@@ -152,10 +152,6 @@ namespace StageProject_RaceCore.Migrations
 
                     b.Property<int>("RaceId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int?>("StageId")
                         .HasColumnType("int");
@@ -437,8 +433,7 @@ namespace StageProject_RaceCore.Migrations
                     b.HasOne("StageProject_RaceCore.Models.Cyclist", "Cyclist")
                         .WithMany("PlayerPoints")
                         .HasForeignKey("CyclistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("StageProject_RaceCore.Models.Player", "Player")
                         .WithMany("PlayerPoints")
@@ -447,14 +442,15 @@ namespace StageProject_RaceCore.Migrations
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Race", "Race")
-                        .WithMany()
+                        .WithMany("PlayerPoints")
                         .HasForeignKey("RaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
                         .WithMany("PlayerPoints")
-                        .HasForeignKey("StageId");
+                        .HasForeignKey("StageId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Cyclist");
 
@@ -575,6 +571,8 @@ namespace StageProject_RaceCore.Migrations
             modelBuilder.Entity("StageProject_RaceCore.Models.Race", b =>
                 {
                     b.Navigation("DraftTurns");
+
+                    b.Navigation("PlayerPoints");
 
                     b.Navigation("PlayerSelections");
 

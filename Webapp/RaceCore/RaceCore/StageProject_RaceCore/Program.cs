@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore
@@ -11,22 +12,45 @@ namespace StageProject_RaceCore
 
             builder.Services.AddControllersWithViews();
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var onlineConnection = builder.Configuration.GetConnectionString("OnlineConnection");
+
+            var localDbPath = Path.Combine(
+                builder.Environment.ContentRootPath,
+                "Data",
+                "racecore.db"
+            );
+
+            var localSqliteConnection = $"Data Source={localDbPath}";
+
+            var useLocalDatabase = !CanConnectToOnlineDatabase(onlineConnection);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseMySql(
-                    connectionString,
-                    new MariaDbServerVersion(new Version(10, 11, 0)),
-                    mySqlOptions =>
-                    {
-                        mySqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 3,
-                            maxRetryDelay: TimeSpan.FromSeconds(5),
-                            errorNumbersToAdd: null
-                        );
-                    }
-                )
-            );
+            {
+                if (useLocalDatabase)
+                {
+                    Console.WriteLine("Online database niet bereikbaar. Lokale SQLite database wordt gebruikt.");
+                    Console.WriteLine($"SQLite path: {localDbPath}");
+
+                    options.UseSqlite(localSqliteConnection);
+                }
+                else
+                {
+                    Console.WriteLine("Online database verbonden. Synology MariaDB wordt gebruikt.");
+
+                    options.UseMySql(
+                        onlineConnection,
+                        new MariaDbServerVersion(new Version(10, 11, 0)),
+                        mySqlOptions =>
+                        {
+                            mySqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 3,
+                                maxRetryDelay: TimeSpan.FromSeconds(5),
+                                errorNumbersToAdd: null
+                            );
+                        }
+                    );
+                }
+            });
 
             var app = builder.Build();
 
@@ -40,6 +64,7 @@ namespace StageProject_RaceCore
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -47,6 +72,25 @@ namespace StageProject_RaceCore
                 pattern: "{controller=Game}/{action=New}/{id?}");
 
             app.Run();
+        }
+
+        private static bool CanConnectToOnlineDatabase(string? connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return false;
+            }
+
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                connection.Open();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
