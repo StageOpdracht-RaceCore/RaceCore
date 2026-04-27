@@ -12,14 +12,14 @@
     border: 1px solid #e5e7eb;
 }
 
-/* Page header */
+/* Header */
 .team-header-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
     padding: 28px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
 }
@@ -48,7 +48,7 @@
 .team-toolbar-card,
 .team-table-card {
     padding: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .team-search-form {
@@ -82,7 +82,6 @@
     font-size: 15px;
     background: #f9fafb;
     color: #111827;
-    transition: 0.2s ease;
 }
 
     .team-search-input:focus,
@@ -97,7 +96,6 @@
 .team-toolbar-actions {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 .team-search-count {
@@ -116,10 +114,9 @@
     padding: 0 18px;
     border-radius: 14px;
     font-weight: 700;
-    text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: 0.2s ease;
+    text-decoration: none;
 }
 
 .team-btn-primary,
@@ -144,34 +141,25 @@
         color: #1e3a8a;
     }
 
-/* Masonry layout - voorkomt dat kaart naast geopende kaart mee uitrekt */
+/* Grid */
 .teams-grid {
     column-count: 2;
-    column-gap: 24px;
+    column-gap: 28px;
 }
 
 .teams-grid-wide-gap {
-    column-gap: 24px;
+    column-gap: 28px;
 }
 
-/* -----------------------------------------------------------------------------
-   Team card
-   ----------------------------------------------------------------------------- */
+/* Card */
 .team-card {
-    --team-color: #2563eb;
-    --team-color-soft: rgba(37, 99, 235, 0.10);
-    --team-color-border: rgba(37, 99, 235, 0.22);
-    --team-color-contrast: #ffffff;
     display: inline-block;
     width: 100%;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     break-inside: avoid;
     overflow: hidden;
-    position: relative;
-    border-top: 5px solid var(--team-color);
-    background: linear-gradient( 180deg, var(--team-color-soft) 0%, rgba(255, 255, 255, 0) 130px ), #ffffff;
+    background: #ffffff;
     transition: 0.2s ease;
-    scroll-margin-top: 24px;
 }
 
     .team-card:hover {
@@ -179,113 +167,115 @@
         box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
     }
 
-/* -----------------------------------------------------------------------------
-   Card header
-   ----------------------------------------------------------------------------- */
+/* Card header */
 .team-header {
+    min-height: 150px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding: 20px 24px;
-    background: rgba(255, 255, 255, 0.88);
+    gap: 24px;
+    padding: 22px 28px;
     border-bottom: 1px solid #eef2f7;
 }
 
 .team-meta {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
+    flex: 1;
     min-width: 0;
 }
 
 .team-avatar {
-    width: 54px;
-    height: 54px;
-    min-width: 54px;
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    color: var(--team-color);
-    border: 3px solid var(--team-color-border);
-    background: #ffffff;
+    font-size: 17px;
+    color: #2563eb;
+    border: 2px solid #dbeafe;
+    background: #eff6ff;
 }
 
 .team-name {
+    font-size: 20px;
+    line-height: 1.15;
     font-weight: 800;
     color: #111827;
 }
 
 .team-cyclist-count {
-    margin-top: 4px;
-    font-size: 14px;
+    margin-top: 5px;
+    font-size: 15px;
     color: #6b7280;
 }
 
 .team-stats {
-    text-align: right;
+    min-width: 165px;
     flex-shrink: 0;
 }
 
 .team-stats-top {
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-bottom: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
 }
 
 .team-points {
-    background: var(--team-color-soft);
-    padding: 6px 12px;
+    min-width: 165px;
+    padding: 8px 16px;
     border-radius: 999px;
-    border: 1px solid var(--team-color-border);
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    font-size: 19px;
     font-weight: 800;
+    text-align: center;
     color: #111827;
 }
 
 .team-counts {
-    color: #6b7280;
-    font-size: 14px;
+    margin-top: 4px;
+    font-size: 16px;
+    color: #111827;
+    white-space: nowrap;
 }
 
-/* Toggle button */
+/* Toggle */
 .collapse-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-width: 112px;
+    gap: 6px;
+    min-width: 92px;
     height: 42px;
-    padding: 0 16px;
+    padding: 0 14px;
     border-radius: 999px;
     border: none;
-    text-decoration: none;
-    color: var(--team-color-contrast);
-    background: var(--team-color);
-    font-weight: 900;
+    background: #2563eb;
+    color: white;
+    font-weight: 800;
     cursor: pointer;
-    transition: 0.2s ease;
 }
 
     .collapse-toggle:hover {
-        transform: translateY(-1px);
+        background: #1d4ed8;
     }
 
-    .collapse-toggle .arrow {
-        display: inline-block;
-        transition: transform 0.2s ease;
-    }
+.arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
 
-.team-card:not(.collapsed) .collapse-toggle .arrow {
+.team-card:not(.collapsed) .arrow {
     transform: rotate(180deg);
 }
 
-/* -----------------------------------------------------------------------------
-   Card body
-   ----------------------------------------------------------------------------- */
+/* Body */
 .team-body {
     padding: 24px;
 }
@@ -294,13 +284,13 @@
     display: none;
 }
 
-/* Add cyclist section */
+/* Add cyclist */
 .team-management {
     padding: 18px;
     margin-bottom: 22px;
     border-radius: 16px;
-    border: 1px solid var(--team-color-border);
-    background: var(--team-color-soft);
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
 }
 
 .team-management-title {
@@ -311,46 +301,47 @@
 
 .add-cyclist-form {
     display: grid;
-    grid-template-columns: 1fr 150px auto;
-    gap: 12px;
+    grid-template-columns: 1fr 130px auto;
+    gap: 10px;
     align-items: center;
 }
 
-.team-management-empty {
-    color: #6b7280;
-}
-
-/* Composition columns */
+/* Columns */
 .composition {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
 }
 
-.column h4 {
-    margin: 0 0 12px 0;
-    font-size: 16px;
-    font-weight: 800;
-    color: #111827;
+.column {
+    min-width: 0;
 }
+
+    .column h4 {
+        margin: 0 0 12px 0;
+        font-size: 16px;
+        font-weight: 800;
+        color: #111827;
+    }
 
 /* Lists */
 .cyclist-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    max-height: 330px;
+    overflow-y: auto;
     border: 1px solid #eef2f7;
     border-radius: 14px;
-    overflow: hidden;
-    background: #ffffff;
+    background: white;
 }
 
     .cyclist-list li {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 14px;
+        gap: 10px;
+        padding: 12px;
         border-bottom: 1px solid #eef2f7;
     }
 
@@ -359,31 +350,40 @@
         }
 
 .cyclist-name-text {
+    min-width: 0;
     font-weight: 700;
     color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+/* Actions */
 .cyclist-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
 }
 
 .cyclist-form {
     margin: 0;
+    display: inline-flex;
 }
 
 .bench-btn,
 .activate-btn,
 .remove-btn {
-    min-height: 34px;
-    padding: 0 12px;
+    height: 30px;
+    min-width: 64px;
+    padding: 0 9px;
     border-radius: 999px;
     border: none;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
-    transition: 0.2s ease;
+    white-space: nowrap;
 }
 
 .bench-btn {
@@ -391,29 +391,16 @@
     color: #92400e;
 }
 
-    .bench-btn:hover {
-        background: #fde68a;
-    }
-
 .activate-btn {
     background: #dcfce7;
     color: #166534;
 }
-
-    .activate-btn:hover {
-        background: #bbf7d0;
-    }
 
 .remove-btn {
     background: #fee2e2;
     color: #991b1b;
 }
 
-    .remove-btn:hover {
-        background: #fecaca;
-    }
-
-/* Empty states */
 .empty,
 .team-empty-state {
     color: #6b7280;
@@ -445,17 +432,26 @@
     }
 
     .team-header {
+        min-height: auto;
         flex-direction: column;
         align-items: flex-start;
+        padding: 20px;
+        gap: 16px;
     }
 
     .team-stats {
         width: 100%;
-        text-align: left;
+        min-width: 0;
     }
 
     .team-stats-top {
+        flex-direction: row;
+        align-items: center;
         justify-content: space-between;
+    }
+
+    .team-points {
+        min-width: 130px;
     }
 
     .composition {
@@ -466,8 +462,19 @@
         grid-template-columns: 1fr;
     }
 
-    .cyclist-list li {
-        align-items: flex-start;
-        flex-direction: column;
+    .cyclist-list {
+        max-height: 300px;
+    }
+
+        .cyclist-list li {
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+    .bench-btn,
+    .activate-btn,
+    .remove-btn {
+        min-width: 58px;
+        padding: 0 8px;
+        font-size: 11px;
     }
 }

@@ -7,8 +7,6 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     var searchQuery = (Context.Request.Query["search"].ToString() ?? "").Trim();
-    var openTeamIdValue = Context.Request.Query["openTeamId"].ToString();
-    int.TryParse(openTeamIdValue, out var openTeamId);
 
     bool MatchesSearch(string? value) =>
         !string.IsNullOrWhiteSpace(value) &&
@@ -35,30 +33,6 @@
         : teams.Sum(team =>
             (team.ActiveCyclists?.Count(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? 0) +
             (team.BenchCyclists?.Count(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? 0));
-
-    string GetTeamStyle(TeamViewModel team)
-    {
-        var tag = (team.Tag ?? "").Trim().ToUpperInvariant();
-
-        return tag switch
-        {
-            "WT" => "--team-color: #dc2626; --team-color-soft: rgba(220, 38, 38, 0.10); --team-color-border: rgba(220, 38, 38, 0.28); --team-color-contrast: #ffffff;",
-            "PRT" => "--team-color: #16a34a; --team-color-soft: rgba(22, 163, 74, 0.10); --team-color-border: rgba(22, 163, 74, 0.28); --team-color-contrast: #ffffff;",
-            "CT" => "--team-color: #f59e0b; --team-color-soft: rgba(245, 158, 11, 0.12); --team-color-border: rgba(245, 158, 11, 0.32); --team-color-contrast: #ffffff;",
-            _ => "--team-color: #7c3aed; --team-color-soft: rgba(124, 58, 237, 0.10); --team-color-border: rgba(124, 58, 237, 0.28); --team-color-contrast: #ffffff;"
-        };
-    }
-
-    string ToggleUrl(int teamId)
-    {
-        var url = Url.Action("Index", "Team", new
-        {
-            search = searchQuery,
-            openTeamId = openTeamId == teamId ? (int?)null : teamId
-        }) ?? "#";
-
-        return $"{url}#team-{teamId}";
-    }
 }
 
 <link rel="stylesheet" href="~/css/Team.css" />
@@ -130,10 +104,8 @@
                 @foreach (var team in teams)
                 {
                     var totalCyclists = team.ActiveCyclistsCount + team.BenchCyclistsCount;
-                    var isExpanded = false;
-                    var cardClass = isExpanded ? "team-card" : "team-card collapsed";
 
-                    <div id="team-@team.Id" class="@cardClass" style="@GetTeamStyle(team)">
+                    <div id="team-@team.Id" class="team-card collapsed">
                         <div class="team-header">
                             <div class="team-meta">
                                 <div class="team-avatar">@team.Tag</div>
@@ -150,8 +122,8 @@
 
                                     <button type="button"
                                             class="collapse-toggle"
-                                            aria-expanded="@isExpanded.ToString().ToLower()">
-                                        <span class="collapse-text">@(isExpanded ? "Close" : "Open")</span>
+                                            aria-expanded="false">
+                                        <span class="collapse-text">Open</span>
                                         <span class="arrow">&#9662;</span>
                                     </button>
                                 </div>
@@ -227,18 +199,14 @@
                                                         <div class="cyclist-actions">
                                                             <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
                                                                 @Html.AntiForgeryToken()
-
                                                                 <input type="hidden" name="cyclistId" value="@cyclist.Id" />
                                                                 <input type="hidden" name="isActive" value="false" />
-
                                                                 <button type="submit" class="bench-btn">Bench</button>
                                                             </form>
 
                                                             <form asp-controller="Team" asp-action="RemoveCyclistFromTeam" method="post" class="cyclist-form">
                                                                 @Html.AntiForgeryToken()
-
                                                                 <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-
                                                                 <button type="submit" class="remove-btn">Remove</button>
                                                             </form>
                                                         </div>
@@ -276,18 +244,14 @@
                                                         <div class="cyclist-actions">
                                                             <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
                                                                 @Html.AntiForgeryToken()
-
                                                                 <input type="hidden" name="cyclistId" value="@cyclist.Id" />
                                                                 <input type="hidden" name="isActive" value="true" />
-
                                                                 <button type="submit" class="activate-btn">Activate</button>
                                                             </form>
 
                                                             <form asp-controller="Team" asp-action="RemoveCyclistFromTeam" method="post" class="cyclist-form">
                                                                 @Html.AntiForgeryToken()
-
                                                                 <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-
                                                                 <button type="submit" class="remove-btn">Remove</button>
                                                             </form>
                                                         </div>
@@ -309,32 +273,27 @@
         }
     }
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-
         const buttons = document.querySelectorAll(".collapse-toggle");
 
         buttons.forEach(button => {
             button.addEventListener("click", function () {
-
                 const card = button.closest(".team-card");
                 if (!card) return;
 
-                // Toggle open/dicht
                 card.classList.toggle("collapsed");
 
                 const isExpanded = !card.classList.contains("collapsed");
 
-                // Update tekst
                 const text = button.querySelector(".collapse-text");
                 if (text) {
                     text.textContent = isExpanded ? "Close" : "Open";
                 }
 
-                // Update aria
-                button.setAttribute("aria-expanded", isExpanded);
+                button.setAttribute("aria-expanded", isExpanded.toString());
 
-                // (optioneel) smooth scroll bij openen
                 if (isExpanded) {
                     card.scrollIntoView({
                         behavior: "smooth",
@@ -343,6 +302,5 @@
                 }
             });
         });
-
     });
 </script>
