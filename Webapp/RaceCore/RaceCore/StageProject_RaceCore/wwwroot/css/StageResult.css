@@ -1,0 +1,173 @@
+﻿.result-page {
+    padding: 24px;
+}
+
+.result-header-card,
+.result-race-card,
+.result-stage-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.result-header-card {
+    padding: 28px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.result-page-kicker {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+}
+
+.result-page-title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.result-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+}
+
+.result-race-card {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.result-race-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.result-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.result-btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+    .result-btn-primary:hover {
+        background: #1d4ed8;
+        color: white;
+    }
+
+.result-btn-light {
+    background: #eef2ff;
+    color: #1e3a8a;
+}
+
+    .result-btn-light:hover {
+        background: #e0e7ff;
+        color: #1e3a8a;
+    }
+
+.result-stage-card {
+    padding: 24px;
+    margin-bottom: 22px;
+}
+
+.result-stage-title {
+    margin: 0 0 18px 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.result-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+    .result-table thead th {
+        text-align: left;
+        padding: 14px 16px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #6b7280;
+        border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
+    }
+
+    .result-table tbody td {
+        padding: 18px 16px;
+        border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+    }
+
+    .result-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+.result-position {
+    font-weight: 800;
+    color: #111827;
+}
+
+.result-name {
+    font-weight: 700;
+    color: #111827;
+}
+
+.result-points {
+    font-weight: 800;
+    color: #059669;
+}
+
+.result-total {
+    font-size: 18px;
+    font-weight: 800;
+    color: #2563eb;
+}
+
+.result-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+@media (max-width: 768px) {
+    .result-page {
+        padding: 14px;
+    }
+
+    .result-page-title {
+        font-size: 26px;
+    }
+
+    .result-race-buttons {
+        flex-direction: column;
+    }
+
+    .result-btn {
+        width: 100%;
+    }
+}
