@@ -83,17 +83,29 @@ namespace StageProject_RaceCore.Controllers
                 {
                     int normalPoints = rules
                         .Where(pr =>
-                            pr.Type == "Stage" &&
+                            pr.Type == "Rit" &&
                             sr.Position != null &&
                             pr.FromPosition <= sr.Position &&
                             pr.ToPosition >= sr.Position)
                         .Sum(pr => pr.Points);
 
                     int jerseyPoints = jerseys
-                        .Where(j => j.CyclistId == sr.CyclistId)
-                        .Sum(j => rules
-                            .Where(pr => pr.Type == j.Type)
-                            .Sum(pr => pr.Points));
+                    .Where(j => j.CyclistId == sr.CyclistId)
+                    .Sum(j =>
+                    {
+                        var ruleType = j.Type switch
+                        {
+                            "Yellow" => "RodeTrui",
+                            "Green" => "GroeneTrui",
+                            "Polka" => "BlauweTrui",
+                            "White" => "WitteTrui",
+                            _ => j.Type
+                        };
+
+        return rules
+            .Where(pr => pr.Type == ruleType)
+            .Sum(pr => pr.Points);
+    });
 
                     return new
                     {
