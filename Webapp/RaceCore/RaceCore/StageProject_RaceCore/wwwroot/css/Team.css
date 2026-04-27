@@ -161,7 +161,7 @@
 
     .team-card.collapsed,
     .team-card:not(.collapsed) {
-        background: linear-gradient(135deg, var(--team-color) 0%, #f1f2f4 100%);
+        background: linear-gradient(135deg, var(--team-color) 0%, #d8dadd 100%);
     }
 
     .team-card:not(.collapsed) {
