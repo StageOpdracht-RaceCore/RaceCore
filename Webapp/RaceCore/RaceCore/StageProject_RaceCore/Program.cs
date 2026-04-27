@@ -16,7 +16,7 @@ namespace StageProject_RaceCore
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySql(
                     connectionString,
-                    new MariaDbServerVersion(new Version(10, 11, 0)) // GEEN AutoDetect!
+                    new MariaDbServerVersion(new Version(10, 11, 0))
                 )
             );
 
@@ -24,7 +24,7 @@ namespace StageProject_RaceCore
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Dashboard/Error");
+                app.UseExceptionHandler("/Game/New");
                 app.UseHsts();
             }
 
@@ -32,11 +32,12 @@ namespace StageProject_RaceCore
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+                pattern: "{controller=Game}/{action=New}/{id?}");
 
             app.Run();
         }
