@@ -22,8 +22,8 @@
                 <a asp-controller="Team" asp-action="Index">Teams</a>
                 <a asp-controller="Race" asp-action="Index">Races</a>
                 <a asp-controller="Stage" asp-action="Index">Stages</a>
-                <a asp-controller="Result" asp-action="StageResults">Results</a>
-                <a asp-controller="Result" asp-action="ManageStageInput">Stage Results</a>
+                <a asp-controller="Player" asp-action="Index">Player Results</a>
+                <a asp-controller="Result" asp-action="StageResults">Stage Results</a>
                 <a asp-controller="Scoring" asp-action="Index">Scoring</a>
                 <a asp-controller="Draft" asp-action="Index">Draft</a>
             </nav>
@@ -46,6 +46,11 @@
             </header>
 
             <div class="content-window">
+                @if (TempData["DatabaseError"] != null)
+                {
+                    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:16px;">@TempData["DatabaseError"]</div>
+                }
+
                 @RenderBody()
             </div>
         </main>
