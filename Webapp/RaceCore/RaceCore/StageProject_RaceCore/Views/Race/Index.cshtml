@@ -13,7 +13,7 @@
             <p class="player-page-kicker">RaceCore Management</p>
             <div class="d-flex justify-content-between align-items-center">
                 <h1>Races</h1>
-                <a class="player-btn player-btn-primary" asp-action="Create">Nieuwe Race</a>
+                <a class="player-btn player-btn-primary" asp-controller="Game" asp-action="new">Nieuwe Race</a>
             </div>
         </div>
 
@@ -49,7 +49,7 @@
                                         <form asp-action="Delete" asp-route-id="@race.Id" method="post" class="d-inline" onsubmit="return confirm('Race verwijderen?');">
                                             <button type="submit" class="player-btn player-btn-danger btn-sm">Delete</button>
                                             @Html.AntiForgeryToken()
-                                        </form>
+                                        </form>²
                                     </div>
                                 </td>
                             </tr>
