@@ -5,20 +5,27 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Race.css"/>
 
-<div class="player-form-page">
-    <div class="player-table-card">
-        <div class="player-form-header">
-            <p class="player-page-kicker">RaceCore Management</p>
-            <div class="d-flex justify-content-between align-items-center">
-                <h1>Races</h1>
-                <a class="player-btn player-btn-primary" asp-action="Create">Nieuwe Race</a>
+<div class="race-page">
+    <section class="race-header-card">
+        <p class="race-page-kicker">RaceCore</p>
+        <h1 class="race-page-title">Races</h1>
+        <p class="race-page-subtitle">
+            Beheer alle wedstrijden, jaren, ritten en deelnames binnen RaceCore.
+        </p>
+    </section>
+
+    <section class="race-table-card">
+        <div class="race-table-header">
+            <div>
+                <p class="race-section-kicker">Overzicht</p>
+                <h2 class="race-card-title">Race lijst</h2>
             </div>
         </div>
 
-        <div class="table-responsive">
-            <table class="player-data-table">
+        <div class="race-table-responsive">
+            <table class="race-table">
                 <thead>
                     <tr>
                         <th>Naam</th>
@@ -27,7 +34,7 @@
                         <th>Einde</th>
                         <th>Stages</th>
                         <th>Entries</th>
-                        <th class="text-end">Acties</th>
+                        <th class="text-end"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,18 +43,29 @@
                         foreach (var race in Model)
                         {
                             <tr>
-                                <td><strong>@race.Name</strong></td>
-                                <td><span class="player-badge-draft">@race.Year</span></td>
+                                <td class="race-name">@race.Name</td>
+                                <td>
+                                    <span class="race-year-badge">@race.Year</span>
+                                </td>
                                 <td>@(race.StartDate.HasValue ? race.StartDate.Value.ToString("yyyy-MM-dd") : "-")</td>
                                 <td>@(race.EndDate.HasValue ? race.EndDate.Value.ToString("yyyy-MM-dd") : "-")</td>
-                                <td>@((race.Stages?.Count ?? 0))</td>
-                                <td>@((race.RaceEntries?.Count ?? 0))</td>
+                                <td>
+                                    <span class="race-count">@((race.Stages?.Count ?? 0))</span>
+                                </td>
+                                <td>
+                                    <span class="race-count">@((race.RaceEntries?.Count ?? 0))</span>
+                                </td>
                                 <td class="text-end">
-                                    <div class="player-table-actions">
-                                        <a class="player-btn player-btn-light btn-sm" asp-action="Edit" asp-route-id="@race.Id">Edit</a>
-                                        <a class="player-btn player-btn-light btn-sm" asp-action="Details" asp-route-id="@race.Id">Details</a>
-                                        <form asp-action="Delete" asp-route-id="@race.Id" method="post" class="d-inline" onsubmit="return confirm('Race verwijderen?');">
-                                            <button type="submit" class="player-btn player-btn-danger btn-sm">Delete</button>
+                                    <div class="race-table-actions">
+                                        <a class="race-btn race-btn-light btn-sm" asp-action="Edit" asp-route-id="@race.Id">Edit</a>
+                                        <a class="race-btn race-btn-light btn-sm" asp-action="Details" asp-route-id="@race.Id">Details</a>
+
+                                        <form asp-action="Delete"
+                                              asp-route-id="@race.Id"
+                                              method="post"
+                                              class="race-delete-form"
+                                              onsubmit="return confirm('Race verwijderen?');">
+                                            <button type="submit" class="race-btn race-btn-danger btn-sm">Delete</button>
                                             @Html.AntiForgeryToken()
                                         </form>
                                     </div>
@@ -57,10 +75,16 @@
                     }
                     else
                     {
-                        <tr><td colspan="7" class="text-center">Geen races gevonden.</td></tr>
+                        <tr>
+                            <td colspan="7">
+                                <div class="race-empty-state">
+                                    Geen races gevonden.
+                                </div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 </div>

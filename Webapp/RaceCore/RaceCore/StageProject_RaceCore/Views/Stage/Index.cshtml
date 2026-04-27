@@ -3,43 +3,71 @@
 
 @{
     ViewData["Title"] = "Ritten";
-    var races = ViewBag.Races as List<Race>;
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
     int selectedRaceId = ViewBag.SelectedRaceId;
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
-<link rel="stylesheet" href="~/css/Stage.css" />
 
-<h1>Ritten</h1>
+<link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
 
-<div class="race-buttons">
-    @foreach (var race in races)
-    {
-        <a asp-controller="Stage"
-           asp-action="Index"
-           asp-route-raceId="@race.Id"
-           class="race-btn @(race.Id == selectedRaceId ? "active" : "")">
-            @race.Name
-        </a>
-    }
-</div>
+<div class="stage-page">
+    <section class="stage-header-card">
+        <p class="stage-page-kicker">RaceCore</p>
+        <h1 class="stage-page-title">Ritten</h1>
+        <p class="stage-page-subtitle">
+            Bekijk per wedstrijd alle ritten met datum en ritinformatie.
+        </p>
+    </section>
 
-<div class="stages-list">
-    @if (Model.Any())
-    {
-        foreach (var stage in Model)
+    <section class="stage-filter-card">
+        <p class="stage-section-kicker">Wedstrijden</p>
+        <h2 class="stage-card-title">Selecteer race</h2>
+
+        <div class="stage-race-buttons">
+            @foreach (var race in races)
+            {
+                <a asp-controller="Stage"
+                       asp-action="Index"
+                       asp-route-raceId="@race.Id"
+                       class="stage-race-btn @(race.Id == selectedRaceId ? "active" : "")">
+                    @race.Name
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="stage-table-card">
+        <div class="stage-table-header">
+            <div>
+                <p class="stage-section-kicker">Overzicht</p>
+                <h2 class="stage-card-title">Ritten lijst</h2>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
         {
-            <div class="stage-card">
-                <h3>Rit @stage.StageNumber: @stage.Name</h3>
-
-                @if (stage.Date != null)
+            <div class="stage-grid">
+                @foreach (var stage in Model)
                 {
-                    <p>@stage.Date.Value.ToString("dd/MM/yyyy")</p>
+                    <article class="stage-card">
+                        <div class="stage-number-badge">
+                            Rit @stage.StageNumber
+                        </div>
+
+                        <h3>@stage.Name</h3>
+
+                        <p>
+                            @(stage.Date.HasValue ? stage.Date.Value.ToString("dd/MM/yyyy") : "Geen datum")
+                        </p>
+                    </article>
                 }
             </div>
         }
-    }
-    else
-    {
-        <p>Geen ritten gevonden voor deze wedstrijd.</p>
-    }
+        else
+        {
+            <div class="stage-empty-state">
+                Geen ritten gevonden voor deze wedstrijd.
+            </div>
+        }
+    </section>
 </div>
