@@ -14,6 +14,25 @@ namespace StageProject_RaceCore.Controllers
       _context = context;
     }
 
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var races = await _context.Races
+                    .OrderByDescending(r => r.Year)
+                    .ThenBy(r => r.Name)
+                    .ToListAsync();
+
+                ViewBag.DatabaseOnline = true; 
+                return View(races);
+            }
+            catch
+            {
+                ViewBag.DatabaseOnline = false;
+                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live races te zien.";
+                return View(new List<Race>());
+            }
+        }
     // READ: List all races
     public async Task<IActionResult> Index()
     {
@@ -94,18 +113,25 @@ namespace StageProject_RaceCore.Controllers
       return View(race);
     }
 
-    // DELETE: Confirm and remove from DB
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-      var race = await _context.Races.FindAsync(id);
-      if (race != null)
-      {
-        _context.Races.Remove(race);
-        await _context.SaveChangesAsync();
-      }
-      return RedirectToAction(nameof(Index));
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var race = await _context.Races.FindAsync(id);
+                if (race != null)
+                {
+                    _context.Races.Remove(race);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch
+            {
+                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
-  }
 }
