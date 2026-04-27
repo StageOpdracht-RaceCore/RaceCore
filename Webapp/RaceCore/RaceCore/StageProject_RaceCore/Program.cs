@@ -16,16 +16,11 @@ namespace StageProject_RaceCore
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySql(
                     connectionString,
-                    ServerVersion.AutoDetect(connectionString)
-                ));
+                    new MariaDbServerVersion(new Version(10, 11, 0)) // GEEN AutoDetect!
+                )
+            );
 
             var app = builder.Build();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                //db.Database.EnsureCreated();
-            }
 
             if (!app.Environment.IsDevelopment())
             {
@@ -35,6 +30,7 @@ namespace StageProject_RaceCore
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
             app.UseRouting();
             app.UseAuthorization();
 

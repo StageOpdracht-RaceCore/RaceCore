@@ -7,6 +7,12 @@
     int maxPlayerPoints = Model.PlayerRanking.Any() ? Model.PlayerRanking.Max(x => x.Points) : 1;
     int maxCyclistPoints = Model.TopCyclists.Any() ? Model.TopCyclists.Max(x => x.Points) : 1;
 }
+@if (ViewBag.DatabaseOnline == false)
+{
+    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:20px;">
+        ⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.
+    </div>
+}
 
 @functions {
     public string GetPlayerColor(string playerName)
