@@ -175,13 +175,9 @@ namespace StageProject_RaceCore.Controllers
         {
             return type switch
             {
-                "Yellow" => "Gele trui",
-                "Green" => "Groene trui",
-                "Polka" => "Bolletjestrui",
-                "White" => "Witte trui",
-                "RodeTrui" => "Gele trui",
+                "RodeTrui" => "Rode trui",
                 "GroeneTrui" => "Groene trui",
-                "BlauweTrui" => "Bolletjestrui",
+                "BlauweTrui" => "Blauwe trui",
                 "WitteTrui" => "Witte trui",
                 _ => type
             };
