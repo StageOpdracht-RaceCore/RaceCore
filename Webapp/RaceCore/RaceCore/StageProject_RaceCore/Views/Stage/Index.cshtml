@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Ritten";
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
-    int selectedRaceId = ViewBag.SelectedRaceId;
+    int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
@@ -21,6 +21,13 @@
         </p>
     </section>
 
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="stage-empty-state">
+            @TempData["DatabaseError"]
+        </div>
+    }
+
     <section class="stage-filter-card">
         <p class="stage-section-kicker">Wedstrijden</p>
         <h2 class="stage-card-title">Selecteer race</h2>
@@ -32,7 +39,7 @@
                     @foreach (var race in races)
                     {
                         <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
-                            @race.Name
+                            @race.Name (@race.Year)
                         </option>
                     }
                 </select>
@@ -85,12 +92,12 @@
                             {
                                 <div class="stage-route-info">
                                     <div>
-                                        <span>Start</span>
+                                        <span>Start coördinaten</span>
                                         <strong>@stage.StartLat, @stage.StartLng</strong>
                                     </div>
 
                                     <div>
-                                        <span>Finish</span>
+                                        <span>Finish coördinaten</span>
                                         <strong>@stage.EndLat, @stage.EndLng</strong>
                                     </div>
                                 </div>
@@ -121,6 +128,7 @@
 
 <script>
     const stageMaps = {};
+
     const stages = @Html.Raw(JsonSerializer.Serialize(Model.Select(s => new
     {
         id = s.Id,
@@ -136,7 +144,9 @@
     const panel = document.getElementById("stage-panel-" + stageId);
     const icon = document.getElementById("stage-icon-" + stageId);
 
-    if (!panel) return;
+    if (!panel) {
+    return;
+    }
 
     const isOpen = panel.classList.contains("open");
 
@@ -145,11 +155,14 @@
 
     if (!isOpen) {
     panel.classList.add("open");
-    if (icon) icon.classList.add("open");
 
-    setTimeout(() => {
+    if (icon) {
+    icon.classList.add("open");
+    }
+
+    setTimeout(function () {
     initStageMap(stageId);
-    }, 120);
+    }, 150);
     }
     }
 
@@ -161,7 +174,7 @@
 
     const stage = stages.find(x => x.id === stageId);
 
-    if (!stage || !stage.startLat || !stage.startLng || !stage.endLat || !stage.endLng) {
+    if (!stage || stage.startLat == null || stage.startLng == null || stage.endLat == null || stage.endLng == null) {
     return;
     }
 
@@ -183,14 +196,14 @@
     attribution: "&copy; OpenStreetMap"
     }).addTo(map);
 
-    L.marker(start).addTo(map).bindPopup("Start: " + stage.name);
-    L.marker(end).addTo(map).bindPopup("Finish: " + stage.name);
+    L.marker(start).addTo(map).bindPopup("Start");
+    L.marker(end).addTo(map).bindPopup("Finish");
 
-    const line = L.polyline([start, end], {
+    const routeLine = L.polyline([start, end], {
     weight: 5
     }).addTo(map);
 
-    map.fitBounds(line.getBounds(), {
+    map.fitBounds(routeLine.getBounds(), {
     padding: [40, 40]
     });
 
