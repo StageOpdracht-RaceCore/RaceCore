@@ -33,12 +33,6 @@ namespace StageProject_RaceCore.Controllers
                 return View(new List<Race>());
             }
         }
-    // READ: List all races
-    public async Task<IActionResult> Index()
-    {
-      var races = await _context.Races.ToListAsync();
-      return View(races);
-    }
 
     // CREATE: Show the blank form
     public IActionResult Create()
