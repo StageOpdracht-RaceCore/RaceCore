@@ -1,0 +1,34 @@
+﻿@model StageProject_RaceCore.Models.Player
+
+@{
+    ViewData["Title"] = "Speler verwijderen";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+<div class="player-form-page">
+    <div class="player-form-card player-delete-card">
+        <div class="player-form-header">
+            <p class="player-page-kicker">Waarschuwing</p>
+            <h1>Speler verwijderen</h1>
+            <p>Deze actie kan niet eenvoudig ongedaan gemaakt worden.</p>
+        </div>
+
+        <div class="player-delete-alert">
+            Ben je zeker dat je speler <strong>@Model.Name</strong> wilt verwijderen?
+        </div>
+
+        <div class="player-detail-list">
+            <div><span>Naam</span><strong>@Model.Name</strong></div>
+            <div><span>Draft positie</span><strong>#@Model.PositionInDraft</strong></div>
+            <div><span>Total points</span><strong>@Model.TotalPoints</strong></div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="player-form-actions">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="player-btn player-btn-danger">Ja, verwijderen</button>
+            <a asp-action="Index" class="player-btn player-btn-light">Annuleren</a>
+        </form>
+    </div>
+</div>

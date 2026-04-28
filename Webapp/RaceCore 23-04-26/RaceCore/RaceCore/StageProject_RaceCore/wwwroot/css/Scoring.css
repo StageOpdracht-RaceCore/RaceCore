@@ -1,0 +1,162 @@
+﻿/* Algemene Pagina Layout */
+.scoring-page {
+    padding: 24px;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: #f8fafc;
+}
+
+/* Blauwe Header Kaart (Player Style) */
+.player-header-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.15);
+}
+
+.player-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.player-page-subtitle {
+    color: #dbeafe;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+/* De Witte Kaarten per positie */
+.result-item-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 80px 1.5fr 1fr;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+    .result-item-card:hover {
+        transform: translateX(5px);
+        border-color: #2563eb;
+        background: #f8fbff;
+    }
+
+/* Badge voor positie */
+.pos-badge {
+    background: #f1f5f9;
+    color: #1e293b;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Input veld stijl */
+.player-search-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 0 16px;
+    background: #f9fafb;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .player-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+/* --- TRUI BOLLEN LOGICA --- */
+.jersey-flex {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.jersey-dot {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+    display: inline-block;
+    filter: saturate(0) opacity(0.2); /* Grijs als niet geselecteerd */
+}
+
+.dot-yellow {
+    background-color: #fbbf24 !important;
+}
+
+.dot-green {
+    background-color: #10b981 !important;
+}
+
+/* De rode trui (voorheen bolletjes, nu egaal rood) */
+.dot-red {
+    background-color: #ef4444 !important;
+    background-image: none !important; /* Verwijder het stippenpatroon */
+    border: 2px solid #dc2626 !important;
+}
+
+/* Zorg dat de kleur ook 'aan' gaat bij selectie */
+input[type="checkbox"]:checked + .dot-red {
+    filter: saturate(1) opacity(1) !important;
+    background-color: #ef4444 !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+.dot-white {
+    background-color: #ffffff !important;
+    border: 2px solid #cbd5e0 !important;
+}
+
+/* Active state: Wanneer de checkbox (die we verbergen) aangevinkt is */
+input[type="checkbox"]:checked + .jersey-dot {
+    filter: saturate(1) opacity(1);
+    transform: scale(1.2);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* De Publiceren knop */
+.player-btn-white {
+    background: white;
+    color: #1d4ed8;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+    .player-btn-white:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+/* Utility */
+.d-none {
+    display: none !important;
+}

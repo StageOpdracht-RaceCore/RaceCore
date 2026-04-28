@@ -10,10 +10,16 @@
         public int StageNumber { get; set; }
 
         public string Name { get; set; } = string.Empty;
+
         public DateTime? Date { get; set; }
 
-        public List<StageResult> Results { get; set; } = new();
-        public List<Jersey> Jerseys { get; set; } = new();
-        public List<PlayerPoints> PlayerPoints { get; set; } = new();
+        public double? StartLat { get; set; }
+        public double? StartLng { get; set; }
+        public double? EndLat { get; set; }
+        public double? EndLng { get; set; }
+
+        public ICollection<StageResult> Results { get; set; } = new List<StageResult>();
+
+        public ICollection<PlayerPoints> PlayerPoints { get; set; } = new List<PlayerPoints>();
     }
 }
