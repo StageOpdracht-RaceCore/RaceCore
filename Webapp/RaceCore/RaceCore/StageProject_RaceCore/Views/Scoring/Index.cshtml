@@ -31,39 +31,41 @@
 
     @if (TempData["Success"] != null)
     {
-        <div class="draft-alert" style="background:#ecfdf5;color:#166534;border-color:#bbf7d0;">
-            @TempData["Success"]
-        </div>
+        <div class="draft-alert">@TempData["Success"]</div>
     }
 
     <div class="player-header-card">
         <div>
             <h1 class="player-page-title">Scoring</h1>
             <p class="player-page-subtitle">
-                Kies een wedstrijd via de knoppen en daarna een rit via de dropdown.
+                Kies een wedstrijd en rit via de dropdowns.
             </p>
         </div>
     </div>
 
-    <div class="player-table-card" style="padding:20px;margin-bottom:20px;">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
-            @foreach (var race in races)
-            {
-                <a asp-action="Index"
-                       asp-route-raceId="@race.Id"
-                       class="player-btn-white @(race.Id == selectedRaceId ? "active" : "")"
-                       style="text-decoration:none;">
-                    @race.Name
-                </a>
-            }
-        </div>
+    <div class="player-table-card scoring-selector-card">
+        <form asp-action="Index" method="get" class="scoring-selector-form">
+            <div class="scoring-stage-group">
+                <label for="raceId">Wedstrijd kiezen</label>
+                <select id="raceId"
+                        name="raceId"
+                        class="scoring-stage-select"
+                        onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name
+                        </option>
+                    }
+                </select>
+            </div>
 
-        <form asp-action="Index" method="get" style="display:flex;gap:12px;align-items:end;">
-            <input type="hidden" name="raceId" value="@selectedRaceId" />
-
-            <div style="flex:1;">
-                <label style="font-weight:700;">Rit kiezen</label>
-                <select name="stageId" class="player-search-input">
+            <div class="scoring-stage-group">
+                <label for="stageId">Rit kiezen</label>
+                <select id="stageId"
+                        name="stageId"
+                        class="scoring-stage-select"
+                        onchange="this.form.submit()">
                     @foreach (var stage in stages)
                     {
                         <option value="@stage.Value" selected="@stage.Selected">
@@ -72,10 +74,6 @@
                     }
                 </select>
             </div>
-
-            <button type="submit" class="player-btn-white">
-                Rit laden
-            </button>
         </form>
     </div>
 
@@ -125,22 +123,34 @@
 
                     <div class="jersey-flex">
                         <label title="Rode trui">
-                            <input type="checkbox" asp-for="Results[i].HasYellowJersey" class="d-none js-jersey-checkbox" data-jersey="Red" />
+                            <input type="checkbox"
+                                   asp-for="Results[i].HasYellowJersey"
+                                   class="d-none js-jersey-checkbox"
+                                   data-jersey="Red" />
                             <span class="jersey-dot dot-red"></span>
                         </label>
 
                         <label title="Groene trui">
-                            <input type="checkbox" asp-for="Results[i].HasGreenJersey" class="d-none js-jersey-checkbox" data-jersey="Green" />
+                            <input type="checkbox"
+                                   asp-for="Results[i].HasGreenJersey"
+                                   class="d-none js-jersey-checkbox"
+                                   data-jersey="Green" />
                             <span class="jersey-dot dot-green"></span>
                         </label>
 
                         <label title="Blauwe trui">
-                            <input type="checkbox" asp-for="Results[i].HasPolkaJersey" class="d-none js-jersey-checkbox" data-jersey="Blue" />
+                            <input type="checkbox"
+                                   asp-for="Results[i].HasPolkaJersey"
+                                   class="d-none js-jersey-checkbox"
+                                   data-jersey="Blue" />
                             <span class="jersey-dot dot-blue"></span>
                         </label>
 
                         <label title="Witte trui">
-                            <input type="checkbox" asp-for="Results[i].HasWhiteJersey" class="d-none js-jersey-checkbox" data-jersey="White" />
+                            <input type="checkbox"
+                                   asp-for="Results[i].HasWhiteJersey"
+                                   class="d-none js-jersey-checkbox"
+                                   data-jersey="White" />
                             <span class="jersey-dot dot-white"></span>
                         </label>
                     </div>
@@ -148,12 +158,13 @@
             }
         </div>
 
-        <div class="player-table-card" style="margin-top:24px;padding:24px;">
-            <h2 style="margin-top:0;">Truidragers buiten Top 25</h2>
+        <div class="player-table-card outside-jersey-card">
+            <h2 class="outside-jersey-title">Truidragers buiten Top 25</h2>
 
             <div class="results-list">
                 <div class="result-item-card">
                     <div class="pos-badge dot-red"></div>
+
                     <div class="px-3">
                         <input type="text"
                                list="cyclistList"
@@ -162,12 +173,14 @@
                                placeholder="Rode trui..."
                                oninput="syncId(this); clearTop25Jersey('Red');"
                                autocomplete="off" />
+
                         <input type="hidden" asp-for="YellowOutsideTop25CyclistId" />
                     </div>
                 </div>
 
                 <div class="result-item-card">
                     <div class="pos-badge dot-green"></div>
+
                     <div class="px-3">
                         <input type="text"
                                list="cyclistList"
@@ -176,12 +189,14 @@
                                placeholder="Groene trui..."
                                oninput="syncId(this); clearTop25Jersey('Green');"
                                autocomplete="off" />
+
                         <input type="hidden" asp-for="GreenOutsideTop25CyclistId" />
                     </div>
                 </div>
 
                 <div class="result-item-card">
                     <div class="pos-badge dot-blue"></div>
+
                     <div class="px-3">
                         <input type="text"
                                list="cyclistList"
@@ -190,12 +205,14 @@
                                placeholder="Blauwe trui..."
                                oninput="syncId(this); clearTop25Jersey('Blue');"
                                autocomplete="off" />
+
                         <input type="hidden" asp-for="PolkaOutsideTop25CyclistId" />
                     </div>
                 </div>
 
                 <div class="result-item-card">
                     <div class="pos-badge dot-white"></div>
+
                     <div class="px-3">
                         <input type="text"
                                list="cyclistList"
@@ -204,6 +221,7 @@
                                placeholder="Witte trui..."
                                oninput="syncId(this); clearTop25Jersey('White');"
                                autocomplete="off" />
+
                         <input type="hidden" asp-for="WhiteOutsideTop25CyclistId" />
                     </div>
                 </div>
