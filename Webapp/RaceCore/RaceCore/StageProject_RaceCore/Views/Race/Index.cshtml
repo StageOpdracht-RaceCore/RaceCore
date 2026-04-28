@@ -7,20 +7,13 @@
 
 <link rel="stylesheet" href="~/css/Race.css"/>
 
-<div class="race-page">
-    <section class="race-header-card">
-        <p class="race-page-kicker">RaceCore</p>
-        <h1 class="race-page-title">Races</h1>
-        <p class="race-page-subtitle">
-            Beheer alle wedstrijden, jaren, ritten en deelnames binnen RaceCore.
-        </p>
-    </section>
-
-    <section class="race-table-card">
-        <div class="race-table-header">
-            <div>
-                <p class="race-section-kicker">Overzicht</p>
-                <h2 class="race-card-title">Race lijst</h2>
+<div class="player-form-page">
+    <div class="player-table-card">
+        <div class="player-form-header">
+            <p class="player-page-kicker">RaceCore Management</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Races</h1>
+                <a class="player-btn player-btn-primary" asp-controller="Game" asp-action="new">Nieuwe Race</a>
             </div>
         </div>
 
@@ -67,7 +60,7 @@
                                               onsubmit="return confirm('Race verwijderen?');">
                                             <button type="submit" class="race-btn race-btn-danger btn-sm">Delete</button>
                                             @Html.AntiForgeryToken()
-                                        </form>
+                                        </form>²
                                     </div>
                                 </td>
                             </tr>
