@@ -33,37 +33,30 @@
         </div>
     </div>
 
-    @* Dropdown selectie via FORM *@
-    <div class="player-toolbar-card history-toolbar">
-        <form asp-controller="History" asp-action="History" method="get" class="history-form">
-            <div class="game-form-group history-select-group">
-                <label class="history-label">Selecteer een race</label>
-                
-                <select name="raceId" class="game-input">
+    @* Dropdown selectie via FORM (Automatisch laden bij selectie) *@
+    <div class="player-table-card scoring-selector-card">
+        <form asp-action="History" method="get" class="scoring-selector-form">
+            <div class="scoring-stage-group">
+                <label for="raceId">Selecteer een race</label>
+                <select id="raceId"
+                        name="raceId"
+                        class="scoring-stage-select"
+                        onchange="this.form.submit()">
                     <option value="">-- Kies een race --</option>
                     @foreach (var race in races)
                     {
-                        @if (race.Id == selectedRaceId)
-                        {
-                            <option value="@race.Id" selected="selected">@race.Name @race.Year</option>
-                        }
-                        else
-                        {
-                            <option value="@race.Id">@race.Name @race.Year</option>
-                        }
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name @race.Year
+                        </option>
                     }
                 </select>
             </div>
-            
-            <button type="submit" class="player-btn player-btn-primary history-submit-btn">
-                Bekijk ritten
-            </button>
+            @* De knop 'Bekijk ritten' is hier verwijderd omdat onchange de submit afhandelt *@
         </form>
     </div>
 
     @* De Tabel *@
     <div class="history-card">
-        @* ... Tabel inhoud blijft hetzelfde ... *@
         <table class="history-table">
             <thead>
                 <tr>
