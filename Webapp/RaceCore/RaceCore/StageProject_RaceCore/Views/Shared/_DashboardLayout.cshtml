@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RaceCore</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    
+    @* Deze regel zorgt ervoor dat CSS uit individuele views (zoals History.cshtml) geladen wordt *@
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="dashboard-body">
     <div class="dashboard-wrapper">
@@ -78,6 +81,6 @@
             window.addEventListener("resize", closeSidebarOnDesktopResize);
     </script>
 
-    @RenderSection("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
