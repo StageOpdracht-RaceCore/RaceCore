@@ -1,5 +1,6 @@
 ﻿@model List<StageProject_RaceCore.Models.Stage>
 @using StageProject_RaceCore.Models
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Ritten";
@@ -8,6 +9,7 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
 
 <div class="stage-page">
@@ -15,7 +17,7 @@
         <p class="stage-page-kicker">RaceCore</p>
         <h1 class="stage-page-title">Ritten</h1>
         <p class="stage-page-subtitle">
-            Bekijk per wedstrijd alle ritten met datum en ritinformatie.
+            Bekijk per wedstrijd alle ritten met datum, start, finish en routekaart.
         </p>
     </section>
 
@@ -52,19 +54,56 @@
 
         @if (Model != null && Model.Any())
         {
-            <div class="stage-grid">
+            <div class="stage-grid stage-grid-map">
                 @foreach (var stage in Model)
                 {
-                    <article class="stage-card">
-                        <div class="stage-number-badge">
-                            Rit @stage.StageNumber
+                    bool hasMap = stage.StartLat.HasValue &&
+                                  stage.StartLng.HasValue &&
+                                  stage.EndLat.HasValue &&
+                                  stage.EndLng.HasValue;
+
+                    <article class="stage-card stage-expand-card">
+                        <button type="button" class="stage-card-toggle" onclick="toggleStageMap(@stage.Id)">
+                            <div class="stage-card-main">
+                                <div class="stage-number-badge">
+                                    Rit @stage.StageNumber
+                                </div>
+
+                                <div>
+                                    <h3>@stage.Name</h3>
+                                    <p>
+                                        @(stage.Date.HasValue ? stage.Date.Value.ToString("dd/MM/yyyy") : "Geen datum")
+                                    </p>
+                                </div>
+                            </div>
+
+                            <span class="stage-toggle-icon" id="stage-icon-@stage.Id">⌄</span>
+                        </button>
+
+                        <div class="stage-map-panel" id="stage-panel-@stage.Id">
+                            @if (hasMap)
+                            {
+                                <div class="stage-route-info">
+                                    <div>
+                                        <span>Start</span>
+                                        <strong>@stage.StartLat, @stage.StartLng</strong>
+                                    </div>
+
+                                    <div>
+                                        <span>Finish</span>
+                                        <strong>@stage.EndLat, @stage.EndLng</strong>
+                                    </div>
+                                </div>
+
+                                <div class="stage-map" id="stage-map-@stage.Id"></div>
+                            }
+                            else
+                            {
+                                <div class="stage-no-map">
+                                    Nog geen kaartgegevens voor deze rit.
+                                </div>
+                            }
                         </div>
-
-                        <h3>@stage.Name</h3>
-
-                        <p>
-                            @(stage.Date.HasValue ? stage.Date.Value.ToString("dd/MM/yyyy") : "Geen datum")
-                        </p>
                     </article>
                 }
             </div>
@@ -77,3 +116,84 @@
         }
     </section>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const stageMaps = {};
+    const stages = @Html.Raw(JsonSerializer.Serialize(Model.Select(s => new
+    {
+        id = s.Id,
+        name = s.Name,
+        stageNumber = s.StageNumber,
+        startLat = s.StartLat,
+        startLng = s.StartLng,
+        endLat = s.EndLat,
+        endLng = s.EndLng
+    })));
+
+    function toggleStageMap(stageId) {
+    const panel = document.getElementById("stage-panel-" + stageId);
+    const icon = document.getElementById("stage-icon-" + stageId);
+
+    if (!panel) return;
+
+    const isOpen = panel.classList.contains("open");
+
+    document.querySelectorAll(".stage-map-panel").forEach(x => x.classList.remove("open"));
+    document.querySelectorAll(".stage-toggle-icon").forEach(x => x.classList.remove("open"));
+
+    if (!isOpen) {
+    panel.classList.add("open");
+    if (icon) icon.classList.add("open");
+
+    setTimeout(() => {
+    initStageMap(stageId);
+    }, 120);
+    }
+    }
+
+    function initStageMap(stageId) {
+    if (stageMaps[stageId]) {
+    stageMaps[stageId].invalidateSize();
+    return;
+    }
+
+    const stage = stages.find(x => x.id === stageId);
+
+    if (!stage || !stage.startLat || !stage.startLng || !stage.endLat || !stage.endLng) {
+    return;
+    }
+
+    const mapElement = document.getElementById("stage-map-" + stageId);
+
+    if (!mapElement) {
+    return;
+    }
+
+    const start = [stage.startLat, stage.startLng];
+    const end = [stage.endLat, stage.endLng];
+
+    const map = L.map(mapElement, {
+    scrollWheelZoom: false
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    L.marker(start).addTo(map).bindPopup("Start: " + stage.name);
+    L.marker(end).addTo(map).bindPopup("Finish: " + stage.name);
+
+    const line = L.polyline([start, end], {
+    weight: 5
+    }).addTo(map);
+
+    map.fitBounds(line.getBounds(), {
+    padding: [40, 40]
+    });
+
+    stageMaps[stageId] = map;
+    }
+</script>
