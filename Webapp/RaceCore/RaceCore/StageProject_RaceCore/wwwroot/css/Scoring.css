@@ -1,11 +1,11 @@
 ﻿/* Algemene Pagina Layout */
 .scoring-page {
     padding: 24px;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background-color: #f8fafc;
 }
 
-/* Blauwe Header Kaart (Player Style) */
+/* Header */
 .player-header-card {
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
@@ -15,6 +15,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 24px;
     box-shadow: 0 10px 25px rgba(30, 58, 138, 0.15);
 }
 
@@ -26,22 +27,34 @@
 
 .player-page-subtitle {
     color: #dbeafe;
-    margin-top: 4px;
+    margin: 4px 0 0;
     opacity: 0.9;
 }
 
-/* De Witte Kaarten per positie */
+/* Kaarten */
+.player-table-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .result-item-card {
     background: white;
     border-radius: 16px;
     padding: 16px 24px;
-    margin-bottom: 12px;
     display: grid;
     grid-template-columns: 80px 1.5fr 1fr;
     align-items: center;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, border-color 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
 }
 
     .result-item-card:hover {
@@ -50,7 +63,7 @@
         background: #f8fbff;
     }
 
-/* Badge voor positie */
+/* Positie badge */
 .pos-badge {
     background: #f1f5f9;
     color: #1e293b;
@@ -65,7 +78,7 @@
     border: 1px solid #e2e8f0;
 }
 
-/* Input veld stijl */
+/* Inputs */
 .player-search-input {
     width: 100%;
     height: 48px;
@@ -84,7 +97,7 @@
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
-/* --- TRUI BOLLEN LOGICA --- */
+/* Truien */
 .jersey-flex {
     display: flex;
     gap: 12px;
@@ -96,48 +109,71 @@
     height: 38px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid #e5e7eb;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     display: inline-block;
-    filter: saturate(0) opacity(0.2); /* Grijs als niet geselecteerd */
+    filter: saturate(0) opacity(0.25);
 }
 
-.dot-yellow {
-    background-color: #fbbf24 !important;
-}
-
-.dot-green {
-    background-color: #10b981 !important;
-}
-
-/* De rode trui (voorheen bolletjes, nu egaal rood) */
 .dot-red {
-    background-color: #ef4444 !important;
-    background-image: none !important; /* Verwijder het stippenpatroon */
+    background: #ef4444 !important;
     border: 2px solid #dc2626 !important;
 }
 
-/* Zorg dat de kleur ook 'aan' gaat bij selectie */
-input[type="checkbox"]:checked + .dot-red {
-    filter: saturate(1) opacity(1) !important;
-    background-color: #ef4444 !important;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+.dot-green {
+    background: #10b981 !important;
+    border: 2px solid #059669 !important;
+}
+
+.dot-blue {
+    background: #2563eb !important;
+    border: 2px solid #1d4ed8 !important;
 }
 
 .dot-white {
-    background-color: #ffffff !important;
-    border: 2px solid #cbd5e0 !important;
+    background: #ffffff !important;
+    border: 2px solid #94a3b8 !important;
 }
 
-/* Active state: Wanneer de checkbox (die we verbergen) aangevinkt is */
+/* Geselecteerde trui in top 25 */
 input[type="checkbox"]:checked + .jersey-dot {
     filter: saturate(1) opacity(1);
     transform: scale(1.2);
-    border-color: rgba(0,0,0,0.1);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
-/* De Publiceren knop */
+/* Truidragers buiten top 25: altijd kleur tonen */
+.pos-badge.dot-red,
+.pos-badge.dot-green,
+.pos-badge.dot-blue,
+.pos-badge.dot-white {
+    filter: none !important;
+}
+
+.pos-badge.dot-red {
+    background: #ef4444 !important;
+    color: white;
+    border-color: #dc2626 !important;
+}
+
+.pos-badge.dot-green {
+    background: #10b981 !important;
+    color: white;
+    border-color: #059669 !important;
+}
+
+.pos-badge.dot-blue {
+    background: #2563eb !important;
+    color: white;
+    border-color: #1d4ed8 !important;
+}
+
+.pos-badge.dot-white {
+    background: #ffffff !important;
+    color: #1e293b;
+    border-color: #94a3b8 !important;
+}
+
+/* Knoppen */
 .player-btn-white {
     background: white;
     color: #1d4ed8;
@@ -147,16 +183,78 @@ input[type="checkbox"]:checked + .jersey-dot {
     border: none;
     cursor: pointer;
     transition: 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-    .player-btn-white:hover {
-        background: #f1f5f9;
+    .player-btn-white:hover,
+    .player-btn-white.active {
+        background: #eff6ff;
+        color: #1d4ed8;
         transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
     }
+
+/* Alerts */
+.draft-alert {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #bbf7d0;
+    background: #ecfdf5;
+    color: #166534;
+    font-weight: 700;
+}
+
+.draft-alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
 
 /* Utility */
 .d-none {
     display: none !important;
+}
+
+.px-3 {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .player-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result-item-card {
+        grid-template-columns: 60px 1fr;
+        gap: 14px;
+    }
+
+    .jersey-flex {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .scoring-page {
+        padding: 16px;
+    }
+
+    .result-item-card {
+        padding: 14px;
+        grid-template-columns: 1fr;
+    }
+
+    .jersey-flex {
+        grid-column: auto;
+    }
+
+    .pos-badge {
+        width: 40px;
+        height: 40px;
+    }
 }
