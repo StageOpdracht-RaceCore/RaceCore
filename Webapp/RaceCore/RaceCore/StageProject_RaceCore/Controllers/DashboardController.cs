@@ -26,13 +26,33 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 model.PlayersCount = _context.Players.Count();
-                model.CyclistsCount = _context.Cyclists.Count();
+                model.CyclistsCount = _context.Cyclists.Count(c => c.IsActive);
                 model.TeamsCount = _context.Teams.Count();
                 model.StagesCount = _context.Stages.Count();
 
-                model.TotalDraftPicks = _context.DraftTurns.Count(dt => dt.CyclistId != null);
-                model.DraftCompleted = _context.DraftTurns.Any() &&
-                                       _context.DraftTurns.All(dt => dt.CyclistId != null);
+                var draftStatus = _context.DraftTurns
+                    .GroupBy(dt => dt.RaceId)
+                    .Select(g => new
+                    {
+                        RaceId = g.Key,
+                        TotalTurns = g.Count(),
+                        PickedTurns = g.Count(x => x.CyclistId != null)
+                    })
+                    .OrderByDescending(x => x.PickedTurns)
+                    .ThenByDescending(x => x.TotalTurns)
+                    .FirstOrDefault();
+
+                if (draftStatus != null)
+                {
+                    model.TotalDraftPicks = draftStatus.PickedTurns;
+                    model.DraftCompleted = draftStatus.TotalTurns > 0 &&
+                                           draftStatus.PickedTurns == draftStatus.TotalTurns;
+                }
+                else
+                {
+                    model.TotalDraftPicks = 0;
+                    model.DraftCompleted = false;
+                }
 
                 model.PlayerRanking = _context.Players
                     .Select(p => new PlayerRankingItem
@@ -53,6 +73,7 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 model.TopCyclists = _context.Cyclists
+                    .Where(c => c.IsActive)
                     .Select(c => new TopCyclistItem
                     {
                         Name = c.FirstName + " " + c.LastName,
@@ -62,6 +83,7 @@ namespace StageProject_RaceCore.Controllers
                             .Sum() ?? 0
                     })
                     .OrderByDescending(x => x.Points)
+                    .ThenBy(x => x.Name)
                     .Take(5)
                     .ToList();
 
@@ -76,6 +98,7 @@ namespace StageProject_RaceCore.Controllers
 
                 var latestStage = _context.Stages
                     .OrderByDescending(s => s.Date)
+                    .ThenByDescending(s => s.StageNumber)
                     .FirstOrDefault();
 
                 if (latestStage != null)
