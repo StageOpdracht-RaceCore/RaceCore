@@ -78,7 +78,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live draft gegevens te zien.";
+                TempData["DatabaseError"] = "Database niet bereikbaar.";
                 return View(new List<DraftTurnViewModel>());
             }
         }
