@@ -1,0 +1,506 @@
+﻿.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    padding: 22px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: white;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+    .stat-card::after {
+        content: "";
+        position: absolute;
+        right: -35px;
+        top: -35px;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .stat-card.blue {
+        background: linear-gradient(135deg, royalblue, dodgerblue);
+    }
+
+    .stat-card.green {
+        background: linear-gradient(135deg, seagreen, mediumseagreen);
+    }
+
+    .stat-card.orange {
+        background: linear-gradient(135deg, orangered, orange);
+    }
+
+    .stat-card.purple {
+        background: linear-gradient(135deg, blueviolet, mediumpurple);
+    }
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    z-index: 1;
+}
+
+.stat-card h4 {
+    margin: 0 0 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.stat-card p {
+    margin: 0;
+    color: white;
+    font-size: 30px;
+    font-weight: 900;
+}
+
+/* LAYOUT */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 0.9fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 18px;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    border-radius: 22px;
+    padding: 22px;
+    border: 1px solid gainsboro;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.card h3 {
+    margin: 4px 0 0;
+    color: midnightblue;
+    font-size: 23px;
+    font-weight: 900;
+}
+
+.section-kicker {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: royalblue;
+    font-weight: 900;
+}
+
+/* LISTS */
+.ranking-list,
+.cyclist-list,
+.jersey-list,
+.podium-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ranking-list-scroll {
+    max-height: 470px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+    .ranking-list-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-track {
+        background: whitesmoke;
+        border-radius: 999px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-thumb {
+        background: lightgray;
+        border-radius: 999px;
+    }
+
+/* RANKING */
+.ranking-row {
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 18px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    transition: 0.2s ease;
+}
+
+    .ranking-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px lightgray;
+    }
+
+.ranking-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ranking-pos {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 16px;
+    background: aliceblue;
+    color: royalblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+.player-avatar {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 16px;
+    color: white;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ranking-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ranking-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+    .ranking-name-row strong {
+        color: midnightblue;
+    }
+
+.player-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.progress-line,
+.cyclist-bar {
+    width: 100%;
+    height: 8px;
+    background: gainsboro;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill,
+.cyclist-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.ranking-points,
+.cyclist-points {
+    color: midnightblue;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+/* LATEST STAGE */
+.stage-title {
+    padding: 15px 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, midnightblue, royalblue);
+    color: white;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.podium-row {
+    background: aliceblue;
+    border: 1px solid lightsteelblue;
+    border-radius: 15px;
+    padding: 13px 15px;
+    font-weight: 800;
+    color: midnightblue;
+}
+
+/* DRAFT */
+.draft-status-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.draft-status-item {
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+    .draft-status-item span {
+        display: block;
+        margin-bottom: 7px;
+        color: slategray;
+        font-size: 13px;
+    }
+
+    .draft-status-item strong {
+        color: midnightblue;
+        font-size: 19px;
+    }
+
+.status-done-text {
+    color: seagreen !important;
+}
+
+.status-live-text {
+    color: royalblue !important;
+}
+
+/* CYCLISTS */
+.cyclist-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 15px;
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 16px;
+}
+
+.cyclist-main {
+    flex: 1;
+    min-width: 0;
+}
+
+    .cyclist-main strong {
+        display: block;
+        margin-bottom: 8px;
+        color: midnightblue;
+    }
+
+.cyclist-bar-fill {
+    background: linear-gradient(90deg, royalblue, dodgerblue);
+}
+
+/* JERSEYS */
+.jersey-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 15px;
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 16px;
+}
+
+    .jersey-row strong {
+        color: midnightblue;
+    }
+
+.jersey {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+    .jersey.yellow {
+        background: khaki;
+        color: saddlebrown;
+    }
+
+    .jersey.green {
+        background: lightgreen;
+        color: darkgreen;
+    }
+
+    .jersey.polka {
+        background: lightpink;
+        color: darkred;
+    }
+
+    .jersey.white {
+        background: white;
+        color: dimgray;
+        border: 1px solid lightgray;
+    }
+
+    .jersey.default {
+        background: aliceblue;
+        color: royalblue;
+    }
+
+/* DRAFT STATUS CARD */
+.hero-section {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hero-side-card {
+    width: 100%;
+    max-width: 340px;
+    background: linear-gradient(135deg, midnightblue, royalblue);
+    color: white;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+}
+
+.hero-side-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+    .hero-side-top span {
+        color: lightsteelblue;
+        font-weight: 800;
+    }
+
+.hero-side-number {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.hero-side-label {
+    margin-top: 8px;
+    color: whitesmoke;
+}
+
+.status-done,
+.status-live {
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.status-done {
+    background: lightgreen;
+    color: darkgreen;
+}
+
+.status-live {
+    background: lightblue;
+    color: midnightblue;
+}
+
+/* EMPTY */
+.empty-box {
+    padding: 18px;
+    border-radius: 16px;
+    background: whitesmoke;
+    border: 1px dashed lightgray;
+    color: slategray;
+    font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1300px) {
+    .main-grid,
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-section {
+        justify-content: stretch;
+    }
+
+    .hero-side-card {
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .draft-status-box {
+        grid-template-columns: 1fr;
+    }
+
+    .ranking-row,
+    .cyclist-row,
+    .jersey-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ranking-left {
+        width: 100%;
+    }
+
+    .ranking-points,
+    .cyclist-points {
+        margin-top: 6px;
+    }
+
+    .ranking-list-scroll {
+        max-height: 430px;
+        padding-right: 2px;
+    }
+}
