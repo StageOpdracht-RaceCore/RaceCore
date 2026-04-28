@@ -1,4 +1,51 @@
-﻿/* Container & Layout */
+﻿/* --- NIEUW: Toolbar & Race Selectie --- */
+.history-toolbar {
+    margin-bottom: 20px;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.history-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.history-select-group {
+    margin-bottom: 0 !important; /* Overschrijf standaard margin van game-form-group */
+    flex-grow: 1;
+    max-width: 400px;
+}
+
+.history-label {
+    font-weight: bold;
+    color: #1e293b;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.history-submit-btn {
+    height: 46px; /* Zorgt dat de knop precies even hoog is als de game-input select box */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mobiele optimalisatie voor de toolbar */
+@media (max-width: 600px) {
+    .history-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .history-select-group {
+        max-width: 100%;
+    }
+}
+
+/* --- BESTAAND: Container & Layout --- */
 .history-page-container {
     padding: 1.5rem;
 }
@@ -30,7 +77,7 @@
     font-size: 0.85rem;
 }
 
-/* De Kaart */
+/* --- BESTAAND: De Kaart --- */
 .history-card {
     background: white;
     border-radius: 12px;
@@ -39,7 +86,7 @@
     border: none;
 }
 
-/* Tabel Styling */
+/* --- BESTAAND: Tabel Styling --- */
 .history-table {
     width: 100%;
     border-collapse: collapse;
@@ -71,7 +118,7 @@
         transition: background-color 0.2s;
     }
 
-/* Specifieke Kolommen */
+/* --- BESTAAND: Specifieke Kolommen --- */
 .stage-number-circle {
     width: 36px;
     height: 36px;
@@ -99,16 +146,11 @@
     font-weight: 500;
 }
 
-/* Winnaar & Speler Badges */
+/* --- BESTAAND: Winnaar & Speler Badges --- */
 .winner-info {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.trophy-icon {
-    color: #f59e0b;
-    font-size: 1.2rem;
+    flex-direction: column; /* Aangepast voor betere stack van naam en team */
+    gap: 0.25rem;
 }
 
 .winner-name {
@@ -118,6 +160,7 @@
 
 .winner-team {
     color: #64748b;
+    font-size: 0.85rem;
     display: block;
 }
 
@@ -137,7 +180,7 @@
     font-weight: 800;
 }
 
-/* Knoppen */
+/* --- BESTAAND: Knoppen --- */
 .btn-details {
     display: inline-flex;
     align-items: center;
@@ -157,15 +200,9 @@
         color: white;
     }
 
-/* Empty State */
+/* --- BESTAAND: Empty State --- */
 .empty-state {
     text-align: center;
     padding: 4rem !important;
     color: #94a3b8;
 }
-
-    .empty-state i {
-        font-size: 3rem;
-        display: block;
-        margin-bottom: 1rem;
-    }

@@ -11,6 +11,10 @@
 
         public string Name { get; set; } = string.Empty;
         public DateTime? Date { get; set; }
+        public double? StartLat { get; set; }
+        public double? StartLng { get; set; }
+        public double? EndLat { get; set; }
+        public double? EndLng { get; set; }
 
         public List<StageResult> Results { get; set; } = new();
         public List<Jersey> Jerseys { get; set; } = new();

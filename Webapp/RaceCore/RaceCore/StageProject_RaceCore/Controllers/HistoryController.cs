@@ -14,19 +14,33 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> History()
+        public async Task<IActionResult> History(int? raceId)
         {
-            // 1. Haal de actieve race op (of de meest recente)
-            var race = await _context.Races
-                .OrderByDescending(r => r.StartDate)
-                .FirstOrDefaultAsync();
+            // 1. Haal alle races op uit de database voor de dropdown
+            var allRaces = await _context.Races.OrderByDescending(r => r.Year).ToListAsync();
+
+            // 2. Stop ze in de ViewBag zodat de View ze kan zien
+            ViewBag.Races = allRaces;
+            ViewBag.SelectedRaceId = raceId;
+
+            // 3. Bepaal welke race getoond moet worden
+            Race race;
+            if (raceId.HasValue)
+            {
+                race = allRaces.FirstOrDefault(r => r.Id == raceId.Value);
+            }
+            else
+            {
+                // Toon de meest recente race als er geen ID is meegegeven
+                race = allRaces.OrderByDescending(r => r.StartDate).FirstOrDefault();
+            }
 
             if (race == null)
             {
                 return NotFound("Geen race gevonden in de database.");
             }
 
-            // 2. Bouw het model op met alle etappes en bijbehorende resultaten
+            // 4. Bouw het model op met alle etappes en bijbehorende resultaten
             var model = new HistoryViewModel
             {
                 RaceId = race.Id,
