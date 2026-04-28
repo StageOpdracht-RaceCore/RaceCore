@@ -162,35 +162,8 @@ namespace StageProject_RaceCore.Controllers
         {
             try
             {
-                if (raceId <= 0)
-                {
-                    TempData["Error"] = "Geen geldige race gevonden.";
-                    return RedirectToAction("Index");
-                }
-
-                if (cyclistId <= 0)
-                {
-                    TempData["Error"] = "Kies eerst een geldige renner.";
-                    return RedirectToAction("Index", new { raceId });
-                }
-
-                var turn = await _context.DraftTurns
-                    .Include(t => t.Player)
-                    .FirstOrDefaultAsync(t => t.Id == draftTurnId && t.RaceId == raceId);
-
-                if (turn == null)
-                {
-                    TempData["Error"] = "Draft beurt niet gevonden.";
-                    return RedirectToAction("Index", new { raceId });
-                }
-
-                if (turn.CyclistId.HasValue)
-                {
-                    TempData["Error"] = "Voor deze beurt is al een renner gekozen.";
-                    return RedirectToAction("Index", new { raceId });
-                }
-
                 var currentTurn = await _context.DraftTurns
+                    .Include(t => t.Player)
                     .Where(t => t.RaceId == raceId && t.CyclistId == null)
                     .OrderBy(t => t.TurnNumber)
                     .FirstOrDefaultAsync();
@@ -207,6 +180,15 @@ namespace StageProject_RaceCore.Controllers
                     return RedirectToAction("Index", new { raceId });
                 }
 
+                var cyclist = await _context.Cyclists
+                    .FirstOrDefaultAsync(c => c.Id == cyclistId && c.IsActive);
+
+                if (cyclist == null)
+                {
+                    TempData["Error"] = "Kies eerst een geldige actieve renner.";
+                    return RedirectToAction("Index", new { raceId });
+                }
+
                 bool alreadyPicked = await _context.DraftTurns
                     .AnyAsync(t => t.RaceId == raceId && t.CyclistId == cyclistId);
 
@@ -216,40 +198,22 @@ namespace StageProject_RaceCore.Controllers
                     return RedirectToAction("Index", new { raceId });
                 }
 
-                var cyclist = await _context.Cyclists
-                    .FirstOrDefaultAsync(c => c.Id == cyclistId && c.IsActive);
-
-                if (cyclist == null)
-                {
-                    TempData["Error"] = "De gekozen renner bestaat niet of is niet actief.";
-                    return RedirectToAction("Index", new { raceId });
-                }
-
-                turn.CyclistId = cyclistId;
+                currentTurn.CyclistId = cyclistId;
 
                 int currentPlayerPickCount = await _context.PlayerSelections
-                    .CountAsync(ps => ps.RaceId == raceId && ps.PlayerId == turn.PlayerId);
+                    .CountAsync(ps => ps.RaceId == raceId && ps.PlayerId == currentTurn.PlayerId);
 
-                bool selectionExists = await _context.PlayerSelections
-                    .AnyAsync(ps =>
-                        ps.RaceId == raceId &&
-                        ps.PlayerId == turn.PlayerId &&
-                        ps.CyclistId == cyclistId);
-
-                if (!selectionExists)
+                _context.PlayerSelections.Add(new PlayerSelection
                 {
-                    _context.PlayerSelections.Add(new PlayerSelection
-                    {
-                        RaceId = raceId,
-                        PlayerId = turn.PlayerId,
-                        CyclistId = cyclistId,
-                        IsActive = currentPlayerPickCount < 10
-                    });
-                }
+                    RaceId = raceId,
+                    PlayerId = currentTurn.PlayerId,
+                    CyclistId = cyclistId,
+                    IsActive = currentPlayerPickCount < 10
+                });
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"{turn.Player?.Name ?? "Speler"} heeft {cyclist.FullName} gekozen.";
+                TempData["Success"] = $"{currentTurn.Player.Name} heeft {cyclist.FullName} gekozen.";
             }
             catch (Exception ex)
             {
@@ -258,27 +222,23 @@ namespace StageProject_RaceCore.Controllers
 
             return RedirectToAction("Index", new { raceId });
         }
-
         private static List<DraftTurn> GenerateFairSnakeDraft(int raceId, List<Player> players, int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
 
             int turnNumber = 1;
-            int playerCount = players.Count;
 
             for (int round = 1; round <= totalRounds; round++)
             {
-                int pairIndex = (round - 1) / 2;
-                int startIndex = pairIndex % playerCount;
+                List<Player> roundPlayers;
 
-                var roundPlayers = players
-                    .Skip(startIndex)
-                    .Concat(players.Take(startIndex))
-                    .ToList();
-
-                if (round % 2 == 0)
+                if (round % 2 == 1)
                 {
-                    roundPlayers.Reverse();
+                    roundPlayers = players.ToList();
+                }
+                else
+                {
+                    roundPlayers = players.AsEnumerable().Reverse().ToList();
                 }
 
                 foreach (var player in roundPlayers)
@@ -287,7 +247,8 @@ namespace StageProject_RaceCore.Controllers
                     {
                         RaceId = raceId,
                         PlayerId = player.Id,
-                        TurnNumber = turnNumber
+                        TurnNumber = turnNumber,
+                        CyclistId = null
                     });
 
                     turnNumber++;
