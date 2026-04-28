@@ -1,0 +1,467 @@
+﻿.new-game-page {
+    padding: 26px;
+    background: white;
+    min-height: 100vh;
+    color: midnightblue;
+}
+
+.game-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 34px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, midnightblue, royalblue);
+    box-shadow: 0 14px 35px lightgray;
+    margin-bottom: 22px;
+    color: white;
+}
+
+.game-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.game-flag {
+    font-size: 56px;
+    opacity: 0.85;
+}
+
+.game-kicker {
+    margin: 0 0 8px;
+    color: lightskyblue;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 13px;
+}
+
+.game-title {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 900;
+    color: white;
+}
+
+.game-subtitle {
+    margin: 10px 0 0;
+    max-width: 700px;
+    color: white;
+}
+
+.game-start-box {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.game-btn {
+    border-radius: 12px;
+    padding: 13px 22px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.game-btn-start {
+    background: limegreen;
+    color: white;
+    box-shadow: 0 10px 22px lightgreen;
+}
+
+.game-btn-light {
+    background: white;
+    color: midnightblue;
+    border: 1px solid lightgray;
+}
+
+.game-btn-hero-light {
+    background: transparent;
+    color: white;
+    border: 1px solid lightsteelblue;
+}
+
+.game-btn:hover {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.game-alert {
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.game-alert-danger {
+    background: mistyrose;
+    color: darkred;
+    border: 1px solid lightcoral;
+}
+
+.game-alert-success {
+    background: honeydew;
+    color: seagreen;
+    border: 1px solid lightgreen;
+}
+
+.game-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.game-stat-card {
+    background: white;
+    border: 1px solid gainsboro;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 22px lightgray;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.game-stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.game-icon-blue {
+    background: aliceblue;
+    color: royalblue;
+}
+
+.game-icon-purple {
+    background: lavender;
+    color: blueviolet;
+}
+
+.game-icon-green {
+    background: honeydew;
+    color: mediumseagreen;
+}
+
+.game-icon-orange {
+    background: oldlace;
+    color: orangered;
+}
+
+.game-stat-label {
+    display: block;
+    color: slategray;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.game-stat-value {
+    font-size: 28px;
+    color: midnightblue;
+}
+
+.game-layout {
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    gap: 22px;
+}
+
+.game-panel {
+    background: white;
+    border: 1px solid gainsboro;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 8px 24px lightgray;
+}
+
+.game-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.game-panel-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: aliceblue;
+    color: dodgerblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.game-panel-title {
+    margin: 0;
+    color: midnightblue;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.game-panel-text {
+    margin: 0 0 18px;
+    color: slategray;
+}
+
+.game-form-group {
+    margin-bottom: 18px;
+}
+
+    .game-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 800;
+        color: midnightblue;
+    }
+
+.game-input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid lightsteelblue;
+    background: white;
+    color: midnightblue;
+    font-weight: 600;
+}
+
+.game-info-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.game-info-item {
+    padding: 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, midnightblue, navy);
+    color: white;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.game-info-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: slateblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.game-info-item strong {
+    display: block;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.game-info-item span {
+    color: whitesmoke;
+    font-size: 14px;
+}
+
+.game-warning-box {
+    background: aliceblue;
+    color: royalblue;
+    border: 1px solid lightskyblue;
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 14px;
+    font-weight: 700;
+}
+
+.game-manage-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.player-pick-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: white;
+    border: 1px solid gainsboro;
+    box-shadow: 0 8px 18px lightgray;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    .player-pick-card:hover {
+        border-color: royalblue;
+        transform: translateY(-2px);
+    }
+
+    .player-pick-card input {
+        width: 20px;
+        height: 20px;
+        accent-color: limegreen;
+    }
+
+.player-pick-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, royalblue, blueviolet);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+.player-pick-name {
+    color: midnightblue;
+    font-weight: 900;
+    font-size: 17px;
+}
+
+.player-pick-meta {
+    color: slategray;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.player-pick-badge {
+    margin-left: auto;
+    background: midnightblue;
+    color: white;
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.game-draft-summary {
+    margin-top: 26px;
+    padding: 18px;
+    border-radius: 14px;
+    background: lavender;
+    border: 1px solid thistle;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.game-draft-summary-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: blueviolet;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.game-draft-summary strong {
+    color: blueviolet;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.game-draft-summary span {
+    color: midnightblue;
+}
+
+.game-empty-state {
+    text-align: center;
+    padding: 30px;
+    background: whitesmoke;
+    border: 1px dashed lightgray;
+    border-radius: 16px;
+}
+
+    .game-empty-state h3 {
+        color: midnightblue;
+        margin-bottom: 8px;
+    }
+
+    .game-empty-state p {
+        color: slategray;
+    }
+
+.text-danger {
+    color: crimson !important;
+    font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+    .game-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .game-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .new-game-page {
+        padding: 16px;
+    }
+
+    .game-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .game-hero-left {
+        align-items: flex-start;
+    }
+
+    .game-flag {
+        display: none;
+    }
+
+    .game-start-box {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .game-btn {
+        width: 100%;
+    }
+
+    .game-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-title {
+        font-size: 28px;
+    }
+
+    .game-manage-actions {
+        grid-template-columns: 1fr;
+    }
+}
