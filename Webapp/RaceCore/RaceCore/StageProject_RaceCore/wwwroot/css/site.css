@@ -260,3 +260,377 @@ td {
         padding: 14px;
     }
 }
+/* GLOBAL EXTRA COMPACT PAGES */
+.content-window {
+    padding: 12px;
+}
+
+/* Page padding */
+.player-page,
+.player-form-page,
+.player-details-page,
+.cyclists-page,
+.race-page,
+.result-page,
+.stage-page,
+.team-page,
+.scoring-page,
+.history-page-container,
+.draft-page,
+.new-game-page {
+    padding: 14px !important;
+}
+
+/* Main cards / panels */
+.player-header-card,
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.result-header-card,
+.result-race-card,
+.result-stage-card,
+.result-item-card,
+.result-race-card,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-header-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-details-hero,
+.race-form-card,
+.stage-header-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.team-header-card,
+.team-toolbar-card,
+.team-table-card,
+.team-card,
+.history-card,
+.player-table-card,
+.game-panel,
+.game-stat-card,
+.draft-main-card,
+.draft-side-card,
+.draft-stat-card {
+    border-radius: 14px !important;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Header hero cards */
+.player-header-card,
+.result-header-card,
+.race-header-card,
+.race-details-hero,
+.stage-header-card,
+.team-header-card,
+.draft-page-header,
+.game-hero {
+    padding: 20px 24px !important;
+    margin-bottom: 14px !important;
+    border-radius: 18px !important;
+}
+
+    /* Titles */
+    .player-page-title,
+    .player-form-header h1,
+    .player-details-hero h1,
+    .result-page-title,
+    .race-page-title,
+    .stage-page-title,
+    .team-page-title,
+    .game-title,
+    .draft-page-header h1 {
+        font-size: 26px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .player-page-subtitle,
+    .result-page-subtitle,
+    .race-page-subtitle,
+    .stage-page-subtitle,
+    .team-page-subtitle,
+    .game-subtitle,
+    .draft-page-header p {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+    }
+
+.player-page-kicker,
+.result-page-kicker,
+.race-page-kicker,
+.stage-page-kicker,
+.team-page-kicker,
+.game-kicker,
+.draft-page-kicker {
+    font-size: 10px !important;
+    margin-bottom: 5px !important;
+}
+
+/* Section cards */
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-form-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.result-race-card,
+.result-stage-card,
+.team-toolbar-card,
+.team-table-card,
+.team-body,
+.team-management,
+.game-panel,
+.draft-side-card {
+    padding: 16px !important;
+}
+
+/* Card titles */
+.player-form-header,
+.race-form-header {
+    margin-bottom: 14px !important;
+}
+
+.player-detail-card h3,
+.cyclists-filter-title,
+.cyclists-card-title,
+.race-card-title,
+.stage-card-title,
+.result-stage-title,
+.game-panel-title,
+.draft-card-header h2 {
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Stats */
+.player-stats-grid,
+.race-stats-grid,
+.game-stats-grid,
+.draft-stats-grid {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+}
+
+.player-stat-card,
+.race-stat-card,
+.game-stat-card,
+.draft-stat-card {
+    padding: 13px 15px !important;
+    min-height: 72px !important;
+}
+
+.player-stat-label,
+.race-stat-label,
+.game-stat-label,
+.draft-stat-label {
+    font-size: 11px !important;
+    margin-bottom: 3px !important;
+}
+
+.player-stat-value,
+.race-stat-value,
+.game-stat-value,
+.draft-stat-value {
+    font-size: 22px !important;
+}
+
+.game-stat-icon,
+.draft-stat-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+}
+
+/* Forms / buttons */
+.player-btn,
+.race-btn,
+.result-btn,
+.team-btn,
+.add-cyclist-btn,
+.stage-race-btn,
+.cyclists-btn,
+.pagination-btn,
+.game-btn,
+.draft-pick-button,
+.player-btn-white,
+.btn-details {
+    min-height: 38px !important;
+    padding: 0 13px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+.player-search-input,
+.player-form-input,
+.race-form-input,
+.cyclists-input,
+.cyclists-select,
+.team-search-input,
+.add-cyclist-select,
+.add-cyclist-status,
+.game-input,
+.draft-search-input {
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+/* Tables */
+.player-table thead th,
+.race-table thead th,
+.cyclists-table thead th,
+.result-table thead th,
+.history-table th {
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+}
+
+.player-table tbody td,
+.race-table tbody td,
+.cyclists-table tbody td,
+.result-table tbody td,
+.history-table td {
+    padding: 11px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Lists / rows */
+.result-item-card,
+.player-empty-state,
+.race-empty-state,
+.result-empty-state,
+.stage-empty-state,
+.empty-state {
+    padding: 20px !important;
+}
+
+.player-avatar,
+.player-details-avatar,
+.race-avatar,
+.team-avatar,
+.draft-player-avatar,
+.player-pick-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 16px !important;
+}
+
+.player-details-avatar,
+.race-avatar {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+}
+
+/* Team cards */
+.teams-grid {
+    column-gap: 16px !important;
+}
+
+.team-card {
+    margin-bottom: 16px !important;
+}
+
+.team-header {
+    min-height: 105px !important;
+    padding: 16px 18px !important;
+    gap: 14px !important;
+}
+
+.team-name {
+    font-size: 17px !important;
+}
+
+.team-cyclist-count,
+.team-counts {
+    font-size: 13px !important;
+}
+
+.team-points {
+    min-width: 120px !important;
+    font-size: 15px !important;
+    padding: 6px 12px !important;
+}
+
+.cyclist-list {
+    max-height: 250px !important;
+}
+
+/* Draft page */
+.draft-card-header {
+    padding: 16px 18px !important;
+}
+
+.draft-table-head,
+.draft-row {
+    padding: 12px 18px !important;
+}
+
+    .draft-row.active {
+        padding-left: 13px !important;
+    }
+
+.draft-current-turn-box {
+    padding: 14px !important;
+    border-radius: 14px !important;
+}
+
+.draft-current-turn-name {
+    font-size: 20px !important;
+}
+
+.draft-info-item {
+    padding: 10px 0 !important;
+    font-size: 13px !important;
+}
+
+/* New game */
+.game-layout {
+    gap: 14px !important;
+}
+
+.players-grid {
+    gap: 10px !important;
+}
+
+.player-pick-card {
+    padding: 10px !important;
+    border-radius: 12px !important;
+}
+
+.game-draft-summary,
+.game-warning-box,
+.game-info-item {
+    padding: 11px !important;
+    border-radius: 12px !important;
+}
+
+/* History */
+.history-header {
+    margin-bottom: 14px !important;
+}
+
+.history-title {
+    font-size: 24px !important;
+}
+
+.stage-number-circle {
+    width: 30px !important;
+    height: 30px !important;
+}

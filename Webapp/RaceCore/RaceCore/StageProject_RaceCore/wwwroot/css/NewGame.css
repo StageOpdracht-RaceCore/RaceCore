@@ -1,65 +1,68 @@
 ﻿.new-game-page {
-    padding: 26px;
+    padding: 20px;
     background: white;
     min-height: 100vh;
     color: midnightblue;
 }
 
+/* HERO */
 .game-hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 24px;
-    padding: 34px;
+    gap: 20px;
+    padding: 28px;
     border-radius: 18px;
     background: linear-gradient(135deg, midnightblue, royalblue);
-    box-shadow: 0 14px 35px lightgray;
-    margin-bottom: 22px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
     color: white;
 }
 
 .game-hero-left {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 14px;
 }
 
 .game-flag {
-    font-size: 56px;
+    font-size: 42px;
     opacity: 0.85;
 }
 
 .game-kicker {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     color: lightskyblue;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .game-title {
     margin: 0;
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 900;
     color: white;
 }
 
 .game-subtitle {
-    margin: 10px 0 0;
-    max-width: 700px;
+    margin: 6px 0 0;
+    max-width: 650px;
     color: white;
+    font-size: 14px;
 }
 
 .game-start-box {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     align-items: center;
 }
 
+/* BUTTONS */
 .game-btn {
-    border-radius: 12px;
-    padding: 13px 22px;
+    border-radius: 10px;
+    padding: 10px 16px;
     font-weight: 800;
     text-decoration: none;
     cursor: pointer;
@@ -67,13 +70,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
+    font-size: 14px;
 }
 
 .game-btn-start {
     background: limegreen;
     color: white;
-    box-shadow: 0 10px 22px lightgreen;
+    box-shadow: 0 6px 14px rgba(50,205,50,0.4);
 }
 
 .game-btn-light {
@@ -82,22 +86,17 @@
     border: 1px solid lightgray;
 }
 
-.game-btn-hero-light {
-    background: transparent;
-    color: white;
-    border: 1px solid lightsteelblue;
-}
-
 .game-btn:hover {
     transform: translateY(-1px);
-    text-decoration: none;
 }
 
+/* ALERTS */
 .game-alert {
-    padding: 14px 16px;
-    border-radius: 14px;
-    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 14px;
     font-weight: 700;
+    font-size: 13px;
 }
 
 .game-alert-danger {
@@ -112,32 +111,33 @@
     border: 1px solid lightgreen;
 }
 
+/* STATS */
 .game-stats-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-bottom: 22px;
+    gap: 12px;
+    margin-bottom: 18px;
 }
 
 .game-stat-card {
     background: white;
     border: 1px solid gainsboro;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 8px 22px lightgray;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .game-stat-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
+    font-size: 18px;
 }
 
 .game-icon-blue {
@@ -161,257 +161,190 @@
 }
 
 .game-stat-label {
-    display: block;
+    font-size: 12px;
     color: slategray;
-    font-size: 14px;
-    margin-bottom: 4px;
 }
 
 .game-stat-value {
-    font-size: 28px;
+    font-size: 22px;
     color: midnightblue;
+    font-weight: 900;
 }
 
+/* LAYOUT */
 .game-layout {
     display: grid;
-    grid-template-columns: 390px 1fr;
-    gap: 22px;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
 }
 
 .game-panel {
     background: white;
     border: 1px solid gainsboro;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 8px 24px lightgray;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
 .game-panel-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 8px;
 }
 
 .game-panel-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: aliceblue;
     color: dodgerblue;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 18px;
 }
 
 .game-panel-title {
-    margin: 0;
-    color: midnightblue;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 900;
 }
 
 .game-panel-text {
-    margin: 0 0 18px;
+    margin-bottom: 12px;
+    font-size: 14px;
     color: slategray;
 }
 
+/* FORM */
 .game-form-group {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 
     .game-form-group label {
-        display: block;
-        margin-bottom: 8px;
         font-weight: 800;
-        color: midnightblue;
+        margin-bottom: 6px;
+        display: block;
     }
 
 .game-input {
     width: 100%;
-    padding: 13px 14px;
-    border-radius: 12px;
+    padding: 10px;
+    border-radius: 10px;
     border: 1px solid lightsteelblue;
-    background: white;
-    color: midnightblue;
-    font-weight: 600;
 }
 
+/* INFO */
 .game-info-list {
     display: grid;
-    gap: 14px;
-    margin-top: 18px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 .game-info-item {
-    padding: 16px;
-    border-radius: 14px;
+    padding: 12px;
+    border-radius: 12px;
     background: linear-gradient(135deg, midnightblue, navy);
     color: white;
     display: flex;
-    gap: 14px;
-    align-items: center;
+    gap: 10px;
 }
 
 .game-info-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     background: slateblue;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
 }
 
-.game-info-item strong {
-    display: block;
-    color: white;
-    margin-bottom: 4px;
-}
-
-.game-info-item span {
-    color: whitesmoke;
-    font-size: 14px;
-}
-
+/* WARNING */
 .game-warning-box {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 12px;
     background: aliceblue;
-    color: royalblue;
     border: 1px solid lightskyblue;
-    border-radius: 14px;
-    padding: 14px;
-    margin-top: 14px;
-    font-weight: 700;
+    font-size: 13px;
 }
 
-.game-manage-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 18px;
-}
-
+/* PLAYERS */
 .players-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 10px;
 }
 
 .player-pick-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 14px;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
     background: white;
     border: 1px solid gainsboro;
-    box-shadow: 0 8px 18px lightgray;
     cursor: pointer;
-    transition: 0.2s ease;
 }
 
-    .player-pick-card:hover {
-        border-color: royalblue;
-        transform: translateY(-2px);
-    }
-
     .player-pick-card input {
-        width: 20px;
-        height: 20px;
-        accent-color: limegreen;
+        width: 16px;
+        height: 16px;
     }
 
 .player-pick-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: linear-gradient(135deg, royalblue, blueviolet);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 900;
 }
 
 .player-pick-name {
-    color: midnightblue;
+    font-size: 15px;
     font-weight: 900;
-    font-size: 17px;
 }
 
 .player-pick-meta {
+    font-size: 12px;
     color: slategray;
-    font-size: 13px;
-    margin-top: 3px;
 }
 
 .player-pick-badge {
     margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 11px;
     background: midnightblue;
     color: white;
-    padding: 7px 11px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 900;
 }
 
+/* SUMMARY */
 .game-draft-summary {
-    margin-top: 26px;
-    padding: 18px;
-    border-radius: 14px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 12px;
     background: lavender;
-    border: 1px solid thistle;
     display: flex;
-    align-items: center;
-    gap: 14px;
+    gap: 10px;
 }
 
 .game-draft-summary-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: blueviolet;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
 }
 
-.game-draft-summary strong {
-    color: blueviolet;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.game-draft-summary span {
-    color: midnightblue;
-}
-
-.game-empty-state {
-    text-align: center;
-    padding: 30px;
-    background: whitesmoke;
-    border: 1px dashed lightgray;
-    border-radius: 16px;
-}
-
-    .game-empty-state h3 {
-        color: midnightblue;
-        margin-bottom: 8px;
-    }
-
-    .game-empty-state p {
-        color: slategray;
-    }
-
-.text-danger {
-    color: crimson !important;
-    font-weight: 700;
-}
-
+/* RESPONSIVE */
 @media (max-width: 1100px) {
     .game-stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -424,267 +357,19 @@
 
 @media (max-width: 760px) {
     .new-game-page {
-        padding: 16px;
-    }
-
-    .game-hero {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .game-hero-left {
-        align-items: flex-start;
-    }
-
-    .game-flag {
-        display: none;
-    }
-
-    .game-start-box {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .game-btn {
-        width: 100%;
-    }
-
-    .game-stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .players-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .game-title {
-        font-size: 28px;
-    }
-
-    .game-manage-actions {
-        grid-template-columns: 1fr;
-    }
-}
-/* EXTRA COMPACT NEW GAME */
-.new-game-page {
-    padding: 18px;
-}
-
-.game-hero {
-    padding: 22px 28px;
-    border-radius: 18px;
-    margin-bottom: 16px;
-    gap: 18px;
-}
-
-.game-hero-left {
-    gap: 14px;
-}
-
-.game-flag {
-    font-size: 42px;
-}
-
-.game-kicker {
-    margin-bottom: 5px;
-    font-size: 11px;
-}
-
-.game-title {
-    font-size: 28px;
-}
-
-.game-subtitle {
-    margin-top: 6px;
-    font-size: 14px;
-    max-width: 760px;
-}
-
-.game-btn {
-    padding: 10px 17px;
-    border-radius: 11px;
-    font-size: 14px;
-}
-
-.game-stats-grid {
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.game-stat-card {
-    padding: 14px 16px;
-    border-radius: 13px;
-    gap: 12px;
-}
-
-.game-stat-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 13px;
-    font-size: 20px;
-}
-
-.game-stat-label {
-    font-size: 12px;
-    margin-bottom: 2px;
-}
-
-.game-stat-value {
-    font-size: 23px;
-}
-
-.game-layout {
-    grid-template-columns: 360px 1fr;
-    gap: 16px;
-}
-
-.game-panel {
-    border-radius: 16px;
-    padding: 18px;
-}
-
-.game-panel-header {
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-.game-panel-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    font-size: 19px;
-}
-
-.game-panel-title {
-    font-size: 21px;
-}
-
-.game-panel-text {
-    margin-bottom: 13px;
-    font-size: 14px;
-}
-
-.game-form-group {
-    margin-bottom: 13px;
-}
-
-    .game-form-group label {
-        margin-bottom: 6px;
-    }
-
-.game-input {
-    padding: 10px 12px;
-    border-radius: 10px;
-}
-
-.game-info-list {
-    gap: 10px;
-    margin-top: 13px;
-}
-
-.game-info-item {
-    padding: 12px;
-    border-radius: 12px;
-    gap: 11px;
-}
-
-.game-info-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    font-size: 18px;
-}
-
-.game-info-item strong {
-    margin-bottom: 2px;
-}
-
-.game-info-item span {
-    font-size: 13px;
-}
-
-.game-warning-box {
-    padding: 11px;
-    margin-top: 11px;
-    border-radius: 12px;
-    font-size: 13px;
-}
-
-.game-manage-actions {
-    gap: 10px;
-    margin-top: 13px;
-}
-
-.players-grid {
-    gap: 11px;
-}
-
-.player-pick-card {
-    padding: 12px;
-    border-radius: 12px;
-    gap: 11px;
-}
-
-    .player-pick-card input {
-        width: 17px;
-        height: 17px;
-    }
-
-.player-pick-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-}
-
-.player-pick-name {
-    font-size: 15px;
-}
-
-.player-pick-meta {
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.player-pick-badge {
-    padding: 6px 9px;
-    font-size: 12px;
-}
-
-.game-draft-summary {
-    margin-top: 16px;
-    padding: 13px;
-    border-radius: 12px;
-    gap: 11px;
-}
-
-.game-draft-summary-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    font-size: 20px;
-}
-
-.game-alert {
-    padding: 11px 13px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    font-size: 13px;
-}
-
-@media (max-width: 760px) {
-    .new-game-page {
         padding: 12px;
     }
 
     .game-hero {
-        padding: 18px;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .game-title {
-        font-size: 25px;
+        font-size: 24px;
     }
 
-    .game-layout {
+    .players-grid {
         grid-template-columns: 1fr;
     }
 }
