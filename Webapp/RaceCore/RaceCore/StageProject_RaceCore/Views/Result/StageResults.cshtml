@@ -21,17 +21,23 @@
     </section>
 
     <section class="result-race-card">
-        <div class="result-race-buttons">
-            @foreach (var race in races)
-            {
-                <a asp-controller="Result"
-                       asp-action="StageResults"
-                       asp-route-raceId="@race.Id"
-                       class="result-btn @(race.Id == selectedRaceId ? "result-btn-primary" : "result-btn-light")">
-                    @race.Name @race.Year
-                </a>
-            }
-        </div>
+        <form asp-controller="Result" asp-action="StageResults" method="get" class="race-select-form">
+            <div class="race-select-group">
+                <label for="raceId">Wedstrijd</label>
+                <select id="raceId" name="raceId" class="app-select">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name @race.Year
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="app-btn app-btn-primary">
+                Tonen
+            </button>
+        </form>
     </section>
 
     @if (stageTables == null || !stageTables.Any())

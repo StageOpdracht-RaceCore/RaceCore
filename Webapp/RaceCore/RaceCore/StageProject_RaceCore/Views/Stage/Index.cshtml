@@ -23,17 +23,23 @@
         <p class="stage-section-kicker">Wedstrijden</p>
         <h2 class="stage-card-title">Selecteer race</h2>
 
-        <div class="stage-race-buttons">
-            @foreach (var race in races)
-            {
-                <a asp-controller="Stage"
-                       asp-action="Index"
-                       asp-route-raceId="@race.Id"
-                       class="stage-race-btn @(race.Id == selectedRaceId ? "active" : "")">
-                    @race.Name
-                </a>
-            }
-        </div>
+        <form asp-controller="Stage" asp-action="Index" method="get" class="race-select-form">
+            <div class="race-select-group">
+                <label for="raceId">Wedstrijd</label>
+                <select id="raceId" name="raceId" class="app-select">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="app-btn app-btn-primary">
+                Tonen
+            </button>
+        </form>
     </section>
 
     <section class="stage-table-card">
