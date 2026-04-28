@@ -147,12 +147,12 @@ namespace StageProject_RaceCore.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = "Fair snake draft succesvol gegenereerd.";
-                return RedirectToAction("Index", new { raceId });
+                return RedirectToDraftPlayersSection(raceId);
             }
             catch (Exception ex)
             {
                 TempData["Error"] = "Draft genereren fout: " + ex.Message;
-                return RedirectToAction("Index", new { raceId });
+                return RedirectToDraftPlayersSection(raceId);
             }
         }
 
@@ -162,6 +162,12 @@ namespace StageProject_RaceCore.Controllers
         {
             try
             {
+                if (raceId <= 0)
+                {
+                    TempData["Error"] = "Geen geldige race gevonden.";
+                    return RedirectToAction("Index");
+                }
+
                 var currentTurn = await _context.DraftTurns
                     .Include(t => t.Player)
                     .Where(t => t.RaceId == raceId && t.CyclistId == null)
@@ -171,13 +177,13 @@ namespace StageProject_RaceCore.Controllers
                 if (currentTurn == null)
                 {
                     TempData["Error"] = "De draft is al afgerond.";
-                    return RedirectToAction("Index", new { raceId });
+                    return RedirectToDraftPlayersSection(raceId);
                 }
 
                 if (currentTurn.Id != draftTurnId)
                 {
                     TempData["Error"] = "Je kan alleen kiezen voor de huidige beurt.";
-                    return RedirectToAction("Index", new { raceId });
+                    return RedirectToDraftPlayersSection(raceId);
                 }
 
                 var cyclist = await _context.Cyclists
@@ -186,7 +192,7 @@ namespace StageProject_RaceCore.Controllers
                 if (cyclist == null)
                 {
                     TempData["Error"] = "Kies eerst een geldige actieve renner.";
-                    return RedirectToAction("Index", new { raceId });
+                    return RedirectToDraftPlayersSection(raceId);
                 }
 
                 bool alreadyPicked = await _context.DraftTurns
@@ -195,7 +201,7 @@ namespace StageProject_RaceCore.Controllers
                 if (alreadyPicked)
                 {
                     TempData["Error"] = "Deze renner is al gekozen.";
-                    return RedirectToAction("Index", new { raceId });
+                    return RedirectToDraftPlayersSection(raceId);
                 }
 
                 currentTurn.CyclistId = cyclistId;
@@ -220,8 +226,14 @@ namespace StageProject_RaceCore.Controllers
                 TempData["Error"] = "Pick fout: " + ex.Message;
             }
 
-            return RedirectToAction("Index", new { raceId });
+            return RedirectToDraftPlayersSection(raceId);
         }
+
+        private IActionResult RedirectToDraftPlayersSection(int raceId)
+        {
+            return Redirect(Url.Action("Index", "Draft", new { raceId }) + "#draft-players-section");
+        }
+
         private static List<DraftTurn> GenerateFairSnakeDraft(int raceId, List<Player> players, int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
