@@ -7,6 +7,13 @@
     int maxPlayerPoints = Model.PlayerRanking.Any() ? Model.PlayerRanking.Max(x => x.Points) : 1;
     int maxCyclistPoints = Model.TopCyclists.Any() ? Model.TopCyclists.Max(x => x.Points) : 1;
 }
+<link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
+@if (ViewBag.DatabaseOnline == false)
+{
+    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:20px;">
+        ⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.
+    </div>
+}
 
 @functions {
     public string GetPlayerColor(string playerName)
@@ -70,7 +77,31 @@
 
 <div class="dashboard-container">
 
-    
+
+    <section class="hero-section">
+        <div class="hero-side-card">
+            <div class="hero-side-content">
+                <div>
+                    <span class="hero-kicker">Draft Status</span>
+                    <h2>@(Model.DraftCompleted ? "Draft Completed" : "Draft In Progress")</h2>
+                    <p>
+                        @(Model.DraftCompleted
+                            ? "De draft is volledig afgerond. Alle picks zijn gemaakt."
+                            : "De draft is nog bezig. Er moeten nog renners gekozen worden.")
+                    </p>
+                </div>
+
+                <strong class="@(Model.DraftCompleted ? "status-done" : "status-live")">
+                    @(Model.DraftCompleted ? "Completed" : "In progress")
+                </strong>
+            </div>
+
+            <div class="hero-side-bottom">
+                <div class="hero-side-number">@Model.TotalDraftPicks</div>
+                <div class="hero-side-label">Total draft picks made</div>
+            </div>
+        </div>
+    </section>
 
     <section class="stats-grid">
         <div class="stat-card blue">
@@ -117,7 +148,7 @@
 
             @if (Model.PlayerRanking.Any())
             {
-                <div class="ranking-list">
+                <div class="ranking-list ranking-list-scroll">
                     @foreach (var player in Model.PlayerRanking)
                     {
                         var width = Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100));
@@ -211,7 +242,6 @@
             </div>
         </div>
     </section>
-    
 
     <section class="bottom-grid">
         <div class="card">
@@ -273,20 +303,7 @@
             }
         </div>
     </section>
-    <section class="hero-section">
 
-        
-        <div class="hero-side-card">
-            <div class="hero-side-top">
-                <span>Draft Status</span>
-                <strong class="@(Model.DraftCompleted ? "status-done" : "status-live")">
-                    @(Model.DraftCompleted ? "Completed" : "In progress")
-                </strong>
-            </div>
-
-            <div class="hero-side-number">@Model.TotalDraftPicks</div>
-            <div class="hero-side-label">Total draft picks made</div>
-        </div>
-    </section>
+   
 
 </div>

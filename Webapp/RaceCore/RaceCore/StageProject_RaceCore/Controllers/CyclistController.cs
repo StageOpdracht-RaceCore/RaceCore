@@ -13,30 +13,80 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, string? active)
+        public async Task<IActionResult> Index(string? search, string? status, int page = 1, int pageSize = 25)
         {
-            var query = _context.Cyclists
-                .Include(c => c.Team)
-                .AsQueryable();
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 25;
 
-            if (!string.IsNullOrEmpty(search))
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = 1;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+            ViewBag.CyclistCount = 0;
+            ViewBag.Races = new List<Race>();
+            ViewBag.DatabaseOnline = false;
+
+            try
             {
-                query = query.Where(c =>
-                    c.FirstName.ToLower().Contains(search) ||
-                    c.LastName.ToLower().Contains(search) ||
-                    c.Team.Name.ToLower().Contains(search)
-                );
+                var races = await _context.Races
+                    .OrderBy(r => r.StartDate)
+                    .ThenBy(r => r.Name)
+                    .Take(3)
+                    .ToListAsync();
+
+                var query = _context.Cyclists
+                    .Include(c => c.Team)
+                    .Include(c => c.RaceEntries)
+                    .AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search = search.Trim();
+
+                    query = query.Where(c =>
+                        c.FirstName.Contains(search) ||
+                        c.LastName.Contains(search) ||
+                        (c.Team != null && c.Team.Name.Contains(search)));
+                }
+
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    if (status == "active")
+                    {
+                        query = query.Where(c => c.IsActive);
+                    }
+                    else if (status == "inactive")
+                    {
+                        query = query.Where(c => !c.IsActive);
+                    }
+                    else if (status.StartsWith("race-") && int.TryParse(status.Replace("race-", ""), out int raceId))
+                    {
+                        query = query.Where(c => c.RaceEntries.Any(re => re.RaceId == raceId));
+                    }
+                }
+
+                var totalItems = await query.CountAsync();
+
+                var cyclists = await query
+                    .OrderBy(c => c.LastName)
+                    .ThenBy(c => c.FirstName)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalItems / pageSize));
+                ViewBag.CyclistCount = totalItems;
+                ViewBag.Races = races;
+                ViewBag.DatabaseOnline = true;
+
+                return View(cyclists);
             }
-            if (!string.IsNullOrEmpty(active)) { 
-                bool isActive = active.ToLower() == "true";
-                query = query.Where(c => c.IsActive == isActive);
+            catch
+            {
+                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live gegevens te zien.";
+                return View(new List<Cyclist>());
             }
-
-            var cyclistList = await query.ToListAsync();
-
-            ViewBag.CyclistCount = cyclistList.Count;
-
-            return View(cyclistList);
         }
     }
 }

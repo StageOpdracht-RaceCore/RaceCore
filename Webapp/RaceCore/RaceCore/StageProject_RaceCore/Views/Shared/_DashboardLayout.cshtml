@@ -12,19 +12,26 @@
         <aside class="sidebar" id="mobileSidebar">
             <div class="sidebar-logo">
                 <h2>RaceCore</h2>
-                <p>Manager Panel</p>
+                <p>Cycling Game</p>
             </div>
 
             <nav class="sidebar-nav">
-                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                <a asp-controller="Player" asp-action="Index">Players</a>
+                <a asp-controller="Game" asp-action="New">🎮 New Game</a>
+                <a asp-controller="Dashboard" asp-action="Index">🏠 Game Dashboard</a>
+                <a asp-controller="Draft" asp-action="Index">🐍 Draft</a>
+                <a asp-controller="Player" asp-action="Index">👥 Players</a>
+                <a asp-controller="Scoring" asp-action="Index">🚴 Stage Input</a>
+                <a asp-controller="Result" asp-action="StageResults">📊 Stage Results</a>
+                <a asp-controller="Result" asp-action="Index">🏆 Leaderboard</a>
+
+                <hr style="border-color:rgba(255,255,255,.12);width:100%;" />
+
                 <a asp-controller="Cyclist" asp-action="Index">Cyclists</a>
                 <a asp-controller="Team" asp-action="Index">Teams</a>
                 <a asp-controller="Race" asp-action="Index">Races</a>
                 <a asp-controller="Stage" asp-action="Index">Stages</a>
-                <a asp-controller="Result" asp-action="Index">Results</a>
-                <a asp-controller="Scoring" asp-action="Index">Scoring</a>
-                <a asp-controller="Draft" asp-action="Index">Draft</a>
+                <a asp-controller="History" asp-action="History">History</a>
+
             </nav>
         </aside>
 
@@ -45,6 +52,11 @@
             </header>
 
             <div class="content-window">
+                @if (TempData["DatabaseError"] != null)
+                {
+                    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:16px;">@TempData["DatabaseError"]</div>
+                }
+
                 @RenderBody()
             </div>
         </main>

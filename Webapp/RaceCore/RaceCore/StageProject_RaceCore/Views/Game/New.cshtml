@@ -1,0 +1,217 @@
+﻿@model StageProject_RaceCore.ViewModels.NewGameViewModel
+
+@{
+    ViewData["Title"] = "New Game";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    int selectedPlayersCount = Model.AvailablePlayers.Count(p => p.IsSelected);
+}
+
+<link rel="stylesheet" href="~/css/NewGame.css" asp-append-version="true" />
+
+<div class="new-game-page">
+    @if (TempData["Error"] != null)
+    {
+        <div class="game-alert game-alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="game-alert game-alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="New" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="game-hero">
+            <div class="game-hero-left">
+                <div class="game-flag">🏁</div>
+
+                <div>
+                    <p class="game-kicker">RaceCore Lobby</p>
+                    <h1 class="game-title">New Game</h1>
+                    <p class="game-subtitle">
+                        Stel je race klaar, kies de spelers en start direct een nieuwe snake draft.
+                        Alles wordt automatisch opgebouwd op basis van de gekozen spelers.
+                    </p>
+                </div>
+            </div>
+
+            <div class="game-start-box">
+                <button type="submit"
+                        class="game-btn game-btn-start"
+                        onclick="return confirm('Nieuwe game starten voor deze race? Oude draft en scores van deze race worden verwijderd.');">
+                    ▶ Start Game
+                </button>
+
+                
+            </div>
+        </div>
+
+        <div class="game-stats-grid">
+            <div class="game-stat-card">
+                <div class="game-stat-icon game-icon-blue">⚑</div>
+                <div>
+                    <span class="game-stat-label">Races</span>
+                    <strong class="game-stat-value">@Model.AvailableRaces.Count</strong>
+                </div>
+            </div>
+
+            <div class="game-stat-card">
+                <div class="game-stat-icon game-icon-purple">👥</div>
+                <div>
+                    <span class="game-stat-label">Spelers</span>
+                    <strong class="game-stat-value">@Model.AvailablePlayers.Count</strong>
+                </div>
+            </div>
+
+            <div class="game-stat-card">
+                <div class="game-stat-icon game-icon-green">✓</div>
+                <div>
+                    <span class="game-stat-label">Geselecteerd</span>
+                    <strong class="game-stat-value">@selectedPlayersCount</strong>
+                </div>
+            </div>
+
+            <div class="game-stat-card">
+                <div class="game-stat-icon game-icon-orange">🚴</div>
+                <div>
+                    <span class="game-stat-label">Renners</span>
+                    <strong class="game-stat-value">@Model.TotalCyclists</strong>
+                </div>
+            </div>
+
+            <div class="game-stat-card">
+                <div class="game-stat-icon game-icon-blue">⛰</div>
+                <div>
+                    <span class="game-stat-label">Ritten</span>
+                    <strong class="game-stat-value">@Model.TotalStages</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-layout">
+            <div class="game-panel">
+                <div class="game-panel-header">
+                    <div class="game-panel-icon">⚙</div>
+                    <h2 class="game-panel-title">Game Setup</h2>
+                </div>
+
+                <p class="game-panel-text">
+                    Kies eerst de race. Daarna selecteer je de players die mogen meedoen.
+                </p>
+
+                <div class="game-form-group">
+                    <label asp-for="RaceId">Race</label>
+                    <select asp-for="RaceId" asp-items="Model.AvailableRaces" class="game-input">
+                        <option value="">-- Kies een race --</option>
+                    </select>
+                    <span asp-validation-for="RaceId" class="text-danger"></span>
+                </div>
+
+                <div class="game-info-list">
+                    <div class="game-info-item">
+                        <div class="game-info-icon">🔄</div>
+                        <div>
+                            <strong>Snake Draft</strong>
+                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-warning-box">
+                    ℹ Let op<br />
+                    Bij Start Game worden oude draft picks, scores en resultaten van deze race verwijderd.
+                </div>
+
+                @if (!Model.AvailableRaces.Any())
+                {
+                    <div class="game-alert game-alert-danger">
+                        Er zijn nog geen races. Maak eerst een race aan.
+                    </div>
+                }
+
+                @if (!Model.AvailablePlayers.Any())
+                {
+                    <div class="game-alert game-alert-danger">
+                        Er zijn nog geen players. Maak eerst spelers aan.
+                    </div>
+                }
+
+                <div class="game-manage-actions">
+                    <a asp-controller="Race" asp-action="Index" class="game-btn game-btn-light">
+                        ⚑ Races beheren
+                    </a>
+
+                    <a asp-controller="Player" asp-action="Index" class="game-btn game-btn-light">
+                        👥 Players beheren
+                    </a>
+                </div>
+            </div>
+
+            <div class="game-panel">
+                <div class="game-panel-header">
+                    <div class="game-panel-icon">👥</div>
+                    <h2 class="game-panel-title">Select Players</h2>
+                </div>
+
+                <p class="game-panel-text">
+                    Kies minstens 2 spelers. De draftpositie bepaalt de eerste volgorde.
+                </p>
+
+                <div class="players-grid">
+                    @if (Model.AvailablePlayers.Any())
+                    {
+                        foreach (var player in Model.AvailablePlayers)
+                        {
+                            <label class="player-pick-card">
+                                <input type="checkbox"
+                                       name="SelectedPlayerIds"
+                                       value="@player.Id"
+                                @(player.IsSelected ? "checked" : "") />
+
+                                <div class="player-pick-avatar">
+                                    @(string.IsNullOrWhiteSpace(player.Name) ? "?" : player.Name.Substring(0, 1).ToUpper())
+                                </div>
+
+                                <div>
+                                    <div class="player-pick-name">@player.Name</div>
+                                    <div class="player-pick-meta">Player ID: @player.Id</div>
+                                </div>
+
+                                <div class="player-pick-badge">
+                                    #@player.PositionInDraft
+                                </div>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <div class="game-empty-state">
+                            <h3>Geen spelers gevonden</h3>
+                            <p>Voeg eerst spelers toe voordat je een game start.</p>
+
+                            <a asp-controller="Player" asp-action="Create" class="game-btn game-btn-start">
+                                Nieuwe speler
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <span asp-validation-for="SelectedPlayerIds" class="text-danger"></span>
+
+                <div class="game-draft-summary">
+                    <div class="game-draft-summary-icon">🏆</div>
+                    <div>
+                        <strong>Fair Snake Draft</strong>
+                        <span>15 rondes • De draft roteert afwisselend voor een eerlijke verdeling.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

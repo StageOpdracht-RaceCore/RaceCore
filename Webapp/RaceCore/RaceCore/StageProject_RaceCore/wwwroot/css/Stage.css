@@ -1,0 +1,261 @@
+﻿.stage-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 24px;
+}
+
+.stage-header-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.stage-header-card {
+    padding: 28px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: #ffffff;
+}
+
+.stage-filter-card,
+.stage-table-card {
+    padding: 24px;
+}
+
+.stage-page-kicker,
+.stage-section-kicker {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+}
+
+.stage-page-kicker {
+    opacity: 0.85;
+}
+
+.stage-section-kicker {
+    color: #2563eb;
+}
+
+.stage-page-title {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.stage-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+}
+
+.stage-card-title {
+    margin: 0 0 22px 0;
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.stage-race-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stage-race-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 14px;
+    background: #eef2ff;
+    color: #1e3a8a;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    .stage-race-btn:hover {
+        background: #e0e7ff;
+        color: #1e3a8a;
+    }
+
+    .stage-race-btn.active {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+.stage-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.stage-card {
+    padding: 20px;
+    transition: 0.2s ease;
+}
+
+    .stage-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
+    }
+
+.stage-number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.stage-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.stage-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.stage-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+.race-select-form,
+.scoring-stage-form {
+    display: flex;
+    align-items: end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.race-select-group,
+.scoring-stage-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.race-select-group {
+    width: min(100%, 360px);
+}
+
+.scoring-stage-group {
+    width: min(100%, 300px);
+}
+
+    .race-select-group label,
+    .scoring-stage-group label {
+        font-weight: 700;
+        color: #374151;
+    }
+
+.app-select,
+.scoring-stage-select {
+    height: 46px;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    color: #111827;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+    .app-select:focus,
+    .scoring-stage-select:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+.app-btn {
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.app-btn-primary {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+    .app-btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+@media (max-width: 700px) {
+    .race-select-form,
+    .scoring-stage-form {
+        align-items: stretch;
+    }
+
+    .race-select-group,
+    .scoring-stage-group,
+    .app-btn {
+        width: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .stage-page {
+        padding: 14px;
+    }
+
+    .stage-header-card,
+    .stage-filter-card,
+    .stage-table-card,
+    .stage-card {
+        padding: 20px;
+    }
+
+    .stage-page-title,
+    .stage-card-title {
+        font-size: 26px;
+    }
+
+    .stage-race-btn {
+        width: 100%;
+    }
+
+    .stage-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,102 @@
+INSERT INTO RaceEntries (RaceId, CyclistId, TeamId, Status)
+WITH v(FirstName, LastName, Status) AS (
+    VALUES
+        ('Pascal', 'Ackermann', 'ACTIVE'),
+        ('Julian', 'Alaphilippe', 'ACTIVE'),
+        ('Alex', 'Aranburu', 'ACTIVE'),
+        ('Thymen', 'Arensman', 'ACTIVE'),
+        ('Bruno', 'Armirail', 'ACTIVE'),
+        ('Kasper', 'Asgreen', 'ACTIVE'),
+        ('Juan', 'Ayuso', 'ACTIVE'),
+        ('Warren', 'Barguil', 'ACTIVE'),
+        ('Tiesj', 'Benoot', 'ACTIVE'),
+        ('Pello', 'Bilbao', 'ACTIVE'),
+        ('Stefan', 'Bissegger', 'ACTIVE'),
+        ('Pavel', 'Bittner', 'ACTIVE'),
+        ('Emanuel', 'Buchmann', 'ACTIVE'),
+        ('Victor', 'Campenaerts', 'ACTIVE'),
+        ('Simon', 'Carr', 'ACTIVE'),
+        ('Mattia', 'Cattaneo', 'ACTIVE'),
+        ('Giulio', 'Ciccone', 'ACTIVE'),
+        ('Magnus', 'Cort', 'ACTIVE'),
+        ('Arnaud', 'De Lie', 'ACTIVE'),
+        ('Isaac', 'del Toro', 'ACTIVE'),
+        ('Nico', 'Denz', 'ACTIVE'),
+        ('Remco', 'Evenepoel', 'ACTIVE'),
+        ('Milan', 'Fretin', 'ACTIVE'),
+        ('Filippo', 'Ganna', 'ACTIVE'),
+        ('David', 'Gaudu', 'ACTIVE'),
+        ('Biniam', 'Girmay', 'ACTIVE'),
+        ('Dorian', 'Godon', 'ACTIVE'),
+        ('Kaden', 'Groves', 'ACTIVE'),
+        ('Ben', 'Healy', 'ACTIVE'),
+        ('Sergio', 'Higuita', 'ACTIVE'),
+        ('Jai', 'Hindley', 'ACTIVE'),
+        ('Daan', 'Hoole', 'ACTIVE'),
+        ('Jordan', 'Jegat', 'ACTIVE'),
+        ('Tobias Halland', 'Johannessen', 'ACTIVE'),
+        ('Matteo', 'Jorgenson', 'ACTIVE'),
+        ('Alex', 'Kirsch', 'ACTIVE'),
+        ('Olav', 'Kooij', 'ACTIVE'),
+        ('Andreas', 'Kron', 'ACTIVE'),
+        ('Stefan', 'Küng', 'ACTIVE'),
+        ('Sepp', 'Kuss', 'ACTIVE'),
+        ('Michal', 'Kwiatkowski', 'ACTIVE'),
+        ('Mikel', 'Landa', 'ACTIVE'),
+        ('Christophe', 'Laporte', 'ACTIVE'),
+        ('Florian', 'Lipowitz', 'ACTIVE'),
+        ('Guillaume', 'Martin-Guyonnet', 'ACTIVE'),
+        ('Daniel Felipe', 'Martínez', 'ACTIVE'),
+        ('Lenny', 'Martinez', 'ACTIVE'),
+        ('Michael', 'Matthews', 'ACTIVE'),
+        ('Brandon', 'McNulty', 'ACTIVE'),
+        ('Jordi', 'Meeus', 'ACTIVE'),
+        ('Tim', 'Merlier', 'ACTIVE'),
+        ('Matej', 'Mohorič', 'ACTIVE'),
+        ('Alex', 'Molenaar', 'ACTIVE'),
+        ('Gianni', 'Moscon', 'ACTIVE'),
+        ('Hugo', 'Page', 'ACTIVE'),
+        ('Valentin', 'Paret-Peintre', 'ACTIVE'),
+        ('Mads', 'Pedersen', 'ACTIVE'),
+        ('Jasper', 'Philipsen', 'ACTIVE'),
+        ('Tom', 'Pidcock', 'ACTIVE'),
+        ('Laurence', 'Pithie', 'ACTIVE'),
+        ('Luke', 'Plapp', 'ACTIVE'),
+        ('Rick', 'Pluimers', 'ACTIVE'),
+        ('Tadej', 'Pogačar', 'ACTIVE'),
+        ('Carlos', 'Rodríguez', 'ACTIVE'),
+        ('Iván', 'Romeo', 'ACTIVE'),
+        ('Einer', 'Rubio', 'ACTIVE'),
+        ('Quinn', 'Simmons', 'ACTIVE'),
+        ('Mattias', 'Skjelmose', 'ACTIVE'),
+        ('Marc', 'Soler', 'ACTIVE'),
+        ('Michael', 'Storer', 'ACTIVE'),
+        ('Jasper', 'Stuyven', 'ACTIVE'),
+        ('Harold', 'Tejada', 'ACTIVE'),
+        ('Mike', 'Teunissen', 'ACTIVE'),
+        ('Antonio', 'Tiberi', 'ACTIVE'),
+        ('Jan', 'Tratnik', 'ACTIVE'),
+        ('Ben', 'Tulett', 'ACTIVE'),
+        ('Wout', 'van Aert', 'ACTIVE'),
+        ('Jonas', 'Vingegaard', 'ACTIVE'),
+        ('Adam', 'Yates', 'ACTIVE')
+)
+SELECT
+    r.Id,
+    c.Id,
+    c.TeamId,
+    v.Status
+FROM v
+INNER JOIN Races r
+    ON r.Name = 'Tour de France'
+   AND r.Year = 2026
+INNER JOIN Cyclists c
+    ON c.FirstName = v.FirstName
+   AND c.LastName = v.LastName
+   AND c.IsActive = 1
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM RaceEntries re
+    WHERE re.RaceId = r.Id
+      AND re.CyclistId = c.Id
+);

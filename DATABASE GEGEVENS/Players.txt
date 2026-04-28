@@ -1,5 +1,5 @@
-INSERT INTO Players (Name) VALUES 
-('Dries'),
-('Roel'),
-('Casper'),
-('Jonas');
+INSERT INTO Players (Name, PositionInDraft, TotalPoints) VALUES 
+('Dries', 1, 0),
+('Roel', 2, 0),
+('Casper', 3, 0),
+('Jonas', 4, 0);

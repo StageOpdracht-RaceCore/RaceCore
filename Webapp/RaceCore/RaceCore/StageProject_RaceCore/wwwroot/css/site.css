@@ -30,17 +30,6 @@ body {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.form-floating > .form-control-plaintext::placeholder,
-.form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
-    text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder,
-.form-floating > .form-control:focus::placeholder {
-    text-align: start;
-}
-
 .dashboard-body {
     margin: 0;
     background: linear-gradient(180deg, #e9f1fb 0%, #f4f7fb 250px);
@@ -68,25 +57,16 @@ body {
     z-index: 1000;
 }
 
-/* Ensure the logo remains visible above overlays and navigation highlights */
-.sidebar-logo {
-    position: relative;
-    z-index: 1100; /* above the sidebar and overlay */
-}
-
-.sidebar-logo h2,
-.sidebar-logo p {
-    color: #ffffff !important;
-}
-
 .sidebar-logo {
     margin-bottom: 22px;
+    position: relative;
+    z-index: 1100;
 }
 
     .sidebar-logo h2 {
         margin: 0;
         font-size: 24px;
-        color: #ffffff;
+        color: white;
     }
 
     .sidebar-logo p {
@@ -115,10 +95,9 @@ body {
 
         .sidebar-nav a:hover {
             background-color: #1f2937;
-            color: #ffffff;
+            color: white;
         }
 
-/* OVERLAY */
 .sidebar-overlay {
     display: none;
 }
@@ -183,437 +162,6 @@ body {
     padding: 18px;
 }
 
-.dashboard-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-}
-
-.hero-section {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.hero-side-card {
-    width: 100%;
-    max-width: 320px;
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.hero-side-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-    .hero-side-top span {
-        color: #6b7280;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-.hero-side-number {
-    font-size: 40px;
-    font-weight: 800;
-    color: #111827;
-    line-height: 1;
-}
-
-.hero-side-label {
-    margin-top: 6px;
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.status-done,
-.status-live {
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.status-done {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.status-live {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
-    align-items: stretch;
-}
-
-.stat-card {
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 104px;
-    color: white;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    overflow: hidden;
-}
-
-    .stat-card.blue {
-        background: linear-gradient(135deg, #2563eb, #3b82f6);
-    }
-
-    .stat-card.green {
-        background: linear-gradient(135deg, #059669, #10b981);
-    }
-
-    .stat-card.orange {
-        background: linear-gradient(135deg, #ea580c, #f59e0b);
-    }
-
-    .stat-card.purple {
-        background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-    }
-
-.stat-icon {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.14);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    flex-shrink: 0;
-}
-
-.stat-card h4 {
-    margin: 0 0 8px 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.92);
-}
-
-.stat-card p {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1;
-    color: white;
-}
-
-.main-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 0.9fr;
-    gap: 16px;
-}
-
-.side-column {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.bottom-grid {
-    display: grid;
-    grid-template-columns: 1.12fr 0.88fr;
-    gap: 16px;
-}
-
-.card {
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
-    height: 100%;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 14px;
-}
-
-.card h3 {
-    margin: 2px 0 0 0;
-    color: #111827;
-    font-size: 20px;
-}
-
-.section-kicker {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #3b82f6;
-    font-weight: 700;
-}
-
-.ranking-list,
-.cyclist-list,
-.jersey-list,
-.podium-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ranking-row {
-    background: #f8fbff;
-    border: 1px solid #dfe8f3;
-    border-radius: 15px;
-    padding: 12px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 14px;
-}
-
-.ranking-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-}
-
-.ranking-pos {
-    min-width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: #e0ecff;
-    color: #1d4ed8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 18px;
-}
-
-.player-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    color: white;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    flex-shrink: 0;
-}
-
-.ranking-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.ranking-name-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    min-width: 0;
-}
-
-    .ranking-name-row strong {
-        font-size: 14px;
-    }
-
-.player-dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.progress-line {
-    width: 100%;
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    border-radius: 999px;
-}
-
-.ranking-points {
-    font-size: 15px;
-    font-weight: 800;
-    color: #111827;
-    white-space: nowrap;
-}
-
-.stage-title {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
-    color: #1e3a8a;
-    border-radius: 14px;
-    padding: 12px 14px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    font-size: 14px;
-}
-
-.podium-row {
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 11px 13px;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.draft-status-box {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.draft-status-item {
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 14px;
-}
-
-    .draft-status-item span {
-        display: block;
-        margin-bottom: 6px;
-        color: #6b7280;
-        font-size: 12px;
-    }
-
-    .draft-status-item strong {
-        font-size: 18px;
-        color: #111827;
-    }
-
-.status-done-text {
-    color: #15803d !important;
-}
-
-.status-live-text {
-    color: #2563eb !important;
-}
-
-.cyclist-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 12px 14px;
-    background: #f8fbff;
-    border: 1px solid #dfe8f3;
-    border-radius: 14px;
-}
-
-.cyclist-main {
-    flex: 1;
-    min-width: 0;
-}
-
-    .cyclist-main strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-.cyclist-bar {
-    width: 100%;
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.cyclist-bar-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #2563eb, #60a5fa);
-}
-
-.cyclist-points {
-    font-weight: 800;
-    color: #111827;
-    font-size: 15px;
-}
-
-.jersey-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 13px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    font-size: 14px;
-}
-
-.jersey {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-    .jersey.yellow {
-        background: #fde68a;
-        color: #854d0e;
-    }
-
-    .jersey.green {
-        background: #bbf7d0;
-        color: #166534;
-    }
-
-    .jersey.polka {
-        background: #fecaca;
-        color: #991b1b;
-    }
-
-    .jersey.white {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-    .jersey.default {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
-
-.empty-box {
-    padding: 16px;
-    border-radius: 14px;
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    color: #6b7280;
-    font-size: 14px;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -637,25 +185,7 @@ td {
     color: #111827;
 }
 
-@media (max-width: 1300px) {
-    .main-grid,
-    .bottom-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .hero-section {
-        justify-content: stretch;
-    }
-
-    .hero-side-card {
-        max-width: none;
-    }
-}
-
+/* MOBILE LAYOUT */
 @media (max-width: 768px) {
     .dashboard-body {
         overflow: auto;
@@ -729,28 +259,378 @@ td {
         overflow: visible;
         padding: 14px;
     }
+}
+/* GLOBAL EXTRA COMPACT PAGES */
+.content-window {
+    padding: 12px;
+}
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+/* Page padding */
+.player-page,
+.player-form-page,
+.player-details-page,
+.cyclists-page,
+.race-page,
+.result-page,
+.stage-page,
+.team-page,
+.scoring-page,
+.history-page-container,
+.draft-page,
+.new-game-page {
+    padding: 14px !important;
+}
+
+/* Main cards / panels */
+.player-header-card,
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.result-header-card,
+.result-race-card,
+.result-stage-card,
+.result-item-card,
+.result-race-card,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-header-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-details-hero,
+.race-form-card,
+.stage-header-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.team-header-card,
+.team-toolbar-card,
+.team-table-card,
+.team-card,
+.history-card,
+.player-table-card,
+.game-panel,
+.game-stat-card,
+.draft-main-card,
+.draft-side-card,
+.draft-stat-card {
+    border-radius: 14px !important;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Header hero cards */
+.player-header-card,
+.result-header-card,
+.race-header-card,
+.race-details-hero,
+.stage-header-card,
+.team-header-card,
+.draft-page-header,
+.game-hero {
+    padding: 20px 24px !important;
+    margin-bottom: 14px !important;
+    border-radius: 18px !important;
+}
+
+    /* Titles */
+    .player-page-title,
+    .player-form-header h1,
+    .player-details-hero h1,
+    .result-page-title,
+    .race-page-title,
+    .stage-page-title,
+    .team-page-title,
+    .game-title,
+    .draft-page-header h1 {
+        font-size: 26px !important;
+        margin-bottom: 5px !important;
     }
 
-    .draft-status-box {
-        grid-template-columns: 1fr;
+    .player-page-subtitle,
+    .result-page-subtitle,
+    .race-page-subtitle,
+    .stage-page-subtitle,
+    .team-page-subtitle,
+    .game-subtitle,
+    .draft-page-header p {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
     }
 
-    .ranking-row,
-    .cyclist-row,
-    .jersey-row {
-        flex-direction: column;
-        align-items: flex-start;
+.player-page-kicker,
+.result-page-kicker,
+.race-page-kicker,
+.stage-page-kicker,
+.team-page-kicker,
+.game-kicker,
+.draft-page-kicker {
+    font-size: 10px !important;
+    margin-bottom: 5px !important;
+}
+
+/* Section cards */
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-form-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.result-race-card,
+.result-stage-card,
+.team-toolbar-card,
+.team-table-card,
+.team-body,
+.team-management,
+.game-panel,
+.draft-side-card {
+    padding: 16px !important;
+}
+
+/* Card titles */
+.player-form-header,
+.race-form-header {
+    margin-bottom: 14px !important;
+}
+
+.player-detail-card h3,
+.cyclists-filter-title,
+.cyclists-card-title,
+.race-card-title,
+.stage-card-title,
+.result-stage-title,
+.game-panel-title,
+.draft-card-header h2 {
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Stats */
+.player-stats-grid,
+.race-stats-grid,
+.game-stats-grid,
+.draft-stats-grid {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+}
+
+.player-stat-card,
+.race-stat-card,
+.game-stat-card,
+.draft-stat-card {
+    padding: 13px 15px !important;
+    min-height: 72px !important;
+}
+
+.player-stat-label,
+.race-stat-label,
+.game-stat-label,
+.draft-stat-label {
+    font-size: 11px !important;
+    margin-bottom: 3px !important;
+}
+
+.player-stat-value,
+.race-stat-value,
+.game-stat-value,
+.draft-stat-value {
+    font-size: 22px !important;
+}
+
+.game-stat-icon,
+.draft-stat-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+}
+
+/* Forms / buttons */
+.player-btn,
+.race-btn,
+.result-btn,
+.team-btn,
+.add-cyclist-btn,
+.stage-race-btn,
+.cyclists-btn,
+.pagination-btn,
+.game-btn,
+.draft-pick-button,
+.player-btn-white,
+.btn-details {
+    min-height: 38px !important;
+    padding: 0 13px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+.player-search-input,
+.player-form-input,
+.race-form-input,
+.cyclists-input,
+.cyclists-select,
+.team-search-input,
+.add-cyclist-select,
+.add-cyclist-status,
+.game-input,
+.draft-search-input {
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+/* Tables */
+.player-table thead th,
+.race-table thead th,
+.cyclists-table thead th,
+.result-table thead th,
+.history-table th {
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+}
+
+.player-table tbody td,
+.race-table tbody td,
+.cyclists-table tbody td,
+.result-table tbody td,
+.history-table td {
+    padding: 11px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Lists / rows */
+.result-item-card,
+.player-empty-state,
+.race-empty-state,
+.result-empty-state,
+.stage-empty-state,
+.empty-state {
+    padding: 20px !important;
+}
+
+.player-avatar,
+.player-details-avatar,
+.race-avatar,
+.team-avatar,
+.draft-player-avatar,
+.player-pick-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 16px !important;
+}
+
+.player-details-avatar,
+.race-avatar {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+}
+
+/* Team cards */
+.teams-grid {
+    column-gap: 16px !important;
+}
+
+.team-card {
+    margin-bottom: 16px !important;
+}
+
+.team-header {
+    min-height: 105px !important;
+    padding: 16px 18px !important;
+    gap: 14px !important;
+}
+
+.team-name {
+    font-size: 17px !important;
+}
+
+.team-cyclist-count,
+.team-counts {
+    font-size: 13px !important;
+}
+
+.team-points {
+    min-width: 120px !important;
+    font-size: 15px !important;
+    padding: 6px 12px !important;
+}
+
+.cyclist-list {
+    max-height: 250px !important;
+}
+
+/* Draft page */
+.draft-card-header {
+    padding: 16px 18px !important;
+}
+
+.draft-table-head,
+.draft-row {
+    padding: 12px 18px !important;
+}
+
+    .draft-row.active {
+        padding-left: 13px !important;
     }
 
-    .ranking-left {
-        width: 100%;
-    }
+.draft-current-turn-box {
+    padding: 14px !important;
+    border-radius: 14px !important;
+}
 
-    .ranking-points,
-    .cyclist-points {
-        margin-top: 6px;
-    }
+.draft-current-turn-name {
+    font-size: 20px !important;
+}
+
+.draft-info-item {
+    padding: 10px 0 !important;
+    font-size: 13px !important;
+}
+
+/* New game */
+.game-layout {
+    gap: 14px !important;
+}
+
+.players-grid {
+    gap: 10px !important;
+}
+
+.player-pick-card {
+    padding: 10px !important;
+    border-radius: 12px !important;
+}
+
+.game-draft-summary,
+.game-warning-box,
+.game-info-item {
+    padding: 11px !important;
+    border-radius: 12px !important;
+}
+
+/* History */
+.history-header {
+    margin-bottom: 14px !important;
+}
+
+.history-title {
+    font-size: 24px !important;
+}
+
+.stage-number-circle {
+    width: 30px !important;
+    height: 30px !important;
 }
