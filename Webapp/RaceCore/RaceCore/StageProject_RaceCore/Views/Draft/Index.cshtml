@@ -7,7 +7,13 @@
     var cyclists = ViewBag.Cyclists as List<StageProject_RaceCore.Models.Cyclist>
                    ?? new List<StageProject_RaceCore.Models.Cyclist>();
 
+    int gameId = ViewBag.GameId ?? 0;
     int raceId = ViewBag.RaceId ?? 0;
+
+    int ridersPerPlayer = ViewBag.RidersPerPlayer ?? 10;
+    int benchPerPlayer = ViewBag.BenchPerPlayer ?? 5;
+
+    string raceName = ViewBag.RaceName ?? "Onbekende race";
 
     var pickedIds = Model
         .Where(t => t.CyclistId != null)
@@ -55,8 +61,9 @@
             <span class="draft-page-kicker">RaceCore Draft Center</span>
             <h1>Live Draft</h1>
             <p>
-                Kies om de beurt wielrenners. De eerste 10 picks worden actieve renners,
-                de laatste 5 zijn bankrenners.
+                Race: <strong>@raceName</strong><br />
+                Kies om de beurt wielrenners. De eerste @ridersPerPlayer picks worden actieve renners,
+                de laatste @benchPerPlayer zijn bankrenners.
             </p>
         </div>
 
@@ -83,18 +90,6 @@
     @if (TempData["DatabaseError"] != null)
     {
         <div class="draft-alert draft-alert-error">@TempData["DatabaseError"]</div>
-    }
-
-    @if (!Model.Any())
-    {
-        <form asp-action="GenerateDraft" method="post" style="margin-bottom:18px;">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="raceId" value="@raceId" />
-
-            <button type="submit" class="draft-pick-button">
-                Generate Fair Snake Draft
-            </button>
-        </form>
     }
 
     <div class="draft-stats-grid">
@@ -138,7 +133,7 @@
             <div class="draft-card-header">
                 <div class="draft-card-header-text">
                     <h2>Spelers in deze draft</h2>
-                    <p>Je ziet enkel de spelers. De renner-keuze staat duidelijk zichtbaar in de actieve rij.</p>
+                    <p>De actieve speler kan hier meteen een renner kiezen.</p>
                 </div>
 
                 <div class="draft-card-header-badge">
@@ -218,7 +213,7 @@
                                                 @Html.AntiForgeryToken()
 
                                                 <input type="hidden" name="draftTurnId" value="@currentTurn.Id" />
-                                                <input type="hidden" name="raceId" value="@raceId" />
+                                                <input type="hidden" name="gameId" value="@gameId" />
 
                                                 <select name="cyclistId" class="draft-search-input" required>
                                                     <option value="">Kies een renner...</option>
@@ -273,8 +268,18 @@
 
                 <div class="draft-info-list">
                     <div class="draft-info-item">
-                        <span>Spelers zichtbaar</span>
-                        <strong>@totalPlayers</strong>
+                        <span>Game ID</span>
+                        <strong>@gameId</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Actieve renners per speler</span>
+                        <strong>@ridersPerPlayer</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Bankrenners per speler</span>
+                        <strong>@benchPerPlayer</strong>
                     </div>
 
                     <div class="draft-info-item">
