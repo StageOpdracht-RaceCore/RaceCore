@@ -67,27 +67,28 @@ namespace StageProject_RaceCore.Controllers
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.SelectedPlayerIds));
                 }
 
-                var oldPlayerSelections = await _context.PlayerSelections
-                    .Where(ps => ps.RaceId == model.RaceId)
-                    .ToListAsync();
+                var game = new GameSession
+                {
+                    RaceId = model.RaceId,
+                    Status = "Draft",
+                    CurrentStageNumber = 0,
+                    RidersPerPlayer = 8,
+                    BenchPerPlayer = 2,
+                    CreatedAt = DateTime.Now
+                };
 
-                var oldDraftTurns = await _context.DraftTurns
-                    .Where(dt => dt.RaceId == model.RaceId)
-                    .ToListAsync();
-
-                _context.PlayerSelections.RemoveRange(oldPlayerSelections);
-                _context.DraftTurns.RemoveRange(oldDraftTurns);
-
+                _context.GameSessions.Add(game);
                 await _context.SaveChangesAsync();
 
-                const int totalRounds = 15;
-                var draftTurns = GenerateFairSnakeDraft(model.RaceId, players, totalRounds);
+                int totalRounds = game.RidersPerPlayer + game.BenchPerPlayer;
+
+                var draftTurns = GenerateFairSnakeDraft(game.Id, model.RaceId, players, totalRounds);
 
                 _context.DraftTurns.AddRange(draftTurns);
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = $"Nieuwe game gestart voor {race.Name} {race.Year}.";
-                return RedirectToAction("Index", "Draft", new { raceId = model.RaceId });
+                return RedirectToAction("Index", "Draft", new { gameId = game.Id });
             }
             catch (Exception ex)
             {
@@ -171,7 +172,7 @@ namespace StageProject_RaceCore.Controllers
             };
         }
 
-        private static List<DraftTurn> GenerateFairSnakeDraft(int raceId, List<Player> players, int totalRounds)
+        private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
 
@@ -180,23 +181,15 @@ namespace StageProject_RaceCore.Controllers
 
             for (int round = 1; round <= totalRounds; round++)
             {
-                int pairIndex = (round - 1) / 2;
-                int startIndex = pairIndex % playerCount;
-
-                var roundPlayers = players
-                    .Skip(startIndex)
-                    .Concat(players.Take(startIndex))
-                    .ToList();
-
-                if (round % 2 == 0)
-                {
-                    roundPlayers.Reverse();
-                }
+                var roundPlayers = round % 2 == 1
+                    ? players.ToList()
+                    : players.AsEnumerable().Reverse().ToList();
 
                 foreach (var player in roundPlayers)
                 {
                     draftTurns.Add(new DraftTurn
                     {
+                        GameSessionId = gameSessionId,
                         RaceId = raceId,
                         PlayerId = player.Id,
                         TurnNumber = turnNumber
