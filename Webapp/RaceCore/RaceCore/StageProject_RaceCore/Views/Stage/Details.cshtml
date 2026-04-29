@@ -1,0 +1,100 @@
+﻿@model StageProject_RaceCore.Models.Stage
+@using StageProject_RaceCore.Models
+
+@{
+    var top25 = ViewBag.Top25 as List<StageResult> ?? new List<StageResult>();
+    var jerseys = ViewBag.Jerseys as List<StageResult> ?? new List<StageResult>();
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
+
+<div style="margin-bottom: 10px;">
+    <a asp-action="Index" class="app-btn">
+        ← Terug naar ritten
+    </a>
+</div>
+
+<div class="stage-page">
+
+    <!-- HEADER -->
+    <section class="stage-header-card">
+        <div class="stage-details-header">
+            <h1>@Model.Name</h1>
+            <p>@Model.Date?.ToString("dd MMM yyyy")</p>
+        </div>
+    </section>
+
+    <!-- TOP 25 -->
+    <section class="stage-table-card stage-details-section">
+        <h2>Top 25</h2>
+
+        @if (top25.Any())
+        {
+            <table class="stage-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Renner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in top25)
+                    {
+                        var rowClass = r.Position == 1 ? "top-1"
+                                     : r.Position == 2 ? "top-2"
+                                     : r.Position == 3 ? "top-3"
+                                     : "";
+
+                        <tr class="@rowClass">
+                            <td>@r.Position</td>
+                            <td>@r.Cyclist.FirstName @r.Cyclist.LastName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="stage-details-empty">
+                Geen resultaten beschikbaar.
+            </div>
+        }
+    </section>
+
+    <!-- JERSEYS -->
+    <section class="stage-table-card stage-details-section">
+        <h2>Trui dragers</h2>
+
+        @if (jerseys.Any())
+        {
+            <table class="stage-table stage-jersey-table">
+                <thead>
+                    <tr>
+                        <th>Renner</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in jerseys)
+                    {
+                        <tr>
+                            <td>@r.Cyclist.FirstName @r.Cyclist.LastName</td>
+                            <td>
+                                <span class="jersey-badge">
+                                    Trui
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="stage-details-empty">
+                Geen trui dragers beschikbaar.
+            </div>
+        }
+    </section>
+
+</div>
