@@ -45,27 +45,28 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 ViewBag.GameId = game.Id;
+                ViewBag.RaceId = game.RaceId;
                 ViewBag.GameStatus = game.Status;
-                ViewBag.RaceName = $"{game.Race.Name} {game.Race.Year}";
+                ViewBag.RaceName = game.Race.Name + " " + game.Race.Year;
                 ViewBag.CurrentStage = game.CurrentStageNumber;
+                ViewBag.DatabaseOnline = true;
 
                 model.PlayersCount = await _context.DraftTurns
-                    .Where(dt => dt.GameSessionId == gameId)
-                    .Select(dt => dt.PlayerId)
+                    .Where(d => d.GameSessionId == gameId)
+                    .Select(d => d.PlayerId)
                     .Distinct()
                     .CountAsync();
 
                 model.TotalDraftPicks = await _context.DraftTurns
-                    .Where(dt => dt.GameSessionId == gameId && dt.CyclistId != null)
+                    .Where(d => d.GameSessionId == gameId && d.CyclistId != null)
                     .CountAsync();
 
                 model.CyclistsCount = model.TotalDraftPicks;
-
                 model.DraftCompleted = game.Status != "Draft";
 
                 model.PlayerRanking = await _context.DraftTurns
-                    .Where(dt => dt.GameSessionId == gameId)
-                    .Select(dt => dt.Player)
+                    .Where(d => d.GameSessionId == gameId)
+                    .Select(d => d.Player)
                     .Distinct()
                     .Select(p => new PlayerRankingItem
                     {
@@ -75,8 +76,8 @@ namespace StageProject_RaceCore.Controllers
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
-                    .OrderByDescending(x => x.Points)
-                    .ThenBy(x => x.PlayerName)
+                    .OrderByDescending(p => p.Points)
+                    .ThenBy(p => p.PlayerName)
                     .ToListAsync();
 
                 for (int i = 0; i < model.PlayerRanking.Count; i++)
@@ -85,8 +86,8 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 model.TopCyclists = await _context.PlayerSelections
-                    .Where(ps => ps.GameSessionId == gameId)
-                    .Select(ps => ps.Cyclist)
+                    .Where(s => s.GameSessionId == gameId)
+                    .Select(s => s.Cyclist)
                     .Distinct()
                     .Select(c => new TopCyclistItem
                     {
@@ -96,8 +97,8 @@ namespace StageProject_RaceCore.Controllers
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
-                    .OrderByDescending(x => x.Points)
-                    .ThenBy(x => x.Name)
+                    .OrderByDescending(c => c.Points)
+                    .ThenBy(c => c.Name)
                     .Take(5)
                     .ToListAsync();
 
@@ -120,18 +121,16 @@ namespace StageProject_RaceCore.Controllers
 
                 if (latestStage != null)
                 {
-                    model.LatestStageTitle = $"Stage {latestStage.StageNumber} - {latestStage.Name}";
+                    model.LatestStageTitle = "Stage " + latestStage.StageNumber + " - " + latestStage.Name;
 
                     model.LatestStageTop3 = await _context.StageResults
-                        .Include(sr => sr.Cyclist)
-                        .Where(sr => sr.StageId == latestStage.Id && sr.Position != null)
-                        .OrderBy(sr => sr.Position)
+                        .Include(r => r.Cyclist)
+                        .Where(r => r.StageId == latestStage.Id && r.Position != null)
+                        .OrderBy(r => r.Position)
                         .Take(3)
-                        .Select(sr => $"{sr.Position}. {sr.Cyclist.FirstName} {sr.Cyclist.LastName}")
+                        .Select(r => r.Position + ". " + r.Cyclist.FirstName + " " + r.Cyclist.LastName)
                         .ToListAsync();
                 }
-
-                ViewBag.DatabaseOnline = true;
             }
             catch
             {

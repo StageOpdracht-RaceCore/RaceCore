@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     int gameId = ViewBag.GameId ?? 0;
+    int raceId = ViewBag.RaceId ?? 0;
     string gameStatus = ViewBag.GameStatus ?? "Unknown";
     string raceName = ViewBag.RaceName ?? "Geen actieve game";
     int currentStage = ViewBag.CurrentStage ?? 0;
@@ -88,7 +89,7 @@
 
         <div class="dashboard-actions">
             <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
-            <a asp-controller="StageInput" asp-action="Index" asp-route-gameId="@gameId" class="btn-blue">Stage Input</a>
+            <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="btn-blue">Stages</a>
             <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
             <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
         </div>
@@ -227,13 +228,13 @@
                 else if (gameStatus == "Active")
                 {
                     <h3>Volgende stap</h3>
-                    <p>De draft is klaar. Vul nu manueel de resultaten van de volgende rit in.</p>
+                    <p>De draft is klaar. Ga naar de stagepagina om ritten en resultaten te beheren.</p>
 
-                    <a asp-controller="StageInput"
+                    <a asp-controller="Scoring"
                            asp-action="Index"
-                           asp-route-gameId="@gameId"
+                           asp-route-raceId="@raceId"
                            class="btn-blue">
-                        Stage Input openen
+                        Scoring
                     </a>
                 }
                 else
@@ -252,7 +253,7 @@
 
             <div class="dashboard-actions bottom-actions">
                 <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
-                <a asp-controller="StageInput" asp-action="Index" asp-route-gameId="@gameId" class="btn-blue">Stage Input</a>
+                <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="btn-blue">Scoring</a>
                 <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
                 <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
             </div>
