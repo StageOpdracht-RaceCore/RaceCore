@@ -40,11 +40,9 @@
             <div class="game-start-box">
                 <button type="submit"
                         class="game-btn game-btn-start"
-                        onclick="return confirm('Nieuwe game starten voor deze race? Oude draft en scores van deze race worden verwijderd.');">
+                        onclick="return confirm('Nieuwe game starten voor deze race? Deze game krijgt een eigen draft en overschrijft geen vorige games.');">
                     ▶ Start Game
                 </button>
-
-                
             </div>
         </div>
 
@@ -69,7 +67,7 @@
                 <div class="game-stat-icon game-icon-green">✓</div>
                 <div>
                     <span class="game-stat-label">Geselecteerd</span>
-                    <strong class="game-stat-value">@selectedPlayersCount</strong>
+                    <strong id="selectedPlayersCount" class="game-stat-value">@selectedPlayersCount</strong>
                 </div>
             </div>
 
@@ -121,7 +119,7 @@
 
                 <div class="game-warning-box">
                     ℹ Let op<br />
-                    Bij Start Game worden oude draft picks, scores en resultaten van deze race verwijderd.
+                    Elke Start Game maakt een nieuwe aparte game aan. Je kan dus dezelfde race meerdere keren opnieuw starten.
                 </div>
 
                 @if (!Model.AvailableRaces.Any())
@@ -168,6 +166,7 @@
                                 <input type="checkbox"
                                        name="SelectedPlayerIds"
                                        value="@player.Id"
+                                       class="player-checkbox"
                                 @(player.IsSelected ? "checked" : "") />
 
                                 <div class="player-pick-avatar">
@@ -214,4 +213,25 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectedCount = document.getElementById("selectedPlayersCount");
+            const checkboxes = document.querySelectorAll(".player-checkbox");
+
+            function updateSelectedPlayersCount() {
+                const count = document.querySelectorAll(".player-checkbox:checked").length;
+
+                if (selectedCount) {
+                    selectedCount.textContent = count;
+                }
+            }
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("change", updateSelectedPlayersCount);
+            });
+
+            updateSelectedPlayersCount();
+        });
+    </script>
 }
