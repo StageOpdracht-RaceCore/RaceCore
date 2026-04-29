@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Players";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
@@ -33,7 +33,11 @@
 
         <div class="player-header-actions">
             <a asp-action="Create" class="player-btn player-btn-primary">+ Nieuwe speler</a>
+            <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
+                ✓ Done
+            </a>
         </div>
+        
     </div>
 
     <div class="player-stats-grid">
