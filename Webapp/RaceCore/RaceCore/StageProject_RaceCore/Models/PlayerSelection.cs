@@ -14,5 +14,7 @@
         public Cyclist Cyclist { get; set; } = null!;
 
         public bool IsActive { get; set; }
+        public int GameSessionId { get; set; }
+        public GameSession GameSession { get; set; } = null!;
     }
 }
