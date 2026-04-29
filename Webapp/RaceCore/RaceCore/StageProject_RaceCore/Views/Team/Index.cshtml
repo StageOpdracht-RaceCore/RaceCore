@@ -1,306 +1,175 @@
-@model StageProject_RaceCore.Models.TeamIndexViewModel
-@using System.Linq
-@using StageProject_RaceCore.Models
+@model StageProject_RaceCore.Models.PlayerTeamsPageViewModel
 
 @{
     ViewData["Title"] = "Teams";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
-
-    var searchQuery = (Context.Request.Query["search"].ToString() ?? "").Trim();
-
-    bool MatchesSearch(string? value) =>
-        !string.IsNullOrWhiteSpace(value) &&
-        value.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
-
-    var allTeams = (Model?.Teams ?? Enumerable.Empty<TeamViewModel>())
-        .OrderByDescending(team => team.ActiveCyclistsCount + team.BenchCyclistsCount)
-        .ToList();
-
-    var teams = allTeams
-        .Where(team =>
-            string.IsNullOrWhiteSpace(searchQuery) ||
-            MatchesSearch(team.Name) ||
-            MatchesSearch(team.Tag) ||
-            (team.ActiveCyclists?.Any(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? false) ||
-            (team.BenchCyclists?.Any(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? false))
-        .ToList();
-
-    var availableCyclists = (Model?.AvailableCyclists ?? Enumerable.Empty<Cyclist>())
-        .ToList();
-
-    var totalCyclistMatches = string.IsNullOrWhiteSpace(searchQuery)
-        ? 0
-        : teams.Sum(team =>
-            (team.ActiveCyclists?.Count(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? 0) +
-            (team.BenchCyclists?.Count(c => MatchesSearch($"{c.FirstName} {c.LastName}")) ?? 0));
 }
 
-<link rel="stylesheet" href="~/css/Team.css" />
+@functions {
+    public string RiderName(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
+    {
+        return rider == null ? "Vrije plaats" : rider.FullName;
+    }
+
+    public string RiderTeam(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
+    {
+        return rider == null || string.IsNullOrWhiteSpace(rider.ProTeamName)
+            ? "-"
+            : rider.ProTeamName;
+    }
+}
+
+<link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
 
 <div class="team-page">
-    <div class="team-header-card">
-        <div>
-            <p class="team-page-kicker">RaceCore</p>
-            <h1 class="team-page-title">Teams</h1>
-            <p class="team-page-subtitle">Overview of all pro cycling teams, their rosters, and current points.</p>
+    <section class="team-header-card player-teams-hero">
+        <div class="team-hero-copy">
+            <p class="team-page-kicker">RaceCore Game</p>
+            <h1 class="team-page-title">Spelersteams</h1>
+            <p class="team-page-subtitle">
+                @if (Model.HasGame)
+                {
+                    <text>@Model.RaceName - @Model.GameStatus</text>
+                }
+                else
+                {
+                    <text>Start eerst een game om de teams van de spelers te zien.</text>
+                }
+            </p>
         </div>
-    </div>
 
-    @if (!allTeams.Any())
-    {
-        <div class="team-table-card team-empty-state">
-            <h3>No teams found</h3>
-            <p>There are currently no teams in the system.</p>
+        <div class="team-hero-stats" aria-label="Team overzicht">
+            <div>
+                <span>Spelers</span>
+                <strong>@Model.PlayerCount</strong>
+            </div>
+
+            <div>
+                <span>Renners</span>
+                <strong>@Model.ActiveRiderSlots</strong>
+            </div>
+
+            <div>
+                <span>Bank</span>
+                <strong>@Model.BenchRiderSlots</strong>
+            </div>
         </div>
+    </section>
+
+    @if (!Model.PlayerTeams.Any())
+    {
+        <section class="team-table-card team-empty-state">
+            <h2>Geen spelersteams gevonden</h2>
+            <p>Er is nog geen actieve game met spelers of draftbeurten.</p>
+            <a asp-controller="Game" asp-action="New" class="team-btn team-btn-primary">Nieuwe game starten</a>
+        </section>
     }
     else
     {
-        <div class="team-toolbar-card">
-            <form asp-controller="Team" asp-action="Index" method="get" class="team-search-form">
-                <div class="team-search-group">
-                    <label for="teamSearch">Search teams or cyclists</label>
-                    <input type="text"
-                           id="teamSearch"
-                           name="search"
-                           value="@searchQuery"
-                           class="team-search-input"
-                           placeholder="Search by team or cyclist name&hellip;" />
-                </div>
-
-                <div class="team-toolbar-actions">
-                    <button type="submit" class="team-btn team-btn-primary">Search</button>
-
-                    @if (!string.IsNullOrWhiteSpace(searchQuery))
-                    {
-                        <a asp-controller="Team" asp-action="Index" class="team-btn team-btn-light">Clear</a>
-                    }
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(searchQuery))
-                {
-                    <div class="team-search-count">
-                        @teams.Count team@(teams.Count == 1 ? "" : "s") found
-
-                        @if (totalCyclistMatches > 0)
-                        {
-                            <span>&middot; @totalCyclistMatches cyclist@(totalCyclistMatches == 1 ? "" : "s") matched</span>
-                        }
-                    </div>
-                }
-            </form>
-        </div>
-
-        @if (!teams.Any())
-        {
-            <div class="team-table-card team-empty-state">
-                <h3>No search results</h3>
-                <p>No teams or cyclists match “@searchQuery”.</p>
-                <a asp-controller="Team" asp-action="Index" class="team-btn team-btn-primary">Show all teams</a>
+        <section class="team-overview-strip">
+            <div>
+                <span>Game</span>
+                <strong>#@Model.GameId</strong>
             </div>
-        }
-        else
-        {
-            <div class="teams-grid teams-grid-wide-gap">
-                @foreach (var team in teams)
-                {
-                    var totalCyclists = team.ActiveCyclistsCount + team.BenchCyclistsCount;
 
-                    <div id="team-@team.Id" class="team-card collapsed">
-                        <div class="team-header">
-                            <div class="team-meta">
-                                <div class="team-avatar">@team.Tag</div>
+            <div>
+                <span>Race</span>
+                <strong>@Model.RaceName</strong>
+            </div>
 
-                                <div>
-                                    <div class="team-name">@team.Name</div>
-                                    <div class="team-cyclist-count">@totalCyclists cyclists</div>
-                                </div>
-                            </div>
+            <div>
+                <span>Gevuld</span>
+                <strong>@Model.FilledSlots / @Model.TotalSlots</strong>
+            </div>
+        </section>
 
-                            <div class="team-stats">
-                                <div class="team-stats-top">
-                                    <div class="team-points">@team.TeamPoints pts</div>
+        <section class="player-team-grid" aria-label="Teams van spelers">
+            @foreach (var playerTeam in Model.PlayerTeams)
+            {
+                var activePercent = Model.ActiveRiderSlots == 0
+                    ? 0
+                    : Math.Min(100, playerTeam.ActiveRiders.Count * 100 / Model.ActiveRiderSlots);
 
-                                    <button type="button"
-                                            class="collapse-toggle"
-                                            aria-expanded="false">
-                                        <span class="collapse-text">Open</span>
-                                        <span class="arrow">&#9662;</span>
-                                    </button>
-                                </div>
+                <article class="player-team-card"
+                         style="--player-color:@playerTeam.Color; --player-color-soft:@playerTeam.ColorSoft; --player-color-dark:@playerTeam.ColorDark; --player-text-color:@playerTeam.TextColor;">
+                    <header class="player-team-header">
+                        <div class="player-team-identity">
+                            <div class="player-team-avatar">@playerTeam.Initials</div>
 
-                                <div class="team-counts">
-                                    Active: <strong>@team.ActiveCyclistsCount</strong>
-                                    &middot;
-                                    Bench: <strong>@team.BenchCyclistsCount</strong>
-                                </div>
+                            <div>
+                                <h2>@playerTeam.PlayerName</h2>
+                                <p>@playerTeam.ActiveRiders.Count actieve renners, @playerTeam.BenchRiders.Count bankrenners</p>
                             </div>
                         </div>
 
-                        <div class="team-body">
-                            <div class="team-management">
-                                <div class="team-management-title">Add cyclist to team</div>
-
-                                @if (availableCyclists.Any())
-                                {
-                                    <form asp-controller="Team"
-                                          asp-action="AddCyclistToTeam"
-                                          method="post"
-                                          class="add-cyclist-form">
-                                        @Html.AntiForgeryToken()
-
-                                        <input type="hidden" name="teamId" value="@team.Id" />
-
-                                        <select name="cyclistId" class="add-cyclist-select" aria-label="Select cyclist to add" required>
-                                            <option value="">Select cyclist</option>
-
-                                            @foreach (var cyclist in availableCyclists)
-                                            {
-                                                <option value="@cyclist.Id">@cyclist.FirstName @cyclist.LastName</option>
-                                            }
-                                        </select>
-
-                                        <select name="isActive" class="add-cyclist-status" aria-label="Choose cyclist status">
-                                            <option value="true">Active</option>
-                                            <option value="false">Bench</option>
-                                        </select>
-
-                                        <button type="submit" class="team-btn team-btn-primary add-cyclist-btn">
-                                            Add to team
-                                        </button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <div class="empty team-management-empty">No unassigned cyclists available</div>
-                                }
-                            </div>
-
-                            <div class="composition">
-                                <div class="column">
-                                    <h4>Active</h4>
-
-                                    @if (team.ActiveCyclists?.Any() ?? false)
-                                    {
-                                        <ul class="cyclist-list">
-                                            @foreach (var cyclist in team.ActiveCyclists)
-                                            {
-                                                var cyclistFullName = $"{cyclist.FirstName} {cyclist.LastName}";
-                                                var isCyclistMatch =
-                                                    string.IsNullOrWhiteSpace(searchQuery) ||
-                                                    MatchesSearch(cyclistFullName) ||
-                                                    MatchesSearch(team.Name) ||
-                                                    MatchesSearch(team.Tag);
-
-                                                if (isCyclistMatch)
-                                                {
-                                                    <li>
-                                                        <span class="cyclist-name-text">@cyclistFullName</span>
-
-                                                        <div class="cyclist-actions">
-                                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-                                                                <input type="hidden" name="isActive" value="false" />
-                                                                <button type="submit" class="bench-btn">Bench</button>
-                                                            </form>
-
-                                                            <form asp-controller="Team" asp-action="RemoveCyclistFromTeam" method="post" class="cyclist-form">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-                                                                <button type="submit" class="remove-btn">Remove</button>
-                                                            </form>
-                                                        </div>
-                                                    </li>
-                                                }
-                                            }
-                                        </ul>
-                                    }
-                                    else
-                                    {
-                                        <div class="empty">No active cyclists</div>
-                                    }
-                                </div>
-
-                                <div class="column">
-                                    <h4>Bench</h4>
-
-                                    @if (team.BenchCyclists?.Any() ?? false)
-                                    {
-                                        <ul class="cyclist-list">
-                                            @foreach (var cyclist in team.BenchCyclists)
-                                            {
-                                                var cyclistFullName = $"{cyclist.FirstName} {cyclist.LastName}";
-                                                var isCyclistMatch =
-                                                    string.IsNullOrWhiteSpace(searchQuery) ||
-                                                    MatchesSearch(cyclistFullName) ||
-                                                    MatchesSearch(team.Name) ||
-                                                    MatchesSearch(team.Tag);
-
-                                                if (isCyclistMatch)
-                                                {
-                                                    <li>
-                                                        <span class="cyclist-name-text">@cyclistFullName</span>
-
-                                                        <div class="cyclist-actions">
-                                                            <form asp-controller="Team" asp-action="ToggleCyclistStatus" method="post" class="cyclist-form">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-                                                                <input type="hidden" name="isActive" value="true" />
-                                                                <button type="submit" class="activate-btn">Activate</button>
-                                                            </form>
-
-                                                            <form asp-controller="Team" asp-action="RemoveCyclistFromTeam" method="post" class="cyclist-form">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="cyclistId" value="@cyclist.Id" />
-                                                                <button type="submit" class="remove-btn">Remove</button>
-                                                            </form>
-                                                        </div>
-                                                    </li>
-                                                }
-                                            }
-                                        </ul>
-                                    }
-                                    else
-                                    {
-                                        <div class="empty">No cyclists on the bench</div>
-                                    }
-                                </div>
+                        <div class="team-completion">
+                            <span>@playerTeam.ActiveRiders.Count / @Model.ActiveRiderSlots actief</span>
+                            <div class="team-completion-bar" aria-hidden="true">
+                                <div style="width:@activePercent%;"></div>
                             </div>
                         </div>
+                    </header>
+
+                    <div class="player-roster-table-wrap">
+                        <table class="player-roster-table">
+                            <thead>
+                                <tr>
+                                    <th>Slot</th>
+                                    <th>Renner</th>
+                                    <th>Ploeg</th>
+                                    <th>Rol</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr class="roster-section-row active-section">
+                                    <th colspan="4">Actieve renners</th>
+                                </tr>
+
+                                @for (var index = 0; index < Model.ActiveRiderSlots; index++)
+                                {
+                                    var rider = playerTeam.ActiveRiders.ElementAtOrDefault(index);
+
+                                    <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "")">
+                                        <td class="slot-number">@(index + 1)</td>
+                                        <td>
+                                            <span class="rider-name">@RiderName(rider)</span>
+                                        </td>
+                                        <td>
+                                            <span class="rider-team">@RiderTeam(rider)</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-pill active">Renner</span>
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr class="roster-section-row bench-section">
+                                    <th colspan="4">Bankrenners</th>
+                                </tr>
+
+                                @for (var index = 0; index < Model.BenchRiderSlots; index++)
+                                {
+                                    var rider = playerTeam.BenchRiders.ElementAtOrDefault(index);
+
+                                    <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")">
+                                        <td class="slot-number">@(index + 1)</td>
+                                        <td>
+                                            <span class="rider-name">@RiderName(rider)</span>
+                                        </td>
+                                        <td>
+                                            <span class="rider-team">@RiderTeam(rider)</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-pill bench">Bank</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                }
-            </div>
-        }
+                </article>
+            }
+        </section>
     }
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll(".collapse-toggle");
-
-        buttons.forEach(button => {
-            button.addEventListener("click", function () {
-                const card = button.closest(".team-card");
-                if (!card) return;
-
-                card.classList.toggle("collapsed");
-
-                const isExpanded = !card.classList.contains("collapsed");
-
-                const text = button.querySelector(".collapse-text");
-                if (text) {
-                    text.textContent = isExpanded ? "Close" : "Open";
-                }
-
-                button.setAttribute("aria-expanded", isExpanded.toString());
-
-                if (isExpanded) {
-                    card.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-                }
-            });
-        });
-    });
-</script>
