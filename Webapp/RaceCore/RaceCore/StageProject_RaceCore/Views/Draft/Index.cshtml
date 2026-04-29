@@ -8,10 +8,10 @@
                    ?? new List<StageProject_RaceCore.Models.Cyclist>();
 
     int gameId = ViewBag.GameId ?? 0;
-    int raceId = ViewBag.RaceId ?? 0;
 
     int ridersPerPlayer = ViewBag.RidersPerPlayer ?? 10;
     int benchPerPlayer = ViewBag.BenchPerPlayer ?? 5;
+    int totalPicksPerPlayer = ridersPerPlayer + benchPerPlayer;
 
     string raceName = ViewBag.RaceName ?? "Onbekende race";
 
@@ -30,6 +30,20 @@
         .OrderBy(t => t.TurnNumber)
         .FirstOrDefault();
 
+    int currentPlayerPickedCount = 0;
+    int currentPickNumberForPlayer = 0;
+    bool currentPickIsBench = false;
+
+    if (currentTurn != null)
+    {
+        currentPlayerPickedCount = Model.Count(t =>
+            t.PlayerId == currentTurn.PlayerId &&
+            t.CyclistId != null);
+
+        currentPickNumberForPlayer = currentPlayerPickedCount + 1;
+        currentPickIsBench = currentPlayerPickedCount >= ridersPerPlayer;
+    }
+
     var playerRows = Model
         .GroupBy(t => new { t.PlayerId, t.PlayerName })
         .Select(g => new
@@ -38,8 +52,9 @@
             PlayerName = g.Key.PlayerName,
             TotalTurns = g.Count(),
             PickedCount = g.Count(x => x.CyclistId != null),
-            NextTurn = g.Where(x => x.CyclistId == null).OrderBy(x => x.TurnNumber).FirstOrDefault(),
-            LastPicked = g.Where(x => x.CyclistId != null).OrderByDescending(x => x.TurnNumber).FirstOrDefault()
+            ActivePicked = Math.Min(g.Count(x => x.CyclistId != null), ridersPerPlayer),
+            BenchPicked = Math.Max(0, g.Count(x => x.CyclistId != null) - ridersPerPlayer),
+            NextTurn = g.Where(x => x.CyclistId == null).OrderBy(x => x.TurnNumber).FirstOrDefault()
         })
         .OrderBy(x => x.NextTurn == null ? 999999 : x.NextTurn.TurnNumber)
         .ThenBy(x => x.PlayerName)
@@ -62,8 +77,8 @@
             <h1>Live Draft</h1>
             <p>
                 Race: <strong>@raceName</strong><br />
-                Kies om de beurt wielrenners. De eerste @ridersPerPlayer picks worden actieve renners,
-                de laatste @benchPerPlayer zijn bankrenners.
+                Eerst kies je <strong>@ridersPerPlayer actieve renners</strong>.
+                Daarna kies je <strong>@benchPerPlayer bankrenners</strong>.
             </p>
         </div>
 
@@ -72,8 +87,8 @@
                 <span class="draft-status-dot"></span>
                 @(draftIsLive ? "Draft Live" : draftIsDone ? "Draft Afgerond" : "Nog Geen Draft")
             </div>
-            <div class="draft-header-actions">
 
+            <div class="draft-header-actions">
                 <a asp-controller="Result"
                        asp-action="Index"
                        asp-route-gameId="@gameId"
@@ -88,7 +103,6 @@
                 </a>
             </div>
         </div>
-        
     </div>
 
     @if (TempData["Error"] != null)
@@ -144,12 +158,14 @@
         </div>
     </div>
 
-    <div class="draft-layout">
-        <section id="draft-players-section" class="draft-main-card">
+    <div class="draft-layout" id="draft-players-section">
+        <section class="draft-main-card">
             <div class="draft-card-header">
                 <div class="draft-card-header-text">
                     <h2>Spelers in deze draft</h2>
-                    <p>De actieve speler kan hier meteen een renner kiezen.</p>
+                    <p>
+                        Elke speler kiest @ridersPerPlayer actieve renners en daarna @benchPerPlayer bankrenners.
+                    </p>
                 </div>
 
                 <div class="draft-card-header-badge">
@@ -177,9 +193,14 @@
                             foreach (var player in playerRows)
                             {
                                 var isActive = currentTurn != null && player.NextTurn != null && player.NextTurn.Id == currentTurn.Id;
-                                var initial = !string.IsNullOrWhiteSpace(player.PlayerName)
-                                    ? player.PlayerName.Substring(0, 1).ToUpper()
-                                    : "?";
+
+                                var initial = "?";
+                                if (!string.IsNullOrWhiteSpace(player.PlayerName))
+                                {
+                                    initial = player.PlayerName.Substring(0, 1).ToUpper();
+                                }
+
+                                var nextIsBench = player.PickedCount >= ridersPerPlayer;
 
                                 <div class="draft-row @(isActive ? "active" : "")">
                                     <div class="draft-cell draft-player-cell" data-label="Speler">
@@ -191,7 +212,18 @@
 
                                                 @if (isActive)
                                                 {
-                                                    <span class="draft-inline-badge active">Aan de beurt</span>
+                                                    if (nextIsBench)
+                                                    {
+                                                        <span class="draft-inline-badge active" style="background:#fff7ed;color:#c2410c;">
+                                                            Bank kiezen
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="draft-inline-badge active">
+                                                            Actieve renner kiezen
+                                                        </span>
+                                                    }
                                                 }
                                                 else if (player.PickedCount >= player.TotalTurns)
                                                 {
@@ -204,21 +236,15 @@
                                             </div>
 
                                             <span class="draft-player-subtitle">
-                                                @if (player.LastPicked != null)
-                                                {
-                                                    <text>Laatst gekozen: @player.LastPicked.CyclistName</text>
-                                                }
-                                                else
-                                                {
-                                                    <text>Nog geen renner gekozen</text>
-                                                }
+                                                Actief: @player.ActivePicked / @ridersPerPlayer |
+                                                Bank: @player.BenchPicked / @benchPerPlayer
                                             </span>
                                         </div>
                                     </div>
 
                                     <div class="draft-cell draft-position-cell" data-label="Picks">
                                         <span class="draft-position-badge">
-                                            @player.PickedCount / @player.TotalTurns
+                                            @player.PickedCount / @totalPicksPerPlayer
                                         </span>
                                     </div>
 
@@ -232,7 +258,15 @@
                                                 <input type="hidden" name="gameId" value="@gameId" />
 
                                                 <select name="cyclistId" class="draft-search-input" required>
-                                                    <option value="">Kies een renner...</option>
+                                                    @if (nextIsBench)
+                                                    {
+                                                        <option value="">Kies bankrenner @(player.BenchPicked + 1) / @benchPerPlayer...</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="">Kies actieve renner @(player.ActivePicked + 1) / @ridersPerPlayer...</option>
+                                                    }
+
                                                     @foreach (var cyclist in availableCyclists)
                                                     {
                                                         <option value="@cyclist.Id">@cyclist.FullName</option>
@@ -277,9 +311,28 @@
 
                 <div class="draft-current-turn-box">
                     <span class="draft-current-turn-label">Nu aan de beurt</span>
+
                     <strong class="draft-current-turn-name">
                         @(currentTurn?.PlayerName ?? (draftIsDone ? "Einde Draft" : "Nog geen draft"))
                     </strong>
+
+                    @if (currentTurn != null)
+                    {
+                        <div style="margin-top:12px;">
+                            @if (currentPickIsBench)
+                            {
+                                <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-weight:900;">
+                                    Bankrenner @(currentPickNumberForPlayer - ridersPerPlayer) / @benchPerPlayer
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#ecfdf5;color:#047857;font-weight:900;">
+                                    Actieve renner @currentPickNumberForPlayer / @ridersPerPlayer
+                                </span>
+                            }
+                        </div>
+                    }
                 </div>
 
                 <div class="draft-info-list">
@@ -296,6 +349,11 @@
                     <div class="draft-info-item">
                         <span>Bankrenners per speler</span>
                         <strong>@benchPerPlayer</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Totaal per speler</span>
+                        <strong>@totalPicksPerPlayer</strong>
                     </div>
 
                     <div class="draft-info-item">
@@ -333,3 +391,15 @@
         </aside>
     </div>
 </div>
+
+<script>
+    window.onload = function () {
+        if (window.location.hash == "#draft-players-section") {
+            var section = document.getElementById("draft-players-section");
+
+            if (section != null) {
+                section.scrollIntoView();
+            }
+        }
+    };
+</script>
