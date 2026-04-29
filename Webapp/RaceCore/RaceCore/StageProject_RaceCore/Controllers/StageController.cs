@@ -7,6 +7,7 @@ namespace StageProject_RaceCore.Controllers
     public class StageController : Controller
     {
         private readonly AppDbContext _context;
+
         public StageController(AppDbContext context)
         {
             _context = context;
@@ -15,6 +16,13 @@ namespace StageProject_RaceCore.Controllers
         public async Task<IActionResult> Index(int raceId = 0)
         {
             var races = await _context.Races
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Name,
+                    r.Year,
+                    StageCount = r.Stages.Count()
+                })
                 .OrderByDescending(r => r.Year)
                 .ThenBy(r => r.Name)
                 .ToListAsync();
@@ -35,6 +43,7 @@ namespace StageProject_RaceCore.Controllers
 
             return View(stages);
         }
+
         public async Task<IActionResult> Details(int id)
         {
             var stage = await _context.Stages
@@ -60,6 +69,7 @@ namespace StageProject_RaceCore.Controllers
 
             ViewBag.Top25 = top25;
             ViewBag.Jerseys = jerseys;
+            ViewBag.RaceId = stage.RaceId;
 
             return View(stage);
         }
