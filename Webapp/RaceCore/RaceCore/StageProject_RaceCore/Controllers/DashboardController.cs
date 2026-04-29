@@ -49,28 +49,34 @@ namespace StageProject_RaceCore.Controllers
                 ViewBag.RaceName = $"{game.Race.Name} {game.Race.Year}";
                 ViewBag.CurrentStage = game.CurrentStageNumber;
 
-                model.PlayersCount = await _context.PlayerSelections
-                    .Where(ps => ps.GameSessionId == gameId)
-                    .Select(ps => ps.PlayerId)
+                model.PlayersCount = await _context.DraftTurns
+                    .Where(dt => dt.GameSessionId == gameId)
+                    .Select(dt => dt.PlayerId)
                     .Distinct()
                     .CountAsync();
 
-                model.CyclistsCount = await _context.PlayerSelections
-                    .Where(ps => ps.GameSessionId == gameId)
+                model.TotalDraftPicks = await _context.DraftTurns
+                    .Where(dt => dt.GameSessionId == gameId && dt.CyclistId != null)
                     .CountAsync();
 
-                model.PlayerRanking = await _context.PlayerSelections
-                    .Where(ps => ps.GameSessionId == gameId)
-                    .GroupBy(ps => ps.Player.Name)
-                    .Select(g => new PlayerRankingItem
+                model.CyclistsCount = model.TotalDraftPicks;
+
+                model.DraftCompleted = game.Status != "Draft";
+
+                model.PlayerRanking = await _context.DraftTurns
+                    .Where(dt => dt.GameSessionId == gameId)
+                    .Select(dt => dt.Player)
+                    .Distinct()
+                    .Select(p => new PlayerRankingItem
                     {
-                        PlayerName = g.Key,
+                        PlayerName = p.Name,
                         Points = _context.PlayerPoints
-                            .Where(pp => pp.PlayerId == g.First().PlayerId)
+                            .Where(pp => pp.PlayerId == p.Id && pp.RaceId == game.RaceId)
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
                     .OrderByDescending(x => x.Points)
+                    .ThenBy(x => x.PlayerName)
                     .ToListAsync();
 
                 for (int i = 0; i < model.PlayerRanking.Count; i++)
@@ -86,19 +92,44 @@ namespace StageProject_RaceCore.Controllers
                     {
                         Name = c.FirstName + " " + c.LastName,
                         Points = _context.PlayerPoints
-                            .Where(pp => pp.CyclistId == c.Id)
+                            .Where(pp => pp.CyclistId == c.Id && pp.RaceId == game.RaceId)
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
                     .OrderByDescending(x => x.Points)
+                    .ThenBy(x => x.Name)
                     .Take(5)
                     .ToListAsync();
 
-                model.DraftCompleted = game.Status != "Draft";
+                model.Jerseys = await _context.Jerseys
+                    .Include(j => j.Cyclist)
+                    .Where(j => j.Stage.RaceId == game.RaceId)
+                    .OrderByDescending(j => j.Stage.StageNumber)
+                    .Select(j => new JerseyItem
+                    {
+                        Type = j.Type,
+                        CyclistName = j.Cyclist.FirstName + " " + j.Cyclist.LastName
+                    })
+                    .Take(4)
+                    .ToListAsync();
 
-                model.TotalDraftPicks = await _context.DraftTurns
-                    .Where(dt => dt.GameSessionId == gameId && dt.CyclistId != null)
-                    .CountAsync();
+                var latestStage = await _context.Stages
+                    .Where(s => s.RaceId == game.RaceId)
+                    .OrderByDescending(s => s.StageNumber)
+                    .FirstOrDefaultAsync();
+
+                if (latestStage != null)
+                {
+                    model.LatestStageTitle = $"Stage {latestStage.StageNumber} - {latestStage.Name}";
+
+                    model.LatestStageTop3 = await _context.StageResults
+                        .Include(sr => sr.Cyclist)
+                        .Where(sr => sr.StageId == latestStage.Id && sr.Position != null)
+                        .OrderBy(sr => sr.Position)
+                        .Take(3)
+                        .Select(sr => $"{sr.Position}. {sr.Cyclist.FirstName} {sr.Cyclist.LastName}")
+                        .ToListAsync();
+                }
 
                 ViewBag.DatabaseOnline = true;
             }
