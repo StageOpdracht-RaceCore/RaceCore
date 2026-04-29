@@ -36,8 +36,6 @@ namespace StageProject_RaceCore.Controllers
 
             return View(stages);
         }
-
-        // 👉 NIEUW: Details pagina
         public async Task<IActionResult> Details(int id)
         {
             var stage = await _context.Stages
