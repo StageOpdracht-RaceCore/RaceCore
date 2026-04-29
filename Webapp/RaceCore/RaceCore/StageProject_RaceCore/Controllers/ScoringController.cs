@@ -9,7 +9,6 @@ namespace StageProject_RaceCore.Controllers
     public class ScoringController : Controller
     {
         private readonly AppDbContext _context;
-
         public ScoringController(AppDbContext context)
         {
             _context = context;

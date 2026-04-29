@@ -298,6 +298,7 @@ input[type="checkbox"]:checked + .jersey-dot {
     flex-wrap: wrap;
 }
 
+
 .scoring-stage-group {
     flex: 1;
     min-width: 240px;
