@@ -157,6 +157,11 @@ namespace StageProject_RaceCore.Models
                 .WithMany(c => c.PlayerPoints)
                 .HasForeignKey(pp => pp.CyclistId)
                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<PlayerPoints>()
+                .HasOne(pp => pp.GameSession)
+                .WithMany()
+                .HasForeignKey(pp => pp.GameSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

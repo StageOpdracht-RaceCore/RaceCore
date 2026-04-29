@@ -1,0 +1,120 @@
+﻿.stage-page {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 28px;
+    margin-bottom: 18px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: white;
+}
+
+    .stage-header p {
+        margin: 0;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #93c5fd;
+    }
+
+    .stage-header h1 {
+        margin: 8px 0;
+        font-size: 30px;
+    }
+
+    .stage-header span {
+        color: #dbeafe;
+    }
+
+.stage-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+    .stage-card h2 {
+        margin: 0 0 6px;
+        color: #1e1b4b;
+    }
+
+    .stage-card p {
+        margin-top: 0;
+        color: #64748b;
+    }
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.result-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+    .result-row label,
+    .jersey-grid label {
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+}
+
+.jersey-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.save-box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save,
+.btn-light {
+    display: inline-block;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-weight: 900;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-save {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-light {
+    background: white;
+    color: #1e1b4b;
+}
+
+@media (max-width: 800px) {
+    .stage-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result-grid,
+    .jersey-grid {
+        grid-template-columns: 1fr;
+    }
+}

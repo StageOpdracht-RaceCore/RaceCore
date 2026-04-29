@@ -1,0 +1,103 @@
+﻿@model StageProject_RaceCore.ViewModels.StageInputViewModel
+
+@{
+    ViewData["Title"] = "Stage Input";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/StageInput.css" asp-append-version="true" />
+
+<div class="stage-page">
+    <div class="stage-header">
+        <div>
+            <p>RaceCore Stage Input</p>
+            <h1>@Model.StageName</h1>
+            <span>@Model.RaceName</span>
+        </div>
+
+        <a asp-controller="Dashboard"
+               asp-action="Index"
+               asp-route-gameId="@Model.GameId"
+               class="btn-light">
+            Dashboard
+        </a>
+    </div>
+
+    <form asp-action="Save" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="GameId" />
+        <input type="hidden" asp-for="StageId" />
+
+        <div class="stage-card">
+            <h2>Top 25</h2>
+            <p>Vul manueel de top 25 van deze rit in.</p>
+
+            <div class="result-grid">
+                @for (int i = 0; i < Model.Rows.Count; i++)
+                {
+                    <div class="result-row">
+                        <input type="hidden" asp-for="Rows[i].Position" />
+
+                        <label>#@Model.Rows[i].Position</label>
+
+                        <select asp-for="Rows[i].CyclistId"
+                                asp-items="Model.Cyclists"
+                                class="form-input">
+                            <option value="">-- Kies renner --</option>
+                        </select>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="stage-card">
+            <h2>Truien</h2>
+            <p>Kies de truidragers na deze rit.</p>
+
+            <div class="jersey-grid">
+                <div>
+                    <label>Gele/Rode trui</label>
+                    <select asp-for="YellowJerseyCyclistId"
+                            asp-items="Model.Cyclists"
+                            class="form-input">
+                        <option value="">-- Kies renner --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Groene trui</label>
+                    <select asp-for="GreenJerseyCyclistId"
+                            asp-items="Model.Cyclists"
+                            class="form-input">
+                        <option value="">-- Kies renner --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Bolletjes/Blauwe trui</label>
+                    <select asp-for="PolkaJerseyCyclistId"
+                            asp-items="Model.Cyclists"
+                            class="form-input">
+                        <option value="">-- Kies renner --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Witte trui</label>
+                    <select asp-for="WhiteJerseyCyclistId"
+                            asp-items="Model.Cyclists"
+                            class="form-input">
+                        <option value="">-- Kies renner --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-box">
+            <button type="submit" class="btn-save">
+                Rit opslaan en punten berekenen
+            </button>
+        </div>
+    </form>
+</div>

@@ -382,3 +382,32 @@
         width: 100%;
     }
 }
+.btn-blue {
+    display: inline-block;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-weight: 900;
+    text-decoration: none;
+    background: #2563eb;
+    color: white;
+}
+
+.game-next-box {
+    margin-top: 15px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #f0f9ff;
+    border: 1px solid #bfdbfe;
+}
+
+    .game-next-box h3 {
+        margin: 0 0 6px;
+        color: #1e1b4b;
+        font-size: 18px;
+    }
+
+    .game-next-box p {
+        margin: 0 0 12px;
+        color: #475569;
+        font-weight: 600;
+    }

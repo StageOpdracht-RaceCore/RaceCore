@@ -88,6 +88,8 @@
 
         <div class="dashboard-actions">
             <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
+            <a asp-controller="StageInput" asp-action="Index" asp-route-gameId="@gameId" class="btn-blue">Stage Input</a>
+            <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
             <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
         </div>
     </div>
@@ -209,8 +211,49 @@
                 </div>
             </div>
 
+            <div class="game-next-box">
+                @if (gameStatus == "Draft")
+                {
+                    <h3>Volgende stap</h3>
+                    <p>De game zit nog in de draft. Kies eerst alle renners.</p>
+
+                    <a asp-controller="Draft"
+                           asp-action="Index"
+                           asp-route-gameId="@gameId"
+                           class="btn-green">
+                        Ga verder met draft
+                    </a>
+                }
+                else if (gameStatus == "Active")
+                {
+                    <h3>Volgende stap</h3>
+                    <p>De draft is klaar. Vul nu manueel de resultaten van de volgende rit in.</p>
+
+                    <a asp-controller="StageInput"
+                           asp-action="Index"
+                           asp-route-gameId="@gameId"
+                           class="btn-blue">
+                        Stage Input openen
+                    </a>
+                }
+                else
+                {
+                    <h3>Game klaar</h3>
+                    <p>Alle ritten zijn verwerkt. Bekijk het eindklassement.</p>
+
+                    <a asp-controller="Result"
+                           asp-action="Index"
+                           asp-route-gameId="@gameId"
+                           class="btn-white">
+                        Bekijk leaderboard
+                    </a>
+                }
+            </div>
+
             <div class="dashboard-actions bottom-actions">
                 <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
+                <a asp-controller="StageInput" asp-action="Index" asp-route-gameId="@gameId" class="btn-blue">Stage Input</a>
+                <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
                 <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
             </div>
         </div>

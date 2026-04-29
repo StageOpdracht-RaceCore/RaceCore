@@ -183,6 +183,9 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int?>("CyclistId")
                         .HasColumnType("int");
 
+                    b.Property<int>("GameSessionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
@@ -198,6 +201,8 @@ namespace StageProject_RaceCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CyclistId");
+
+                    b.HasIndex("GameSessionId");
 
                     b.HasIndex("PlayerId");
 
@@ -510,6 +515,12 @@ namespace StageProject_RaceCore.Migrations
                         .HasForeignKey("CyclistId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("StageProject_RaceCore.Models.GameSession", "GameSession")
+                        .WithMany()
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("StageProject_RaceCore.Models.Player", "Player")
                         .WithMany("PlayerPoints")
                         .HasForeignKey("PlayerId")
@@ -528,6 +539,8 @@ namespace StageProject_RaceCore.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Cyclist");
+
+                    b.Navigation("GameSession");
 
                     b.Navigation("Player");
 
