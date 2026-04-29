@@ -1,4 +1,7 @@
-﻿/* Page */
+﻿/* ===============================
+   BASIS VAN DE CYCLISTS PAGINA
+================================= */
+
 .cyclists-page {
     display: flex;
     flex-direction: column;
@@ -7,7 +10,11 @@
     padding: 24px;
 }
 
-/* Header card zoals Player.css */
+
+/* ===============================
+   HEADER BOVENAAN
+================================= */
+
 .result-header-card {
     display: flex;
     flex-direction: column;
@@ -43,7 +50,11 @@
     color: #dbeafe;
 }
 
-/* Cards */
+
+/* ===============================
+   ALGEMENE KAARTEN
+================================= */
+
 .cyclists-filter-card,
 .cyclists-table-card {
     background: #ffffff;
@@ -53,7 +64,11 @@
     padding: 24px;
 }
 
-/* Headings */
+
+/* ===============================
+   TITELS IN DE KAARTEN
+================================= */
+
 .cyclists-section-kicker {
     display: block;
     margin-bottom: 8px;
@@ -76,7 +91,11 @@
     padding: 0;
 }
 
-/* Form */
+
+/* ===============================
+   FILTER FORMULIER
+================================= */
+
 .cyclists-form {
     display: flex;
     gap: 16px;
@@ -97,7 +116,11 @@
         color: #374151;
     }
 
-/* Inputs */
+
+/* ===============================
+   INPUTS EN SELECTS
+================================= */
+
 .cyclists-input,
 .cyclists-select {
     width: 100%;
@@ -123,7 +146,11 @@
         color: #94a3b8;
     }
 
-/* Buttons */
+
+/* ===============================
+   KNOPPEN
+================================= */
+
 .button-group {
     flex: 0 0 auto;
     min-width: auto;
@@ -164,7 +191,11 @@
         color: #ffffff;
     }
 
-/* Count + Reset */
+
+/* ===============================
+   AANTAL RESULTATEN + RESET KNOP
+================================= */
+
 .countAndReset {
     display: flex;
     justify-content: space-between;
@@ -186,7 +217,11 @@
     color: #1d4ed8;
 }
 
-/* Table */
+
+/* ===============================
+   TABEL
+================================= */
+
 .cyclists-table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -220,6 +255,11 @@
         background: #f8fbff;
     }
 
+
+/* ===============================
+   RENNER NAAM EN TEAM
+================================= */
+
 .cyclist-name {
     font-size: 15px;
     font-weight: 700;
@@ -231,7 +271,11 @@
     color: #6b7280;
 }
 
-/* Badges */
+
+/* ===============================
+   STATUS BADGES
+================================= */
+
 .status-badge,
 .race-badge {
     display: inline-flex;
@@ -263,14 +307,22 @@
     color: #6b7280;
 }
 
-/* Empty state */
+
+/* ===============================
+   LEGE STATE
+================================= */
+
 .empty-box {
     text-align: center;
     padding: 40px 20px;
     color: #6b7280;
 }
 
-/* Pagination */
+
+/* ===============================
+   PAGINATIE
+================================= */
+
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -296,7 +348,11 @@
         color: #ffffff;
     }
 
-/* Responsive */
+
+/* ===============================
+   RESPONSIVE VOOR MOBIEL
+================================= */
+
 @media (max-width: 768px) {
     .cyclists-page {
         padding: 14px;

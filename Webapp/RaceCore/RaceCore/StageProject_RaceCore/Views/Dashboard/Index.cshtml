@@ -7,32 +7,29 @@
     int gameId = ViewBag.GameId ?? 0;
     int raceId = ViewBag.RaceId ?? 0;
     string gameStatus = ViewBag.GameStatus ?? "Unknown";
-    string raceName = ViewBag.RaceName ?? "Geen actieve game";
+    string raceName = ViewBag.RaceName ?? "No active game";
     int currentStage = ViewBag.CurrentStage ?? 0;
 
-    int maxPlayerPoints = 1;
-
-    if (Model.PlayerRanking.Any())
-    {
-        maxPlayerPoints = Math.Max(1, Model.PlayerRanking.Max(x => x.Points));
-    }
+    int maxPlayerPoints = Model.PlayerRanking.Any()
+        ? Math.Max(1, Model.PlayerRanking.Max(x => x.Points))
+        : 1;
 }
 
 <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
 
 @if (ViewBag.DatabaseOnline == false)
 {
-    <div class="alert-warning">⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.</div>
+    <div class="alert-box alert-warning">⚠️ Database not reachable. Start OpenVPN to view live data.</div>
 }
 
 @if (TempData["Error"] != null)
 {
-    <div class="alert-error">@TempData["Error"]</div>
+    <div class="alert-box alert-error">@TempData["Error"]</div>
 }
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert-success">@TempData["Success"]</div>
+    <div class="alert-box alert-success">@TempData["Success"]</div>
 }
 
 @functions {
@@ -57,12 +54,7 @@
 
     public string GetInitial(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return "?";
-        }
-
-        return name.Substring(0, 1).ToUpper();
+        return string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper();
     }
 
     public string GetJerseyClass(string type)
@@ -80,22 +72,19 @@
 
 <div class="dashboard-container">
 
-    <div class="dashboard-hero">
+    <section class="dashboard-hero">
         <div>
             <div class="small-title">RaceCore Game Hub</div>
             <h1>@raceName</h1>
-            <p>Status: <strong>@gameStatus</strong> | Stage: <strong>@currentStage</strong> | Game ID: <strong>@gameId</strong></p>
+            <p>
+                Status: <strong>@gameStatus</strong> |
+                Stage: <strong>@currentStage</strong> |
+                Game ID: <strong>@gameId</strong>
+            </p>
         </div>
+    </section>
 
-        <div class="dashboard-actions">
-            <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
-            <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="btn-blue">Stages</a>
-            <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
-            <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
-        </div>
-    </div>
-
-    <div class="stats-row">
+    <section class="stats-row">
         <div class="stat-box blue">
             <div class="stat-icon">👤</div>
             <div>
@@ -119,9 +108,10 @@
                 <strong>@gameStatus</strong>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="main-dashboard-grid">
+    <section class="main-dashboard-grid">
+
         <div class="card">
             <div class="card-title">
                 <span>Competition</span>
@@ -133,12 +123,9 @@
                 <div class="ranking-list">
                     @foreach (var player in Model.PlayerRanking)
                     {
-                        int width = 8;
-
-                        if (player.Points > 0)
-                        {
-                            width = Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100));
-                        }
+                        int width = player.Points > 0
+                            ? Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100))
+                            : 8;
 
                         string color = GetPlayerColor(player.PlayerName);
 
@@ -169,7 +156,7 @@
             }
             else
             {
-                <div class="empty-box">Nog geen ranking beschikbaar.</div>
+                <div class="empty-box">No ranking available yet.</div>
             }
         </div>
 
@@ -215,52 +202,54 @@
             <div class="game-next-box">
                 @if (gameStatus == "Draft")
                 {
-                    <h3>Volgende stap</h3>
-                    <p>De game zit nog in de draft. Kies eerst alle renners.</p>
+                    <h3>Next Step</h3>
+                    <p>The game is still in draft mode. Pick all riders first.</p>
 
                     <a asp-controller="Draft"
                            asp-action="Index"
                            asp-route-gameId="@gameId"
                            class="btn-green">
-                        Ga verder met draft
+                        Continue Draft
                     </a>
                 }
                 else if (gameStatus == "Active")
                 {
-                    <h3>Volgende stap</h3>
-                    <p>De draft is klaar. Ga naar de stagepagina om ritten en resultaten te beheren.</p>
+                    <h3>Next Step</h3>
+                    <p>The draft is complete. Go to scoring to manage stages and results.</p>
 
                     <a asp-controller="Scoring"
                            asp-action="Index"
                            asp-route-raceId="@raceId"
-                           class="btn-blue">
-                        Scoring
+                           class="btn-green">
+                        Go to Scoring
                     </a>
                 }
                 else
                 {
-                    <h3>Game klaar</h3>
-                    <p>Alle ritten zijn verwerkt. Bekijk het eindklassement.</p>
+                    <h3>Game Finished</h3>
+                    <p>All stages have been processed. View the final leaderboard.</p>
 
                     <a asp-controller="Result"
                            asp-action="Index"
                            asp-route-gameId="@gameId"
-                           class="btn-white">
-                        Bekijk leaderboard
+                           class="btn-green">
+                        View Leaderboard
                     </a>
                 }
             </div>
 
-            <div class="dashboard-actions bottom-actions">
-                <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="btn-green">Open Draft</a>
-                <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="btn-blue">Scoring</a>
-                <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="btn-white">Leaderboard</a>
-                <a asp-controller="Game" asp-action="New" class="btn-white">Nieuwe Game</a>
+            <div class="dashboard-actions">
+                <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Scoring</a>
+                <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Stages</a>
+                <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="dashboard-action-btn">Leaderboard</a>
+                <a asp-controller="Game" asp-action="New" class="dashboard-action-btn">New Game</a>
             </div>
         </div>
-    </div>
 
-    <div class="bottom-dashboard-grid">
+    </section>
+
+    <section class="bottom-dashboard-grid">
+
         <div class="card">
             <div class="card-title">
                 <span>Performance</span>
@@ -281,7 +270,7 @@
             }
             else
             {
-                <div class="empty-box">Nog geen cyclist points beschikbaar.</div>
+                <div class="empty-box">No cyclist points available yet.</div>
             }
         </div>
 
@@ -305,8 +294,9 @@
             }
             else
             {
-                <div class="empty-box">Nog geen truidragers beschikbaar.</div>
+                <div class="empty-box">No jersey holders available yet.</div>
             }
         </div>
-    </div>
+
+    </section>
 </div>

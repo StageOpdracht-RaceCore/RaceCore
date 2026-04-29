@@ -73,12 +73,6 @@
                 @(draftIsLive ? "Draft Live" : draftIsDone ? "Draft Afgerond" : "Nog Geen Draft")
             </div>
             <div class="draft-header-actions">
-                <a asp-controller="Scoring"
-                       asp-action="Index"
-                       asp-route-raceId="@raceId"
-                       class="draft-header-btn draft-header-btn-blue">
-                    Scoring
-                </a>
 
                 <a asp-controller="Result"
                        asp-action="Index"
