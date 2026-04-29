@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Ritten";
-    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+    var races = ViewBag.Races;
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
@@ -19,24 +19,30 @@
 
     <!-- FILTER -->
     <section class="stage-filter-card">
-        <form asp-action="Index" method="get">
-            <label>Wedstrijd</label>
+        <form asp-action="Index" method="get" class="race-select-form">
 
-            <select name="raceId" class="app-select" onchange="this.form.submit()">
-                @foreach (var race in races)
-                {
-                    <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
-                        @race.Name (@race.Year)
-                    </option>
-                }
-            </select>
+            <div class="race-select-group">
+                <label>Wedstrijd</label>
+
+                <select name="raceId" class="app-select" onchange="this.form.submit()">
+
+                    @foreach (var race in (dynamic)races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name (@race.Year) - @race.StageCount ritten
+                        </option>
+                    }
+
+                </select>
+            </div>
+
         </form>
     </section>
 
     <!-- LIJST -->
     <section class="stage-table-card">
 
-        @if (Model.Any())
+        @if (Model != null && Model.Any())
         {
             <table class="stage-table">
                 <thead>
@@ -47,18 +53,18 @@
                         <th></th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach (var stage in Model)
                     {
                         <tr>
                             <td>@stage.StageNumber</td>
                             <td>@stage.Name</td>
+                            <td>@(stage.Date?.ToString("dd/MM/yyyy") ?? "-")</td>
                             <td>
-                                @(stage.Date?.ToString("dd/MM/yyyy") ?? "-")
-                            </td>
-
-                            <td>
-                                <a asp-action="Details" asp-route-id="@stage.Id" class="app-btn">
+                                <a asp-action="Details"
+                                       asp-route-id="@stage.Id"
+                                       class="app-btn app-btn-primary">
                                     Details
                                 </a>
                             </td>
@@ -69,7 +75,11 @@
         }
         else
         {
-            <p>Geen ritten gevonden.</p>
+            <div class="stage-empty-state">
+                Geen ritten gevonden voor deze wedstrijd.
+            </div>
         }
+
     </section>
+
 </div>
