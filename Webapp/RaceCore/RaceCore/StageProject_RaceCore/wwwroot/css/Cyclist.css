@@ -165,7 +165,7 @@ h3 {
         background: #f8fbff;
     }
 
-    .cyclists-table tbody tr:last-child td {
+    .cyclistsTable tbody tr:last-child td {
         border-bottom: none;
     }
 
@@ -246,11 +246,11 @@ h3 {
 }
 
 /* Scrollbar */
-.cyclists-table-wrapper::-webkit-scrollbar {
+.cyclistsTableWrapper::-webkit-scrollbar {
     height: 10px;
 }
 
-.cyclists-table-wrapper::-webkit-scrollbar-track {
+.cyclistsTableWrapper::-webkit-scrollbar-track {
     background: #e5e7eb;
     border-radius: 999px;
 }
