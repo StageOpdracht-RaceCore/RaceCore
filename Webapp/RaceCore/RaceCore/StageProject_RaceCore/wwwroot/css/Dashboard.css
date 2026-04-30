@@ -1,12 +1,19 @@
-﻿.dashboard-container {
+﻿/* ===============================
+   PAGE
+================================= */
+
+.dashboard-container {
     width: 100%;
     max-width: 1500px;
     margin: 0 auto;
 }
 
-.alert-warning,
-.alert-error,
-.alert-success {
+
+/* ===============================
+   ALERTS
+================================= */
+
+.alert-box {
     padding: 12px;
     border-radius: 10px;
     margin-bottom: 15px;
@@ -28,10 +35,15 @@
     color: #166534;
 }
 
+
+/* ===============================
+   HERO
+================================= */
+
 .dashboard-hero {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 25px;
     padding: 30px;
     margin-bottom: 16px;
@@ -61,38 +73,68 @@
     font-weight: 900;
 }
 
-.dashboard-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
 
-.btn-green,
-.btn-white {
-    display: inline-block;
-    padding: 11px 16px;
-    border-radius: 12px;
-    font-weight: 900;
-    text-decoration: none;
-}
+/* ===============================
+   CARDS / TITLES
+================================= */
 
-.btn-green {
-    background: #22c55e;
-    color: white;
-}
-
-.btn-white {
+.card {
     background: white;
-    color: #1e1b4b;
+    border-radius: 20px;
+    padding: 20px;
     border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+}
+
+.card-title {
+    margin-bottom: 15px;
+}
+
+    .card-title span {
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .card-title h2 {
+        margin: 5px 0 0;
+        color: #1e1b4b;
+        font-size: 24px;
+        font-weight: 900;
+    }
+
+
+/* ===============================
+   LAYOUT
+================================= */
+
+.stats-row,
+.main-dashboard-grid,
+.bottom-dashboard-grid {
+    display: grid;
+    gap: 16px;
 }
 
 .stats-row {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
     margin-bottom: 16px;
 }
+
+.main-dashboard-grid {
+    grid-template-columns: 1.6fr 1fr;
+    margin-bottom: 16px;
+}
+
+.bottom-dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+
+/* ===============================
+   STAT BOXES
+================================= */
 
 .stat-box {
     display: flex;
@@ -103,7 +145,8 @@
     color: white;
 }
 
-    .stat-box span {
+    .stat-box span,
+    .info-box span {
         display: block;
         font-weight: 700;
     }
@@ -134,45 +177,63 @@
     background: linear-gradient(135deg, #7c3aed, #a855f7);
 }
 
-.main-dashboard-grid {
+
+/* ===============================
+   BUTTONS
+================================= */
+
+.btn-green,
+.dashboard-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.btn-green {
+    background: #22c55e;
+    color: white !important;
+}
+
+.dashboard-actions {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    margin-top: 18px;
 }
 
-.bottom-dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+.dashboard-action-btn {
+    width: 100%;
+    min-height: 54px;
+    padding: 0 14px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white !important;
+    font-size: 16px;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
 }
 
-.card {
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
-}
-
-.card-title {
-    margin-bottom: 15px;
-}
-
-    .card-title span {
-        color: #2563eb;
-        font-size: 11px;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    .btn-green:hover,
+    .dashboard-action-btn:hover {
+        transform: translateY(-2px);
+        color: white !important;
     }
 
-    .card-title h2 {
-        margin: 5px 0 0;
-        color: #1e1b4b;
-        font-size: 24px;
-        font-weight: 900;
+    .dashboard-action-btn:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
     }
+
+
+/* ===============================
+   RANKING / LISTS
+================================= */
 
 .ranking-list,
 .simple-list {
@@ -237,6 +298,16 @@
         border-radius: 50%;
     }
 
+.points {
+    color: #1e1b4b;
+    white-space: nowrap;
+}
+
+
+/* ===============================
+   PROGRESS
+================================= */
+
 .progress-bar {
     width: 100%;
     height: 7px;
@@ -254,10 +325,10 @@
     background: linear-gradient(90deg, #2563eb, #22c55e);
 }
 
-.points {
-    color: #1e1b4b;
-    white-space: nowrap;
-}
+
+/* ===============================
+   GAME PROGRESS
+================================= */
 
 .info-grid {
     display: grid;
@@ -273,10 +344,8 @@
 }
 
     .info-box span {
-        display: block;
         margin-bottom: 7px;
         color: #64748b;
-        font-weight: 700;
     }
 
     .info-box strong {
@@ -298,9 +367,30 @@
     font-weight: 800;
 }
 
-.bottom-actions {
+.game-next-box {
     margin-top: 15px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #f0f9ff;
+    border: 1px solid #bfdbfe;
 }
+
+    .game-next-box h3 {
+        margin: 0 0 6px;
+        color: #1e1b4b;
+        font-size: 18px;
+    }
+
+    .game-next-box p {
+        margin: 0 0 12px;
+        color: #475569;
+        font-weight: 600;
+    }
+
+
+/* ===============================
+   EMPTY STATE
+================================= */
 
 .empty-box {
     padding: 15px;
@@ -310,6 +400,11 @@
     color: #64748b;
     font-weight: 700;
 }
+
+
+/* ===============================
+   JERSEYS
+================================= */
 
 .jersey {
     padding: 6px 10px;
@@ -344,6 +439,11 @@
     color: #1d4ed8;
 }
 
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
 @media (max-width: 1100px) {
     .main-dashboard-grid,
     .bottom-dashboard-grid,
@@ -354,6 +454,12 @@
     .dashboard-hero {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+@media (max-width: 1300px) {
+    .dashboard-actions {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -382,32 +488,14 @@
         width: 100%;
     }
 }
-.btn-blue {
-    display: inline-block;
-    padding: 11px 16px;
-    border-radius: 12px;
-    font-weight: 900;
-    text-decoration: none;
-    background: #2563eb;
-    color: white;
-}
 
-.game-next-box {
-    margin-top: 15px;
-    padding: 16px;
-    border-radius: 16px;
-    background: #f0f9ff;
-    border: 1px solid #bfdbfe;
-}
-
-    .game-next-box h3 {
-        margin: 0 0 6px;
-        color: #1e1b4b;
-        font-size: 18px;
+@media (max-width: 520px) {
+    .dashboard-actions {
+        grid-template-columns: 1fr;
     }
 
-    .game-next-box p {
-        margin: 0 0 12px;
-        color: #475569;
-        font-weight: 600;
+    .dashboard-action-btn {
+        min-height: 50px;
+        font-size: 15px;
     }
+}

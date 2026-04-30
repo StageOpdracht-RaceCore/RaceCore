@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "New Game";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     int selectedPlayersCount = Model.AvailablePlayers.Count(p => p.IsSelected);
 }
@@ -20,7 +20,7 @@
         <div class="game-alert game-alert-success">@TempData["Success"]</div>
     }
 
-    <form asp-action="New" method="post">
+    <form asp-action="New" method="post" id="newGameForm">
         @Html.AntiForgeryToken()
 
         <div class="game-hero">
@@ -35,12 +35,11 @@
                         Alles wordt automatisch opgebouwd op basis van de gekozen spelers.
                     </p>
                 </div>
+                
             </div>
 
             <div class="game-start-box">
-                <button type="submit"
-                        class="game-btn game-btn-start"
-                        onclick="return confirm('Nieuwe game starten voor deze race? Deze game krijgt een eigen draft en overschrijft geen vorige games.');">
+                <button type="button" class="game-btn game-btn-start" id="openStartGameModal">
                     ▶ Start Game
                 </button>
             </div>
@@ -107,20 +106,9 @@
                     <span asp-validation-for="RaceId" class="text-danger"></span>
                 </div>
 
-                <div class="game-info-list">
-                    <div class="game-info-item">
-                        <div class="game-info-icon">🔄</div>
-                        <div>
-                            <strong>Snake Draft</strong>
-                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
-                        </div>
-                    </div>
-                </div>
+                
 
-                <div class="game-warning-box">
-                    ℹ Let op<br />
-                    Elke Start Game maakt een nieuwe aparte game aan. Je kan dus dezelfde race meerdere keren opnieuw starten.
-                </div>
+                
 
                 @if (!Model.AvailableRaces.Any())
                 {
@@ -144,6 +132,21 @@
                     <a asp-controller="Player" asp-action="Index" class="game-btn game-btn-light">
                         👥 Players beheren
                     </a>
+                </div>
+
+                <div class="game-info-list">
+                    <div class="game-info-item">
+                        <div class="game-info-icon">🔄</div>
+                        <div>
+                            <strong>Snake Draft</strong>
+                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-warning-box">
+                    ℹ Let op<br />
+                    Elke Start Game maakt een nieuwe aparte game aan. Je kan dus dezelfde race meerdere keren opnieuw starten.
                 </div>
             </div>
 
@@ -208,6 +211,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="game-modal-overlay" id="startGameModal">
+            <div class="game-modal">
+                <div class="game-modal-icon">🏁</div>
+
+                <h2>Nieuwe game starten?</h2>
+
+                <p>
+                    Deze game krijgt een eigen snake draft.
+                    Vorige games worden niet overschreven.
+                </p>
+
+                <div class="game-modal-actions">
+                    <button type="button" class="game-btn game-btn-light" id="cancelStartGame">
+                        Annuleren
+                    </button>
+
+                    <button type="submit" class="game-btn game-btn-start">
+                        Ja, start game
+                    </button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 
@@ -218,6 +244,9 @@
         document.addEventListener("DOMContentLoaded", function () {
             const selectedCount = document.getElementById("selectedPlayersCount");
             const checkboxes = document.querySelectorAll(".player-checkbox");
+            const modal = document.getElementById("startGameModal");
+            const openModalBtn = document.getElementById("openStartGameModal");
+            const cancelModalBtn = document.getElementById("cancelStartGame");
 
             function updateSelectedPlayersCount() {
                 const count = document.querySelectorAll(".player-checkbox:checked").length;
@@ -229,6 +258,32 @@
 
             checkboxes.forEach(function (checkbox) {
                 checkbox.addEventListener("change", updateSelectedPlayersCount);
+            });
+
+            if (openModalBtn && modal) {
+                openModalBtn.addEventListener("click", function () {
+                    modal.classList.add("show");
+                });
+            }
+
+            if (cancelModalBtn && modal) {
+                cancelModalBtn.addEventListener("click", function () {
+                    modal.classList.remove("show");
+                });
+            }
+
+            if (modal) {
+                modal.addEventListener("click", function (e) {
+                    if (e.target === modal) {
+                        modal.classList.remove("show");
+                    }
+                });
+            }
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && modal) {
+                    modal.classList.remove("show");
+                }
             });
 
             updateSelectedPlayersCount();

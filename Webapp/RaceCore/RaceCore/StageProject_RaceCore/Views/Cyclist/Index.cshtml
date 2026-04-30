@@ -11,7 +11,15 @@
     int totalPages = ViewBag.TotalPages ?? 1;
     int pageSize = ViewBag.PageSize ?? 25;
     int cyclistCount = ViewBag.CyclistCount ?? 0;
-    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+
+    var allRaces = ViewBag.Races as List<Race> ?? new List<Race>();
+
+    var races = allRaces
+        .Where(r =>
+            r.Name.Contains("Giro", StringComparison.OrdinalIgnoreCase) ||
+            r.Name.Contains("Tour", StringComparison.OrdinalIgnoreCase) ||
+            r.Name.Contains("Vuelta", StringComparison.OrdinalIgnoreCase))
+        .ToList();
 
     int startPage = Math.Max(1, currentPage - 2);
     int endPage = Math.Min(totalPages, startPage + 4);
@@ -21,9 +29,7 @@
         startPage = Math.Max(1, endPage - 4);
     }
 }
-
 <link rel="stylesheet" href="~/css/Cyclist.css" />
-    
 
 <div class="cyclists-page">
     <section class="result-header-card">
@@ -100,12 +106,14 @@
                             <th>Last Name</th>
                             <th>Team</th>
                             <th>Status</th>
+
                             @foreach (var race in races)
                             {
                                 <th>@race.Name</th>
                             }
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach (var cyclist in Model)
                         {
@@ -113,6 +121,7 @@
                                 <td class="cyclist-name">@cyclist.FirstName</td>
                                 <td class="cyclist-name">@cyclist.LastName</td>
                                 <td class="cyclist-team">@(cyclist.Team?.Name ?? "Geen team")</td>
+
                                 <td>
                                     @if (cyclist.IsActive)
                                     {

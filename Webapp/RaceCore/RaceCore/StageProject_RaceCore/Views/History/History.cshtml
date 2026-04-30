@@ -12,10 +12,9 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/history.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/NewGame.css" asp-append-version="true" />
 }
 
-<div class="player-page">
+<div class="player-page scoring-page">
     @* Blauwe Header *@
     <div class="player-header-card">
         <div>
@@ -33,30 +32,26 @@
         </div>
     </div>
 
-    @* Dropdown selectie via FORM (Automatisch laden bij selectie) *@
+    @* Wedstrijd selectie Kaart *@
     <div class="player-table-card scoring-selector-card">
         <form asp-action="History" method="get" class="scoring-selector-form">
             <div class="scoring-stage-group">
-                <label for="raceId">Selecteer een race</label>
-                <select id="raceId"
-                        name="raceId"
-                        class="scoring-stage-select"
-                        onchange="this.form.submit()">
-                    <option value="">-- Kies een race --</option>
-                    @foreach (var race in races)
+                <label for="raceId" class="scoring-label">Wedstrijd kiezen</label>
+                <select id="raceId" name="raceId" class="scoring-stage-select" onchange="this.form.submit()">
+                    @* De regel met "-- Kies een race --" is hier verwijderd *@
+                    @foreach (var race in (IEnumerable<StageProject_RaceCore.Models.Race>)ViewBag.Races)
                     {
-                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                        <option value="@race.Id" selected="@(race.Id == (int?)ViewBag.SelectedRaceId)">
                             @race.Name @race.Year
                         </option>
                     }
                 </select>
             </div>
-            @* De knop 'Bekijk ritten' is hier verwijderd omdat onchange de submit afhandelt *@
         </form>
     </div>
 
-    @* De Tabel *@
-    <div class="history-card">
+    @* Ritten Tabel *@
+    <div class="player-table-card history-card">
         <table class="history-table">
             <thead>
                 <tr>
@@ -65,7 +60,7 @@
                     <th>Datum</th>
                     <th>Ritwinnaar</th>
                     <th>Beste Speler</th>
-                    <th style="text-align: right;">Acties</th>
+                    <th style="text-align: right; padding-right: 24px;">Acties</th>
                 </tr>
             </thead>
             <tbody>
@@ -92,7 +87,7 @@
                                     <span class="player-points">@stage.TopPlayerPoints pts</span>
                                 </div>
                             </td>
-                            <td style="text-align: right;">
+                            <td style="text-align: right; padding-right: 24px;">
                                 <a asp-controller="Result" asp-action="StageResults" asp-route-raceId="@Model.RaceId" class="btn-details">Details</a>
                             </td>
                         </tr>

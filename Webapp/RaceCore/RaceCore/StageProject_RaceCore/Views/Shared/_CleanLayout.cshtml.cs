@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace StageProject_RaceCore.Views.StageInput
+namespace StageProject_RaceCore.Views.Shared
 {
-    public class IndexModel : PageModel
+    public class _CleanLayoutModel : PageModel
     {
         public void OnGet()
         {
