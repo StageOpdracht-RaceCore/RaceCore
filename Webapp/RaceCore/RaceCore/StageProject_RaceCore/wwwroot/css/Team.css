@@ -1,543 +1,437 @@
-/* =============================================================================
-   Team.css - RaceCore Teams page
-   ============================================================================= */
-
-/* Design tokens */
-:root {
-    --rc-blue: #0078d4;
-    --rc-blue-dark: #005fa3;
-    --rc-blue-glow: rgba(0, 120, 212, 0.14);
-    --rc-green: #00875a;
-    --rc-green-dark: #006644;
-    --rc-surface: #ffffff;
-    --rc-border: #e5e7eb;
-    --rc-border-soft: #f0f0f0;
-    --rc-text: #111827;
-    --rc-text-muted: #6b7280;
-    --rc-radius-lg: 20px;
-    --rc-radius-md: 10px;
-    --rc-radius-sm: 6px;
-    --rc-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-    --rc-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-}
-
-/* Page summary */
-.page-summary {
-    box-sizing: border-box;
-    width: calc(100% - 2rem);
-    margin: 0 auto 1.5rem;
-    padding: 24px 28px;
-    background: linear-gradient(135deg, #7c3aed 0%, #3b1478 100%);
-    border: none;
-    border-radius: var(--rc-radius-lg);
-    box-shadow: var(--rc-shadow);
-}
-
-    .page-summary h2 {
-        margin: 0 0 4px;
-        font-size: 1.4rem;
-        color: #ffffff;
-    }
-
-    .page-summary p {
-        margin: 0;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.75);
-    }
-
-/* Search */
-.global-search-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: calc(100% - 2rem);
-    margin: 0 auto 1.5rem;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, #fde047 0%, #d97706 100%);
-    border: none;
-    border-radius: var(--rc-radius-lg);
-    box-shadow: var(--rc-shadow-sm);
-}
-
-    .global-search-bar input[type="text"] {
-        flex: 1;
-        padding: 8px 14px;
-        font-size: 0.9rem;
-        color: var(--rc-text);
-        background: #f9fafb;
-        border: 1px solid var(--rc-border);
-        border-radius: var(--rc-radius-md);
-        outline: none;
-        transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
-    }
-
-        .global-search-bar input[type="text"]:focus {
-            background: var(--rc-surface);
-            border-color: var(--rc-blue);
-            box-shadow: 0 0 0 3px var(--rc-blue-glow);
-        }
-
-        .global-search-bar input[type="text"]::placeholder {
-            color: #9ca3af;
-        }
-
-#globalSearchClear {
-    padding: 7px 14px;
-    font-size: 0.85rem;
-    color: var(--rc-text-muted);
-    cursor: pointer;
-    background: transparent;
-    border: 1px solid var(--rc-border);
-    border-radius: var(--rc-radius-md);
-    transition: background 150ms ease, color 150ms ease;
-}
-
-    #globalSearchClear:hover {
-        color: var(--rc-text);
-        background: #f3f4f6;
-    }
-
-#globalSearchCount {
-    min-width: 100px;
-    font-size: 0.8rem;
-    color: var(--rc-text-muted);
-    text-align: right;
-    white-space: nowrap;
-}
-
-/* =============================================================================
-   Team card — white text on coloured background
-   ============================================================================= */
-.team-card .team-name,
-.team-card .team-cyclist-count,
-.team-card .team-counts,
-.team-card .team-management-title,
-.team-card .column h4,
-.team-card .empty {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.team-card .collapse-toggle {
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
-}
-
-    .team-card .collapse-toggle:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.25);
-    }
-
-.team-card .cyclist-list li {
-    color: rgba(255, 255, 255, 0.95);
-}
-
-    .team-card .cyclist-list li:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-.team-card .team-body {
-    border-top-color: rgba(255, 255, 255, 0.2);
-}
-
-.team-card .team-management {
-    border-bottom-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Grid */
-.teams-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 16px;
-    align-items: start;
-    width: calc(100% - 2rem);
+.team-page {
+    width: 100%;
+    max-width: 1600px;
     margin: 0 auto;
+    padding: 18px;
 }
 
-.teams-grid-wide-gap {
-    column-gap: 5ch;
+.team-header-card,
+.team-table-card,
+.team-overview-strip,
+.player-team-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
 }
 
-@media (max-width: 700px) {
-    .teams-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Team card */
-.team-card {
-    --team-color: #6b7280;
-    --team-color-soft: rgba(107, 114, 128, 0.14);
-    --team-color-soft-border: rgba(107, 114, 128, 0.3);
-    --team-color-contrast: #ffffff;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: var(--rc-surface);
-    border: 1px solid var(--rc-border);
-    border-radius: var(--rc-radius-lg);
-    box-shadow: var(--rc-shadow-sm);
-    transition: box-shadow 200ms ease, border-color 200ms ease;
-}
-
-    .team-card:hover {
-        box-shadow: var(--rc-shadow);
-    }
-
-    .team-card.team-card-search-hidden {
-        display: none !important;
-    }
-
-    .team-card.collapsed {
-        border-top: 4px solid var(--team-color);
-        background: linear-gradient( 90deg, var(--team-color) 0%, var(--team-color-dark) 100% );
-    }
-
-    .team-card:not(.collapsed) {
-        max-height: 520px;
-        border-top: 4px solid var(--team-color);
-        background: linear-gradient( 90deg, var(--team-color) 0%, var(--team-color-dark) 100% );
-    }
-
-/* Header */
-.team-header {
+.player-teams-hero {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 16px 20px;
-    cursor: pointer;
-    user-select: none;
-    background: transparent;
+    gap: 24px;
+    padding: 24px;
+    margin-bottom: 16px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #047857 100%);
 }
 
-    .team-header:hover {
-        background: rgba(0, 0, 0, 0.12);
+.team-hero-copy {
+    min-width: 0;
+}
+
+.team-page-kicker {
+    margin: 0 0 6px;
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.team-page-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.05;
+}
+
+.team-page-subtitle {
+    margin: 0;
+    color: #dbeafe;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.team-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(82px, 1fr));
+    gap: 10px;
+    min-width: 300px;
+}
+
+    .team-hero-stats div,
+    .team-overview-strip div {
+        padding: 13px 14px;
+        border-radius: 12px;
     }
 
-.team-meta {
+    .team-hero-stats div {
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .team-hero-stats span,
+    .team-overview-strip span {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
+
+    .team-hero-stats span {
+        color: #bfdbfe;
+    }
+
+    .team-hero-stats strong {
+        display: block;
+        color: #ffffff;
+        font-size: 24px;
+        line-height: 1;
+    }
+
+.team-overview-strip {
+    display: grid;
+    grid-template-columns: 0.7fr 1.8fr 1fr;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+    .team-overview-strip div {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .team-overview-strip span {
+        color: #64748b;
+    }
+
+    .team-overview-strip strong {
+        display: block;
+        color: #111827;
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.player-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+.player-team-card {
+    overflow: hidden;
+}
+
+.player-team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border-top: 5px solid var(--player-color);
+    background: linear-gradient(90deg, var(--player-color-soft), #ffffff 76%);
+}
+
+.player-team-identity {
     display: flex;
     align-items: center;
     gap: 12px;
     min-width: 0;
 }
 
-.team-name {
+.player-team-avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--player-text-color);
+    background: var(--player-color);
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.player-team-identity h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.player-team-identity p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.team-completion {
+    min-width: 128px;
+    color: #0f172a;
+    font-weight: 900;
+    text-align: right;
+}
+
+    .team-completion span {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+    }
+
+.team-completion-bar {
+    width: 128px;
+    height: 8px;
     overflow: hidden;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--rc-text);
+    border-radius: 999px;
+    background: #e5e7eb;
+}
+
+    .team-completion-bar div {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
+    }
+
+.player-roster-table-wrap {
+    overflow-x: hidden;
+}
+
+.player-roster-table {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+    .player-roster-table th,
+    .player-roster-table td {
+        padding: 9px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: middle;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .player-roster-table thead th {
+        color: #475569;
+        background: #f8fafc;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
+
+    .player-roster-table th:first-child,
+    .player-roster-table td:first-child {
+        width: 44px;
+    }
+
+    .player-roster-table th:nth-child(3),
+    .player-roster-table td:nth-child(3) {
+        width: 24%;
+    }
+
+    .player-roster-table th:last-child,
+    .player-roster-table td:last-child {
+        width: 76px;
+        text-align: right;
+    }
+
+.roster-section-row th {
+    padding: 9px 8px;
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.roster-section-row.active-section th {
+    color: var(--player-text-color);
+    background: var(--player-color);
+    padding-left: calc(8px + 0.5ch);
+}
+
+.roster-section-row.bench-section th {
+    color: #374151;
+    background: #e5e7eb;
+}
+
+.roster-row.active-rider {
+    background: var(--player-color-soft);
+    border-left: 4px solid var(--player-color);
+}
+
+.roster-row.roster-before-bench td {
+    border-bottom: 0;
+}
+
+.roster-row.bench-rider {
+    background: #f3f4f6;
+    border-left: 4px solid #9ca3af;
+}
+
+.roster-row.empty-slot {
+    background: #ffffff;
+}
+
+    .roster-row.empty-slot .rider-name,
+    .roster-row.empty-slot .rider-team {
+        color: #94a3b8;
+        font-style: italic;
+        font-weight: 700;
+    }
+
+.slot-number {
+    color: #64748b;
+    font-weight: 900;
+}
+
+.rider-name,
+.rider-team {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.team-cyclist-count {
-    margin-top: 2px;
-    font-size: 0.8rem;
-    color: var(--rc-text-muted);
+.rider-name {
+    color: #111827;
+    font-weight: 900;
 }
 
-.swatch {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    background: var(--team-color);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 4px;
-}
-
-.tag {
-    display: inline-block;
-    margin-left: 6px;
-    padding: 2px 8px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    vertical-align: middle;
-    color: var(--rc-blue);
-    background: #f0f4ff;
-    border: 1px solid #d0e2ff;
-    border-radius: 20px;
-}
-
-/* Header stats */
-.team-stats {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    align-items: flex-end;
-    gap: 5px;
-}
-
-.team-stats-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.badge {
-    padding: 4px 10px;
-    font-size: 0.8rem;
+.rider-team {
+    color: #64748b;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #fff;
-    background: var(--rc-blue);
-    border-radius: 20px;
 }
 
-.team-counts {
-    font-size: 0.78rem;
-    color: var(--rc-text-muted);
-    white-space: nowrap;
-}
-
-/* Collapse toggle */
-.collapse-toggle {
-    display: flex;
+.status-pill {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    width: 28px;
+    min-width: 58px;
     height: 28px;
-    font-size: 0.75rem;
-    color: var(--rc-text-muted);
-    cursor: pointer;
-    background: #f3f4f6;
-    border: 1px solid var(--rc-border);
-    border-radius: 50%;
-    transition: background 150ms ease;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
 }
 
-    .collapse-toggle:hover {
-        color: var(--rc-text);
-        background: #e5e7eb;
+    .status-pill.active {
+        color: var(--player-text-color);
+        background: var(--player-color);
     }
 
-    .collapse-toggle:focus {
-        outline: 2px solid var(--rc-blue);
-        outline-offset: 2px;
+    .status-pill.bench {
+        color: #374151;
+        background: #d1d5db;
     }
 
-    .collapse-toggle .arrow {
-        display: inline-block;
-        transition: transform 220ms ease;
-    }
-
-.team-card.collapsed .collapse-toggle .arrow {
-    transform: rotate(-90deg);
+.team-table-card {
+    padding: 24px;
 }
 
-/* Body */
-.team-body {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 0 20px 16px;
-    background: transparent;
-    border-top: 1px solid var(--rc-border-soft);
+.team-empty-state h2 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 22px;
 }
 
-.team-card.collapsed .team-body {
-    display: none;
-}
-
-/* Team management */
-.team-management {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px 0 14px;
-    border-bottom: 1px solid var(--rc-border-soft);
-}
-
-.team-management-title {
-    font-size: 0.75rem;
+.team-empty-state p {
+    margin: 0 0 16px;
+    color: #64748b;
     font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--rc-text-muted);
 }
 
-.team-management-empty {
-    padding: 0;
+/* Clickable rider rows */
+tr[data-cyclist-id] {
+    cursor: pointer;
 }
 
-.add-cyclist-form {
-    display: flex;
-    flex-wrap: wrap;
+    tr[data-cyclist-id]:hover {
+        filter: brightness(0.95);
+    }
+
+.roster-row--selected {
+    outline: 2px solid var(--player-color) !important;
+    outline-offset: -2px;
+    filter: brightness(0.92) !important;
+}
+
+.team-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-}
-
-.add-cyclist-select,
-.add-cyclist-status {
-    min-width: 0;
-    padding: 8px 12px;
-    font-size: 0.875rem;
-    color: var(--rc-text);
-    background: #fff;
-    border: 1px solid var(--rc-border);
-    border-radius: var(--rc-radius-md);
-    outline: none;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.add-cyclist-select {
-    flex: 1 1 220px;
-}
-
-.add-cyclist-status {
-    flex: 0 0 110px;
-}
-
-    .add-cyclist-select:focus,
-    .add-cyclist-status:focus {
-        border-color: var(--rc-blue);
-        box-shadow: 0 0 0 3px var(--rc-blue-glow);
-    }
-
-/* Composition */
-.composition {
-    display: flex;
-    gap: 34px;
-    margin-top: 14px;
-}
-
-.column {
-    flex: 1;
-    min-width: 0;
-}
-
-    .column h4 {
-        margin: 0 0 8px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.07em;
-        text-transform: uppercase;
-        color: var(--rc-text-muted);
-    }
-
-/* Cyclist list */
-.cyclist-list {
-    margin: 1ch;
-    padding: 0;
-    list-style: none;
-}
-
-    .cyclist-list li {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 6px 8px;
-        font-size: 0.875rem;
-        color: var(--rc-text);
-        border-radius: var(--rc-radius-sm);
-        transition: background 120ms ease;
-    }
-
-        .cyclist-list li:hover {
-            background: #f9fafb;
-        }
-
-        .cyclist-list li[hidden] {
-            display: none;
-        }
-
-.cyclist-name-text {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.cyclist-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-}
-
-.cyclist-form {
-    width: 100%;
-    margin: 0;
-}
-
-.cyclist-actions .bench-btn,
-.cyclist-actions .activate-btn,
-.cyclist-actions .remove-btn {
-    display: block;
-    width: 100%;
-    text-align: center;
-}
-
-/* Empty / search states */
-.empty {
-    padding: 8px 0;
-    font-size: 0.85rem;
-    font-style: italic;
-    color: #9ca3af;
-}
-
-/* Action buttons */
-.bench-btn,
-.activate-btn,
-.remove-btn {
-    flex-shrink: 0;
-    padding: 3px 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 900;
+    text-decoration: none;
     cursor: pointer;
-    border-radius: 20px;
-    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
-.add-cyclist-btn {
-    flex-shrink: 0;
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #fff;
-    cursor: pointer;
-    background: var(--rc-blue);
-    border: 1px solid var(--rc-blue);
-    border-radius: 20px;
-    transition: background 150ms ease, border-color 150ms ease;
+.team-btn-primary {
+    color: #ffffff;
+    background: #2563eb;
 }
 
-    .add-cyclist-btn:hover {
-        background: var(--rc-blue-dark);
-        border-color: var(--rc-blue-dark);
+    .team-btn-primary:hover {
+        color: #ffffff;
+        background: #1d4ed8;
     }
 
-.bench-btn {
-    color: #374151;
-    background: #fff;
-    border: 1px solid #d1d5db;
-}
-
-    .bench-btn:hover {
-        background: #f3f4f6;
-        border-color: #9ca3af;
+@media (max-width: 900px) {
+    .player-teams-hero {
+        align-items: stretch;
+        flex-direction: column;
     }
 
-.activate-btn {
-    color: #fff;
-    background: var(--rc-green);
-    border: 1px solid var(--rc-green);
-}
-
-    .activate-btn:hover {
-        background: var(--rc-green-dark);
-        border-color: var(--rc-green-dark);
+    .team-hero-stats {
+        min-width: 0;
     }
 
-.remove-btn {
-    color: #b42318;
-    background: #fff;
-    border: 1px solid #f0b4ad;
+    .team-overview-strip {
+        grid-template-columns: 1fr;
+    }
 }
 
-    .remove-btn:hover {
-        background: #fef3f2;
-        border-color: #e58f87;
+@media (max-width: 560px) {
+    .team-page {
+        padding: 12px;
     }
+
+    .player-team-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .player-team-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .team-completion,
+    .team-completion-bar {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .team-hero-stats {
+        grid-template-columns: 1fr;
+    }
+}

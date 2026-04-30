@@ -1,25 +1,12 @@
 ﻿
 /* ===============================
    ALGEMENE KAARTEN
-================================= */
-
-.filters,
-.cyclistsOverview {
-    background: #ffffff;
-}
-
-
-/* ===============================
-   TITELS IN DE KAARTEN
-================================= */
-
-h4 {
     display: block;
     margin-bottom: 8px;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 1.5px;
     color: #2563eb;
 }
 
@@ -27,77 +14,49 @@ h3 {
     margin: 0 0 22px 0;
     font-size: 20px;
     font-weight: 800;
-    line-height: 1.2;
-    color: #0f172a;
+    color: #111827;
 }
 
 
 /* ===============================
    FILTER FORMULIER
-================================= */
-
-.cyclistsForm {
-    display: flex;
-    gap: 16px;
-    align-items: end;
-}
-
-/* ===============================
-   INPUTS EN SELECTS
-================================= */
-
-.select {
     width: 100%;
-    height: 52px;
-    padding: 0 16px;
+    height: 48px;
+    border-radius: 14px;
     border: 1px solid #d1d5db;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.92);
+    padding: 0 14px;
+    font-size: 15px;
+    background: #f9fafb;
     color: #111827;
-    font-size: 14px;
     outline: none;
-    appearance: none;
-    transition: all 0.2s ease;
+    transition: 0.2s ease;
 }
 
     .select:focus {
         border-color: #2563eb;
         background: #ffffff;
-        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
 /* ===============================
    KNOPPEN
-================================= */
-.formButton{
-    width: 80px;
-}
-
-.formButton,
-.pageBtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 52px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: #ffffff;
-    font-size: 14px;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 14px;
     font-weight: 700;
     text-decoration: none;
+    border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+    transition: 0.2s ease;
 }
 
 
 
 /* ===============================
    AANTAL RESULTATEN + RESET KNOP
-================================= */
-
 .countAndReset {
     display: flex;
     justify-content: space-between;
@@ -110,17 +69,13 @@ h3 {
 .countAndReset p {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.72);
-    color: #1d4ed8;
-    border: 1px solid rgba(191, 219, 254, 0.95);
+    gap: 6px;
+    padding: 7px 12px;
     border-radius: 999px;
-    font-size: 15px;
-    font-weight: 800;
-    line-height: 1;
-    backdrop-filter: blur(4px);
-    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    background: #dbeafe;
+    color: #1d4ed8;
 }
 
 
@@ -135,20 +90,19 @@ h3 {
 
 .cyclistsTable {
     width: 100%;
-    min-width: 700px;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
+    min-width: 950px;
 }
 
     .cyclistsTable thead th {
         text-align: left;
+        padding: 14px 16px;
         font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.02em;
-        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
         color: #6b7280;
-        background: #f8fafc;
         border-bottom: 1px solid #e5e7eb;
+        background: #f8fafc;
     }
 
     .cyclistsTable tbody td {
@@ -156,9 +110,6 @@ h3 {
         border-bottom: 1px solid #eef2f7;
         vertical-align: middle;
         color: #111827;
-        background: #ffffff;
-        border-bottom: 1px solid #eef2f7;
-        transition: background-color 0.2s ease;
     }
 
     .cyclistsTable tbody tr:hover {
@@ -190,49 +141,30 @@ h3 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
-    padding: 8px 12px;
-    border: 1px solid transparent;
+    padding: 7px 12px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .statusActive {
     background: #dcfce7;
     color: #166534;
-    border-color: #bbf7d0;
 }
 
 .statusInactive {
     background: #fee2e2;
     color: #991b1b;
-    border-color: #fecaca;
-}
-.race-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 56px;
-    padding: 8px 12px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1;
 }
 
 .raceYes {
     background: #dbeafe;
     color: #1d4ed8;
-    border-color: #bfdbfe;
 }
 
 .raceNo {
     background: #f3f4f6;
     color: #6b7280;
-    border-color: #e5e7eb;
 }
 
 
@@ -242,7 +174,8 @@ h3 {
 
 .empty {
     text-align: center;
-    font-size: 14px;
+    padding: 40px 20px;
+    color: #6b7280;
 }
 
 /* Scrollbar */
@@ -259,7 +192,7 @@ h3 {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 24px;
+    margin-top: 24px;
     flex-wrap: wrap;
 }
 
@@ -277,20 +210,13 @@ h3 {
 
     .pageBtn.active {
         background: #2563eb;
-        color: white;
-        border-color: #2563eb;
+        color: #ffffff;
     }
 
-/* Responsive */
-@media (max-width: 1100px) {
-    .cyclists-form {
-        grid-template-columns: 1fr 1fr;
-    }
 
-    .button-group {
-        grid-column: 1 / -1;
-    }
-}
+/* ===============================
+   RESPONSIVE VOOR MOBIEL
+================================= */
 
 @media (max-width: 768px) {
     .page {

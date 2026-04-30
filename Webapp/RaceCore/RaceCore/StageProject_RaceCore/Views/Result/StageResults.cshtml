@@ -4,7 +4,7 @@
     ViewData["Title"] = "Stage Results";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
-    var races = ViewBag.Races as List<Race>;
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
 }
@@ -15,21 +15,29 @@
     <section class="result-header-card">
         <p class="result-page-kicker">RaceCore</p>
         <h1 class="result-page-title">Rituitslagen</h1>
-        <p class="result-page-subtitle">Bekijk per wedstrijd alle ritten met punten en truipunten.</p>
+        <p class="result-page-subtitle">
+            Bekijk per wedstrijd alle ritten met punten, truipunten en truidragers buiten de top 25.
+        </p>
     </section>
 
     <section class="result-race-card">
-        <div class="result-race-buttons">
-            @foreach (var race in races)
-            {
-                <a asp-controller="Result"
-                       asp-action="StageResults"
-                       asp-route-raceId="@race.Id"
-                       class="result-btn @(race.Id == selectedRaceId ? "result-btn-primary" : "result-btn-light")">
-                    @race.Name @race.Year
-                </a>
-            }
-        </div>
+        <form asp-controller="Result" asp-action="StageResults" method="get" class="race-select-form">
+            <div class="race-select-group">
+                <label for="raceId">Wedstrijd</label>
+                <select id="raceId" name="raceId" class="app-select" onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name @race.Year
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="app-btn app-btn-primary">
+                Tonen
+            </button>
+        </form>
     </section>
 
     @if (stageTables == null || !stageTables.Any())
@@ -55,10 +63,12 @@
                                 <th>Positie</th>
                                 <th>Naam</th>
                                 <th>Punten</th>
+                                <th>Trui</th>
                                 <th>Trui punten</th>
                                 <th>Totaal</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach (var row in stage.Rows)
                             {
@@ -66,6 +76,7 @@
                                     <td class="result-position">@row.Position</td>
                                     <td class="result-name">@row.CyclistName</td>
                                     <td class="result-points">@row.Points</td>
+                                    <td>@(!string.IsNullOrWhiteSpace(row.JerseyTypes) ? row.JerseyTypes : "-")</td>
                                     <td>@row.JerseyPoints</td>
                                     <td class="result-total">@row.Total</td>
                                 </tr>
@@ -73,6 +84,42 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
+                {
+                    <div style="margin-top:22px;">
+                        <h3 style="margin-bottom:12px;">Truidragers buiten Top 25</h3>
+
+                        <div class="result-table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Positie</th>
+                                        <th>Naam</th>
+                                        <th>Punten</th>
+                                        <th>Trui</th>
+                                        <th>Trui punten</th>
+                                        <th>Totaal</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var row in stage.OutsideJerseyRows)
+                                    {
+                                        <tr>
+                                            <td class="result-position">@row.Position</td>
+                                            <td class="result-name">@row.CyclistName</td>
+                                            <td class="result-points">@row.Points</td>
+                                            <td>@row.JerseyTypes</td>
+                                            <td>@row.JerseyPoints</td>
+                                            <td class="result-total">@row.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
             </section>
         }
     }

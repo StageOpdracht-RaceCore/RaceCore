@@ -1,4 +1,8 @@
-﻿body {
+﻿/* ===============================
+   BASIS VAN DE PAGINA
+================================= */
+
+body {
     background: #f3f6fb;
 }
 
@@ -12,6 +16,11 @@
     width: 100%;
     max-width: 100%;
 }
+
+
+/* ===============================
+   BOVENSTE HEADER VAN DE DRAFT PAGINA
+================================= */
 
 .draft-page-header {
     display: flex;
@@ -60,10 +69,59 @@
 
 .draft-page-header-right {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
     justify-content: flex-end;
     flex-shrink: 0;
+    gap: 14px;
 }
+
+
+/* ===============================
+   KNOPPEN BOVENAAN IN DE HEADER
+================================= */
+
+.draft-header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.draft-header-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 15px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+    .draft-header-btn:hover {
+        transform: translateY(-1px);
+    }
+
+.draft-header-btn-blue {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+.draft-header-btn-white {
+    background: white;
+    color: #1e1b4b;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+
+/* ===============================
+   STATUS PILL: LIVE / DONE
+================================= */
 
 .draft-status-pill {
     display: inline-flex;
@@ -98,6 +156,11 @@
     flex-shrink: 0;
 }
 
+
+/* ===============================
+   MELDINGEN / ALERTS
+================================= */
+
 .draft-alert {
     margin-bottom: 18px;
     padding: 14px 18px;
@@ -111,6 +174,11 @@
     color: #b91c1c;
     border-color: #fecaca;
 }
+
+
+/* ===============================
+   STATISTIEK KAARTEN BOVENAAN
+================================= */
 
 .draft-stats-grid {
     display: grid;
@@ -166,6 +234,11 @@
     word-break: break-word;
 }
 
+
+/* ===============================
+   ALGEMENE LAYOUT: MAIN + SIDEBAR
+================================= */
+
 .draft-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) 340px;
@@ -185,6 +258,11 @@
     overflow: hidden;
     min-width: 0;
 }
+
+
+/* ===============================
+   HEADER VAN DE SPELERSKAART
+================================= */
 
 .draft-card-header {
     display: flex;
@@ -224,6 +302,11 @@
     white-space: nowrap;
     flex-shrink: 0;
 }
+
+
+/* ===============================
+   DRAFT TABEL
+================================= */
 
 .draft-table-wrap {
     width: 100%;
@@ -287,6 +370,11 @@
     min-width: 0;
 }
 
+
+/* ===============================
+   SPELER INFO IN DE RIJ
+================================= */
+
 .draft-player-cell {
     display: flex;
     align-items: center;
@@ -335,6 +423,11 @@
     word-break: break-word;
 }
 
+
+/* ===============================
+   BADGES: ACTIEF / KLAAR / WACHT
+================================= */
+
 .draft-inline-badge {
     display: inline-flex;
     align-items: center;
@@ -361,6 +454,11 @@
         color: #6b7280;
     }
 
+
+/* ===============================
+   PICKS AANTAL
+================================= */
+
 .draft-position-cell {
     display: flex;
     align-items: center;
@@ -379,6 +477,11 @@
     font-size: 0.92rem;
 }
 
+
+/* ===============================
+   SELECTIE FORMULIER VOOR RENNER
+================================= */
+
 .draft-selection-cell {
     min-width: 0;
 }
@@ -389,19 +492,6 @@
     align-items: center;
     width: 100%;
     min-width: 0;
-}
-
-.draft-search-select {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-    flex: 1;
-}
-
-.draft-search-select-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
 }
 
 .draft-search-input {
@@ -431,6 +521,24 @@
 .draft-search-input-error {
     border-color: #dc2626 !important;
     box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+}
+
+
+/* ===============================
+   OUDE CUSTOM DROPDOWN STYLING
+================================= */
+
+.draft-search-select {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+}
+
+.draft-search-select-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .draft-search-toggle {
@@ -509,6 +617,11 @@
     font-weight: 600;
 }
 
+
+/* ===============================
+   PICK BUTTON
+================================= */
+
 .draft-pick-button {
     height: 50px;
     padding: 0 20px;
@@ -529,6 +642,11 @@
         transform: translateY(-1px);
         box-shadow: 0 14px 28px rgba(37, 99, 235, 0.3);
     }
+
+
+/* ===============================
+   LEGE STATE EN GEKOZEN RENNER
+================================= */
 
 .draft-empty-state {
     color: #8a94a6;
@@ -560,6 +678,11 @@
     font-weight: 900;
     flex-shrink: 0;
 }
+
+
+/* ===============================
+   RECHTER SIDEBAR
+================================= */
 
 .draft-sidebar {
     display: flex;
@@ -612,6 +735,11 @@
         color: #1d4ed8;
     }
 
+
+/* ===============================
+   NU AAN DE BEURT BLOK
+================================= */
+
 .draft-current-turn-box {
     padding: 18px;
     border-radius: 20px;
@@ -637,6 +765,11 @@
     font-weight: 800;
     word-break: break-word;
 }
+
+
+/* ===============================
+   INFO LIJST IN SIDEBAR
+================================= */
 
 .draft-info-list {
     display: flex;
@@ -665,6 +798,11 @@
         font-weight: 800;
     }
 
+
+/* ===============================
+   PROGRESS BAR IN SIDEBAR
+================================= */
+
 .draft-progress-wrap {
     display: flex;
     flex-direction: column;
@@ -691,6 +829,11 @@
     font-weight: 700;
 }
 
+
+/* ===============================
+   TIP KAART
+================================= */
+
 .draft-tip-card {
     background: linear-gradient(180deg, #fffdf5 0%, #fffaf0 100%);
     border-color: #f7e6b5;
@@ -710,6 +853,11 @@
     font-size: 0.94rem;
 }
 
+
+/* ===============================
+   RESPONSIVE VOOR GROTE SCHERMEN
+================================= */
+
 @media (max-width: 1400px) {
     .draft-layout {
         grid-template-columns: minmax(0, 1fr) 320px;
@@ -725,6 +873,11 @@
         order: -1;
     }
 }
+
+
+/* ===============================
+   RESPONSIVE VOOR TABLET
+================================= */
 
 @media (max-width: 992px) {
     .draft-page {
@@ -760,6 +913,11 @@
         }
 }
 
+
+/* ===============================
+   RESPONSIVE VOOR MOBIEL
+================================= */
+
 @media (max-width: 768px) {
     .draft-page {
         padding: 14px;
@@ -782,7 +940,17 @@
 
     .draft-page-header-right {
         width: 100%;
+        align-items: flex-start;
         justify-content: flex-start;
+    }
+
+    .draft-header-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .draft-header-btn {
+        flex: 1;
     }
 
     .draft-status-pill {
@@ -907,6 +1075,11 @@
         font-size: 1.25rem;
     }
 }
+
+
+/* ===============================
+   RESPONSIVE VOOR KLEINE GSM
+================================= */
 
 @media (max-width: 480px) {
     .draft-page {
