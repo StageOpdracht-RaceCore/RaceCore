@@ -26,6 +26,11 @@
         </div>
 
         <div class="player-header-actions">
+            @* Knop naar Dashboard *@
+            <a asp-controller="Dashboard" asp-action="Index" class="player-btn-white" style="margin-right: 8px; text-decoration: none;">
+                Naar Dashboard
+            </a>
+
             <a asp-controller="Result" asp-action="Index" class="player-btn player-btn-primary">
                 Terug naar Ranking
             </a>
@@ -38,10 +43,9 @@
             <div class="scoring-stage-group">
                 <label for="raceId" class="scoring-label">Wedstrijd kiezen</label>
                 <select id="raceId" name="raceId" class="scoring-stage-select" onchange="this.form.submit()">
-                    @* De regel met "-- Kies een race --" is hier verwijderd *@
-                    @foreach (var race in (IEnumerable<StageProject_RaceCore.Models.Race>)ViewBag.Races)
+                    @foreach (var race in races)
                     {
-                        <option value="@race.Id" selected="@(race.Id == (int?)ViewBag.SelectedRaceId)">
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
                             @race.Name @race.Year
                         </option>
                     }
