@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Historiek";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
     
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
