@@ -7,8 +7,10 @@
         public int RaceId { get; set; }
         public Race Race { get; set; } = null!;
 
+        public int StageId { get; set; }
+        public Stage Stage { get; set; } = null!;
+
         public string Status { get; set; } = "Draft";
-        // Draft / Active / Finished
 
         public int CurrentStageNumber { get; set; } = 0;
 

@@ -46,6 +46,19 @@ namespace StageProject_RaceCore.Models
                 .HasForeignKey(s => s.RaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // GAME SESSION
+            modelBuilder.Entity<GameSession>()
+                .HasOne(gs => gs.Race)
+                .WithMany()
+                .HasForeignKey(gs => gs.RaceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameSession>()
+                .HasOne(gs => gs.Stage)
+                .WithMany()
+                .HasForeignKey(gs => gs.StageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // CYCLIST
             modelBuilder.Entity<Cyclist>()
                 .HasOne(c => c.Team)
@@ -101,8 +114,14 @@ namespace StageProject_RaceCore.Models
 
             // DRAFT TURN
             modelBuilder.Entity<DraftTurn>()
-                .HasIndex(dt => new { dt.RaceId, dt.TurnNumber })
+                .HasIndex(dt => new { dt.GameSessionId, dt.TurnNumber })
                 .IsUnique();
+
+            modelBuilder.Entity<DraftTurn>()
+                .HasOne(dt => dt.GameSession)
+                .WithMany()
+                .HasForeignKey(dt => dt.GameSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DraftTurn>()
                 .HasOne(dt => dt.Player)
@@ -157,6 +176,7 @@ namespace StageProject_RaceCore.Models
                 .WithMany(c => c.PlayerPoints)
                 .HasForeignKey(pp => pp.CyclistId)
                 .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<PlayerPoints>()
                 .HasOne(pp => pp.GameSession)
                 .WithMany()

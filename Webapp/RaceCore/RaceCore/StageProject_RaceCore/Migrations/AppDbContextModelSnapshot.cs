@@ -78,11 +78,11 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("CyclistId");
 
-                    b.HasIndex("GameSessionId");
-
                     b.HasIndex("PlayerId");
 
-                    b.HasIndex("RaceId", "TurnNumber")
+                    b.HasIndex("RaceId");
+
+                    b.HasIndex("GameSessionId", "TurnNumber")
                         .IsUnique();
 
                     b.ToTable("DraftTurns");
@@ -111,6 +111,9 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int>("RidersPerPlayer")
                         .HasColumnType("int");
 
+                    b.Property<int>("StageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -118,6 +121,8 @@ namespace StageProject_RaceCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RaceId");
+
+                    b.HasIndex("StageId");
 
                     b.ToTable("GameSessions");
                 });
@@ -483,10 +488,18 @@ namespace StageProject_RaceCore.Migrations
                     b.HasOne("StageProject_RaceCore.Models.Race", "Race")
                         .WithMany()
                         .HasForeignKey("RaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
+                        .WithMany()
+                        .HasForeignKey("StageId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Race");
+
+                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("StageProject_RaceCore.Models.Jersey", b =>
