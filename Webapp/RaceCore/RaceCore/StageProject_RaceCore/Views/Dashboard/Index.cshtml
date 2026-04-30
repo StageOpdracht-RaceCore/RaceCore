@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Game Dashboard";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     int gameId = ViewBag.GameId ?? 0;
     int raceId = ViewBag.RaceId ?? 0;
@@ -243,6 +243,10 @@
                 <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Stages</a>
                 <a asp-controller="Result" asp-action="Index" asp-route-gameId="@gameId" class="dashboard-action-btn">Leaderboard</a>
                 <a asp-controller="Game" asp-action="New" class="dashboard-action-btn">New Game</a>
+                <a asp-controller="Team" asp-action="Index" class="dashboard-action-btn">Teams</a>
+                <a asp-controller="History" asp-action="History" class="dashboard-action-btn">History</a>
+                <a asp-controller="Cyclist" asp-action="Index" class="dashboard-action-btn">Cyclists</a>
+                <a asp-controller="Result" asp-action="StageResults" class="dashboard-action-btn">Stage Results</a>
             </div>
         </div>
 
