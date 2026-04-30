@@ -133,6 +133,52 @@ namespace StageProject_RaceCore.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SwapActiveBench(
+            int gameId,
+            int playerId,
+            int activeCyclistId,
+            int benchCyclistId)
+        {
+            try
+            {
+                if (!await _context.Database.CanConnectAsync())
+                {
+                    return BadRequest();
+                }
+
+                var activeSelection = await _context.PlayerSelections
+                    .FirstOrDefaultAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.CyclistId == activeCyclistId);
+
+                var benchSelection = await _context.PlayerSelections
+                    .FirstOrDefaultAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.CyclistId == benchCyclistId);
+
+                if (activeSelection == null || benchSelection == null)
+                {
+                    return NotFound();
+                }
+
+                activeSelection.IsActive = true;
+                benchSelection.IsActive = false;
+
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500);
+            }
+        }
+
         private async Task<GameSession?> ResolveGame(int gameId)
         {
             var games = _context.GameSessions
