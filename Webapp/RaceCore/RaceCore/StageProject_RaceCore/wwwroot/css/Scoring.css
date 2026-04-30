@@ -1,0 +1,342 @@
+﻿/* Algemene Pagina Layout */
+.scoring-page {
+    padding: 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: #f8fafc;
+}
+
+/* Header */
+.player-header-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.15);
+}
+
+.player-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.player-page-subtitle {
+    color: #dbeafe;
+    margin: 4px 0 0;
+    opacity: 0.9;
+}
+
+/* Kaarten */
+.player-table-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.result-item-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 24px;
+    display: grid;
+    grid-template-columns: 80px 1.5fr 1fr;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+    .result-item-card:hover {
+        transform: translateX(5px);
+        border-color: #2563eb;
+        background: #f8fbff;
+    }
+
+/* Positie badge */
+.pos-badge {
+    background: #f1f5f9;
+    color: #1e293b;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Inputs */
+.player-search-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 0 16px;
+    background: #f9fafb;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .player-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+/* Truien */
+.jersey-flex {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.jersey-dot {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-block;
+    filter: saturate(0) opacity(0.25);
+}
+
+.dot-red {
+    background: #ef4444 !important;
+    border: 2px solid #dc2626 !important;
+}
+
+.dot-green {
+    background: #10b981 !important;
+    border: 2px solid #059669 !important;
+}
+
+.dot-blue {
+    background: #2563eb !important;
+    border: 2px solid #1d4ed8 !important;
+}
+
+.dot-white {
+    background: #ffffff !important;
+    border: 2px solid #94a3b8 !important;
+}
+
+/* Geselecteerde trui in top 25 */
+input[type="checkbox"]:checked + .jersey-dot {
+    filter: saturate(1) opacity(1);
+    transform: scale(1.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* Truidragers buiten top 25: altijd kleur tonen */
+.pos-badge.dot-red,
+.pos-badge.dot-green,
+.pos-badge.dot-blue,
+.pos-badge.dot-white {
+    filter: none !important;
+}
+
+.pos-badge.dot-red {
+    background: #ef4444 !important;
+    color: white;
+    border-color: #dc2626 !important;
+}
+
+.pos-badge.dot-green {
+    background: #10b981 !important;
+    color: white;
+    border-color: #059669 !important;
+}
+
+.pos-badge.dot-blue {
+    background: #2563eb !important;
+    color: white;
+    border-color: #1d4ed8 !important;
+}
+
+.pos-badge.dot-white {
+    background: #ffffff !important;
+    color: #1e293b;
+    border-color: #94a3b8 !important;
+}
+
+/* Knoppen */
+.player-btn-white {
+    background: white;
+    color: #1d4ed8;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+    .player-btn-white:hover,
+    .player-btn-white.active {
+        background: #eff6ff;
+        color: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
+    }
+
+/* Alerts */
+.draft-alert {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #bbf7d0;
+    background: #ecfdf5;
+    color: #166534;
+    font-weight: 700;
+}
+
+.draft-alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+/* Utility */
+.d-none {
+    display: none !important;
+}
+
+.px-3 {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.race-select-form,
+.scoring-stage-form {
+    display: flex;
+    align-items: end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.race-select-group,
+.scoring-stage-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.race-select-group {
+    width: min(100%, 360px);
+}
+
+.scoring-stage-group {
+    width: min(100%, 300px);
+}
+
+    .race-select-group label,
+    .scoring-stage-group label {
+        font-weight: 700;
+        color: #374151;
+    }
+
+.app-select,
+.scoring-stage-select {
+    height: 46px;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    color: #111827;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+    .app-select:focus,
+    .scoring-stage-select:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+.app-btn {
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.app-btn-primary {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+    .app-btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+@media (max-width: 700px) {
+    .race-select-form,
+    .scoring-stage-form {
+        align-items: stretch;
+    }
+
+    .race-select-group,
+    .scoring-stage-group,
+    .app-btn {
+        width: 100%;
+    }
+}
+/* Responsive */
+@media (max-width: 900px) {
+    .player-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result-item-card {
+        grid-template-columns: 60px 1fr;
+        gap: 14px;
+    }
+
+    .jersey-flex {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .scoring-page {
+        padding: 16px;
+    }
+
+    .result-item-card {
+        padding: 14px;
+        grid-template-columns: 1fr;
+    }
+
+    .jersey-flex {
+        grid-column: auto;
+    }
+
+    .pos-badge {
+        width: 40px;
+        height: 40px;
+    }
+}

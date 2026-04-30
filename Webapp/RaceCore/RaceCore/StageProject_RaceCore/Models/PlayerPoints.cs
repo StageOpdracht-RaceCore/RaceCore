@@ -13,10 +13,9 @@
         public int? StageId { get; set; }
         public Stage? Stage { get; set; }
 
-        public int CyclistId { get; set; }
-        public Cyclist Cyclist { get; set; } = null!;
+        public int? CyclistId { get; set; }
+        public Cyclist? Cyclist { get; set; }
 
         public int Points { get; set; }
-        public string Reason { get; set; } = string.Empty;
     }
 }

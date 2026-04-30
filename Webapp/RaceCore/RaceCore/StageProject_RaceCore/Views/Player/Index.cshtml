@@ -1,38 +1,150 @@
+@model StageProject_RaceCore.ViewModels.PlayerPageViewModel
+
 @{
     ViewData["Title"] = "Players";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
-@model List<StageProject_RaceCore.Models.Player>
 
-<h2>Spelers</h2>
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
-<a asp-action="Create" class="btn btn-primary mb-3">Nieuwe speler</a>
+<div class="player-page">
+    @if (TempData["Success"] != null)
+    {
+        <div class="player-alert player-alert-success">
+            @TempData["Success"]
+        </div>
+    }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Naam</th>
-            <th>Selections</th>
-            <th>Draft turns</th>
-            <th>Punten records</th>
-            <th>Acties</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>@p.Name</td>
-                <td>@(p.Selections?.Count ?? 0)</td>
-                <td>@(p.DraftTurns?.Count ?? 0)</td>
-                <td>@(p.PlayerPoints?.Count ?? 0)</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@p.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@p.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@p.Id">Delete</a>
-                    <a asp-action="Delete" asp-route-id="@p.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    @if (TempData["Error"] != null)
+    {
+        <div class="player-alert player-alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1 class="player-page-title">Players</h1>
+            <p class="player-page-subtitle">
+                Beheer alle spelers, hun draftvolgorde en hun prestaties in het systeem.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            <a asp-action="Create" class="player-btn player-btn-primary">+ Nieuwe speler</a>
+        </div>
+    </div>
+
+    <div class="player-stats-grid">
+        <div class="player-stat-card">
+            <span class="player-stat-label">Totaal spelers</span>
+            <strong class="player-stat-value">@Model.TotalPlayers</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Totale punten</span>
+            <strong class="player-stat-value">@Model.TotalPoints</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Selections</span>
+            <strong class="player-stat-value">@Model.TotalSelections</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Draft turns</span>
+            <strong class="player-stat-value">@Model.TotalDraftTurns</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Punten records</span>
+            <strong class="player-stat-value">@Model.TotalPointRecords</strong>
+        </div>
+    </div>
+
+    <div class="player-toolbar-card">
+        <form method="get" asp-action="Index" class="player-search-form">
+            <div class="player-search-group">
+                <label for="searchTerm">Zoek speler</label>
+                <input id="searchTerm"
+                       name="searchTerm"
+                       value="@Model.SearchTerm"
+                       class="player-search-input"
+                       placeholder="Zoek op naam..." />
+            </div>
+
+            <div class="player-toolbar-actions">
+                <button type="submit" class="player-btn player-btn-primary">Zoeken</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Speler</th>
+                        <th>Draft positie</th>
+                        <th>Totale punten</th>
+                        <th>Selections</th>
+                        <th>Draft turns</th>
+                        <th>Punten records</th>
+                        <th class="text-end">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Players.Any())
+                    {
+                        foreach (var player in Model.Players)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="player-name-cell">
+                                        <div class="player-avatar">
+                                            @(string.IsNullOrWhiteSpace(player.Name) ? "?" : player.Name.Substring(0, 1).ToUpper())
+                                        </div>
+                                        <div>
+                                            <div class="player-name">@player.Name</div>
+                                            <div class="player-meta">Player ID: @player.Id</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="player-badge player-badge-draft">#@player.PositionInDraft</span>
+                                </td>
+                                <td>
+                                    <span class="player-points">@player.TotalPoints</span>
+                                </td>
+                                <td>@player.SelectionsCount</td>
+                                <td>@player.DraftTurnsCount</td>
+                                <td>@player.PointsRecordsCount</td>
+                                <td>
+                                    <div class="player-action-links">
+                                        <a asp-action="Details" asp-route-id="@player.Id" class="player-link">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@player.Id" class="player-link">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@player.Id" class="player-link player-link-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="player-empty-state">
+                                    <h3>Geen spelers gevonden.</h3>
+                                    <p>Er zijn geen spelers die overeenkomen met je zoekopdracht.</p>
+                                    <a asp-action="Create" class="player-btn player-btn-primary">Nieuwe speler toevoegen</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,66 @@
+INSERT INTO RaceEntries (RaceId, CyclistId, TeamId, Status)
+WITH v(FirstName, LastName, Status) AS (
+    VALUES
+        ('Hugo', 'Houle', 'ACTIVE'),
+        ('Pau Miquel', 'Delgado', 'ACTIVE'),
+        ('Léo', 'Bisiaux', 'ACTIVE'),
+        ('Matthew', 'Riccitello', 'ACTIVE'),
+        ('Felix', 'Gall', 'ACTIVE'),
+        ('Marijn', 'van den Berg', 'ACTIVE'),
+        ('Guillaume', 'Martin-Guyonnet', 'ACTIVE'),
+        ('Axel', 'Laurance', 'ACTIVE'),
+        ('Mathias Sunekær', 'Norsgaard', 'ACTIVE'),
+        ('Mattias', 'Skjelmose', 'ACTIVE'),
+        ('Jarno', 'Widar', 'ACTIVE'),
+        ('Nairo', 'Quintana', 'ACTIVE'),
+        ('Einer', 'Rubio', 'ACTIVE'),
+        ('Enric', 'Mas', 'ACTIVE'),
+        ('Gianni', 'Vermeersch', 'ACTIVE'),
+        ('Primož', 'Roglič', 'ACTIVE'),
+        ('Ethan', 'Hayter', 'ACTIVE'),
+        ('Junior', 'Lecerf', 'ACTIVE'),
+        ('Luke', 'Plapp', 'ACTIVE'),
+        ('Max', 'Poole', 'ACTIVE'),
+        ('Steven', 'Kruijswijk', 'ACTIVE'),
+        ('Tijmen', 'Graat', 'ACTIVE'),
+        ('Menno', 'Huising', 'ACTIVE'),
+        ('Per', 'Strand Hagenes', 'ACTIVE'),
+        ('Filippo', 'Fiorelli', 'ACTIVE'),
+        ('Wout', 'van Aert', 'ACTIVE'),
+        ('Matthew', 'Brennan', 'ACTIVE'),
+        ('Jørgen', 'Nordhagen', 'ACTIVE'),
+        ('Ben', 'Tulett', 'ACTIVE'),
+        ('João', 'Almeida', 'ACTIVE'),
+        ('Marc', 'Soler', 'ACTIVE'),
+        ('Ivo', 'Oliveira', 'ACTIVE'),
+        ('Erlend', 'Blikra', 'ACTIVE'),
+        ('Magnus', 'Cort', 'ACTIVE'),
+        ('Henok', 'Mulubrhan', 'ACTIVE'),
+        ('Harold', 'Tejada', 'ACTIVE'),
+        ('Harold Martin', 'López', 'ACTIVE'),
+        ('Nicolas', 'Vinokurov', 'ACTIVE'),
+        ('Davide', 'Ballerini', 'ACTIVE'),
+        ('Bryan', 'Coquard', 'ACTIVE'),
+        ('Milan', 'Vader', 'ACTIVE'),
+        ('Jesus', 'Herrada', 'ACTIVE'),
+        ('Jose Manuel', 'Diaz', 'ACTIVE')
+)
+SELECT
+    r.Id,
+    c.Id,
+    c.TeamId,
+    v.Status
+FROM v
+INNER JOIN Races r
+    ON r.Name = 'Vuelta a España'
+   AND r.Year = 2026
+INNER JOIN Cyclists c
+    ON c.FirstName = v.FirstName
+   AND c.LastName = v.LastName
+   AND c.IsActive = 1
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM RaceEntries re
+    WHERE re.RaceId = r.Id
+      AND re.CyclistId = c.Id
+);

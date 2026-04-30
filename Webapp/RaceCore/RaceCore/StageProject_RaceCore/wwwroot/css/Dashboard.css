@@ -1,0 +1,667 @@
+﻿.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+/* DRAFT STATUS HERO */
+.hero-section {
+    width: 100%;
+}
+
+.hero-side-card {
+    width: 100%;
+    background: linear-gradient(135deg, midnightblue, royalblue);
+    color: white;
+    border-radius: 20px;
+    padding: 22px 28px;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+}
+
+.hero-side-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.hero-kicker {
+    display: block;
+    margin-bottom: 6px;
+    color: lightsteelblue;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-side-card h2 {
+    margin: 0 0 6px;
+    color: white;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.hero-side-card p {
+    margin: 0;
+    max-width: 760px;
+    color: whitesmoke;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hero-side-bottom {
+    margin-top: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.hero-side-number {
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.hero-side-label {
+    padding-bottom: 5px;
+    color: whitesmoke;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-done,
+.status-live {
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.status-done {
+    background: lightgreen;
+    color: darkgreen;
+}
+
+.status-live {
+    background: lightblue;
+    color: midnightblue;
+}
+
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 17px;
+    padding: 16px 18px;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: white;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.11);
+}
+
+    .stat-card::after {
+        content: "";
+        position: absolute;
+        right: -42px;
+        top: -42px;
+        width: 105px;
+        height: 105px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .stat-card.blue {
+        background: linear-gradient(135deg, royalblue, dodgerblue);
+    }
+
+    .stat-card.green {
+        background: linear-gradient(135deg, seagreen, mediumseagreen);
+    }
+
+    .stat-card.orange {
+        background: linear-gradient(135deg, orangered, orange);
+    }
+
+    .stat-card.purple {
+        background: linear-gradient(135deg, blueviolet, mediumpurple);
+    }
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    z-index: 1;
+}
+
+.stat-card h4 {
+    margin: 0 0 5px;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stat-card p {
+    margin: 0;
+    color: white;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+/* LAYOUT */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 0.9fr;
+    gap: 14px;
+    align-items: start;
+}
+
+.side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 14px;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 17px;
+    border: 1px solid gainsboro;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 13px;
+}
+
+.card h3 {
+    margin: 3px 0 0;
+    color: midnightblue;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.section-kicker {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: royalblue;
+    font-weight: 900;
+}
+
+/* LISTS */
+.ranking-list,
+.cyclist-list,
+.jersey-list,
+.podium-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.ranking-list-scroll {
+    max-height: 410px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+    .ranking-list-scroll::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-track {
+        background: whitesmoke;
+        border-radius: 999px;
+    }
+
+    .ranking-list-scroll::-webkit-scrollbar-thumb {
+        background: lightgray;
+        border-radius: 999px;
+    }
+
+/* RANKING */
+.ranking-row {
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 15px;
+    padding: 11px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 11px;
+    transition: 0.2s ease;
+}
+
+    .ranking-row:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px lightgray;
+    }
+
+.ranking-left {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ranking-pos {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 13px;
+    background: aliceblue;
+    color: royalblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+.player-avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 13px;
+    color: white;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ranking-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ranking-name-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 5px;
+}
+
+    .ranking-name-row strong {
+        color: midnightblue;
+    }
+
+.player-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.progress-line,
+.cyclist-bar {
+    width: 100%;
+    height: 6px;
+    background: gainsboro;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill,
+.cyclist-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.ranking-points,
+.cyclist-points {
+    color: midnightblue;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+/* LATEST STAGE */
+.stage-title {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, midnightblue, royalblue);
+    color: white;
+    font-weight: 800;
+    margin-bottom: 9px;
+}
+
+.podium-row {
+    background: aliceblue;
+    border: 1px solid lightsteelblue;
+    border-radius: 13px;
+    padding: 11px 13px;
+    font-weight: 800;
+    color: midnightblue;
+}
+
+/* DRAFT */
+.draft-status-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.draft-status-item {
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 14px;
+    padding: 12px;
+}
+
+    .draft-status-item span {
+        display: block;
+        margin-bottom: 5px;
+        color: slategray;
+        font-size: 12px;
+    }
+
+    .draft-status-item strong {
+        color: midnightblue;
+        font-size: 17px;
+    }
+
+.status-done-text {
+    color: seagreen !important;
+}
+
+.status-live-text {
+    color: royalblue !important;
+}
+
+/* CYCLISTS */
+.cyclist-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 11px;
+    padding: 11px 12px;
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 14px;
+}
+
+.cyclist-main {
+    flex: 1;
+    min-width: 0;
+}
+
+    .cyclist-main strong {
+        display: block;
+        margin-bottom: 6px;
+        color: midnightblue;
+    }
+
+.cyclist-bar-fill {
+    background: linear-gradient(90deg, royalblue, dodgerblue);
+}
+
+/* JERSEYS */
+.jersey-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 12px;
+    background: whitesmoke;
+    border: 1px solid gainsboro;
+    border-radius: 14px;
+}
+
+    .jersey-row strong {
+        color: midnightblue;
+    }
+
+.jersey {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+    .jersey.yellow {
+        background: khaki;
+        color: saddlebrown;
+    }
+
+    .jersey.green {
+        background: lightgreen;
+        color: darkgreen;
+    }
+
+    .jersey.polka {
+        background: lightpink;
+        color: darkred;
+    }
+
+    .jersey.white {
+        background: white;
+        color: dimgray;
+        border: 1px solid lightgray;
+    }
+
+    .jersey.default {
+        background: aliceblue;
+        color: royalblue;
+    }
+
+/* EMPTY */
+.empty-box {
+    padding: 14px;
+    border-radius: 14px;
+    background: whitesmoke;
+    border: 1px dashed lightgray;
+    color: slategray;
+    font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1300px) {
+    .main-grid,
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .draft-status-box {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-side-card {
+        padding: 22px;
+    }
+
+    .hero-side-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-side-card h2 {
+        font-size: 25px;
+    }
+
+    .hero-side-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .hero-side-number {
+        font-size: 38px;
+    }
+
+    .ranking-row,
+    .cyclist-row,
+    .jersey-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ranking-left {
+        width: 100%;
+    }
+
+    .ranking-points,
+    .cyclist-points {
+        margin-top: 5px;
+    }
+
+    .ranking-list-scroll {
+        max-height: 380px;
+        padding-right: 2px;
+    }
+}
+/* EXTRA COMPACT DASHBOARD */
+.dashboard-container {
+    gap: 12px;
+}
+
+.hero-side-card {
+    border-radius: 18px;
+    padding: 18px 24px;
+}
+
+.hero-kicker {
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.hero-side-card h2 {
+    margin-bottom: 4px;
+    font-size: 24px;
+}
+
+.hero-side-card p {
+    font-size: 13px;
+}
+
+.hero-side-bottom {
+    margin-top: 10px;
+}
+
+.hero-side-number {
+    font-size: 34px;
+}
+
+.hero-side-label {
+    font-size: 12px;
+}
+
+.status-done,
+.status-live {
+    padding: 7px 13px;
+    font-size: 11px;
+}
+
+.stats-grid {
+    gap: 10px;
+}
+
+.stat-card {
+    min-height: 76px;
+    padding: 13px 16px;
+    border-radius: 15px;
+}
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.stat-card h4 {
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+
+.stat-card p {
+    font-size: 22px;
+}
+
+.main-grid,
+.bottom-grid {
+    gap: 12px;
+}
+
+.card {
+    padding: 14px;
+    border-radius: 16px;
+}
+
+.card-header {
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 18px;
+}
+
+.ranking-row,
+.cyclist-row,
+.jersey-row {
+    padding: 9px 10px;
+    border-radius: 13px;
+}
+
+.ranking-pos,
+.player-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 11px;
+}
+
+.progress-line,
+.cyclist-bar {
+    height: 5px;
+}
+
+.ranking-list-scroll {
+    max-height: 350px;
+}
+
+.stage-title {
+    padding: 10px 12px;
+    border-radius: 12px;
+}
+
+.empty-box {
+    padding: 11px;
+}

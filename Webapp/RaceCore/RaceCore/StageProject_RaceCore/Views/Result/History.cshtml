@@ -1,0 +1,139 @@
+﻿@model StageProject_RaceCore.ViewModels.HistoryViewModel
+
+@{
+    ViewData["Title"] = "Historiek";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+@* Helpers voor avatars en kleuren *@
+@functions {
+    public string GetPlayerColor(string playerName) 
+    {
+        var colors = new List<string> { "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16" };
+        if (string.IsNullOrWhiteSpace(playerName)) return colors[0];
+        int index = Math.Abs(playerName.ToLower().Sum(c => c)) % colors.Count;
+        return colors[index];
+    }
+
+    public string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+    }
+}
+
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" /> @* Voor de stat-cards/alerts *@
+
+<div class="player-page">
+    
+    @* 1. Database Online Check uit Dashboard *@
+    @if (ViewBag.DatabaseOnline == false)
+    {
+        <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:20px; font-weight: bold;">
+            ⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.
+        </div>
+    }
+
+    @* 2. Header Sectie *@
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1 class="player-page-title">Historiek: @Model.RaceName</h1>
+            <p class="player-page-subtitle">
+                Bekijk het verloop van de ritten, winnaars en de best scorende spelers per etappe.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            <a asp-controller="Result" asp-action="Index" class="player-btn player-btn-light">Terug naar Ranking</a>
+        </div>
+    </div>
+
+    @* 3. Tabel Sectie *@
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Rit</th>
+                        <th>Datum</th>
+                        <th>Parcours / Naam</th>
+                        <th>Ritwinnaar</th>
+                        <th>Beste Speler</th>
+                        <th class="text-end">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Stages != null && Model.Stages.Any())
+                    {
+                        foreach (var stage in Model.Stages)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="player-badge player-badge-draft">#@stage.StageNumber</span>
+                                </td>
+                                <td>
+                                    @(stage.Date?.ToString("dd/MM") ?? "TBD")
+                                </td>
+                                <td>
+                                    <div class="player-name">@stage.StageName</div>
+                                </td>
+                                <td>
+                                    <div class="player-name-cell">
+                                        <div class="player-avatar" style="background-color: #6c757d; width: 32px; height: 32px; font-size: 12px;">
+                                            🏁
+                                        </div>
+                                        <div>
+                                            <div class="player-name text-primary">@stage.WinnerName</div>
+                                            <div class="player-meta">@stage.WinnerTeam</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (stage.TopPlayerPoints > 0)
+                                    {
+                                        var pColor = GetPlayerColor(stage.TopPlayerName);
+                                        <div class="player-name-cell">
+                                            <div class="player-avatar" style="background:@pColor; width: 32px; height: 32px; font-size: 12px;">
+                                                @GetInitials(stage.TopPlayerName)
+                                            </div>
+                                            <div>
+                                                <div class="player-name">@stage.TopPlayerName</div>
+                                                <div class="player-points" style="font-size: 0.85rem; color: @pColor;">+@stage.TopPlayerPoints pts</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="player-meta italic">Nog geen data</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="player-action-links">
+                                        <a asp-action="StageResults" asp-route-stageId="@stage.StageId" class="player-link">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">
+                                <div class="player-empty-state">
+                                    <h3>Geen etappes gevonden.</h3>
+                                    <p>Er is nog geen rittenschema beschikbaar voor deze race.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+﻿@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Stage Results";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+    var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
+    int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
+}
+
+<link rel="stylesheet" href="~/css/StageResult.css" />
+
+<div class="result-page">
+    <section class="result-header-card">
+        <p class="result-page-kicker">RaceCore</p>
+        <h1 class="result-page-title">Rituitslagen</h1>
+        <p class="result-page-subtitle">
+            Bekijk per wedstrijd alle ritten met punten, truipunten en truidragers buiten de top 25.
+        </p>
+    </section>
+
+    <section class="result-race-card">
+        <form asp-controller="Result" asp-action="StageResults" method="get" class="race-select-form">
+            <div class="race-select-group">
+                <label for="raceId">Wedstrijd</label>
+                <select id="raceId" name="raceId" class="app-select" onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name @race.Year
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="app-btn app-btn-primary">
+                Tonen
+            </button>
+        </form>
+    </section>
+
+    @if (stageTables == null || !stageTables.Any())
+    {
+        <section class="result-stage-card">
+            <div class="result-empty-state">
+                <h3>Geen ritten gevonden</h3>
+                <p>Er zijn nog geen ritresultaten beschikbaar voor deze wedstrijd.</p>
+            </div>
+        </section>
+    }
+    else
+    {
+        foreach (var stage in stageTables)
+        {
+            <section class="result-stage-card">
+                <h2 class="result-stage-title">@stage.StageName</h2>
+
+                <div class="result-table-responsive">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Positie</th>
+                                <th>Naam</th>
+                                <th>Punten</th>
+                                <th>Trui</th>
+                                <th>Trui punten</th>
+                                <th>Totaal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var row in stage.Rows)
+                            {
+                                <tr>
+                                    <td class="result-position">@row.Position</td>
+                                    <td class="result-name">@row.CyclistName</td>
+                                    <td class="result-points">@row.Points</td>
+                                    <td>@(!string.IsNullOrWhiteSpace(row.JerseyTypes) ? row.JerseyTypes : "-")</td>
+                                    <td>@row.JerseyPoints</td>
+                                    <td class="result-total">@row.Total</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
+                {
+                    <div style="margin-top:22px;">
+                        <h3 style="margin-bottom:12px;">Truidragers buiten Top 25</h3>
+
+                        <div class="result-table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Positie</th>
+                                        <th>Naam</th>
+                                        <th>Punten</th>
+                                        <th>Trui</th>
+                                        <th>Trui punten</th>
+                                        <th>Totaal</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var row in stage.OutsideJerseyRows)
+                                    {
+                                        <tr>
+                                            <td class="result-position">@row.Position</td>
+                                            <td class="result-name">@row.CyclistName</td>
+                                            <td class="result-points">@row.Points</td>
+                                            <td>@row.JerseyTypes</td>
+                                            <td>@row.JerseyPoints</td>
+                                            <td class="result-total">@row.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </section>
+        }
+    }
+</div>

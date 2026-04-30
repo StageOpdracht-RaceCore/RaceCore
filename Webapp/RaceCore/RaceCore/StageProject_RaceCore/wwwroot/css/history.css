@@ -1,0 +1,171 @@
+﻿/* Container & Layout */
+.history-page-container {
+    padding: 1.5rem;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.history-title {
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.history-subtitle {
+    color: #64748b;
+    margin: 0;
+}
+
+.race-id-badge {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* De Kaart */
+.history-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: none;
+}
+
+/* Tabel Styling */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .history-table thead {
+        background-color: #f8fafc;
+    }
+
+    .history-table th {
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .history-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .history-table tbody tr:hover {
+        background-color: #f8fafc;
+        transition: background-color 0.2s;
+    }
+
+/* Specifieke Kolommen */
+.stage-number-circle {
+    width: 36px;
+    height: 36px;
+    background-color: #64748b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.stage-name {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stage-id-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.stage-date {
+    color: #334155;
+    font-weight: 500;
+}
+
+/* Winnaar & Speler Badges */
+.winner-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.trophy-icon {
+    color: #f59e0b;
+    font-size: 1.2rem;
+}
+
+.winner-name {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.winner-team {
+    color: #64748b;
+    display: block;
+}
+
+.top-player-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(6, 182, 212, 0.1);
+    color: #0891b2;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    font-size: 0.85rem;
+}
+
+.player-points {
+    font-weight: 800;
+}
+
+/* Knoppen */
+.btn-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid #3b82f6;
+    color: #3b82f6;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+    .btn-details:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem !important;
+    color: #94a3b8;
+}
+
+    .empty-state i {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+    }

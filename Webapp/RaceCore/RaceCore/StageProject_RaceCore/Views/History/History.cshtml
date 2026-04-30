@@ -1,0 +1,94 @@
+﻿@model StageProject_RaceCore.ViewModels.HistoryViewModel
+
+@{
+    ViewData["Title"] = "Historiek";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+@* 1. Koppel de CSS-file van de 'Players' pagina voor exact dezelfde look *@
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+@* 2. Hoofdcontainer (gebruikt dezelfde klasse als op de voorbeeld foto) *@
+<div class="player-page">
+    
+    @* 3. De Blauwe Header-Kaart *@
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1 class="player-page-title">Historiek: @Model.RaceName</h1>
+            <p class="player-page-subtitle">
+                Overzicht van alle verreden etappes en winnaars.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            @* We gebruiken de Player-knop-stijl voor de acties *@
+            <a asp-controller="Result" asp-action="Index" class="player-btn player-btn-light">Terug naar Ranking</a>
+        </div>
+    </div>
+
+    @* 4. De Witte Tabel-Kaart *@
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Rit</th>
+                        <th>Etappe Details</th>
+                        <th>Datum</th>
+                        <th>Ritwinnaar</th>
+                        <th>Beste Speler</th>
+                        <th class="text-end">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Stages.Any())
+                    {
+                        foreach (var stage in Model.Stages)
+                        {
+                            <tr>
+                                <td>
+                                    @* Gebruik badge stijl voor het ritnummer *@
+                                    <span class="player-badge player-badge-draft">#@stage.StageNumber</span>
+                                </td>
+                                <td>
+                                    <div class="player-name">@stage.StageName</div>
+                                    <small class="player-meta">Stage ID: @stage.StageId</small>
+                                </td>
+                                <td>
+                                    @stage.Date?.ToString("dd/MM")
+                                </td>
+                                <td>
+                                    <div class="player-name text-primary">@stage.WinnerName</div>
+                                    <div class="player-meta">@stage.WinnerTeam</div>
+                                </td>
+                                <td>
+                                    <div class="player-name">@stage.TopPlayerName</div>
+                                    <div class="player-points">@stage.TopPlayerPoints pts</div>
+                                </td>
+
+                                <td>
+                                    <div class="player-action-links">
+                                        <a asp-action="StageResults" asp-route-stageId="@stage.StageId" class="player-link">Details</a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">
+                                <div class="player-empty-state">
+                                    <h3>Geen etappes gevonden.</h3>
+                                    <p>Er is nog geen rittenschema beschikbaar voor deze race.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

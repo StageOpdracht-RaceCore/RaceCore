@@ -1,6 +1,79 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<StageProject_RaceCore.Models.Stage>
+@using StageProject_RaceCore.Models
+
 @{
+    ViewData["Title"] = "Ritten";
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+    int selectedRaceId = ViewBag.SelectedRaceId;
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
+
+<link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
+
+<div class="stage-page">
+    <section class="stage-header-card">
+        <p class="stage-page-kicker">RaceCore</p>
+        <h1 class="stage-page-title">Ritten</h1>
+        <p class="stage-page-subtitle">
+            Bekijk per wedstrijd alle ritten met datum en ritinformatie.
+        </p>
+    </section>
+
+    <section class="stage-filter-card">
+        <p class="stage-section-kicker">Wedstrijden</p>
+        <h2 class="stage-card-title">Selecteer race</h2>
+
+        <form asp-controller="Stage" asp-action="Index" method="get" class="race-select-form">
+            <div class="race-select-group">
+                <label for="raceId">Wedstrijd</label>
+                <select id="raceId" name="raceId" class="app-select" onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="app-btn app-btn-primary">
+                Tonen
+            </button>
+        </form>
+    </section>
+
+    <section class="stage-table-card">
+        <div class="stage-table-header">
+            <div>
+                <p class="stage-section-kicker">Overzicht</p>
+                <h2 class="stage-card-title">Ritten lijst</h2>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="stage-grid">
+                @foreach (var stage in Model)
+                {
+                    <article class="stage-card">
+                        <div class="stage-number-badge">
+                            Rit @stage.StageNumber
+                        </div>
+
+                        <h3>@stage.Name</h3>
+
+                        <p>
+                            @(stage.Date.HasValue ? stage.Date.Value.ToString("dd/MM/yyyy") : "Geen datum")
+                        </p>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="stage-empty-state">
+                Geen ritten gevonden voor deze wedstrijd.
+            </div>
+        }
+    </section>
+</div>

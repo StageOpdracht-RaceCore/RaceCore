@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.168.10.124",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "Racecore",
+            "database": "racecore",
+            "username": "jasonpeleman",
+            "password": "Jasonpeleman2029*"
+        }
+    ]
+}
