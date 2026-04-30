@@ -5,98 +5,106 @@
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Main.css" />
-<link rel="stylesheet" href="~/css/Player.css" />
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
-<section class="page">
-
-    <!-- HEADER -->
-    <section class="header">
-        <h6>RaceCore</h6>
-        <h1>Players</h1>
-        <p>Beheer alle spelers, hun draftvolgorde en prestaties in het systeem.</p>
-
-        <div class="player-header-actions">
-            <a asp-action="Create" class="player-btn player-btn-primary">
-                + Nieuwe speler
-            </a>
-
-            <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
-                ✓ Done
-            </a>
-        </div>
-    </section>
-
-    <!-- ALERTS -->
+<div class="player-page">
     @if (TempData["Success"] != null)
     {
-        <div class="alert success">
+        <div class="player-alert player-alert-success">
             @TempData["Success"]
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert error">
+        <div class="player-alert player-alert-danger">
             @TempData["Error"]
         </div>
     }
 
-    <!-- FILTERS (SEARCH) -->
-    <section class="filters">
-        <h4>Filters</h4>
-        <h3>Zoek speler</h3>
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1 class="player-page-title">Players</h1>
+            <p class="player-page-subtitle">
+                Beheer alle spelers, hun draftvolgorde en hun prestaties in het systeem.
+            </p>
+        </div>
 
-        <form method="get" asp-action="Index" class="cyclistsForm">
-            
-            <div class="formStyle">
-                <label for="searchTerm">Zoeken</label>
+        <div class="player-header-actions">
+            <a asp-action="Create" class="player-btn player-btn-primary">+ Nieuwe speler</a>
+            <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
+                ✓ Done
+            </a>
+        </div>
+        
+    </div>
+
+    <div class="player-stats-grid">
+        <div class="player-stat-card">
+            <span class="player-stat-label">Totaal spelers</span>
+            <strong class="player-stat-value">@Model.TotalPlayers</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Totale punten</span>
+            <strong class="player-stat-value">@Model.TotalPoints</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Selections</span>
+            <strong class="player-stat-value">@Model.TotalSelections</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Draft turns</span>
+            <strong class="player-stat-value">@Model.TotalDraftTurns</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Punten records</span>
+            <strong class="player-stat-value">@Model.TotalPointRecords</strong>
+        </div>
+    </div>
+
+    <div class="player-toolbar-card">
+        <form method="get" asp-action="Index" class="player-search-form">
+            <div class="player-search-group">
+                <label for="searchTerm">Zoek speler</label>
                 <input id="searchTerm"
                        name="searchTerm"
                        value="@Model.SearchTerm"
-                       class="select"
+                       class="player-search-input"
                        placeholder="Zoek op naam..." />
             </div>
 
-            <button type="submit" class="formButton btn btn-primary">
-                Zoeken
-            </button>
-
-            <a asp-action="Index" class="formButton btn btn-danger">
-                Reset
-            </a>
-
+            <div class="player-toolbar-actions">
+                <button type="submit" class="player-btn player-btn-primary">Zoeken</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Reset</a>
+            </div>
         </form>
-    </section>
+    </div>
 
-    <!-- TABLE -->
-    <section class="cyclistsOverview">
-        <h4>Overzicht</h4>
-        <h3>Players lijst</h3>
-
-        @if (Model.Players != null && Model.Players.Any())
-        {
-            <div class="cyclistsTableWrapper">
-
-                <table class="cyclistsTable">
-
-                    <thead>
-                        <tr>
-                            <th>Speler</th>
-                            <th>Draft positie</th>
-                            <th>Totale punten</th>
-                            <th>Selections</th>
-                            <th>Draft turns</th>
-                            <th>Punten records</th>
-                            <th class="text-end">Acties</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var player in Model.Players)
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Speler</th>
+                        <th>Draft positie</th>
+                        <th>Totale punten</th>
+                        <th>Selections</th>
+                        <th>Draft turns</th>
+                        <th>Punten records</th>
+                        <th class="text-end">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Players.Any())
+                    {
+                        foreach (var player in Model.Players)
                         {
                             <tr>
-
                                 <td>
                                     <div class="player-name-cell">
                                         <div class="player-avatar">
@@ -104,45 +112,43 @@
                                         </div>
                                         <div>
                                             <div class="player-name">@player.Name</div>
-                                            <div class="player-meta">ID: @player.Id</div>
+                                            <div class="player-meta">Player ID: @player.Id</div>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td>
-                                    <span class="race raceYes">#@player.PositionInDraft</span>
+                                    <span class="player-badge player-badge-draft">#@player.PositionInDraft</span>
                                 </td>
-
                                 <td>
-                                    <strong class="player-points">@player.TotalPoints</strong>
+                                    <span class="player-points">@player.TotalPoints</span>
                                 </td>
-
                                 <td>@player.SelectionsCount</td>
                                 <td>@player.DraftTurnsCount</td>
                                 <td>@player.PointsRecordsCount</td>
-
                                 <td>
                                     <div class="player-action-links">
-                                        <a asp-action="Details" asp-route-id="@player.Id">Details</a>
-                                        <a asp-action="Edit" asp-route-id="@player.Id">Edit</a>
-                                        <a asp-action="Delete" asp-route-id="@player.Id">Delete</a>
+                                        <a asp-action="Details" asp-route-id="@player.Id" class="player-link">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@player.Id" class="player-link">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@player.Id" class="player-link player-link-danger">Delete</a>
                                     </div>
                                 </td>
-
                             </tr>
                         }
-                    </tbody>
-
-                </table>
-
-            </div>
-        }
-        else
-        {
-            <div class="empty">
-                Geen spelers gevonden.
-            </div>
-        }
-    </section>
-
-</section>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="player-empty-state">
+                                    <h3>Geen spelers gevonden.</h3>
+                                    <p>Er zijn geen spelers die overeenkomen met je zoekopdracht.</p>
+                                    <a asp-action="Create" class="player-btn player-btn-primary">Nieuwe speler toevoegen</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
