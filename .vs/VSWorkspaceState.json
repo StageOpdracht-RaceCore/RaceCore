@@ -3,10 +3,8 @@
     "",
     "\\Webapp",
     "\\Webapp\\RaceCore",
-    "\\Webapp\\RaceCore\\StageProject_RaceCore",
-    "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot",
-    "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot\\css"
+    "\\Webapp\\RaceCore\\RaceCore"
   ],
-  "SelectedNode": "\\Webapp\\RaceCore\\StageProject_RaceCore\\wwwroot\\css\\Player.css",
+  "SelectedNode": "\\Webapp\\RaceCore\\RaceCore\\RaceCore.slnx",
   "PreviewInSolutionExplorer": false
 }
