@@ -2,6 +2,23 @@
 /* ===============================
    ALGEMENE KAARTEN
 ================================= */
+.back {
+    width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 16px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
 
 .filters,
 .cyclistsOverview {

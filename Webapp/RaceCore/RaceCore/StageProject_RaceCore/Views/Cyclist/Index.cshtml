@@ -33,6 +33,7 @@
 <link rel="stylesheet" href="~/css/Cyclist.css" />
 
 <section class="page">
+    <a asp-controller="Dashboard" asp-action="Index" class="back btn btn-primary">Back to Dashboard</a>
     <section class="header">
         <h6>RaceCore</h6>
         <h1>Cyclists</h1>
@@ -67,7 +68,7 @@
             </div>
 
                 <button type="submit" class="formButton btn btn-primary">Zoeken</button>
-        </form>
+        </form> 
 
         <div class="countAndReset">
             <p>Aantal cyclists: <strong>@cyclistCount</strong></p>
