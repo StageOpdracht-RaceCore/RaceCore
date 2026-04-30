@@ -1,4 +1,4 @@
-@model StageProject_RaceCore.Models.PlayerTeamsPageViewModel
+ï»¿@model StageProject_RaceCore.Models.PlayerTeamsPageViewModel
 
 @{
     ViewData["Title"] = "Teams";
@@ -19,9 +19,12 @@
     }
 }
 
-<link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/team.css" asp-append-version="true" />
 
 <div class="team-page">
+    <div class="team-top-actions">
+        <a asp-controller="Dashboard" asp-action="Index" class="team-btn team-btn-secondary">Dashboard</a>
+    </div>
     <section class="team-header-card player-teams-hero">
         <div class="team-hero-copy">
             <p class="team-page-kicker">RaceCore Game</p>
@@ -196,14 +199,14 @@
                 return;
             }
 
-            // First pick — just highlight it
+            // First pick ï¿½ just highlight it
             if (!selectedRow) {
                 selectedRow = row;
                 row.classList.add('roster-row--selected');
                 return;
             }
 
-            // Second pick — must be in the SAME card but OPPOSITE section
+            // Second pick ï¿½ must be in the SAME card but OPPOSITE section
             var firstCard = selectedRow.closest('.player-team-card');
             if (firstCard !== card) {
                 // Different card: restart selection in new card
@@ -224,7 +227,7 @@
                 return;
             }
 
-            // Different sections within the same card — perform the swap
+            // Different sections within the same card ï¿½ perform the swap
             swapRows(selectedRow, row);
             clearSelection();
         };
