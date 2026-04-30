@@ -19,15 +19,6 @@
 <link rel="stylesheet" href="~/css/Scoring.css" asp-append-version="true" />
 
 <div class="scoring-page">
-    @* --- NAVIGATIE BALK --- *@
-    <div class="d-flex justify-content-between mb-3">
-        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Dashboard
-        </a>
-        <a asp-controller="Result" asp-action="StageResults" class="btn btn-info text-white">
-            Stage Results <i class="fas fa-chart-line"></i>
-        </a>
-    </div>
 
     @* --- ALERTS --- *@
     @if (TempData["Error"] != null || TempData["ErrorMessage"] != null)
@@ -39,23 +30,27 @@
 
     @* --- SELECTIE SECTIE (WEDSTRIJD & RIT DROPDOWNS) --- *@
     <div class="player-header-card">
-        <div>
+        <div style="flex-grow: 1;">
             <h1 class="player-page-title">Scoring Beheer</h1>
             <p class="player-page-subtitle">Selecteer de gewenste wedstrijd en etappe.</p>
         </div>
+        <a asp-controller="Dashboard" asp-action="Index" class="player-btn-white" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
     </div>
 
-    <div class="player-table-card" style="padding:20px; margin-bottom:20px;">
+    <div class="player-table-card" style="padding:24px; margin-bottom:24px;">
         <form asp-controller="Scoring" asp-action="Index" method="get" id="selectionForm">
-            <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:15px; align-items: end;">
+            <div style="display: flex; gap: 20px; align-items: flex-end; width: 100%;">
                 
-                @* Wedstrijd Dropdown *@
-                <div>
-                    <label style="font-weight:700; display:block; margin-bottom:5px;">Wedstrijd kiezen</label>
-                    <select name="raceId" class="player-search-input" onchange="this.form.submit()">
+                @* Wedstrijd Dropdown - breedte gefixeerd op 40% *@
+                <div style="flex: 0 0 40%;">
+                    <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">Wedstrijd kiezen</label>
+                    <select name="raceId" class="player-search-input" onchange="this.form.submit()" style="width: 100%;">
                         <option value="">-- Selecteer Wedstrijd --</option>
                         @foreach (var race in races)
                         {
+                            @* Gebruik van <!option> zorgt dat de geselecteerde waarde blijft staan *@
                             <!option value="@race.Id" @(race.Id == selectedRaceId ? "selected" : "")>
                                 @race.Name
                             </!option>
@@ -63,21 +58,25 @@
                     </select>
                 </div>
 
-                @* Rit Dropdown *@
-                <div>
-                    <label style="font-weight:700; display:block; margin-bottom:5px;">Rit kiezen</label>
-                    <select name="stageId" class="player-search-input">
+                @* Rit Dropdown - breedte gefixeerd op 40% *@
+                <div style="flex: 0 0 40%;">
+                    <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">Rit kiezen</label>
+                    <select name="stageId" class="player-search-input" style="width: 100%;">
                         @foreach (var stage in stages)
                         {
-                            <option value="@stage.Value" selected="@stage.Selected">@stage.Text</option>
+                            <!option value="@stage.Value" @(stage.Selected ? "selected" : "")>
+                                @stage.Text
+                            </!option>
                         }
                     </select>
                 </div>
 
-                @* Laad Knop *@
-                <button type="submit" class="player-btn-white" style="height: 45px;">
-                    Rit laden
-                </button>
+                @* Laad Knop - de rest van de ruimte *@
+                <div style="flex: 1;">
+                    <button type="submit" class="player-btn-white" style="height: 48px; width: 100%; border: 1px solid #d1d5db; color: #1d4ed8;">
+                        Rit laden
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -90,7 +89,7 @@
             <input type="hidden" asp-for="StageId" />
 
             <div class="player-header-card">
-                <div>
+                <div style="flex-grow: 1;">
                     <h1 class="player-page-title">Rit @Model.StageId Resultaten</h1>
                 </div>
                 <button type="submit" class="player-btn-white">Scores Publiceren</button>
@@ -126,8 +125,8 @@
 
             @* Buiten Top 25 *@
             <div class="player-table-card outside-jersey-card" style="margin-top:20px;">
-                <h2 class="outside-jersey-title">Truidragers buiten Top 25</h2>
-                <div class="results-list">
+                <h2 class="outside-jersey-title" style="padding: 20px 24px 0; margin-bottom: -10px;">Truidragers buiten Top 25</h2>
+                <div class="results-list" style="padding: 20px;">
                     <div class="result-item-card"><div class="pos-badge dot-red"></div><div class="px-3" style="flex-grow:1;"><input type="text" list="cyclistList" class="player-search-input js-outside-jersey-name" value="@redName" oninput="syncId(this); clearTop25Jersey('Red');" placeholder="Rode trui..." /><input type="hidden" asp-for="YellowOutsideTop25CyclistId" /></div></div>
                     <div class="result-item-card"><div class="pos-badge dot-green"></div><div class="px-3" style="flex-grow:1;"><input type="text" list="cyclistList" class="player-search-input js-outside-jersey-name" value="@greenName" oninput="syncId(this); clearTop25Jersey('Green');" placeholder="Groene trui..." /><input type="hidden" asp-for="GreenOutsideTop25CyclistId" /></div></div>
                     <div class="result-item-card"><div class="pos-badge dot-blue"></div><div class="px-3" style="flex-grow:1;"><input type="text" list="cyclistList" class="player-search-input js-outside-jersey-name" value="@blueName" oninput="syncId(this); clearTop25Jersey('Blue');" placeholder="Blauwe trui..." /><input type="hidden" asp-for="PolkaOutsideTop25CyclistId" /></div></div>
