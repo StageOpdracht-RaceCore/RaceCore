@@ -1,285 +1,168 @@
 ﻿/* =========================================================
-   PLAYER PAGES - GENERAL LAYOUT
+   ALGEMENE KAARTEN
 ========================================================= */
 
-.player-page,
-.player-form-page,
-.player-details-page {
+.player-page {
     padding: 24px;
 }
 
-.player-header-card,
-.player-toolbar-card,
-.player-table-card,
-.player-form-card,
-.player-stat-card,
-.player-detail-card,
-.player-details-hero {
+.filters,
+.cyclistsOverview {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 20px;
-    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
-}
-
-
-/* =========================================================
-   ALERTS
-========================================================= */
-
-.player-alert {
-    padding: 14px 16px;
-    margin-bottom: 18px;
-    border-radius: 14px;
-    font-weight: 600;
-    border: 1px solid transparent;
-}
-
-.player-alert-success {
-    background: #ecfdf5;
-    color: #065f46;
-    border-color: #a7f3d0;
-}
-
-.player-alert-danger,
-.player-delete-alert {
-    background: #fef2f2;
-    color: #991b1b;
-    border-color: #fecaca;
-}
-
-
-/* =========================================================
-   HEADER / HERO
-========================================================= */
-
-.player-header-card {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
     padding: 28px;
-    margin-bottom: 20px;
-    color: white;
-    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
-}
-
-.player-page-kicker {
-    margin: 0 0 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    opacity: 0.85;
-}
-
-.player-page-title,
-.player-form-header h1,
-.player-details-hero h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
-    font-weight: 800;
-}
-
-.player-page-subtitle,
-.player-form-header p {
-    margin: 0;
-    font-size: 15px;
-    color: #dbeafe;
-}
-
-.player-header-actions,
-.player-toolbar-actions,
-.player-form-actions,
-.player-action-links {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    margin-bottom: 0;
+    border-radius: 20px;
 }
 
 
 /* =========================================================
-   BUTTONS
+   TITELS IN DE KAARTEN
 ========================================================= */
 
-.player-btn {
+h4 {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #2563eb;
+}
+
+h3 {
+    margin: 0 0 22px 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #0f172a;
+}
+
+
+/* =========================================================
+   FILTER FORM
+========================================================= */
+
+.cyclistsForm {
+    display: flex;
+    gap: 16px;
+    align-items: end;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.select {
+    width: 100%;
+    height: 52px;
+    padding: 0 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #111827;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+    .select:focus {
+        border-color: #2563eb;
+        background: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+    }
+
+
+/* =========================================================
+   KNOPPEN
+========================================================= */
+
+.formButton {
+    width: 80px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
+    height: 52px;
+    padding: 0 20px;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
+    color: #ffffff;
+    font-size: 14px;
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
 }
 
-.player-btn-primary {
-    background: #2563eb;
-    color: white;
-}
-
-    .player-btn-primary:hover {
-        background: #1d4ed8;
-        color: white;
-    }
-
-.player-btn-light {
-    background: #eef2ff;
-    color: #1e3a8a;
-}
-
-    .player-btn-light:hover {
-        background: #e0e7ff;
-        color: #1e3a8a;
-    }
-
-.player-btn-danger {
-    background: #dc2626;
-    color: white;
-}
-
-    .player-btn-danger:hover {
-        background: #b91c1c;
-        color: white;
-    }
-
-.player-btn-done {
-    background: limegreen;
-    color: white;
-    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
-}
-
-    .player-btn-done:hover {
-        background: #22c55e;
-        color: white;
-        transform: translateY(-1px);
-    }
-
-
-/* =========================================================
-   STATS CARDS
-========================================================= */
-
-.player-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.player-stat-card {
-    padding: 20px;
-}
-
-.player-stat-label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.player-stat-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
+.pageBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 
 /* =========================================================
-   SEARCH TOOLBAR
+   TABLE WRAPPER
 ========================================================= */
 
-.player-toolbar-card {
-    padding: 24px;
-    margin-bottom: 20px;
-}
-
-.player-search-form {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.player-search-group {
-    flex: 1;
-    min-width: 260px;
-}
-
-    .player-search-group label,
-    .player-form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 700;
-        color: #374151;
-    }
-
-.player-search-input,
-.player-form-input {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 14px;
-    background: #f9fafb;
-    font-size: 15px;
-    transition: 0.2s ease;
-}
-
-    .player-search-input:focus,
-    .player-form-input:focus {
-        outline: none;
-        background: white;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-
-/* =========================================================
-   PLAYERS TABLE
-========================================================= */
-
-.player-table-card {
-    padding: 24px;
-}
-
-.player-table-responsive {
+.cyclistsTableWrapper {
     width: 100%;
     overflow-x: auto;
 }
 
-.player-table {
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.cyclistsTable {
     width: 100%;
-    min-width: 950px;
-    border-collapse: collapse;
+    min-width: 700px;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-    .player-table thead th {
-        padding: 14px 16px;
+    .cyclistsTable thead th {
         text-align: left;
         font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
         color: #6b7280;
         background: #f8fafc;
         border-bottom: 1px solid #e5e7eb;
     }
 
-    .player-table tbody td {
+    .cyclistsTable tbody td {
         padding: 18px 16px;
-        vertical-align: middle;
         border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+        color: #111827;
+        background: #ffffff;
+        transition: background-color 0.2s ease;
     }
 
-    .player-table tbody tr:hover {
+    .cyclistsTable tbody tr:hover {
         background: #f8fbff;
     }
 
 
 /* =========================================================
-   PLAYER TABLE CONTENT
+   PLAYER SPECIFIEK CONTENT
 ========================================================= */
 
 .player-name-cell {
@@ -288,28 +171,16 @@
     gap: 14px;
 }
 
-.player-avatar,
-.player-details-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: 800;
-    color: white;
-    background: linear-gradient(135deg, #2563eb, #0f172a);
-}
-
 .player-avatar {
     width: 44px;
     height: 44px;
-    font-size: 18px;
-}
-
-.player-details-avatar {
-    width: 74px;
-    height: 74px;
-    font-size: 28px;
-    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, #2563eb, #0f172a);
 }
 
 .player-name {
@@ -319,23 +190,8 @@
 }
 
 .player-meta {
-    margin-top: 4px;
     font-size: 12px;
     color: #6b7280;
-}
-
-.player-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.player-badge-draft {
-    background: #dbeafe;
-    color: #1d4ed8;
 }
 
 .player-points {
@@ -346,148 +202,56 @@
 
 
 /* =========================================================
-   TABLE ACTION LINKS
+   BADGES
 ========================================================= */
 
-.player-link {
+.race {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.raceYes {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.raceNo {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+.player-action-links a {
     font-weight: 700;
     color: #2563eb;
     text-decoration: none;
 }
 
-    .player-link:hover {
+    .player-action-links a:hover {
         text-decoration: underline;
     }
-
-.player-link-danger {
-    color: #dc2626;
-}
 
 
 /* =========================================================
    EMPTY STATE
 ========================================================= */
 
-.player-empty-state {
+.empty {
     text-align: center;
-    padding: 40px 20px;
-}
-
-    .player-empty-state h3 {
-        margin-bottom: 8px;
-        color: #111827;
-    }
-
-    .player-empty-state p {
-        margin-bottom: 20px;
-        color: #6b7280;
-    }
-
-
-/* =========================================================
-   CREATE / EDIT FORM PAGES
-========================================================= */
-
-.player-form-card {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 24px;
-}
-
-.player-form-header {
-    margin-bottom: 24px;
-}
-
-    .player-form-header p {
-        color: #6b7280;
-    }
-
-.player-form-grid {
-    display: grid;
-    gap: 18px;
-}
-
-
-/* =========================================================
-   DETAILS / DELETE PAGES
-========================================================= */
-
-.player-details-hero {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 24px;
-    margin-bottom: 20px;
-}
-
-    .player-details-hero .player-page-subtitle {
-        color: #6b7280;
-    }
-
-.player-details-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 20px;
-}
-
-.player-detail-card {
-    padding: 24px;
-}
-
-    .player-detail-card h3 {
-        margin-top: 0;
-        margin-bottom: 18px;
-        font-size: 18px;
-        color: #111827;
-    }
-
-.player-detail-list {
-    display: grid;
-    gap: 14px;
-}
-
-    .player-detail-list div {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 12px 0;
-        border-bottom: 1px solid #eef2f7;
-    }
-
-    .player-detail-list span {
-        color: #6b7280;
-    }
-
-    .player-detail-list strong {
-        color: #111827;
-        text-align: right;
-    }
-
-.player-delete-card {
-    border-color: #fecaca;
-}
-
-.player-delete-alert {
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    border-radius: 14px;
-    font-weight: 600;
-    border-width: 1px;
-    border-style: solid;
-}
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-.text-end {
-    text-align: right;
-}
-
-.text-danger {
-    color: #dc2626;
+    font-size: 14px;
+    color: #6b7280;
 }
 
 
@@ -495,51 +259,21 @@
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1100px) {
-    .player-stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .player-details-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 768px) {
-    .player-page,
-    .player-form-page,
-    .player-details-page {
+    .player-page {
         padding: 14px;
     }
 
-    .player-header-card,
-    .player-details-hero {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-        .player-page-title,
-        .player-form-header h1,
-        .player-details-hero h1 {
-            font-size: 26px;
-        }
-
-    .player-stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .player-search-form {
+    .cyclistsForm {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .player-header-actions,
-    .player-toolbar-actions,
-    .player-form-actions {
-        width: 100%;
+    .cyclistsTable {
+        min-width: 850px;
     }
 
-    .player-btn {
+    .formButton {
         width: 100%;
     }
 }
