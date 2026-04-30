@@ -21,29 +21,29 @@
         startPage = Math.Max(1, endPage - 4);
     }
 }
-
+<link rel="stylesheet" href="~/css/Main.css"/> 
 <link rel="stylesheet" href="~/css/Cyclist.css" />
 
-<div class="cyclists-page">
+<section class="page">
+    <section class="header">
+        <h6>RaceCore</h6>
+        <h1>Cyclists</h1>
+        <p>Bekijk hier alle renners en aan welke wedstrijd ze meedoen. </p>
+    </section>
 
-    <div class="cyclists-filter-card">
-        <div class="cyclists-section-kicker">Filters</div>
-        <h3 class="cyclists-filter-title">Zoek cyclists</h3>
+    <section class="filters">
+        <h4>Filters</h4>
+        <h3>Zoek cyclists</h3>
 
-        <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclists-form">
-            <div class="form-group">
+        <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclistsForm">
+            <div class="formStyle">
                 <label for="search">Zoeken</label>
-                <input id="search"
-                       type="text"
-                       name="search"
-                       class="cyclists-input"
-                       value="@currentSearch"
-                       placeholder="Zoek op naam of team" />
+                <input id="search" type="text" name="search" class="select" value="@currentSearch" placeholder="Zoek op naam of team" />
             </div>
 
-            <div class="form-group">
+            <div class="formStyle">
                 <label for="status">Status</label>
-                <select id="status" name="status" class="cyclists-select">
+                <select id="status" name="status" class="select">
                     <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">Alle</option>
                     <option value="active" selected="@(currentStatus == "active")">Actief</option>
                     <option value="inactive" selected="@(currentStatus == "inactive")">Niet actief</option>
@@ -58,34 +58,26 @@
                 </select>
             </div>
 
-            <div class="form-group button-group">
-                <button type="submit" class="cyclists-btn">Zoeken</button>
-            </div>
+                <button type="submit" class="formButton btn btn-primary">Zoeken</button>
         </form>
 
         <div class="countAndReset">
-            <div class="cyclists-count">
-                Aantal cyclists: <strong>@cyclistCount</strong>
-            </div>
+            <p>Aantal cyclists: <strong>@cyclistCount</strong></p>
 
-            <a asp-action="Index"
-                   asp-controller="Cyclist"
-                   class="cyclists-btn reset-btn">
+            <a asp-action="Index" asp-controller="Cyclist" class="formButton btn btn-danger">
                 Reset
             </a>
         </div>
-    </div>
+    </section>
 
-    <div class="cyclists-table-card">
-        <div class="cyclists-table-header">
-            <div class="cyclists-section-kicker">Overzicht</div>
-            <h3 class="cyclists-card-title">Cyclists lijst</h3>
-        </div>
+    <section class="cyclistsOverview">
+        <h4>Overzicht</h4>
+        <h3>Cyclists lijst</h3>
 
         @if (Model != null && Model.Any())
         {
-            <div class="cyclists-table-wrapper">
-                <table class="cyclists-table">
+            <section class="cyclistsTableWrapper">
+                <table class="cyclistsTable">
                     <thead>
                         <tr>
                             <th>First Name</th>
@@ -102,17 +94,18 @@
                         @foreach (var cyclist in Model)
                         {
                             <tr>
-                                <td class="cyclist-name">@cyclist.FirstName</td>
-                                <td class="cyclist-name">@cyclist.LastName</td>
-                                <td class="cyclist-team">@(cyclist.Team?.Name ?? "Geen team")</td>
+                                <td class="cyclistName">@cyclist.FirstName</td>
+                                <td class="cyclistName">@cyclist.LastName</td>
+                                <td class="cyclistTeam">@(cyclist.Team?.Name ?? "Geen team")</td>
+
                                 <td>
                                     @if (cyclist.IsActive)
                                     {
-                                        <span class="status-badge status-active">Actief</span>
+                                        <span class="status statusActive">Actief</span>
                                     }
                                     else
                                     {
-                                        <span class="status-badge status-inactive">Niet actief</span>
+                                        <span class="status statusInactive">Niet actief</span>
                                     }
                                 </td>
 
@@ -123,11 +116,11 @@
                                     <td>
                                         @if (doetMee)
                                         {
-                                            <span class="race-badge race-yes">Ja</span>
+                                            <span class=" race raceYes">Ja</span>
                                         }
                                         else
                                         {
-                                            <span class="race-badge race-no">Nee</span>
+                                            <span class="race raceNo">Nee</span>
                                         }
                                     </td>
                                 }
@@ -136,7 +129,7 @@
                     </tbody>
                 </table>
 
-                <div class="pagination-container">
+                <div class="pagenumbers">
                     @if (currentPage > 1)
                     {
                         <a asp-action="Index"
@@ -144,7 +137,7 @@
                                asp-route-status="@currentStatus"
                                asp-route-page="1"
                                asp-route-pageSize="@pageSize"
-                               class="pagination-btn">
+                               class="pageBtn">
                             &lt;&lt; Eerste
                         </a>
 
@@ -153,7 +146,7 @@
                                asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage - 1)"
                                asp-route-pageSize="@pageSize"
-                               class="pagination-btn">
+                               class="pageBtn">
                             &lt; Vorige
                         </a>
                     }
@@ -165,7 +158,7 @@
                                asp-route-status="@currentStatus"
                                asp-route-page="@i"
                                asp-route-pageSize="@pageSize"
-                               class="pagination-btn @(i == currentPage ? "active" : "")">
+                               class="pageBtn @(i == currentPage ? "active" : "")">
                             @i
                         </a>
                     }
@@ -177,7 +170,7 @@
                                asp-route-status="@currentStatus"
                                asp-route-page="@(currentPage + 1)"
                                asp-route-pageSize="@pageSize"
-                               class="pagination-btn">
+                               class="pageBtn">
                             Volgende &gt;
                         </a>
 
@@ -186,18 +179,20 @@
                                asp-route-status="@currentStatus"
                                asp-route-page="@totalPages"
                                asp-route-pageSize="@pageSize"
-                               class="pagination-btn">
+                               class="pageBtn">
                             Laatste &gt;&gt;
                         </a>
                     }
                 </div>
-            </div>
+            </section>
         }
         else
         {
-            <div class="empty-box">
+            <div class="empty">
                 Geen cyclists gevonden.
             </div>
         }
-    </div>
-</div>
+    </section>
+
+</section>
+
