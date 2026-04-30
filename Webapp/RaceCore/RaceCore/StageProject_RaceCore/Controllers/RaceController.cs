@@ -42,35 +42,38 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Year,StartDate,EndDate")] Race race)
         {
-            if (!ModelState.IsValid) return View(race);
+            if (!ModelState.IsValid)
+            {
+                return View(race);
+            }
 
             try
             {
-                _context.Add(race);
+                _context.Races.Add(race);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
                 TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return View(race);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return RedirectToAction(nameof(Index));
+            if (id == null) return NotFound();
 
             try
             {
                 var race = await _context.Races.FindAsync(id);
-                if (race == null) return RedirectToAction(nameof(Index));
+                if (race == null) return NotFound();
+
                 return View(race);
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om te bewerken.";
+                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -79,57 +82,62 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Year,StartDate,EndDate")] Race race)
         {
-            if (id != race.Id) return RedirectToAction(nameof(Index));
-            if (!ModelState.IsValid) return View(race);
+            if (id != race.Id) return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                return View(race);
+            }
 
             try
             {
-                _context.Update(race);
+                _context.Races.Update(race);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
                 TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return View(race);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return RedirectToAction(nameof(Index));
+            if (id == null) return NotFound();
 
             try
             {
                 var race = await _context.Races
                     .Include(r => r.Stages)
                     .Include(r => r.RaceEntries)
-                    .FirstOrDefaultAsync(m => m.Id == id);
+                    .FirstOrDefaultAsync(r => r.Id == id);
 
-                if (race == null) return RedirectToAction(nameof(Index));
+                if (race == null) return NotFound();
+
                 return View(race);
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om details te zien.";
+                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return RedirectToAction(nameof(Index));
             }
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return RedirectToAction(nameof(Index));
+            if (id == null) return NotFound();
 
             try
             {
-                var race = await _context.Races.FirstOrDefaultAsync(m => m.Id == id);
-                if (race == null) return RedirectToAction(nameof(Index));
+                var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == id);
+                if (race == null) return NotFound();
+
                 return View(race);
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om te verwijderen.";
+                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -141,6 +149,7 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var race = await _context.Races.FindAsync(id);
+
                 if (race != null)
                 {
                     _context.Races.Remove(race);

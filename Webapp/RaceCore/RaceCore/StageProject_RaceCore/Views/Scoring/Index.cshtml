@@ -74,9 +74,9 @@
             @foreach (var race in races)
             {
                 <a asp-action="Index"
-                   asp-route-raceId="@race.Id"
-                   class="player-btn-white @(race.Id == selectedRaceId ? "active" : "")"
-                   style="text-decoration:none;">
+                       asp-route-raceId="@race.Id"
+                       class="player-btn-white @(race.Id == selectedRaceId ? "active" : "")"
+                       style="text-decoration:none;">
                     @race.Name
                 </a>
             }
@@ -246,12 +246,14 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialisatie voor bestaande waarden
             document.querySelectorAll(".js-cyclist-name, .js-outside-jersey-name").forEach(input => {
                 if (input.value !== "") {
                     syncId(input);
                 }
             });
 
+            // Logica voor checkboxes (slechts één renner per trui)
             document.querySelectorAll(".js-jersey-checkbox").forEach(box => {
                 box.addEventListener("change", function () {
                     if (this.checked) {
@@ -269,6 +271,7 @@
             });
         });
 
+        // Koppel de geselecteerde naam aan de CyclistID uit de datalist
         function syncId(input) {
             const list = document.getElementById("cyclistList");
             const hidden = input.nextElementSibling;
@@ -290,12 +293,14 @@
             }
         }
 
+        // Als er een trui buiten de top 25 wordt ingevuld, wis deze dan uit de top 25
         function clearTop25Jersey(jerseyType) {
             document.querySelectorAll('.js-jersey-checkbox[data-jersey="' + jerseyType + '"]').forEach(box => {
                 box.checked = false;
             });
         }
 
+        // Als er een trui in de top 25 wordt aangevinkt, wis dan de input buiten de top 25
         function clearOutsideJersey(jerseyType) {
             let inputName = "";
 

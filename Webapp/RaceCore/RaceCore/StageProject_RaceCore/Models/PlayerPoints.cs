@@ -4,6 +4,9 @@
     {
         public int Id { get; set; }
 
+        public int GameSessionId { get; set; }
+        public GameSession GameSession { get; set; } = null!;
+
         public int PlayerId { get; set; }
         public Player Player { get; set; } = null!;
 

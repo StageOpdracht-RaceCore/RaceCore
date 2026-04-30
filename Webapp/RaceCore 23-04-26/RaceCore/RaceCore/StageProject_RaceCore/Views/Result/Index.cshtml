@@ -1,0 +1,37 @@
+
+@{
+    @model IEnumerable<StageProject_RaceCore.Controllers.ResultVM>
+    <section class="riders-page">
+    <div class="page-card">
+    <table class="riders-table">
+        <thead>
+            <tr>
+                <th>Positie</th>
+                <th>Naam</th>
+                <th>Punten</th>
+                <th>Truien</th>
+                <th>Totaal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int pos = 1;
+            }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@pos</td>
+                    <td>@item.CyclistName</td>
+                    <td>@item.points</td>
+                    <td>@item.JerseyType</td>
+                    <td>@item.totalPoints</td>
+                </tr>
+                pos++;
+            }
+        </tbody>
+    </table
+    </div>
+    </section>
+
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}

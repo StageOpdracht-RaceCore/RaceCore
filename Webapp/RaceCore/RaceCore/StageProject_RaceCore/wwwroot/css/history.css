@@ -1,4 +1,35 @@
-﻿/* --- BASIS TYPOGRAFIE & LAY-OUT --- */
+﻿.player-page {
+    padding: 24px;
+}
+
+.player-page-kicker {
+    margin: 0 0 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+}
+
+.player-page-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.player-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+}
+
+.player-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* --- BASIS TYPOGRAFIE & LAY-OUT --- */
 .scoring-page {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: #1e293b;

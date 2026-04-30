@@ -1,0 +1,165 @@
+﻿@model StageProject_RaceCore.ViewModels.LeaderboardViewModel
+
+@{
+    ViewData["Title"] = "Leaderboard";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    int maxPoints = Model.HighestPoints > 0 ? Model.HighestPoints : 1;
+}
+
+<link rel="stylesheet" href="~/css/Leaderboard.css" asp-append-version="true" />
+
+<div class="leaderboard-page">
+
+    <section class="leaderboard-hero">
+        <div>
+            <p class="leaderboard-kicker">RaceCore Ranking</p>
+            <h1 class="leaderboard-title">Leaderboard</h1>
+            <p class="leaderboard-subtitle">
+                Bekijk welke speler momenteel de meeste punten heeft in deze game.
+            </p>
+        </div>
+
+        <form asp-controller="Leaderboard" asp-action="Index" method="get" class="leaderboard-game-form">
+            <label for="gameId">Game</label>
+            <select id="gameId" name="gameId" onchange="this.form.submit()">
+                @foreach (var game in Model.Games)
+                {
+                    if (game.Id == Model.SelectedGameId)
+                    {
+                        <option value="@game.Id" selected>
+                            @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@game.Id">
+                            @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </option>
+                    }
+                }
+            </select>
+        </form>
+    </section>
+
+    @if (!Model.Games.Any())
+    {
+        <section class="leaderboard-card">
+            <div class="leaderboard-empty">
+                <h2>Geen game gevonden</h2>
+                <p>Start eerst een nieuwe game voordat het leaderboard punten kan tonen.</p>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="leaderboard-stats">
+            <div class="leaderboard-stat-card">
+                <span>Race</span>
+                <strong>@Model.RaceName</strong>
+            </div>
+
+            <div class="leaderboard-stat-card">
+                <span>Status</span>
+                <strong>@Model.GameStatus</strong>
+            </div>
+
+            <div class="leaderboard-stat-card">
+                <span>Spelers</span>
+                <strong>@Model.PlayerCount</strong>
+            </div>
+
+            <div class="leaderboard-stat-card">
+                <span>Totaal punten</span>
+                <strong>@Model.TotalPoints</strong>
+            </div>
+        </section>
+
+        <section class="leaderboard-card">
+            <div class="leaderboard-card-header">
+                <div>
+                    <h2>Player Ranking</h2>
+                    <p>Rangschikking op basis van alle punten in deze game.</p>
+                </div>
+            </div>
+
+            @if (!Model.Rows.Any())
+            {
+                <div class="leaderboard-empty">
+                    <h2>Nog geen spelers</h2>
+                    <p>Er zijn nog geen draft turns of spelers gekoppeld aan deze game.</p>
+                </div>
+            }
+            else
+            {
+                <div class="leaderboard-table-wrapper">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Player</th>
+                                <th>Draft</th>
+                                <th>Renners</th>
+                                <th>Beste renner</th>
+                                <th>Punten</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var row in Model.Rows)
+                            {
+                                int percentage = maxPoints > 0
+                                    ? (int)Math.Round((double)row.TotalPoints / maxPoints * 100)
+                                    : 0;
+
+                                <tr>
+                                    <td>
+                                        <span class="rank-badge rank-@row.Rank">@row.Rank</span>
+                                    </td>
+
+                                    <td>
+                                        <div class="player-cell">
+                                            <div class="player-avatar" style="background:@row.Color">
+                                                @row.Initials
+                                            </div>
+
+                                            <div>
+                                                <strong>@row.PlayerName</strong>
+                                                <span>Player ID: @row.PlayerId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="draft-pill">#@row.DraftPosition</span>
+                                    </td>
+
+                                    <td>
+                                        @row.RidersCount
+                                    </td>
+
+                                    <td>
+                                        <div class="best-rider">
+                                            <strong>@row.BestCyclistName</strong>
+                                            <span>@row.BestCyclistPoints punten</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="points-cell">
+                                            <strong>@row.TotalPoints</strong>
+
+                                            <div class="points-bar">
+                                                <div style="width:@percentage%; background:@row.Color"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    }
+</div>

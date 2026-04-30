@@ -13,108 +13,124 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int gameId)
         {
-            var model = new DashboardViewModel
-            {
-                PlayerRanking = new List<PlayerRankingItem>(),
-                TopCyclists = new List<TopCyclistItem>(),
-                Jerseys = new List<JerseyItem>(),
-                LatestStageTop3 = new List<string>()
-            };
+            var model = new DashboardViewModel();
 
             try
             {
-                model.PlayersCount = _context.Players.Count();
-                model.CyclistsCount = _context.Cyclists.Count(c => c.IsActive);
-                model.TeamsCount = _context.Teams.Count();
-                model.StagesCount = _context.Stages.Count();
+                if (gameId <= 0)
+                {
+                    var latestGame = await _context.GameSessions
+                        .OrderByDescending(g => g.CreatedAt)
+                        .FirstOrDefaultAsync();
 
-                var draftStatus = _context.DraftTurns
-                    .GroupBy(dt => dt.RaceId)
-                    .Select(g => new
+                    if (latestGame == null)
                     {
-                        RaceId = g.Key,
-                        TotalTurns = g.Count(),
-                        PickedTurns = g.Count(x => x.CyclistId != null)
-                    })
-                    .OrderByDescending(x => x.PickedTurns)
-                    .ThenByDescending(x => x.TotalTurns)
-                    .FirstOrDefault();
+                        TempData["Error"] = "Start eerst een game.";
+                        return RedirectToAction("New", "Game");
+                    }
 
-                if (draftStatus != null)
-                {
-                    model.TotalDraftPicks = draftStatus.PickedTurns;
-                    model.DraftCompleted = draftStatus.TotalTurns > 0 &&
-                                           draftStatus.PickedTurns == draftStatus.TotalTurns;
-                }
-                else
-                {
-                    model.TotalDraftPicks = 0;
-                    model.DraftCompleted = false;
+                    gameId = latestGame.Id;
                 }
 
-                model.PlayerRanking = _context.Players
+                var game = await _context.GameSessions
+                    .Include(g => g.Race)
+                    .FirstOrDefaultAsync(g => g.Id == gameId);
+
+                if (game == null)
+                {
+                    TempData["Error"] = "Game niet gevonden.";
+                    return RedirectToAction("New", "Game");
+                }
+
+                ViewBag.GameId = game.Id;
+                ViewBag.RaceId = game.RaceId;
+                ViewBag.GameStatus = game.Status;
+                ViewBag.RaceName = game.Race.Name + " " + game.Race.Year;
+                ViewBag.CurrentStage = game.CurrentStageNumber;
+                ViewBag.DatabaseOnline = true;
+
+                model.PlayersCount = await _context.DraftTurns
+                    .Where(d => d.GameSessionId == gameId)
+                    .Select(d => d.PlayerId)
+                    .Distinct()
+                    .CountAsync();
+
+                model.TotalDraftPicks = await _context.DraftTurns
+                    .Where(d => d.GameSessionId == gameId && d.CyclistId != null)
+                    .CountAsync();
+
+                model.CyclistsCount = model.TotalDraftPicks;
+                model.DraftCompleted = game.Status != "Draft";
+
+                model.PlayerRanking = await _context.DraftTurns
+                    .Where(d => d.GameSessionId == gameId)
+                    .Select(d => d.Player)
+                    .Distinct()
                     .Select(p => new PlayerRankingItem
                     {
                         PlayerName = p.Name,
                         Points = _context.PlayerPoints
-                            .Where(pp => pp.PlayerId == p.Id)
+                            .Where(pp => pp.PlayerId == p.Id && pp.RaceId == game.RaceId)
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
-                    .OrderByDescending(x => x.Points)
-                    .ThenBy(x => x.PlayerName)
-                    .ToList();
+                    .OrderByDescending(p => p.Points)
+                    .ThenBy(p => p.PlayerName)
+                    .ToListAsync();
 
                 for (int i = 0; i < model.PlayerRanking.Count; i++)
                 {
                     model.PlayerRanking[i].Position = i + 1;
                 }
 
-                model.TopCyclists = _context.Cyclists
-                    .Where(c => c.IsActive)
+                model.TopCyclists = await _context.PlayerSelections
+                    .Where(s => s.GameSessionId == gameId)
+                    .Select(s => s.Cyclist)
+                    .Distinct()
                     .Select(c => new TopCyclistItem
                     {
                         Name = c.FirstName + " " + c.LastName,
                         Points = _context.PlayerPoints
-                            .Where(pp => pp.CyclistId == c.Id)
+                            .Where(pp => pp.CyclistId == c.Id && pp.RaceId == game.RaceId)
                             .Select(pp => (int?)pp.Points)
                             .Sum() ?? 0
                     })
-                    .OrderByDescending(x => x.Points)
-                    .ThenBy(x => x.Name)
+                    .OrderByDescending(c => c.Points)
+                    .ThenBy(c => c.Name)
                     .Take(5)
-                    .ToList();
+                    .ToListAsync();
 
-                model.Jerseys = _context.Jerseys
+                model.Jerseys = await _context.Jerseys
                     .Include(j => j.Cyclist)
+                    .Where(j => j.Stage.RaceId == game.RaceId)
+                    .OrderByDescending(j => j.Stage.StageNumber)
                     .Select(j => new JerseyItem
                     {
                         Type = j.Type,
                         CyclistName = j.Cyclist.FirstName + " " + j.Cyclist.LastName
                     })
-                    .ToList();
+                    .Take(4)
+                    .ToListAsync();
 
-                var latestStage = _context.Stages
-                    .OrderByDescending(s => s.Date)
-                    .ThenByDescending(s => s.StageNumber)
-                    .FirstOrDefault();
+                var latestStage = await _context.Stages
+                    .Where(s => s.RaceId == game.RaceId)
+                    .OrderByDescending(s => s.StageNumber)
+                    .FirstOrDefaultAsync();
 
                 if (latestStage != null)
                 {
-                    model.LatestStageTitle = $"Stage {latestStage.StageNumber} - {latestStage.Name}";
+                    model.LatestStageTitle = "Stage " + latestStage.StageNumber + " - " + latestStage.Name;
 
-                    model.LatestStageTop3 = _context.StageResults
-                        .Include(sr => sr.Cyclist)
-                        .Where(sr => sr.StageId == latestStage.Id && sr.Position != null)
-                        .OrderBy(sr => sr.Position)
+                    model.LatestStageTop3 = await _context.StageResults
+                        .Include(r => r.Cyclist)
+                        .Where(r => r.StageId == latestStage.Id && r.Position != null)
+                        .OrderBy(r => r.Position)
                         .Take(3)
-                        .Select(sr => $"{sr.Position}. {sr.Cyclist.FirstName} {sr.Cyclist.LastName}")
-                        .ToList();
+                        .Select(r => r.Position + ". " + r.Cyclist.FirstName + " " + r.Cyclist.LastName)
+                        .ToListAsync();
                 }
-
-                ViewBag.DatabaseOnline = true;
             }
             catch
             {
@@ -122,11 +138,6 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return View(model);
-        }
-
-        public IActionResult Error()
-        {
-            return View();
         }
     }
 }
