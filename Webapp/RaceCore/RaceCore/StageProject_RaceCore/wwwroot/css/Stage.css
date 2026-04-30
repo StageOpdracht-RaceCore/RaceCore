@@ -1,8 +1,4 @@
-﻿/* ===============================
-   PAGE LAYOUT
-================================= */
-
-.stage-page {
+﻿.stage-page {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -10,80 +6,82 @@
     padding: 24px;
 }
 
-/* ===============================
-   CARDS
-================================= */
-
-.stage-header-card,
-.stage-filter-card,
-.stage-table-card {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
-}
-
+/* HERO */
 .stage-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
     padding: 28px;
+    border-radius: 20px;
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: #ffffff;
 }
 
-.stage-filter-card,
-.stage-table-card {
-    padding: 24px;
+.stage-header-copy {
+    min-width: 0;
 }
 
-/* ===============================
-   TITLES
-================================= */
+.stage-page-kicker {
+    margin: 0 0 6px;
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
 
 .stage-page-title {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     font-size: 32px;
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .stage-page-subtitle {
     margin: 0;
     font-size: 15px;
     color: #dbeafe;
+    font-weight: 700;
 }
 
-.stage-card-title {
-    margin-bottom: 16px;
-    font-size: 22px;
-    font-weight: 800;
-    color: #111827;
+/* DASHBOARD BUTTON */
+.stage-dashboard-white-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 14px;
+    color: #070b3f;
+    background: #ffffff;
+    font-size: 17px;
+    font-weight: 900;
+    text-decoration: none;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
 }
 
-/* ===============================
-   FORM
-================================= */
+    .stage-dashboard-white-btn:hover {
+        background: #f8fafc;
+        transform: translateY(-2px);
+    }
 
+/* CARDS */
+.stage-filter-card,
+.stage-table-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+/* FORM */
 .race-select-form {
     display: flex;
-    align-items: end;
-    gap: 12px;
-    flex-wrap: wrap;
 }
 
 .race-select-group {
-    flex: 1;
-    min-width: 260px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    width: 100%;
 }
-
-    .race-select-group label {
-        font-weight: 700;
-        color: #374151;
-    }
-
-/* ===============================
-   INPUTS
-================================= */
 
 .app-select {
     width: 100%;
@@ -91,195 +89,33 @@
     border-radius: 12px;
     border: 1px solid #d1d5db;
     padding: 0 12px;
-    background: #f9fafb;
-    color: #111827;
-    font-weight: 600;
 }
 
-    .app-select:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-/* ===============================
-   BUTTONS
-================================= */
-
-.app-btn {
-    min-height: 44px;
-    padding: 0 18px;
-    border-radius: 12px;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.2s ease;
-}
-
-.app-btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
-}
-
-    .app-btn-primary:hover {
-        background: #1d4ed8;
-        transform: translateY(-1px);
-    }
-
-/* ===============================
-   TABLE
-================================= */
-
+/* TABLE */
 .stage-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .stage-table thead {
-        background: #f1f5f9;
-    }
-
     .stage-table th {
         text-align: left;
         padding: 12px;
-        font-size: 13px;
-        text-transform: uppercase;
-        color: #64748b;
-        font-weight: 800;
+        background: #f1f5f9;
     }
 
     .stage-table td {
         padding: 14px 12px;
         border-top: 1px solid #e5e7eb;
-        font-weight: 600;
-        color: #111827;
     }
 
-    .stage-table tr:hover {
-        background: #f8fafc;
-    }
-
-/* ===============================
-   EMPTY STATE
-================================= */
-
-.stage-empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #6b7280;
-    font-weight: 600;
-}
-
-/* ===============================
-   DETAILS PAGE
-================================= */
-
-.stage-details-header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-    .stage-details-header h1 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 800;
-        color: #ffffff;
-    }
-
-    .stage-details-header p {
-        margin: 0;
-        font-size: 14px;
-        color: #dbeafe;
-    }
-
-.stage-details-section {
-    margin-top: 10px;
-}
-
-    .stage-details-section h2 {
-        margin-bottom: 14px;
-        font-size: 18px;
-        font-weight: 800;
-        color: #111827;
-    }
-
-/* Top 3 highlight */
-
-.stage-table tr.top-1 {
-    background: #fef3c7;
-    font-weight: 800;
-}
-
-.stage-table tr.top-2 {
-    background: #e5e7eb;
-}
-
-.stage-table tr.top-3 {
-    background: #fde68a;
-}
-
-/* Jerseys */
-
-.stage-jersey-table td {
-    font-weight: 700;
-}
-
-.jersey-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 800;
-    background: #eef2ff;
-    color: #1d4ed8;
-}
-
-/* Details empty */
-
-.stage-details-empty {
-    padding: 20px;
-    border-radius: 12px;
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    color: #64748b;
-    font-weight: 600;
-}
-
-/* ===============================
-   RESPONSIVE
-================================= */
-
+/* RESPONSIVE */
 @media (max-width: 768px) {
-    .stage-page {
-        padding: 14px;
-    }
-
-    .stage-header-card,
-    .stage-filter-card,
-    .stage-table-card {
-        padding: 20px;
-    }
-
-    .stage-page-title {
-        font-size: 26px;
-    }
-
-    .race-select-form {
+    .stage-header-card {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .app-btn {
+    .stage-dashboard-white-btn {
         width: 100%;
-    }
-
-    .stage-table th,
-    .stage-table td {
-        font-size: 13px;
-        padding: 10px;
     }
 }

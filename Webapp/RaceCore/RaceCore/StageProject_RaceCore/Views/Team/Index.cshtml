@@ -333,22 +333,32 @@
             });
         }
 
-        function updateRowState(row) {
-            var hasCyclist = !!row.dataset.cyclistId;
-            row.classList.toggle('empty-slot', !hasCyclist);
+        function toggleEmptyState(targetRow, sourceRow) {
+            // If the source had no cyclist id, the target is now an empty slot
+            var isEmpty = !sourceRow.dataset.cyclistId || sourceRow.classList.contains('empty-slot');
+            targetRow.classList.toggle('empty-slot', isEmpty);
 
-            if (!hasCyclist) {
-                delete row.dataset.cyclistId;
-                row.querySelectorAll('td')[3].innerHTML = '';
-                return;
+            if (isEmpty) {
+                delete targetRow.dataset.cyclistId;
+                targetRow.removeAttribute('onclick');
+                targetRow.removeAttribute('role');
+                targetRow.removeAttribute('tabindex');
+                targetRow.removeAttribute('title');
+                // Clear the status pill cell
+                targetRow.querySelectorAll('td')[3].innerHTML = '';
+            } else {
+                // Restore interactivity if it was previously empty
+                targetRow.setAttribute('onclick', 'selectRider(this)');
+                targetRow.setAttribute('role', 'button');
+                targetRow.setAttribute('tabindex', '0');
+                targetRow.setAttribute('title', 'Selecteer om te wisselen');
+                // Restore correct pill
+                var isActive = targetRow.classList.contains('active-rider');
+                var pillClass = isActive ? 'active' : 'bench';
+                var pillLabel = isActive ? 'Renner' : 'Bank';
+                targetRow.querySelectorAll('td')[3].innerHTML =
+                    '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
             }
-
-            var isActive = row.classList.contains('active-rider');
-            var pillClass = isActive ? 'active' : 'bench';
-            var pillLabel = isActive ? 'Renner' : 'Bank';
-
-            row.querySelectorAll('td')[3].innerHTML =
-                '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
         }
 
         function clearSelection() {
