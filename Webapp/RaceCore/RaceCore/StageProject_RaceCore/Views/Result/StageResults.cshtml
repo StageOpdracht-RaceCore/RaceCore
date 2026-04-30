@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Stage Results";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
@@ -13,11 +13,17 @@
 
 <div class="result-page">
     <section class="result-header-card">
-        <p class="result-page-kicker">RaceCore</p>
-        <h1 class="result-page-title">Rituitslagen</h1>
-        <p class="result-page-subtitle">
-            Bekijk per wedstrijd alle ritten met punten, truipunten en truidragers buiten de top 25.
-        </p>
+        <div class="result-header-copy">
+            <p class="result-page-kicker">RaceCore</p>
+            <h1 class="result-page-title">Stage Result</h1>
+            <p class="result-page-subtitle">
+                Bekijk per wedstrijd alle ritten met punten, truipunten en de truidragers buiten de top 25.
+            </p>
+        </div>
+
+        <a asp-controller="Dashboard" asp-action="Index" class="result-dashboard-white-btn">
+            Dashboard
+        </a>
     </section>
 
     <section class="result-race-card">
