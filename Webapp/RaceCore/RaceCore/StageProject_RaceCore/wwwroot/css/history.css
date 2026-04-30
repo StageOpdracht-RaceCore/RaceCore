@@ -1,155 +1,233 @@
-﻿/* Container & Layout */
-.history-page-container {
-    padding: 1.5rem;
+﻿.player-page {
+    padding: 24px;
 }
 
-.history-header {
+.player-page-kicker {
+    margin: 0 0 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+}
+
+.player-page-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.player-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+}
+
+.player-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* --- BASIS TYPOGRAFIE & LAY-OUT --- */
+.scoring-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- BLAUWE HEADER & ACTIONS --- */
+.player-header-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-}
-
-.history-title {
-    font-weight: 800;
-    color: #1e293b;
-    margin-bottom: 0.25rem;
-}
-
-.history-subtitle {
-    color: #64748b;
-    margin: 0;
-}
-
-.race-id-badge {
-    background-color: #3b82f6;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 32px;
+    border-radius: 20px;
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.85rem;
+    margin-bottom: 24px;
 }
 
-/* De Kaart */
+.player-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Witte knop (Dashboard) */
+.player-btn-white {
+    background-color: white;
+    color: #2563eb;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-decoration: none;
+}
+
+    .player-btn-white:hover {
+        background-color: #f8fafc;
+        transform: translateY(-1px);
+        color: #1d4ed8;
+    }
+
+/* Blauwe knop (Ranking) */
+.player-btn-primary {
+    background-color: #2563eb;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+    .player-btn-primary:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+    }
+
+/* --- SELECTOR KAART (Dropdown) --- */
+.scoring-selector-card {
+    padding: 24px;
+    margin-bottom: 24px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.scoring-stage-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scoring-label {
+    font-weight: 800;
+    color: #374151;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+}
+
+.scoring-stage-select {
+    width: 100%;
+    max-width: 400px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 0 16px;
+    background: #f9fafb;
+    font-weight: 700;
+    font-size: 15px;
+    color: #111827;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 18px;
+    transition: all 0.2s ease;
+}
+
+    .scoring-stage-select:focus {
+        outline: none;
+        border-color: #2563eb;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+/* --- HISTORIEK TABEL --- */
 .history-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
     overflow: hidden;
-    border: none;
 }
 
-/* Tabel Styling */
 .history-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .history-table thead {
-        background-color: #f8fafc;
-    }
-
     .history-table th {
-        padding: 1rem;
+        padding: 16px;
         text-align: left;
-        font-size: 0.75rem;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        font-weight: 700;
+        font-weight: 800;
         color: #475569;
+        background-color: #f8fafc;
         border-bottom: 1px solid #e2e8f0;
     }
 
     .history-table td {
-        padding: 1rem;
+        padding: 16px;
         vertical-align: middle;
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .history-table tbody tr:hover {
-        background-color: #f8fafc;
-        transition: background-color 0.2s;
-    }
-
-/* Specifieke Kolommen */
-.stage-number-circle {
-    width: 36px;
-    height: 36px;
-    background-color: #64748b;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
 .stage-name {
-    font-weight: 700;
+    font-weight: 800;
     color: #1e293b;
+    font-size: 15px;
+    letter-spacing: -0.01em;
 }
 
 .stage-id-label {
-    color: #94a3b8;
-    font-size: 0.75rem;
-}
-
-.stage-date {
-    color: #334155;
+    color: #64748b;
+    font-size: 13px;
     font-weight: 500;
 }
 
-/* Winnaar & Speler Badges */
-.winner-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.trophy-icon {
-    color: #f59e0b;
-    font-size: 1.2rem;
-}
-
 .winner-name {
-    font-weight: 600;
+    font-weight: 700;
     color: #1e293b;
-}
-
-.winner-team {
-    color: #64748b;
-    display: block;
+    font-size: 14px;
 }
 
 .top-player-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background-color: rgba(6, 182, 212, 0.1);
+    gap: 8px;
+    background-color: #ecfeff;
     color: #0891b2;
-    padding: 0.4rem 0.8rem;
+    padding: 6px 14px;
     border-radius: 20px;
-    border: 1px solid rgba(6, 182, 212, 0.2);
-    font-size: 0.85rem;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid rgba(8, 145, 178, 0.1);
 }
 
 .player-points {
-    font-weight: 800;
+    font-weight: 900;
 }
 
-/* Knoppen */
 .btn-details {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 1.5px solid #3b82f6;
+    padding: 8px 18px;
+    border: 2px solid #3b82f6;
     color: #3b82f6;
     text-decoration: none;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    transition: all 0.2s;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 13px;
+    transition: all 0.2s ease;
 }
 
     .btn-details:hover {
@@ -157,15 +235,15 @@
         color: white;
     }
 
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 4rem !important;
-    color: #94a3b8;
+.stage-number-circle {
+    width: 38px;
+    height: 38px;
+    background-color: #1e293b;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
 }
-
-    .empty-state i {
-        font-size: 3rem;
-        display: block;
-        margin-bottom: 1rem;
-    }

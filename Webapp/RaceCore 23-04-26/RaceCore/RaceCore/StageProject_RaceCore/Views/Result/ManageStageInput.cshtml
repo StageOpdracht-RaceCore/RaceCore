@@ -1,0 +1,338 @@
+﻿@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Ritresultaten invoer";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+    var stages = ViewBag.Stages as List<Stage> ?? new List<Stage>();
+    var cyclists = ViewBag.Cyclists as List<Cyclist> ?? new List<Cyclist>();
+    var stageResults = ViewBag.StageResults as List<StageResult> ?? new List<StageResult>();
+    var jerseys = ViewBag.Jerseys as List<Jersey> ?? new List<Jersey>();
+
+    int? selectedRaceId = ViewBag.SelectedRaceId as int?;
+    int? selectedStageId = ViewBag.SelectedStageId as int?;
+
+    int? rodeTruiCyclistId = ViewBag.RodeTruiCyclistId as int?;
+    int? groeneTruiCyclistId = ViewBag.GroeneTruiCyclistId as int?;
+    int? blauweTruiCyclistId = ViewBag.BlauweTruiCyclistId as int?;
+    int? witteTruiCyclistId = ViewBag.WitteTruiCyclistId as int?;
+}
+
+<link rel="stylesheet" href="~/css/StageResult.css" />
+
+<div class="results-page">
+
+    <div class="results-filter-card">
+        <span class="results-section-kicker">Resultaten</span>
+        <h2 class="results-filter-title">Ritresultaten invoer</h2>
+
+        <form method="get" asp-action="ManageStageInput">
+            <div class="results-filter-row">
+                <div class="form-group">
+                    <label>Race</label>
+                    <select name="raceId" class="results-select" onchange="this.form.submit()">
+                        @foreach (var race in races)
+                        {
+                            <option value="@race.Id" selected="@(selectedRaceId == race.Id)">@race.Name @race.Year</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Stage</label>
+                    <select name="stageId" class="results-select" onchange="this.form.submit()">
+                        @foreach (var stage in stages)
+                        {
+                            <option value="@stage.Id" selected="@(selectedStageId == stage.Id)">Stage @stage.StageNumber - @stage.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="results-table-card">
+        <div class="results-table-header">
+            <span class="results-section-kicker">Top 25</span>
+            <h3 class="results-card-title">Rituitslag en truien</h3>
+        </div>
+
+        <form asp-action="SaveTop25" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="selectedRaceId" value="@selectedRaceId" />
+            <input type="hidden" name="selectedStageId" value="@selectedStageId" />
+
+            <div class="results-table-wrapper">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Positie</th>
+                            <th>Zoek renner</th>
+                            <th>Renner</th>
+                            <th>Jersey</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 1; i <= 25; i++)
+                        {
+                            var existing = stageResults.FirstOrDefault(sr => sr.Position == i);
+                            var existingJersey = existing == null
+                                ? null
+                                : jerseys.FirstOrDefault(j => j.CyclistId == existing.CyclistId);
+
+                            <tr>
+                                <td class="result-points">@i</td>
+                                <td colspan="2">
+                                    @{
+                                        var existingCyclist = existing == null
+                                            ? null
+                                            : cyclists.FirstOrDefault(c => c.Id == existing.CyclistId);
+                                    }
+                                    <div class="cyclist-autocomplete"
+                                         data-cyclists='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(cyclists.Select(c => new { id = c.Id, name = c.FullName })))'>
+                                        <input type="hidden" name="cyclistIds" class="cyclist-id" value="@existingCyclist?.Id" />
+                                        <input type="text"
+                                               class="results-input cyclist-search"
+                                               placeholder="Zoek renner..."
+                                               autocomplete="off"
+                                               value="@existingCyclist?.FullName" />
+                                        <div class="cyclist-dropdown"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select name="jerseys" class="form-control">
+                                        <option value="">-- geen trui --</option>
+                                        <option value="RodeTrui" selected="@(existingJersey?.Type == "RodeTrui")">Rode trui</option>
+                                        <option value="GroeneTrui" selected="@(existingJersey?.Type == "GroeneTrui")">Groene trui</option>
+                                        <option value="BlauweTrui" selected="@(existingJersey?.Type == "BlauweTrui")">Blauwe trui</option>
+                                        <option value="WitteTrui" selected="@(existingJersey?.Type == "WitteTrui")">Witte trui</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="results-divider"></div>
+
+            <div class="results-form-card extra-jersey-card">
+                <span class="results-section-kicker">Extra</span>
+                <h3 class="results-card-title">Truihouder buiten top 25</h3>
+
+                <div class="jersey-grid">
+                    <div class="jersey-item">
+                        <label>Rode trui</label>
+                        @{
+                            var selectedRodeCyclist = cyclists.FirstOrDefault(c => c.Id == rodeTruiCyclistId);
+                        }
+                        <div class="cyclist-autocomplete"
+                             data-cyclists='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(cyclists.Select(c => new { id = c.Id, name = c.FullName })))'>
+                            <input type="hidden" name="extraRodeTruiCyclistId" class="cyclist-id" value="@selectedRodeCyclist?.Id" />
+                            <input type="text"
+                                   class="results-input cyclist-search"
+                                   placeholder="Zoek renner..."
+                                   autocomplete="off"
+                                   value="@selectedRodeCyclist?.FullName" />
+                            <div class="cyclist-dropdown"></div>
+                        </div>
+                    </div>
+
+                    <div class="jersey-item">
+                        <label>Groene trui</label>
+                        @{
+                            var selectedGroeneCyclist = cyclists.FirstOrDefault(c => c.Id == groeneTruiCyclistId);
+                        }
+                        <div class="cyclist-autocomplete"
+                             data-cyclists='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(cyclists.Select(c => new { id = c.Id, name = c.FullName })))'>
+                            <input type="hidden" name="extraGroeneTruiCyclistId" class="cyclist-id" value="@selectedGroeneCyclist?.Id" />
+                            <input type="text"
+                                   class="results-input cyclist-search"
+                                   placeholder="Zoek renner..."
+                                   autocomplete="off"
+                                   value="@selectedGroeneCyclist?.FullName" />
+                            <div class="cyclist-dropdown"></div>
+                        </div>
+                    </div>
+
+                    <div class="jersey-item">
+                        <label>Blauwe trui</label>
+                        @{
+                            var selectedBlauweCyclist = cyclists.FirstOrDefault(c => c.Id == blauweTruiCyclistId);
+                        }
+                        <div class="cyclist-autocomplete"
+                             data-cyclists='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(cyclists.Select(c => new { id = c.Id, name = c.FullName })))'>
+                            <input type="hidden" name="extraBlauweTruiCyclistId" class="cyclist-id" value="@selectedBlauweCyclist?.Id" />
+                            <input type="text"
+                                   class="results-input cyclist-search"
+                                   placeholder="Zoek renner..."
+                                   autocomplete="off"
+                                   value="@selectedBlauweCyclist?.FullName" />
+                            <div class="cyclist-dropdown"></div>
+                        </div>
+                    </div>
+
+                    <div class="jersey-item">
+                        <label>Witte trui</label>
+                        @{
+                            var selectedWitteCyclist = cyclists.FirstOrDefault(c => c.Id == witteTruiCyclistId);
+                        }
+                        <div class="cyclist-autocomplete"
+                             data-cyclists='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(cyclists.Select(c => new { id = c.Id, name = c.FullName })))'>
+                            <input type="hidden" name="extraWitteTruiCyclistId" class="cyclist-id" value="@selectedWitteCyclist?.Id" />
+                            <input type="text"
+                                   class="results-input cyclist-search"
+                                   placeholder="Zoek renner..."
+                                   autocomplete="off"
+                                   value="@selectedWitteCyclist?.FullName" />
+                            <div class="cyclist-dropdown"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-actions" style="padding: 24px;">
+                <button type="submit" class="results-btn primary">Uitslag en truien opslaan</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="results-action-card">
+        <span class="results-section-kicker">Bonus</span>
+        <h3 class="results-card-title">Bonuspunten berekenen</h3>
+
+        <form asp-action="CalculateBonusPoints" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="selectedRaceId" value="@selectedRaceId" />
+            <input type="hidden" name="selectedStageId" value="@selectedStageId" />
+
+            <div class="results-actions">
+                <button type="submit" class="results-btn success">Bonuspunten berekenen</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const autocompleteWrappers = document.querySelectorAll('.cyclist-autocomplete');
+
+            const normalize = value => (value || '').trim().toLocaleLowerCase();
+
+            const closeAllDropdowns = (exceptWrapper) => {
+                autocompleteWrappers.forEach(wrapper => {
+                    if (wrapper !== exceptWrapper) {
+                        wrapper.classList.remove('is-open');
+                    }
+                });
+            };
+
+            const createItem = (wrapper, rider) => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'cyclist-dropdown-item';
+                item.textContent = rider.name;
+                item.addEventListener('click', () => selectRider(wrapper, rider));
+                return item;
+            };
+
+            const selectRider = (wrapper, rider) => {
+                const input = wrapper.querySelector('.cyclist-search');
+                const hiddenInput = wrapper.querySelector('.cyclist-id');
+
+                input.value = rider.name;
+                hiddenInput.value = rider.id;
+                wrapper.classList.remove('is-open');
+            };
+
+            const renderDropdown = (wrapper, searchTerm) => {
+                const dropdown = wrapper.querySelector('.cyclist-dropdown');
+                const hiddenInput = wrapper.querySelector('.cyclist-id');
+                const riders = JSON.parse(wrapper.dataset.cyclists || '[]');
+                const normalizedTerm = normalize(searchTerm);
+
+                dropdown.innerHTML = '';
+
+                if (!normalizedTerm) {
+                    wrapper.classList.remove('is-open');
+                    return;
+                }
+
+                const matches = riders
+                    .filter(rider => normalize(rider.name).includes(normalizedTerm))
+                    .slice(0, 8);
+
+                if (!matches.length) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'cyclist-dropdown-empty';
+                    emptyState.textContent = 'Geen renners gevonden';
+                    dropdown.appendChild(emptyState);
+                    wrapper.classList.add('is-open');
+                    return;
+                }
+
+                matches.forEach(rider => dropdown.appendChild(createItem(wrapper, rider)));
+                wrapper.classList.add('is-open');
+
+                const exactMatch = matches.find(rider => normalize(rider.name) === normalizedTerm);
+                if (exactMatch) {
+                    hiddenInput.value = exactMatch.id;
+                } else if (!matches.some(rider => String(rider.id) === hiddenInput.value)) {
+                    hiddenInput.value = '';
+                }
+            };
+
+            autocompleteWrappers.forEach(wrapper => {
+                const input = wrapper.querySelector('.cyclist-search');
+                const hiddenInput = wrapper.querySelector('.cyclist-id');
+                const riders = JSON.parse(wrapper.dataset.cyclists || '[]');
+
+                input.addEventListener('focus', () => {
+                    closeAllDropdowns(wrapper);
+                    renderDropdown(wrapper, input.value);
+                });
+
+                input.addEventListener('input', () => {
+                    closeAllDropdowns(wrapper);
+                    renderDropdown(wrapper, input.value);
+                });
+
+                input.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        wrapper.classList.remove('is-open');
+                        return;
+                    }
+
+                    if (event.key === 'Enter') {
+                        const firstMatch = riders.find(rider => normalize(rider.name).includes(normalize(input.value)));
+                        if (firstMatch) {
+                            event.preventDefault();
+                            selectRider(wrapper, firstMatch);
+                        }
+                    }
+                });
+
+                input.addEventListener('blur', () => {
+                    window.setTimeout(() => {
+                        const selectedRider = riders.find(rider => String(rider.id) === hiddenInput.value);
+                        if (selectedRider) {
+                            input.value = selectedRider.name;
+                        } else if (!normalize(input.value)) {
+                            hiddenInput.value = '';
+                        }
+
+                        wrapper.classList.remove('is-open');
+                    }, 150);
+                });
+            });
+
+            document.addEventListener('click', event => {
+                const wrapper = event.target.closest('.cyclist-autocomplete');
+                closeAllDropdowns(wrapper);
+            });
+        })();
+    </script>
+}

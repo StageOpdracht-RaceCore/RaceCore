@@ -2,14 +2,17 @@
 
 @{
     ViewData["Title"] = "New Game";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
+    // aantal geselecteerde spelers berekenen
     int selectedPlayersCount = Model.AvailablePlayers.Count(p => p.IsSelected);
 }
 
 <link rel="stylesheet" href="~/css/NewGame.css" asp-append-version="true" />
 
 <div class="new-game-page">
+
+    <!-- Meldingen error / success -->
     @if (TempData["Error"] != null)
     {
         <div class="game-alert game-alert-danger">@TempData["Error"]</div>
@@ -20,9 +23,11 @@
         <div class="game-alert game-alert-success">@TempData["Success"]</div>
     }
 
-    <form asp-action="New" method="post">
+    <!-- FORM = volledige game setup -->
+    <form asp-action="New" method="post" id="newGameForm">
         @Html.AntiForgeryToken()
 
+        <!-- HERO / HEADER -->
         <div class="game-hero">
             <div class="game-hero-left">
                 <div class="game-flag">🏁</div>
@@ -30,24 +35,22 @@
                 <div>
                     <p class="game-kicker">RaceCore Lobby</p>
                     <h1 class="game-title">New Game</h1>
+
                     <p class="game-subtitle">
-                        Stel je race klaar, kies de spelers en start direct een nieuwe snake draft.
-                        Alles wordt automatisch opgebouwd op basis van de gekozen spelers.
+                        Stel je race klaar, kies een rit, kies de spelers en start direct een nieuwe snake draft.
                     </p>
                 </div>
             </div>
 
+            <!-- Start knop opent eerst popup -->
             <div class="game-start-box">
-                <button type="submit"
-                        class="game-btn game-btn-start"
-                        onclick="return confirm('Nieuwe game starten voor deze race? Oude draft en scores van deze race worden verwijderd.');">
+                <button type="button" class="game-btn game-btn-start" id="openStartGameModal">
                     ▶ Start Game
                 </button>
-
-                
             </div>
         </div>
 
+        <!-- Statistieken bovenaan -->
         <div class="game-stats-grid">
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-blue">⚑</div>
@@ -69,7 +72,7 @@
                 <div class="game-stat-icon game-icon-green">✓</div>
                 <div>
                     <span class="game-stat-label">Geselecteerd</span>
-                    <strong class="game-stat-value">@selectedPlayersCount</strong>
+                    <strong id="selectedPlayersCount" class="game-stat-value">@selectedPlayersCount</strong>
                 </div>
             </div>
 
@@ -90,7 +93,10 @@
             </div>
         </div>
 
+        <!-- Hoofd layout -->
         <div class="game-layout">
+
+            <!-- Linker paneel: game instellingen -->
             <div class="game-panel">
                 <div class="game-panel-header">
                     <div class="game-panel-icon">⚙</div>
@@ -98,36 +104,39 @@
                 </div>
 
                 <p class="game-panel-text">
-                    Kies eerst de race. Daarna selecteer je de players die mogen meedoen.
+                    Kies eerst de race. Daarna kies je de rit waarmee je de game wilt starten.
                 </p>
 
+                <!-- Race dropdown -->
                 <div class="game-form-group">
                     <label asp-for="RaceId">Race</label>
-                    <select asp-for="RaceId" asp-items="Model.AvailableRaces" class="game-input">
+                    <select asp-for="RaceId" asp-items="Model.AvailableRaces" class="game-input" id="raceSelect">
                         <option value="">-- Kies een race --</option>
                     </select>
                     <span asp-validation-for="RaceId" class="text-danger"></span>
                 </div>
 
-                <div class="game-info-list">
-                    <div class="game-info-item">
-                        <div class="game-info-icon">🔄</div>
-                        <div>
-                            <strong>Snake Draft</strong>
-                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
-                        </div>
-                    </div>
+                <!-- Rit dropdown wordt automatisch gevuld op basis van gekozen race -->
+                <div class="game-form-group">
+                    <label asp-for="StageId">Rit</label>
+                    <select asp-for="StageId" asp-items="Model.AvailableStages" class="game-input" id="stageSelect">
+                        <option value="">-- Kies een rit --</option>
+                    </select>
+                    <span asp-validation-for="StageId" class="text-danger"></span>
                 </div>
 
-                <div class="game-warning-box">
-                    ℹ Let op<br />
-                    Bij Start Game worden oude draft picks, scores en resultaten van deze race verwijderd.
-                </div>
-
+                <!-- Controle meldingen als er data ontbreekt -->
                 @if (!Model.AvailableRaces.Any())
                 {
                     <div class="game-alert game-alert-danger">
                         Er zijn nog geen races. Maak eerst een race aan.
+                    </div>
+                }
+
+                @if (!Model.AvailableStages.Any() && Model.AvailableRaces.Any())
+                {
+                    <div class="game-alert game-alert-danger">
+                        Deze race heeft nog geen ritten. Maak eerst ritten aan voor deze race.
                     </div>
                 }
 
@@ -138,6 +147,7 @@
                     </div>
                 }
 
+                <!-- Beheer knoppen -->
                 <div class="game-manage-actions">
                     <a asp-controller="Race" asp-action="Index" class="game-btn game-btn-light">
                         ⚑ Races beheren
@@ -147,8 +157,26 @@
                         👥 Players beheren
                     </a>
                 </div>
+
+                <!-- Info blok -->
+                <div class="game-info-list">
+                    <div class="game-info-item">
+                        <div class="game-info-icon">🔄</div>
+                        <div>
+                            <strong>Snake Draft</strong>
+                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waarschuwing -->
+                <div class="game-warning-box">
+                    ℹ Let op<br />
+                    Elke Start Game maakt een nieuwe aparte game aan.
+                </div>
             </div>
 
+            <!-- Rechter paneel: spelers kiezen -->
             <div class="game-panel">
                 <div class="game-panel-header">
                     <div class="game-panel-icon">👥</div>
@@ -156,18 +184,21 @@
                 </div>
 
                 <p class="game-panel-text">
-                    Kies minstens 2 spelers. De draftpositie bepaalt de eerste volgorde.
+                    Kies minstens 2 spelers.
                 </p>
 
+                <!-- Players lijst -->
                 <div class="players-grid">
                     @if (Model.AvailablePlayers.Any())
                     {
                         foreach (var player in Model.AvailablePlayers)
                         {
+                            <!-- Player kaart -->
                             <label class="player-pick-card">
                                 <input type="checkbox"
                                        name="SelectedPlayerIds"
                                        value="@player.Id"
+                                       class="player-checkbox"
                                 @(player.IsSelected ? "checked" : "") />
 
                                 <div class="player-pick-avatar">
@@ -187,9 +218,9 @@
                     }
                     else
                     {
+                        <!-- Geen spelers gevonden -->
                         <div class="game-empty-state">
                             <h3>Geen spelers gevonden</h3>
-                            <p>Voeg eerst spelers toe voordat je een game start.</p>
 
                             <a asp-controller="Player" asp-action="Create" class="game-btn game-btn-start">
                                 Nieuwe speler
@@ -200,12 +231,38 @@
 
                 <span asp-validation-for="SelectedPlayerIds" class="text-danger"></span>
 
+                <!-- Draft samenvatting -->
                 <div class="game-draft-summary">
                     <div class="game-draft-summary-icon">🏆</div>
                     <div>
                         <strong>Fair Snake Draft</strong>
-                        <span>15 rondes • De draft roteert afwisselend voor een eerlijke verdeling.</span>
+                        <span>10 rondes</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popup voor Start Game -->
+        <div class="game-modal-overlay" id="startGameModal">
+            <div class="game-modal">
+                <div class="game-modal-icon">🏁</div>
+
+                <h2>Nieuwe game starten?</h2>
+
+                <p>
+                    Game <strong id="modalRaceName">de gekozen race</strong> wordt gestart.
+                    <br />
+                    Rit: <strong id="modalStageName">de gekozen rit</strong>
+                </p>
+
+                <div class="game-modal-actions">
+                    <button type="button" class="game-btn game-btn-light" id="cancelStartGame">
+                        Annuleren
+                    </button>
+
+                    <button type="submit" class="game-btn game-btn-start">
+                        Ja, start game
+                    </button>
                 </div>
             </div>
         </div>
@@ -213,5 +270,135 @@
 </div>
 
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Elementen ophalen
+            const selectedCount = document.getElementById("selectedPlayersCount");
+            const checkboxes = document.querySelectorAll(".player-checkbox");
+
+            const modal = document.getElementById("startGameModal");
+            const openModalBtn = document.getElementById("openStartGameModal");
+            const cancelModalBtn = document.getElementById("cancelStartGame");
+
+            const raceSelect = document.getElementById("raceSelect");
+            const stageSelect = document.getElementById("stageSelect");
+
+            const modalRaceName = document.getElementById("modalRaceName");
+            const modalStageName = document.getElementById("modalStageName");
+
+            // Aantal geselecteerde spelers live aanpassen
+            function updateSelectedPlayersCount() {
+                const count = document.querySelectorAll(".player-checkbox:checked").length;
+
+                if (selectedCount) {
+                    selectedCount.textContent = count;
+                }
+            }
+
+            // Race naam in popup aanpassen
+            function updateModalRaceName() {
+                if (!raceSelect || !modalRaceName) {
+                    return;
+                }
+
+                const selectedOption = raceSelect.options[raceSelect.selectedIndex];
+
+                if (selectedOption && selectedOption.value !== "") {
+                    modalRaceName.textContent = selectedOption.text;
+                } else {
+                    modalRaceName.textContent = "de gekozen race";
+                }
+            }
+
+            // Rit naam in popup aanpassen
+            function updateModalStageName() {
+                if (!stageSelect || !modalStageName) {
+                    return;
+                }
+
+                const selectedOption = stageSelect.options[stageSelect.selectedIndex];
+
+                if (selectedOption && selectedOption.value !== "") {
+                    modalStageName.textContent = selectedOption.text;
+                } else {
+                    modalStageName.textContent = "de gekozen rit";
+                }
+            }
+
+            // Ritten laden wanneer race verandert
+            async function loadStagesForRace() {
+                if (!raceSelect || !stageSelect) {
+                    return;
+                }
+
+                const raceId = raceSelect.value;
+
+                stageSelect.innerHTML = '<option value="">-- Kies een rit --</option>';
+
+                if (!raceId) {
+                    updateModalStageName();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/Game/GetStagesByRace?raceId=${raceId}`);
+                    const stages = await response.json();
+
+                    stages.forEach(stage => {
+                        const option = document.createElement("option");
+                        option.value = stage.id;
+                        option.textContent = stage.text;
+                        stageSelect.appendChild(option);
+                    });
+
+                    // automatisch eerste rit selecteren als er ritten zijn
+                    if (stages.length > 0) {
+                        stageSelect.value = stages[0].id;
+                    }
+
+                    updateModalStageName();
+                } catch {
+                    stageSelect.innerHTML = '<option value="">Ritten konden niet geladen worden</option>';
+                    updateModalStageName();
+                }
+            }
+
+            // Checkbox teller updaten
+            checkboxes.forEach(cb => cb.addEventListener("change", updateSelectedPlayersCount));
+
+            // Race veranderen = ritten opnieuw laden
+            if (raceSelect) {
+                raceSelect.addEventListener("change", function () {
+                    updateModalRaceName();
+                    loadStagesForRace();
+                });
+            }
+
+            // Rit veranderen = popup tekst aanpassen
+            if (stageSelect) {
+                stageSelect.addEventListener("change", updateModalStageName);
+            }
+
+            // Popup openen
+            openModalBtn.addEventListener("click", function () {
+                updateModalRaceName();
+                updateModalStageName();
+                modal.classList.add("show");
+            });
+
+            // Popup sluiten
+            cancelModalBtn.addEventListener("click", function () {
+                modal.classList.remove("show");
+            });
+
+            // Eerste keer alles juist zetten
+            updateSelectedPlayersCount();
+            updateModalRaceName();
+            updateModalStageName();
+        });
+    </script>
 }

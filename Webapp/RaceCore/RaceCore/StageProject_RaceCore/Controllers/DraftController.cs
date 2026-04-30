@@ -9,75 +9,91 @@ namespace StageProject_RaceCore.Controllers
     {
         private readonly AppDbContext _context;
 
+        private const int ActiveRidersPerPlayer = 10;
+        private const int BenchRidersPerPlayer = 5;
+
         public DraftController(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int raceId)
+        public async Task<IActionResult> Index(int gameId)
         {
-            ViewBag.Cyclists = new List<Cyclist>();
-            ViewBag.RaceId = raceId;
-            ViewBag.DatabaseOnline = false;
-            ViewBag.NoDraft = false;
-            ViewBag.PlayerCount = 0;
-
             try
             {
-                if (raceId <= 0)
+                if (gameId <= 0)
                 {
-                    var firstRace = await _context.Races
-                        .OrderByDescending(r => r.Year)
-                        .ThenBy(r => r.Name)
+                    var lastGame = await _context.GameSessions
+                        .OrderByDescending(g => g.CreatedAt)
                         .FirstOrDefaultAsync();
 
-                    if (firstRace == null)
+                    if (lastGame == null)
                     {
-                        TempData["Error"] = "Er is nog geen race aangemaakt. Maak eerst een race aan.";
-                        return View(new List<DraftTurnViewModel>());
+                        TempData["Error"] = "Start eerst een nieuwe game.";
+                        return RedirectToAction("New", "Game");
                     }
 
-                    raceId = firstRace.Id;
+                    gameId = lastGame.Id;
                 }
 
-                var draftTurnsDb = await _context.DraftTurns
-                    .Where(d => d.RaceId == raceId)
+                var game = await _context.GameSessions
+                    .Include(g => g.Race)
+                    .FirstOrDefaultAsync(g => g.Id == gameId);
+
+                if (game == null)
+                {
+                    TempData["Error"] = "Game niet gevonden.";
+                    return RedirectToAction("New", "Game");
+                }
+
+                await FixDraftSettingsAndTurns(game);
+
+                var draftTurns = await _context.DraftTurns
                     .Include(d => d.Player)
                     .Include(d => d.Cyclist)
+                    .Where(d => d.GameSessionId == gameId)
                     .OrderBy(d => d.TurnNumber)
                     .ToListAsync();
 
-                var playerIdsInDraft = draftTurnsDb
-                    .Select(d => d.PlayerId)
-                    .Distinct()
+                await FixPlayerSelectionActiveStatus(game, draftTurns);
+
+                var pickedCyclistIds = draftTurns
+                    .Where(d => d.CyclistId != null)
+                    .Select(d => d.CyclistId.Value)
                     .ToList();
 
                 var cyclists = await _context.Cyclists
-                    .Where(c => c.IsActive)
+                    .Where(c => c.IsActive && !pickedCyclistIds.Contains(c.Id))
                     .OrderBy(c => c.FirstName)
                     .ThenBy(c => c.LastName)
                     .ToListAsync();
 
-                var viewModel = draftTurnsDb.Select(d => new DraftTurnViewModel
+                var model = draftTurns.Select(turn => new DraftTurnViewModel
                 {
-                    Id = d.Id,
-                    TurnNumber = d.TurnNumber,
-                    PlayerId = d.PlayerId,
-                    PlayerName = d.Player != null ? d.Player.Name : "Unknown",
-                    CyclistId = d.CyclistId,
-                    CyclistName = d.Cyclist != null ? d.Cyclist.FullName : null
+                    Id = turn.Id,
+                    TurnNumber = turn.TurnNumber,
+                    PlayerId = turn.PlayerId,
+                    PlayerName = turn.Player.Name,
+                    CyclistId = turn.CyclistId,
+                    CyclistName = turn.Cyclist != null ? turn.Cyclist.FullName : null
                 }).ToList();
 
+                ViewBag.GameId = game.Id;
+                ViewBag.RaceId = game.RaceId;
+                ViewBag.RaceName = game.Race.Name + " " + game.Race.Year;
+                ViewBag.GameStatus = game.Status;
                 ViewBag.Cyclists = cyclists;
-                ViewBag.RaceId = raceId;
                 ViewBag.DatabaseOnline = true;
-                ViewBag.NoDraft = !draftTurnsDb.Any();
-                ViewBag.PlayerCount = playerIdsInDraft.Count;
+                ViewBag.PlayerCount = draftTurns.Select(d => d.PlayerId).Distinct().Count();
+                ViewBag.NoDraft = !draftTurns.Any();
+                ViewBag.RidersPerPlayer = ActiveRidersPerPlayer;
+                ViewBag.BenchPerPlayer = BenchRidersPerPlayer;
 
-                return View(viewModel);
+                return View(model);
             }
             catch
             {
+                ViewBag.DatabaseOnline = false;
                 TempData["DatabaseError"] = "Database niet bereikbaar.";
                 return View(new List<DraftTurnViewModel>());
             }
@@ -85,105 +101,46 @@ namespace StageProject_RaceCore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateDraft(int raceId)
+        public async Task<IActionResult> PickCyclist(int draftTurnId, int cyclistId, int gameId)
         {
             try
             {
-                if (raceId <= 0)
+                var game = await _context.GameSessions
+                    .FirstOrDefaultAsync(g => g.Id == gameId);
+
+                if (game == null)
                 {
-                    TempData["Error"] = "Geen geldige race gevonden.";
-                    return RedirectToAction("Index");
+                    TempData["Error"] = "Game niet gevonden.";
+                    return RedirectToAction("New", "Game");
                 }
 
-                var raceExists = await _context.Races.AnyAsync(r => r.Id == raceId);
+                game.RidersPerPlayer = ActiveRidersPerPlayer;
+                game.BenchPerPlayer = BenchRidersPerPlayer;
 
-                if (!raceExists)
+                if (game.Status != "Draft")
                 {
-                    TempData["Error"] = "Race niet gevonden.";
-                    return RedirectToAction("Index");
-                }
-
-                var existingDraftPlayerIds = await _context.DraftTurns
-                    .Where(d => d.RaceId == raceId)
-                    .Select(d => d.PlayerId)
-                    .Distinct()
-                    .ToListAsync();
-
-                var playersQuery = _context.Players.AsQueryable();
-
-                if (existingDraftPlayerIds.Any())
-                {
-                    playersQuery = playersQuery.Where(p => existingDraftPlayerIds.Contains(p.Id));
-                }
-
-                var players = await playersQuery
-                    .OrderBy(p => p.PositionInDraft)
-                    .ThenBy(p => p.Id)
-                    .ToListAsync();
-
-                if (players.Count < 2)
-                {
-                    TempData["Error"] = "Er zijn minstens 2 spelers nodig om een draft te genereren.";
-                    return RedirectToAction("Index", new { raceId });
-                }
-
-                const int totalRounds = 15;
-                var draftTurns = GenerateFairSnakeDraft(raceId, players, totalRounds);
-
-                var existingSelections = await _context.PlayerSelections
-                    .Where(ps => ps.RaceId == raceId)
-                    .ToListAsync();
-
-                var existingTurns = await _context.DraftTurns
-                    .Where(dt => dt.RaceId == raceId)
-                    .ToListAsync();
-
-                _context.PlayerSelections.RemoveRange(existingSelections);
-                _context.DraftTurns.RemoveRange(existingTurns);
-
-                await _context.SaveChangesAsync();
-
-                _context.DraftTurns.AddRange(draftTurns);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Fair snake draft succesvol gegenereerd.";
-                return RedirectToDraftPlayersSection(raceId);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Draft genereren fout: " + ex.Message;
-                return RedirectToDraftPlayersSection(raceId);
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PickCyclist(int draftTurnId, int cyclistId, int raceId)
-        {
-            try
-            {
-                if (raceId <= 0)
-                {
-                    TempData["Error"] = "Geen geldige race gevonden.";
-                    return RedirectToAction("Index");
+                    TempData["Error"] = "Deze draft is al klaar.";
+                    return RedirectToDraft(gameId);
                 }
 
                 var currentTurn = await _context.DraftTurns
-                    .Include(t => t.Player)
-                    .Where(t => t.RaceId == raceId && t.CyclistId == null)
-                    .OrderBy(t => t.TurnNumber)
+                    .Include(d => d.Player)
+                    .Where(d => d.GameSessionId == gameId && d.CyclistId == null)
+                    .OrderBy(d => d.TurnNumber)
                     .FirstOrDefaultAsync();
 
                 if (currentTurn == null)
                 {
-                    TempData["Error"] = "De draft is al afgerond.";
-                    return RedirectToDraftPlayersSection(raceId);
+                    game.Status = "Active";
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index", "Dashboard", new { gameId });
                 }
 
                 if (currentTurn.Id != draftTurnId)
                 {
-                    TempData["Error"] = "Je kan alleen kiezen voor de huidige beurt.";
-                    return RedirectToDraftPlayersSection(raceId);
+                    TempData["Error"] = "Dit is niet de huidige beurt.";
+                    return RedirectToDraft(gameId);
                 }
 
                 var cyclist = await _context.Cyclists
@@ -191,83 +148,184 @@ namespace StageProject_RaceCore.Controllers
 
                 if (cyclist == null)
                 {
-                    TempData["Error"] = "Kies eerst een geldige actieve renner.";
-                    return RedirectToDraftPlayersSection(raceId);
+                    TempData["Error"] = "Renner niet gevonden.";
+                    return RedirectToDraft(gameId);
                 }
 
-                bool alreadyPicked = await _context.DraftTurns
-                    .AnyAsync(t => t.RaceId == raceId && t.CyclistId == cyclistId);
+                bool cyclistAlreadyPicked = await _context.DraftTurns
+                    .AnyAsync(d => d.GameSessionId == gameId && d.CyclistId == cyclistId);
 
-                if (alreadyPicked)
+                if (cyclistAlreadyPicked)
                 {
                     TempData["Error"] = "Deze renner is al gekozen.";
-                    return RedirectToDraftPlayersSection(raceId);
+                    return RedirectToDraft(gameId);
                 }
 
                 currentTurn.CyclistId = cyclistId;
 
-                int currentPlayerPickCount = await _context.PlayerSelections
-                    .CountAsync(ps => ps.RaceId == raceId && ps.PlayerId == currentTurn.PlayerId);
+                int playerPickCount = await _context.PlayerSelections
+                    .CountAsync(s => s.GameSessionId == gameId && s.PlayerId == currentTurn.PlayerId);
 
-                _context.PlayerSelections.Add(new PlayerSelection
+                bool isActiveCyclist = playerPickCount < ActiveRidersPerPlayer;
+
+                var selection = new PlayerSelection
                 {
-                    RaceId = raceId,
+                    GameSessionId = gameId,
+                    RaceId = game.RaceId,
                     PlayerId = currentTurn.PlayerId,
                     CyclistId = cyclistId,
-                    IsActive = currentPlayerPickCount < 10
-                });
+                    IsActive = isActiveCyclist
+                };
+
+                _context.PlayerSelections.Add(selection);
+
+                bool draftIsFinished = !await _context.DraftTurns
+                    .AnyAsync(d =>
+                        d.GameSessionId == gameId &&
+                        d.CyclistId == null &&
+                        d.Id != currentTurn.Id);
+
+                if (draftIsFinished)
+                {
+                    game.Status = "Active";
+                }
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"{currentTurn.Player.Name} heeft {cyclist.FullName} gekozen.";
+                if (isActiveCyclist)
+                {
+                    TempData["Success"] = currentTurn.Player.Name + " heeft actieve renner " + cyclist.FullName + " gekozen.";
+                }
+                else
+                {
+                    TempData["Success"] = currentTurn.Player.Name + " heeft bankrenner " + cyclist.FullName + " gekozen.";
+                }
+
+                if (draftIsFinished)
+                {
+                    return RedirectToAction("Index", "Dashboard", new { gameId });
+                }
+
+                return RedirectToDraft(gameId);
             }
             catch (Exception ex)
             {
                 TempData["Error"] = "Pick fout: " + ex.Message;
+                return RedirectToDraft(gameId);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult GenerateDraft(int gameId)
+        {
+            TempData["Error"] = "Draft wordt automatisch gemaakt via New Game.";
+            return RedirectToDraft(gameId);
+        }
+
+        private async Task FixDraftSettingsAndTurns(GameSession game)
+        {
+            game.RidersPerPlayer = ActiveRidersPerPlayer;
+            game.BenchPerPlayer = BenchRidersPerPlayer;
+
+            var draftTurns = await _context.DraftTurns
+                .Where(d => d.GameSessionId == game.Id)
+                .OrderBy(d => d.TurnNumber)
+                .ToListAsync();
+
+            if (!draftTurns.Any())
+            {
+                await _context.SaveChangesAsync();
+                return;
             }
 
-            return RedirectToDraftPlayersSection(raceId);
-        }
+            var playerOrder = draftTurns
+                .OrderBy(d => d.TurnNumber)
+                .Select(d => d.PlayerId)
+                .Distinct()
+                .ToList();
 
-        private IActionResult RedirectToDraftPlayersSection(int raceId)
-        {
-            return Redirect(Url.Action("Index", "Draft", new { raceId }) + "#draft-players-section");
-        }
+            int playerCount = playerOrder.Count;
+            int correctRounds = ActiveRidersPerPlayer + BenchRidersPerPlayer;
+            int correctTotalTurns = playerCount * correctRounds;
 
-        private static List<DraftTurn> GenerateFairSnakeDraft(int raceId, List<Player> players, int totalRounds)
-        {
-            var draftTurns = new List<DraftTurn>();
-
-            int turnNumber = 1;
-
-            for (int round = 1; round <= totalRounds; round++)
+            if (draftTurns.Count >= correctTotalTurns)
             {
-                List<Player> roundPlayers;
+                await _context.SaveChangesAsync();
+                return;
+            }
 
-                if (round % 2 == 1)
+            int nextTurnNumber = draftTurns.Max(d => d.TurnNumber) + 1;
+            int existingRounds = draftTurns.Count / playerCount;
+
+            for (int roundIndex = existingRounds; roundIndex < correctRounds; roundIndex++)
+            {
+                List<int> roundPlayers;
+
+                if (roundIndex % 2 == 0)
                 {
-                    roundPlayers = players.ToList();
+                    roundPlayers = playerOrder;
                 }
                 else
                 {
-                    roundPlayers = players.AsEnumerable().Reverse().ToList();
+                    roundPlayers = playerOrder.AsEnumerable().Reverse().ToList();
                 }
 
-                foreach (var player in roundPlayers)
+                foreach (var playerId in roundPlayers)
                 {
-                    draftTurns.Add(new DraftTurn
+                    var newTurn = new DraftTurn
                     {
-                        RaceId = raceId,
-                        PlayerId = player.Id,
-                        TurnNumber = turnNumber,
-                        CyclistId = null
-                    });
+                        GameSessionId = game.Id,
+                        RaceId = game.RaceId,
+                        PlayerId = playerId,
+                        TurnNumber = nextTurnNumber
+                    };
 
-                    turnNumber++;
+                    _context.DraftTurns.Add(newTurn);
+                    nextTurnNumber++;
                 }
             }
 
-            return draftTurns;
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task FixPlayerSelectionActiveStatus(GameSession game, List<DraftTurn> draftTurns)
+        {
+            var selections = await _context.PlayerSelections
+                .Where(s => s.GameSessionId == game.Id)
+                .ToListAsync();
+
+            var playerGroups = draftTurns
+                .Where(d => d.CyclistId != null)
+                .GroupBy(d => d.PlayerId);
+
+            foreach (var playerGroup in playerGroups)
+            {
+                var orderedPicks = playerGroup
+                    .OrderBy(d => d.TurnNumber)
+                    .ToList();
+
+                for (int i = 0; i < orderedPicks.Count; i++)
+                {
+                    var pick = orderedPicks[i];
+
+                    var selection = selections.FirstOrDefault(s =>
+                        s.PlayerId == pick.PlayerId &&
+                        s.CyclistId == pick.CyclistId);
+
+                    if (selection != null)
+                    {
+                        selection.IsActive = i < ActiveRidersPerPlayer;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private IActionResult RedirectToDraft(int gameId)
+        {
+            return Redirect("/Draft/Index?gameId=" + gameId + "#draft-players-section");
         }
     }
 }

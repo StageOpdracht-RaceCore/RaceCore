@@ -13,30 +13,65 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int? raceId)
+        public async Task<IActionResult> Index(int raceId = 0)
         {
             var races = await _context.Races
-                .OrderBy(r => r.Name)
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Name,
+                    r.Year,
+                    StageCount = r.Stages.Count()
+                })
+                .OrderByDescending(r => r.Year)
+                .ThenBy(r => r.Name)
                 .ToListAsync();
 
-            if (!races.Any())
+            if (raceId <= 0 && races.Any())
             {
-                ViewBag.Races = races;
-                ViewBag.SelectedRaceId = 0;
-                return View(new List<Stage>());
+                raceId = races.First().Id;
             }
 
-            int selectedRaceId = raceId ?? races.First().Id;
-
             var stages = await _context.Stages
-                .Where(s => s.RaceId == selectedRaceId)
+                .Include(s => s.Race)
+                .Where(s => s.RaceId == raceId)
                 .OrderBy(s => s.StageNumber)
                 .ToListAsync();
 
             ViewBag.Races = races;
-            ViewBag.SelectedRaceId = selectedRaceId;
+            ViewBag.SelectedRaceId = raceId;
 
             return View(stages);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var stage = await _context.Stages
+                .Include(s => s.Race)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (stage == null)
+                return NotFound();
+
+            var results = await _context.StageResults
+                .Include(r => r.Cyclist)
+                .Where(r => r.StageId == id)
+                .ToListAsync();
+
+            var top25 = results
+                .Where(r => r.Position > 0 && r.Position <= 25)
+                .OrderBy(r => r.Position)
+                .ToList();
+
+            var jerseys = results
+                .Where(r => r.Position == 0)
+                .ToList();
+
+            ViewBag.Top25 = top25;
+            ViewBag.Jerseys = jerseys;
+            ViewBag.RaceId = stage.RaceId;
+
+            return View(stage);
         }
     }
 }
