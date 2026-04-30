@@ -92,9 +92,6 @@ namespace StageProject_RaceCore.Controllers
                         Position = i,
                         CyclistId = result?.CyclistId,
                         CyclistName = result?.Cyclist?.FullName ?? "",
-
-                        // ViewModel-namen blijven hetzelfde,
-                        // maar database-types zijn nu Red, Green, Blue, White.
                         HasYellowJersey = result != null && HasJersey(existingJerseys, result.CyclistId, "Red"),
                         HasGreenJersey = result != null && HasJersey(existingJerseys, result.CyclistId, "Green"),
                         HasPolkaJersey = result != null && HasJersey(existingJerseys, result.CyclistId, "Blue"),
@@ -137,6 +134,36 @@ namespace StageProject_RaceCore.Controllers
                 if (model.Results == null || model.StageId <= 0)
                     return RedirectToAction("Index");
 
+                // --- START VALIDATIE DUBBELE RENNERS ---
+                var cyclistIds = model.Results
+                    .Where(r => r.CyclistId.HasValue && r.CyclistId.Value > 0)
+                    .Select(r => r.CyclistId.Value)
+                    .ToList();
+
+                // Voeg ook de truidragers van buiten de top 25 toe aan de controlelijst
+                if (model.YellowOutsideTop25CyclistId.HasValue && model.YellowOutsideTop25CyclistId > 0)
+                    cyclistIds.Add(model.YellowOutsideTop25CyclistId.Value);
+                if (model.GreenOutsideTop25CyclistId.HasValue && model.GreenOutsideTop25CyclistId > 0)
+                    cyclistIds.Add(model.GreenOutsideTop25CyclistId.Value);
+                if (model.PolkaOutsideTop25CyclistId.HasValue && model.PolkaOutsideTop25CyclistId > 0)
+                    cyclistIds.Add(model.PolkaOutsideTop25CyclistId.Value);
+                if (model.WhiteOutsideTop25CyclistId.HasValue && model.WhiteOutsideTop25CyclistId > 0)
+                    cyclistIds.Add(model.WhiteOutsideTop25CyclistId.Value);
+
+                var duplicates = cyclistIds
+                    .GroupBy(x => x)
+                    .Where(g => g.Count() > 1)
+                    .Select(y => y.Key)
+                    .ToList();
+
+                if (duplicates.Any())
+                {
+                    var duplicateCyclist = await _context.Cyclists.FindAsync(duplicates.First());
+                    TempData["Error"] = $"De renner '{duplicateCyclist?.FullName}' is meerdere keren geselecteerd. Een renner mag maar één keer voorkomen in de uitslag.";
+                    return RedirectToAction("Index", new { stageId = model.StageId });
+                }
+                // --- EINDE VALIDATIE ---
+
                 var stage = await _context.Stages
                     .FirstOrDefaultAsync(s => s.Id == model.StageId);
 
@@ -156,7 +183,6 @@ namespace StageProject_RaceCore.Controllers
 
                 _context.StageResults.RemoveRange(oldResults);
                 _context.Jerseys.RemoveRange(oldJerseys);
-
                 await _context.SaveChangesAsync();
 
                 var usedJerseys = new HashSet<string>();
@@ -176,13 +202,10 @@ namespace StageProject_RaceCore.Controllers
 
                     if (row.HasYellowJersey)
                         AddJerseyOnce(model.StageId, row.CyclistId.Value, "Red", usedJerseys);
-
                     if (row.HasGreenJersey)
                         AddJerseyOnce(model.StageId, row.CyclistId.Value, "Green", usedJerseys);
-
                     if (row.HasPolkaJersey)
                         AddJerseyOnce(model.StageId, row.CyclistId.Value, "Blue", usedJerseys);
-
                     if (row.HasWhiteJersey)
                         AddJerseyOnce(model.StageId, row.CyclistId.Value, "White", usedJerseys);
                 }
@@ -195,16 +218,11 @@ namespace StageProject_RaceCore.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = "Scores en truidragers succesvol opgeslagen.";
-
-                return RedirectToAction("Index", new
-                {
-                    raceId = stage.RaceId,
-                    stageId = model.StageId
-                });
+                return RedirectToAction("StageResults", "Result");
             }
             catch
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Er is een databasefout opgetreden bij het opslaan. Start OpenVPN en probeer opnieuw.";
                 return RedirectToAction("Index", new { stageId = model.StageId });
             }
         }
@@ -234,19 +252,16 @@ namespace StageProject_RaceCore.Controllers
                 viewModel.YellowOutsideTop25CyclistId = jersey.CyclistId;
                 ViewData["RedOutsideTop25CyclistName"] = jersey.Cyclist?.FullName ?? "";
             }
-
             if (type == "Green")
             {
                 viewModel.GreenOutsideTop25CyclistId = jersey.CyclistId;
                 ViewData["GreenOutsideTop25CyclistName"] = jersey.Cyclist?.FullName ?? "";
             }
-
             if (type == "Blue")
             {
                 viewModel.PolkaOutsideTop25CyclistId = jersey.CyclistId;
                 ViewData["BlueOutsideTop25CyclistName"] = jersey.Cyclist?.FullName ?? "";
             }
-
             if (type == "White")
             {
                 viewModel.WhiteOutsideTop25CyclistId = jersey.CyclistId;

@@ -19,6 +19,17 @@
 <link rel="stylesheet" href="~/css/Scoring.css" asp-append-version="true" />
 
 <div class="scoring-page">
+    @* --- NAVIGATIE BALK --- *@
+    <div class="d-flex justify-content-between mb-3">
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+        <a asp-controller="Result" asp-action="StageResults" class="btn btn-info text-white">
+            Stage Results <i class="fas fa-chart-line"></i>
+        </a>
+    </div>
+
+    @* --- ALERTS & FOUTMELDINGEN --- *@
     @if (TempData["Error"] != null)
     {
         <div class="draft-alert draft-alert-error">@TempData["Error"]</div>
@@ -36,6 +47,19 @@
         </div>
     }
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" style="background-color: #f8d7da; color: #721c24;">
+            <div class="d-flex align-items-center">
+                <span style="font-size: 1.2rem; margin-right: 10px;">🚫</span>
+                <div>
+                    <strong>Fout bij opslaan:</strong> @TempData["ErrorMessage"]
+                </div>
+            </div>
+        </div>
+    }
+
+    @* --- SELECTIE SECTIE --- *@
     <div class="player-header-card">
         <div>
             <h1 class="player-page-title">Scoring</h1>
@@ -79,6 +103,7 @@
         </form>
     </div>
 
+    @* --- SCORING FORMULIER --- *@
     <form asp-action="SaveScores" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="StageId" />
@@ -103,6 +128,7 @@
             }
         </datalist>
 
+        @* --- TOP 25 LIJST --- *@
         <div class="results-list">
             @for (int i = 0; i < Model.Results.Count; i++)
             {
@@ -148,10 +174,17 @@
             }
         </div>
 
+<<<<<<< Updated upstream
         <div class="player-table-card" style="margin-top:24px;padding:24px;">
             <h2 style="margin-top:0;">Truidragers buiten Top 25</h2>
+=======
+        @* --- TRUIDRAGERS BUITEN TOP 25 --- *@
+        <div class="player-table-card outside-jersey-card">
+            <h2 class="outside-jersey-title">Truidragers buiten Top 25</h2>
+>>>>>>> Stashed changes
 
             <div class="results-list">
+                @* Rode Trui *@
                 <div class="result-item-card">
                     <div class="pos-badge dot-red"></div>
                     <div class="px-3">
@@ -166,6 +199,7 @@
                     </div>
                 </div>
 
+                @* Groene Trui *@
                 <div class="result-item-card">
                     <div class="pos-badge dot-green"></div>
                     <div class="px-3">
@@ -180,6 +214,7 @@
                     </div>
                 </div>
 
+                @* Blauwe Trui *@
                 <div class="result-item-card">
                     <div class="pos-badge dot-blue"></div>
                     <div class="px-3">
@@ -194,6 +229,7 @@
                     </div>
                 </div>
 
+                @* Witte Trui *@
                 <div class="result-item-card">
                     <div class="pos-badge dot-white"></div>
                     <div class="px-3">
@@ -215,12 +251,14 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialisatie voor bestaande waarden
             document.querySelectorAll(".js-cyclist-name, .js-outside-jersey-name").forEach(input => {
                 if (input.value !== "") {
                     syncId(input);
                 }
             });
 
+            // Logica voor checkboxes (slechts één renner per trui)
             document.querySelectorAll(".js-jersey-checkbox").forEach(box => {
                 box.addEventListener("change", function () {
                     if (this.checked) {
@@ -238,6 +276,7 @@
             });
         });
 
+        // Koppel de geselecteerde naam aan de CyclistID uit de datalist
         function syncId(input) {
             const list = document.getElementById("cyclistList");
             const hidden = input.nextElementSibling;
@@ -259,12 +298,17 @@
             }
         }
 
+        // Als er een trui buiten de top 25 wordt ingevuld, wis deze dan uit de top 25
         function clearTop25Jersey(jerseyType) {
             document.querySelectorAll('.js-jersey-checkbox[data-jersey="' + jerseyType + '"]').forEach(box => {
                 box.checked = false;
             });
         }
 
+<<<<<<< Updated upstream
+=======
+        // Als er een trui in de top 25 wordt aangevinkt, wis dan de input buiten de top 25
+>>>>>>> Stashed changes
         function clearOutsideJersey(jerseyType) {
             let inputName = "";
 
