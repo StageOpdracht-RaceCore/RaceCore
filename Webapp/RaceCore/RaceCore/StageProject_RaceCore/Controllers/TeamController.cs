@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,21 @@ namespace StageProject_RaceCore.Controllers
 {
     public class TeamController : Controller
     {
+        private const int ActiveRiderSlots = 10;
+        private const int BenchRiderSlots = 5;
+
+        private static readonly string[] PlayerColors =
+        {
+            "#2563eb",
+            "#16a34a",
+            "#f59e0b",
+            "#dc2626",
+            "#7c3aed",
+            "#0891b2",
+            "#db2777",
+            "#65a30d"
+        };
+
         private readonly AppDbContext _context;
 
         public TeamController(AppDbContext context)
@@ -16,163 +33,230 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        // Loads teams with their cyclists from the database and passes a view model to the view.
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int gameId = 0)
         {
+            var model = new PlayerTeamsPageViewModel
+            {
+                ActiveRiderSlots = ActiveRiderSlots,
+                BenchRiderSlots = BenchRiderSlots
+            };
+
             try
             {
-                // Return an empty page when the database is unavailable.
                 if (!await _context.Database.CanConnectAsync())
                 {
-                    return View(new TeamIndexViewModel());
+                    return View(model);
                 }
 
-                var teams = await _context.Teams
-                    .OrderBy(t => t.Name)
-                    .Select(t => new TeamViewModel
+                var game = await ResolveGame(gameId);
+
+                if (game == null)
+                {
+                    return View(model);
+                }
+
+                model.GameId = game.Id;
+                model.RaceId = game.RaceId;
+                model.RaceName = $"{game.Race.Name} {game.Race.Year}";
+                model.GameStatus = game.Status;
+
+                var draftTurns = await _context.DraftTurns
+                    .Include(d => d.Player)
+                    .Where(d => d.GameSessionId == game.Id)
+                    .OrderBy(d => d.TurnNumber)
+                    .ToListAsync();
+
+                var selections = await _context.PlayerSelections
+                    .Include(s => s.Player)
+                    .Include(s => s.Cyclist)
+                        .ThenInclude(c => c.Team)
+                    .Where(s => s.GameSessionId == game.Id)
+                    .ToListAsync();
+
+                var turnNumberByCyclistId = draftTurns
+                    .Where(d => d.CyclistId.HasValue)
+                    .GroupBy(d => d.CyclistId!.Value)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Min(d => d.TurnNumber));
+
+                var players = draftTurns
+                    .Where(d => d.Player != null)
+                    .Select(d => d.Player)
+                    .Concat(selections
+                        .Where(s => s.Player != null)
+                        .Select(s => s.Player))
+                    .GroupBy(p => p.Id)
+                    .Select(g => g.First())
+                    .OrderBy(p => p.PositionInDraft)
+                    .ThenBy(p => p.Name)
+                    .ToList();
+
+                for (var index = 0; index < players.Count; index++)
+                {
+                    var player = players[index];
+                    var color = PlayerColors[index % PlayerColors.Length];
+                    var playerSelections = selections
+                        .Where(s => s.PlayerId == player.Id)
+                        .ToList();
+
+                    model.PlayerTeams.Add(new PlayerTeamViewModel
                     {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Tag = t.Tag,
-                        Color = TeamViewModel.ResolveBrandColor(t.Tag, t.Name),
-                        ActiveCyclistsCount = t.Cyclists.Count(c => c.IsActive),
-                        BenchCyclistsCount = t.Cyclists.Count(c => !c.IsActive),
-                        ActiveCyclists = t.Cyclists
-                            .Where(c => c.IsActive)
-                            .Select(c => new CyclistSimple
-                            {
-                                Id = c.Id,
-                                FirstName = c.FirstName,
-                                LastName = c.LastName,
-                                IsActive = c.IsActive
-                            })
+                        PlayerId = player.Id,
+                        PlayerName = player.Name,
+                        Initials = BuildInitials(player.Name),
+                        PositionInDraft = player.PositionInDraft,
+                        Color = color,
+                        ColorSoft = ToRgba(color, 0.12),
+                        ColorDark = Darken(color, 0.22),
+                        TextColor = GetReadableTextColor(color),
+                        ActiveRiders = BuildRiders(
+                            playerSelections,
+                            isActive: true,
+                            turnNumberByCyclistId)
+                            .Take(ActiveRiderSlots)
                             .ToList(),
-                        BenchCyclists = t.Cyclists
-                            .Where(c => !c.IsActive)
-                            .Select(c => new CyclistSimple
-                            {
-                                Id = c.Id,
-                                FirstName = c.FirstName,
-                                LastName = c.LastName,
-                                IsActive = c.IsActive
-                            })
+                        BenchRiders = BuildRiders(
+                            playerSelections,
+                            isActive: false,
+                            turnNumberByCyclistId)
+                            .Take(BenchRiderSlots)
                             .ToList()
-                    })
-                    .ToListAsync();
-
-                var availableCyclists = await _context.Cyclists
-                    .Where(c => c.TeamId == null)
-                    .OrderBy(c => c.LastName)
-                    .ThenBy(c => c.FirstName)
-                    .ToListAsync();
-
-                var model = new TeamIndexViewModel
-                {
-                    Teams = teams,
-                    AvailableCyclists = availableCyclists
-                };
-
-                return View(model);
+                    });
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return View(new TeamIndexViewModel());
             }
+
+            return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCyclistToTeam(
-            int teamId,
-            int cyclistId,
-            bool isActive)
+        private async Task<GameSession?> ResolveGame(int gameId)
         {
-            try
+            var games = _context.GameSessions
+                .Include(g => g.Race)
+                .AsQueryable();
+
+            if (gameId > 0)
             {
-                var team = await _context.Teams.FindAsync(teamId);
-                if (team == null)
-                {
-                    return NotFound();
-                }
-
-                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
-                if (cyclist == null)
-                {
-                    return NotFound();
-                }
-
-                if (cyclist.TeamId.HasValue && cyclist.TeamId != teamId)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-
-                cyclist.TeamId = teamId;
-                cyclist.IsActive = isActive;
-
-                _context.Cyclists.Update(cyclist);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return await games.FirstOrDefaultAsync(g => g.Id == gameId);
             }
-            catch (Exception ex)
+
+            var currentGame = await games
+                .Where(g => g.Status != "Finished")
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (currentGame != null)
             {
-                Console.WriteLine(ex);
-                return RedirectToAction(nameof(Index));
+                return currentGame;
             }
+
+            return await games
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveCyclistFromTeam(int cyclistId)
+        private static List<PlayerTeamRiderViewModel> BuildRiders(
+            IEnumerable<PlayerSelection> selections,
+            bool isActive,
+            IReadOnlyDictionary<int, int> turnNumberByCyclistId)
         {
-            try
-            {
-                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
-                if (cyclist == null)
+            return selections
+                .Where(s => s.IsActive == isActive && s.Cyclist != null)
+                .OrderBy(s => turnNumberByCyclistId.TryGetValue(s.CyclistId, out var turnNumber)
+                    ? turnNumber
+                    : int.MaxValue)
+                .ThenBy(s => s.Cyclist!.LastName)
+                .ThenBy(s => s.Cyclist!.FirstName)
+                .Select(s => new PlayerTeamRiderViewModel
                 {
-                    return NotFound();
-                }
-
-                cyclist.TeamId = null;
-                cyclist.IsActive = false;
-
-                _context.Cyclists.Update(cyclist);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return RedirectToAction(nameof(Index));
-            }
+                    CyclistId = s.CyclistId,
+                    FullName = s.Cyclist!.FullName,
+                    ProTeamName = s.Cyclist.Team?.Name ?? "Geen ploeg",
+                    PickNumber = turnNumberByCyclistId.TryGetValue(s.CyclistId, out var turnNumber)
+                        ? turnNumber
+                        : 0,
+                    IsActive = isActive
+                })
+                .ToList();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleCyclistStatus(int cyclistId, bool isActive)
+        private static string BuildInitials(string name)
         {
-            try
+            var initials = name
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(part => part[0])
+                .ToArray();
+
+            return initials.Length == 0
+                ? "?"
+                : new string(initials).ToUpperInvariant();
+        }
+
+        private static string ToRgba(string color, double alpha)
+        {
+            if (!TryParseHexColor(color, out var red, out var green, out var blue))
             {
-                var cyclist = await _context.Cyclists.FindAsync(cyclistId);
-                if (cyclist == null)
-                {
-                    return NotFound();
-                }
-
-                cyclist.IsActive = isActive;
-
-                _context.Cyclists.Update(cyclist);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return $"rgba(37, 99, 235, {alpha.ToString("0.##", CultureInfo.InvariantCulture)})";
             }
-            catch (Exception ex)
+
+            return string.Create(
+                CultureInfo.InvariantCulture,
+                $"rgba({red}, {green}, {blue}, {alpha:0.##})");
+        }
+
+        private static string Darken(string color, double amount)
+        {
+            if (!TryParseHexColor(color, out var red, out var green, out var blue))
             {
-                Console.WriteLine(ex);
-                return RedirectToAction(nameof(Index));
+                return "#1e40af";
             }
+
+            var factor = 1 - amount;
+            return $"#{(int)Math.Round(red * factor):X2}{(int)Math.Round(green * factor):X2}{(int)Math.Round(blue * factor):X2}";
+        }
+
+        private static string GetReadableTextColor(string color)
+        {
+            if (!TryParseHexColor(color, out var red, out var green, out var blue))
+            {
+                return "#ffffff";
+            }
+
+            var luminance = (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+            return luminance > 150 ? "#111827" : "#ffffff";
+        }
+
+        private static bool TryParseHexColor(
+            string? color,
+            out int red,
+            out int green,
+            out int blue)
+        {
+            red = 0;
+            green = 0;
+            blue = 0;
+
+            if (string.IsNullOrWhiteSpace(color))
+            {
+                return false;
+            }
+
+            var value = color.Trim();
+
+            if (value.StartsWith("#", StringComparison.Ordinal))
+            {
+                value = value[1..];
+            }
+
+            return value.Length == 6 &&
+                   int.TryParse(value[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out red) &&
+                   int.TryParse(value.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out green) &&
+                   int.TryParse(value.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out blue);
         }
     }
 }
