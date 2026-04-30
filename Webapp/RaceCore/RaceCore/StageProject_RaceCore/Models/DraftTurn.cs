@@ -14,5 +14,7 @@
 
         public int? CyclistId { get; set; }
         public Cyclist? Cyclist { get; set; }
+        public int GameSessionId { get; set; }
+        public GameSession GameSession { get; set; } = null!;
     }
 }

@@ -30,9 +30,10 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var races = await _context.Races
-                    .OrderBy(r => r.StartDate)
-                    .ThenBy(r => r.Name)
-                    .Take(3)
+                    .Where(r =>
+                    r.Name.Contains("Giro") ||
+                    r.Name.Contains("Tour") ||
+                    r.Name.Contains("Vuelta"))
                     .ToListAsync();
 
                 var query = _context.Cyclists

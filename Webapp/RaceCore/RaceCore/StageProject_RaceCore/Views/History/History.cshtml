@@ -3,16 +3,13 @@
 
 @{
     ViewData["Title"] = "Historiek";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
     
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/history.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
-}
+<link rel="stylesheet" href="~/css/history.css" asp-append-version="true" />
 
 <div class="player-page scoring-page">
     @* Blauwe Header *@

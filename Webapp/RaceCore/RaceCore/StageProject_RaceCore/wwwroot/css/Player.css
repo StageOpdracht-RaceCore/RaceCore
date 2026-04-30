@@ -1,4 +1,8 @@
-﻿.player-page,
+﻿/* =========================================================
+   PLAYER PAGES - GENERAL LAYOUT
+========================================================= */
+
+.player-page,
 .player-form-page,
 .player-details-page {
     padding: 24px;
@@ -8,19 +12,24 @@
 .player-toolbar-card,
 .player-table-card,
 .player-form-card,
-.player-detail-card,
 .player-stat-card,
+.player-detail-card,
 .player-details-hero {
     background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 20px;
     box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
 }
+
+
+/* =========================================================
+   ALERTS
+========================================================= */
 
 .player-alert {
     padding: 14px 16px;
-    border-radius: 14px;
     margin-bottom: 18px;
+    border-radius: 14px;
     font-weight: 600;
     border: 1px solid transparent;
 }
@@ -31,11 +40,17 @@
     border-color: #a7f3d0;
 }
 
-.player-alert-danger {
+.player-alert-danger,
+.player-delete-alert {
     background: #fef2f2;
     color: #991b1b;
     border-color: #fecaca;
 }
+
+
+/* =========================================================
+   HEADER / HERO
+========================================================= */
 
 .player-header-card {
     display: flex;
@@ -44,12 +59,12 @@
     gap: 20px;
     padding: 28px;
     margin-bottom: 20px;
-    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
 }
 
 .player-page-kicker {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -59,7 +74,7 @@
 .player-page-title,
 .player-form-header h1,
 .player-details-hero h1 {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     font-size: 32px;
     font-weight: 800;
 }
@@ -71,81 +86,8 @@
     color: #dbeafe;
 }
 
-.player-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.player-stat-card {
-    padding: 20px;
-}
-
-.player-stat-label {
-    display: block;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 10px;
-}
-
-.player-stat-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
-}
-
-.player-toolbar-card,
-.player-table-card,
-.player-form-card,
-.player-detail-card,
-.player-details-hero {
-    padding: 24px;
-}
-
-.player-search-form {
-    display: flex;
-    gap: 16px;
-    align-items: end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.player-search-group {
-    flex: 1;
-    min-width: 260px;
-}
-
-    .player-search-group label,
-    .player-form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 700;
-        color: #374151;
-    }
-
-.player-search-input,
-.player-form-input {
-    width: 100%;
-    height: 48px;
-    border-radius: 14px;
-    border: 1px solid #d1d5db;
-    padding: 0 14px;
-    font-size: 15px;
-    background: #f9fafb;
-    transition: 0.2s ease;
-}
-
-    .player-search-input:focus,
-    .player-form-input:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-.player-toolbar-actions,
 .player-header-actions,
+.player-toolbar-actions,
 .player-form-actions,
 .player-action-links {
     display: flex;
@@ -153,16 +95,21 @@
     flex-wrap: wrap;
 }
 
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
 .player-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 46px;
     padding: 0 18px;
+    border: none;
     border-radius: 14px;
     font-weight: 700;
     text-decoration: none;
-    border: none;
     cursor: pointer;
     transition: 0.2s ease;
 }
@@ -197,6 +144,107 @@
         color: white;
     }
 
+.player-btn-done {
+    background: limegreen;
+    color: white;
+    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+}
+
+    .player-btn-done:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+
+/* =========================================================
+   STATS CARDS
+========================================================= */
+
+.player-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.player-stat-card {
+    padding: 20px;
+}
+
+.player-stat-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.player-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+}
+
+
+/* =========================================================
+   SEARCH TOOLBAR
+========================================================= */
+
+.player-toolbar-card {
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.player-search-form {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.player-search-group {
+    flex: 1;
+    min-width: 260px;
+}
+
+    .player-search-group label,
+    .player-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #374151;
+    }
+
+.player-search-input,
+.player-form-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    background: #f9fafb;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+    .player-search-input:focus,
+    .player-form-input:focus {
+        outline: none;
+        background: white;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+
+/* =========================================================
+   PLAYERS TABLE
+========================================================= */
+
+.player-table-card {
+    padding: 24px;
+}
+
 .player-table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -204,30 +252,35 @@
 
 .player-table {
     width: 100%;
-    border-collapse: collapse;
     min-width: 950px;
+    border-collapse: collapse;
 }
 
     .player-table thead th {
-        text-align: left;
         padding: 14px 16px;
+        text-align: left;
         font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 0.4px;
         color: #6b7280;
-        border-bottom: 1px solid #e5e7eb;
         background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
     }
 
     .player-table tbody td {
         padding: 18px 16px;
-        border-bottom: 1px solid #eef2f7;
         vertical-align: middle;
+        border-bottom: 1px solid #eef2f7;
     }
 
     .player-table tbody tr:hover {
         background: #f8fbff;
     }
+
+
+/* =========================================================
+   PLAYER TABLE CONTENT
+========================================================= */
 
 .player-name-cell {
     display: flex;
@@ -266,9 +319,9 @@
 }
 
 .player-meta {
+    margin-top: 4px;
     font-size: 12px;
     color: #6b7280;
-    margin-top: 4px;
 }
 
 .player-badge {
@@ -291,6 +344,11 @@
     color: #059669;
 }
 
+
+/* =========================================================
+   TABLE ACTION LINKS
+========================================================= */
+
 .player-link {
     font-weight: 700;
     color: #2563eb;
@@ -304,6 +362,11 @@
 .player-link-danger {
     color: #dc2626;
 }
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
 .player-empty-state {
     text-align: center;
@@ -320,9 +383,15 @@
         color: #6b7280;
     }
 
+
+/* =========================================================
+   CREATE / EDIT FORM PAGES
+========================================================= */
+
 .player-form-card {
     max-width: 760px;
     margin: 0 auto;
+    padding: 24px;
 }
 
 .player-form-header {
@@ -338,10 +407,16 @@
     gap: 18px;
 }
 
+
+/* =========================================================
+   DETAILS / DELETE PAGES
+========================================================= */
+
 .player-details-hero {
     display: flex;
     align-items: center;
     gap: 18px;
+    padding: 24px;
     margin-bottom: 20px;
 }
 
@@ -356,12 +431,16 @@
     margin-bottom: 20px;
 }
 
-.player-detail-card h3 {
-    margin-top: 0;
-    margin-bottom: 18px;
-    font-size: 18px;
-    color: #111827;
+.player-detail-card {
+    padding: 24px;
 }
+
+    .player-detail-card h3 {
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 18px;
+        color: #111827;
+    }
 
 .player-detail-list {
     display: grid;
@@ -386,18 +465,22 @@
     }
 
 .player-delete-card {
-    border: 1px solid #fecaca;
+    border-color: #fecaca;
 }
 
 .player-delete-alert {
-    background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
     padding: 14px 16px;
-    border-radius: 14px;
     margin-bottom: 20px;
+    border-radius: 14px;
     font-weight: 600;
+    border-width: 1px;
+    border-style: solid;
 }
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
 
 .text-end {
     text-align: right;
@@ -406,6 +489,11 @@
 .text-danger {
     color: #dc2626;
 }
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media (max-width: 1100px) {
     .player-stats-grid {
@@ -445,6 +533,7 @@
         align-items: stretch;
     }
 
+    .player-header-actions,
     .player-toolbar-actions,
     .player-form-actions {
         width: 100%;

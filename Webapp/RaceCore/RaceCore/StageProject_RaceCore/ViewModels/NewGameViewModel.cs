@@ -8,10 +8,14 @@ namespace StageProject_RaceCore.ViewModels
         [Required(ErrorMessage = "Kies een race.")]
         public int RaceId { get; set; }
 
+        public int StageId { get; set; }
+
         [Required(ErrorMessage = "Kies minstens 2 spelers.")]
         public List<int> SelectedPlayerIds { get; set; } = new();
 
         public List<SelectListItem> AvailableRaces { get; set; } = new();
+
+        public List<SelectListItem> AvailableStages { get; set; } = new();
 
         public List<PlayerSelectItemViewModel> AvailablePlayers { get; set; } = new();
 

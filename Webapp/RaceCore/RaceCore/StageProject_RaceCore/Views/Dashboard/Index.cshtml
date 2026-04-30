@@ -1,75 +1,70 @@
 ﻿@model StageProject_RaceCore.Models.DashboardViewModel
 
 @{
-    ViewData["Title"] = "Dashboard";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Game Dashboard";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
-    int maxPlayerPoints = Model.PlayerRanking.Any() ? Model.PlayerRanking.Max(x => x.Points) : 1;
-    int maxCyclistPoints = Model.TopCyclists.Any() ? Model.TopCyclists.Max(x => x.Points) : 1;
+    int gameId = ViewBag.GameId ?? 0;
+    int raceId = ViewBag.RaceId ?? 0;
+    string gameStatus = ViewBag.GameStatus ?? "Unknown";
+    string raceName = ViewBag.RaceName ?? "No active game";
+    int currentStage = ViewBag.CurrentStage ?? 0;
+
+    int maxPlayerPoints = Model.PlayerRanking.Any()
+        ? Math.Max(1, Model.PlayerRanking.Max(x => x.Points))
+        : 1;
 }
+
 <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
+
 @if (ViewBag.DatabaseOnline == false)
 {
-    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:20px;">
-        ⚠️ Database niet bereikbaar. Start OpenVPN om live gegevens te zien.
-    </div>
+    <div class="alert-box alert-warning">⚠️ Database not reachable. Start OpenVPN to view live data.</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert-box alert-error">@TempData["Error"]</div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-box alert-success">@TempData["Success"]</div>
 }
 
 @functions {
     public string GetPlayerColor(string playerName)
     {
-        var colors = new List<string>
-        {
-            "#3b82f6",
-            "#10b981",
-            "#f59e0b",
-            "#ef4444",
-            "#8b5cf6",
-            "#06b6d4",
-            "#ec4899",
-            "#84cc16"
-        };
+        var colors = new List<string> { "#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed", "#0891b2" };
 
         if (string.IsNullOrWhiteSpace(playerName))
         {
             return colors[0];
         }
 
-        int index = Math.Abs(playerName.ToLower().Sum(c => c)) % colors.Count;
-        return colors[index];
+        int total = 0;
+
+        foreach (char letter in playerName.ToLower())
+        {
+            total += letter;
+        }
+
+        return colors[Math.Abs(total) % colors.Count];
     }
 
-    public string GetInitials(string name)
+    public string GetInitial(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return "?";
-        }
-
-        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 1)
-        {
-            return parts[0].Substring(0, 1).ToUpper();
-        }
-
-        return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpper();
+        return string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper();
     }
 
     public string GetJerseyClass(string type)
     {
-        var value = (type ?? "").ToLower();
+        string value = (type ?? "").ToLower();
 
-        if (value.Contains("yellow") || value.Contains("gele"))
-            return "jersey yellow";
-
-        if (value.Contains("green") || value.Contains("groene"))
-            return "jersey green";
-
-        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka"))
-            return "jersey polka";
-
-        if (value.Contains("white") || value.Contains("witte"))
-            return "jersey white";
+        if (value.Contains("yellow") || value.Contains("gele")) return "jersey yellow";
+        if (value.Contains("green") || value.Contains("groene")) return "jersey green";
+        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka")) return "jersey polka";
+        if (value.Contains("white") || value.Contains("witte")) return "jersey white";
 
         return "jersey default";
     }
@@ -77,220 +72,224 @@
 
 <div class="dashboard-container">
 
-
-    <section class="hero-section">
-        <div class="hero-side-card">
-            <div class="hero-side-content">
-                <div>
-                    <span class="hero-kicker">Draft Status</span>
-                    <h2>@(Model.DraftCompleted ? "Draft Completed" : "Draft In Progress")</h2>
-                    <p>
-                        @(Model.DraftCompleted
-                            ? "De draft is volledig afgerond. Alle picks zijn gemaakt."
-                            : "De draft is nog bezig. Er moeten nog renners gekozen worden.")
-                    </p>
-                </div>
-
-                <strong class="@(Model.DraftCompleted ? "status-done" : "status-live")">
-                    @(Model.DraftCompleted ? "Completed" : "In progress")
-                </strong>
-            </div>
-
-            <div class="hero-side-bottom">
-                <div class="hero-side-number">@Model.TotalDraftPicks</div>
-                <div class="hero-side-label">Total draft picks made</div>
-            </div>
+    <section class="dashboard-hero">
+        <div>
+            <div class="small-title">RaceCore Game Hub</div>
+            <h1>@raceName</h1>
+            <p>
+                Status: <strong>@gameStatus</strong> |
+                Stage: <strong>@currentStage</strong> 
+            </p>
         </div>
     </section>
 
-    <section class="stats-grid">
-        <div class="stat-card blue">
+    <section class="stats-row">
+        <div class="stat-box blue">
             <div class="stat-icon">👤</div>
             <div>
-                <h4>Total Players</h4>
-                <p>@Model.PlayersCount</p>
+                <span>Players</span>
+                <strong>@Model.PlayersCount</strong>
             </div>
         </div>
 
-        <div class="stat-card green">
-            <div class="stat-icon">🚴</div>
+        <div class="stat-box orange">
+            <div class="stat-icon">🎯</div>
             <div>
-                <h4>Total Cyclists</h4>
-                <p>@Model.CyclistsCount</p>
+                <span>Draft Picks</span>
+                <strong>@Model.TotalDraftPicks</strong>
             </div>
         </div>
 
-        <div class="stat-card orange">
+        <div class="stat-box purple">
             <div class="stat-icon">🏁</div>
             <div>
-                <h4>Total Teams</h4>
-                <p>@Model.TeamsCount</p>
-            </div>
-        </div>
-
-        <div class="stat-card purple">
-            <div class="stat-icon">🛣️</div>
-            <div>
-                <h4>Total Stages</h4>
-                <p>@Model.StagesCount</p>
+                <span>Status</span>
+                <strong>@gameStatus</strong>
             </div>
         </div>
     </section>
 
-    <section class="main-grid">
-        <div class="card ranking-card">
-            <div class="card-header">
-                <div>
-                    <span class="section-kicker">Competition</span>
-                    <h3>Player Ranking</h3>
-                </div>
+    <section class="main-dashboard-grid">
+
+        <div class="card">
+            <div class="card-title">
+                <span>Competition</span>
+                <h2>Player Ranking</h2>
             </div>
 
             @if (Model.PlayerRanking.Any())
             {
-                <div class="ranking-list ranking-list-scroll">
+                <div class="ranking-list">
                     @foreach (var player in Model.PlayerRanking)
                     {
-                        var width = Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100));
-                        var color = GetPlayerColor(player.PlayerName);
+                        int width = player.Points > 0
+                            ? Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100))
+                            : 8;
+
+                        string color = GetPlayerColor(player.PlayerName);
 
                         <div class="ranking-row">
                             <div class="ranking-left">
-                                <div class="ranking-pos">#@player.Position</div>
+                                <div class="ranking-number">#@player.Position</div>
 
                                 <div class="player-avatar" style="background:@color;">
-                                    @GetInitials(player.PlayerName)
+                                    @GetInitial(player.PlayerName)
                                 </div>
 
                                 <div class="ranking-info">
-                                    <div class="ranking-name-row">
-                                        <span class="player-dot" style="background:@color;"></span>
+                                    <div class="player-name">
+                                        <span style="background:@color;"></span>
                                         <strong>@player.PlayerName</strong>
                                     </div>
 
-                                    <div class="progress-line">
+                                    <div class="progress-bar">
                                         <div class="progress-fill" style="width:@width%; background:@color;"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="ranking-points">@player.Points pts</div>
+                            <strong class="points">@player.Points pts</strong>
                         </div>
                     }
                 </div>
             }
             else
             {
-                <div class="empty-box">Nog geen ranking beschikbaar.</div>
+                <div class="empty-box">No ranking available yet.</div>
             }
         </div>
 
-        <div class="side-column">
-            <div class="card latest-stage-card">
-                <div class="card-header">
-                    <div>
-                        <span class="section-kicker">Recent</span>
-                        <h3>Latest Stage</h3>
-                    </div>
+        <div class="card">
+            <div class="card-title">
+                <span>Game</span>
+                <h2>Game Progress</h2>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <span>Race</span>
+                    <strong>@raceName</strong>
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(Model.LatestStageTitle))
-                {
-                    <div class="stage-title">@Model.LatestStageTitle</div>
+                <div class="info-box">
+                    <span>Status</span>
+                    <strong>@gameStatus</strong>
+                </div>
 
-                    @if (Model.LatestStageTop3.Any())
-                    {
-                        <div class="podium-list">
-                            @foreach (var item in Model.LatestStageTop3)
-                            {
-                                <div class="podium-row">@item</div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="empty-box">Nog geen top 3 gevonden.</div>
-                    }
+                <div class="info-box">
+                    <span>Stage</span>
+                    <strong>@currentStage</strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Total Picks</span>
+                    <strong>@Model.TotalDraftPicks</strong>
+                </div>
+            </div>
+
+            <div class="draft-progress-box">
+                <div class="draft-progress-top">
+                    <span>Draft Progress</span>
+                    <strong>@Model.TotalDraftPicks picks</strong>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill green-fill" style="width:@(Model.TotalDraftPicks == 0 ? 5 : 100)%"></div>
+                </div>
+            </div>
+
+            <div class="game-next-box">
+                @if (gameStatus == "Draft")
+                {
+                    <h3>Next Step</h3>
+                    <p>The game is still in draft mode. Pick all riders first.</p>
+
+                    <a asp-controller="Draft"
+                           asp-action="Index"
+                           asp-route-gameId="@gameId"
+                           class="btn-green">
+                        Continue Draft
+                    </a>
+                }
+                else if (gameStatus == "Active")
+                {
+                    <h3>Next Step</h3>
+                    <p>The draft is complete. Go to scoring to manage stages and results.</p>
+
+                    <a asp-controller="Scoring"
+                           asp-action="Index"
+                           asp-route-raceId="@raceId"
+                           class="btn-green">
+                        Go to Scoring
+                    </a>
                 }
                 else
                 {
-                    <div class="empty-box">Nog geen stage beschikbaar.</div>
+                    <h3>Game Finished</h3>
+                    <p>All stages have been processed. View the final leaderboard.</p>
+
+                    <a asp-controller="Result"
+                           asp-action="Index"
+                           asp-route-gameId="@gameId"
+                           class="btn-green">
+                        View Leaderboard
+                    </a>
                 }
             </div>
 
-            <div class="card draft-card">
-                <div class="card-header">
-                    <div>
-                        <span class="section-kicker">Draft</span>
-                        <h3>Draft Overview</h3>
-                    </div>
-                </div>
-
-                <div class="draft-status-box">
-                    <div class="draft-status-item">
-                        <span>Status</span>
-                        <strong class="@(Model.DraftCompleted ? "status-done-text" : "status-live-text")">
-                            @(Model.DraftCompleted ? "Completed" : "Still running")
-                        </strong>
-                    </div>
-
-                    <div class="draft-status-item">
-                        <span>Total picks</span>
-                        <strong>@Model.TotalDraftPicks</strong>
-                    </div>
-                </div>
+            <div class="dashboard-actions">
+                <a asp-controller="Game" asp-action="New" class="dashboard-action-btn">New Game</a>
+                <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Scoring</a>
+                <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Stages</a>
+                <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="dashboard-action-btn">Leaderboard</a>
+                
+                <a asp-controller="Team" asp-action="Index" class="dashboard-action-btn">Teams</a>
+                <a asp-controller="History" asp-action="History" class="dashboard-action-btn">History</a>
+                <a asp-controller="Cyclist" asp-action="Index" class="dashboard-action-btn">Cyclists</a>
+                <a asp-controller="Result" asp-action="StageResults" class="dashboard-action-btn">Stage Results</a>
             </div>
         </div>
+
     </section>
 
-    <section class="bottom-grid">
+    <section class="bottom-dashboard-grid">
+
         <div class="card">
-            <div class="card-header">
-                <div>
-                    <span class="section-kicker">Performance</span>
-                    <h3>Top Cyclists</h3>
-                </div>
+            <div class="card-title">
+                <span>Performance</span>
+                <h2>Top Cyclists</h2>
             </div>
 
             @if (Model.TopCyclists.Any())
             {
-                <div class="cyclist-list">
+                <div class="simple-list">
                     @foreach (var cyclist in Model.TopCyclists)
                     {
-                        var width = Math.Max(8, (int)Math.Round((double)cyclist.Points / maxCyclistPoints * 100));
-
-                        <div class="cyclist-row">
-                            <div class="cyclist-main">
-                                <strong>@cyclist.Name</strong>
-                                <div class="cyclist-bar">
-                                    <div class="cyclist-bar-fill" style="width:@width%;"></div>
-                                </div>
-                            </div>
-                            <div class="cyclist-points">@cyclist.Points</div>
+                        <div class="simple-row">
+                            <strong>@cyclist.Name</strong>
+                            <span>@cyclist.Points pts</span>
                         </div>
                     }
                 </div>
             }
             else
             {
-                <div class="empty-box">Nog geen cyclist points beschikbaar.</div>
+                <div class="empty-box">No cyclist points available yet.</div>
             }
         </div>
 
         <div class="card">
-            <div class="card-header">
-                <div>
-                    <span class="section-kicker">Classifications</span>
-                    <h3>Jerseys</h3>
-                </div>
+            <div class="card-title">
+                <span>Classifications</span>
+                <h2>Jerseys</h2>
             </div>
 
             @if (Model.Jerseys.Any())
             {
-                <div class="jersey-list">
+                <div class="simple-list">
                     @foreach (var jersey in Model.Jerseys)
                     {
-                        <div class="jersey-row">
+                        <div class="simple-row">
                             <span class="@GetJerseyClass(jersey.Type)">@jersey.Type</span>
                             <strong>@jersey.CyclistName</strong>
                         </div>
@@ -299,11 +298,9 @@
             }
             else
             {
-                <div class="empty-box">Nog geen truidragers beschikbaar.</div>
+                <div class="empty-box">No jersey holders available yet.</div>
             }
         </div>
+
     </section>
-
-   
-
 </div>
