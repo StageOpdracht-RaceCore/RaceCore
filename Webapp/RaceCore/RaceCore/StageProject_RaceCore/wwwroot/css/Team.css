@@ -5,6 +5,13 @@
     padding: 18px;
 }
 
+.team-top-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 12px;
+}
+
 .team-header-card,
 .team-table-card,
 .team-overview-strip,
@@ -393,6 +400,17 @@ tr[data-cyclist-id] {
     .team-btn-primary:hover {
         color: #ffffff;
         background: #1d4ed8;
+    }
+
+.team-btn-secondary {
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.8);
+}
+
+    .team-btn-secondary:hover {
+        color: #0f172a;
+        background: #f8fafc;
     }
 
 @media (max-width: 900px) {
