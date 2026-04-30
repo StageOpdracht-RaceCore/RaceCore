@@ -82,12 +82,13 @@ namespace StageProject_RaceCore.Controllers
 
                 int totalRounds = game.RidersPerPlayer + game.BenchPerPlayer;
 
-                var draftTurns = GenerateFairSnakeDraft(game.Id, model.RaceId, players, totalRounds);
+                var draftTurns = GenerateFairSnakeDraft(game.Id, race.Id, players, totalRounds);
 
                 _context.DraftTurns.AddRange(draftTurns);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"Nieuwe game gestart voor {race.Name} {race.Year}.";
+                TempData["Success"] = $"Game {race.Name} {race.Year} is gestart.";
+
                 return RedirectToAction("Index", "Draft", new { gameId = game.Id });
             }
             catch (Exception ex)
@@ -175,14 +176,12 @@ namespace StageProject_RaceCore.Controllers
         private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
-
             int turnNumber = 1;
-            int playerCount = players.Count;
 
             for (int round = 1; round <= totalRounds; round++)
             {
                 var roundPlayers = round % 2 == 1
-                    ? players.ToList()
+                    ? players
                     : players.AsEnumerable().Reverse().ToList();
 
                 foreach (var player in roundPlayers)
