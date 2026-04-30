@@ -61,12 +61,14 @@
     {
         string value = (type ?? "").ToLower();
 
-        if (value.Contains("yellow") || value.Contains("gele")) return "jersey yellow";
-        if (value.Contains("green") || value.Contains("groene")) return "jersey green";
-        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka")) return "jersey polka";
-        if (value.Contains("white") || value.Contains("witte")) return "jersey white";
+        if (value.Contains("yellow") || value.Contains("gele")) return "jersey jersey-yellow";
+        if (value.Contains("green") || value.Contains("groene")) return "jersey jersey-green";
+        if (value.Contains("red") || value.Contains("rode")) return "jersey jersey-red";
+        if (value.Contains("blue") || value.Contains("blauwe")) return "jersey jersey-blue";
+        if (value.Contains("white") || value.Contains("witte")) return "jersey jersey-white";
+        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka")) return "jersey jersey-polka";
 
-        return "jersey default";
+        return "jersey jersey-default";
     }
 }
 
