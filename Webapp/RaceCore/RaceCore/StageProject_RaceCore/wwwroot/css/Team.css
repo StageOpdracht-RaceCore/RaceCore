@@ -20,8 +20,8 @@
 .team-dashboard-btn {
     white-space: nowrap;
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(29, 78, 216, 0.55);
+    border: 1px solid rgba(191, 219, 254, 0.35);
     box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -30,8 +30,8 @@
 
     .team-dashboard-btn:hover {
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(29, 78, 216, 0.68);
+        border-color: rgba(191, 219, 254, 0.55);
         transform: translateY(-1px);
     }
 
@@ -440,6 +440,29 @@ tr[data-cyclist-id] {
         color: #0f172a;
         background: #f8fafc;
     }
+
+/* Hero (title card) dashboard button overrides */
+.player-teams-hero .team-dashboard-btn {
+    color: #ffffff;
+    background: rgba(29, 78, 216, 0.55);
+    border: 1px solid rgba(191, 219, 254, 0.35);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.player-teams-hero .team-dashboard-btn:hover {
+    color: #ffffff;
+    background: rgba(29, 78, 216, 0.68);
+    border-color: rgba(191, 219, 254, 0.55);
+    transform: translateY(-1px);
+}
+
+.player-teams-hero .team-dashboard-btn:focus-visible {
+    outline: 2px solid rgba(191, 219, 254, 0.9);
+    outline-offset: 2px;
+}
 
 @media (max-width: 900px) {
     .player-teams-hero {
