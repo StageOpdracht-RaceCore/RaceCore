@@ -60,37 +60,37 @@
     min-width: 300px;
 }
 
-.team-hero-stats div,
-.team-overview-strip div {
-    padding: 13px 14px;
-    border-radius: 12px;
-}
+    .team-hero-stats div,
+    .team-overview-strip div {
+        padding: 13px 14px;
+        border-radius: 12px;
+    }
 
-.team-hero-stats div {
-    background: rgba(255, 255, 255, 0.13);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+    .team-hero-stats div {
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-.team-hero-stats span,
-.team-overview-strip span {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.7px;
-    text-transform: uppercase;
-}
+    .team-hero-stats span,
+    .team-overview-strip span {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
 
-.team-hero-stats span {
-    color: #bfdbfe;
-}
+    .team-hero-stats span {
+        color: #bfdbfe;
+    }
 
-.team-hero-stats strong {
-    display: block;
-    color: #ffffff;
-    font-size: 24px;
-    line-height: 1;
-}
+    .team-hero-stats strong {
+        display: block;
+        color: #ffffff;
+        font-size: 24px;
+        line-height: 1;
+    }
 
 .team-overview-strip {
     display: grid;
@@ -100,23 +100,23 @@
     margin-bottom: 16px;
 }
 
-.team-overview-strip div {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-}
+    .team-overview-strip div {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
 
-.team-overview-strip span {
-    color: #64748b;
-}
+    .team-overview-strip span {
+        color: #64748b;
+    }
 
-.team-overview-strip strong {
-    display: block;
-    color: #111827;
-    font-size: 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .team-overview-strip strong {
+        display: block;
+        color: #111827;
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
 .player-team-grid {
     display: grid;
@@ -182,11 +182,11 @@
     text-align: right;
 }
 
-.team-completion span {
-    display: block;
-    margin-bottom: 7px;
-    font-size: 13px;
-}
+    .team-completion span {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+    }
 
 .team-completion-bar {
     width: 128px;
@@ -196,11 +196,11 @@
     background: #e5e7eb;
 }
 
-.team-completion-bar div {
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
-}
+    .team-completion-bar div {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
+    }
 
 .player-roster-table-wrap {
     overflow-x: hidden;
@@ -213,41 +213,41 @@
     table-layout: fixed;
 }
 
-.player-roster-table th,
-.player-roster-table td {
-    padding: 9px 8px;
-    border-bottom: 1px solid #e5e7eb;
-    vertical-align: middle;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .player-roster-table th,
+    .player-roster-table td {
+        padding: 9px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: middle;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
-.player-roster-table thead th {
-    color: #475569;
-    background: #f8fafc;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.7px;
-    text-transform: uppercase;
-}
+    .player-roster-table thead th {
+        color: #475569;
+        background: #f8fafc;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
 
-.player-roster-table th:first-child,
-.player-roster-table td:first-child {
-    width: 44px;
-}
+    .player-roster-table th:first-child,
+    .player-roster-table td:first-child {
+        width: 44px;
+    }
 
-.player-roster-table th:nth-child(3),
-.player-roster-table td:nth-child(3) {
-    width: 24%;
-}
+    .player-roster-table th:nth-child(3),
+    .player-roster-table td:nth-child(3) {
+        width: 24%;
+    }
 
-.player-roster-table th:last-child,
-.player-roster-table td:last-child {
-    width: 76px;
-    text-align: right;
-}
+    .player-roster-table th:last-child,
+    .player-roster-table td:last-child {
+        width: 76px;
+        text-align: right;
+    }
 
 .roster-section-row th {
     padding: 9px 8px;
@@ -287,12 +287,12 @@
     background: #ffffff;
 }
 
-.roster-row.empty-slot .rider-name,
-.roster-row.empty-slot .rider-team {
-    color: #94a3b8;
-    font-style: italic;
-    font-weight: 700;
-}
+    .roster-row.empty-slot .rider-name,
+    .roster-row.empty-slot .rider-team {
+        color: #94a3b8;
+        font-style: italic;
+        font-weight: 700;
+    }
 
 .slot-number {
     color: #64748b;
@@ -331,15 +331,15 @@
     font-weight: 900;
 }
 
-.status-pill.active {
-    color: var(--player-text-color);
-    background: var(--player-color);
-}
+    .status-pill.active {
+        color: var(--player-text-color);
+        background: var(--player-color);
+    }
 
-.status-pill.bench {
-    color: #374151;
-    background: #d1d5db;
-}
+    .status-pill.bench {
+        color: #374151;
+        background: #d1d5db;
+    }
 
 .team-table-card {
     padding: 24px;
@@ -355,6 +355,21 @@
     margin: 0 0 16px;
     color: #64748b;
     font-weight: 700;
+}
+
+/* Clickable rider rows */
+tr[data-cyclist-id] {
+    cursor: pointer;
+}
+
+    tr[data-cyclist-id]:hover {
+        filter: brightness(0.95);
+    }
+
+.roster-row--selected {
+    outline: 2px solid var(--player-color) !important;
+    outline-offset: -2px;
+    filter: brightness(0.92) !important;
 }
 
 .team-btn {
@@ -375,10 +390,10 @@
     background: #2563eb;
 }
 
-.team-btn-primary:hover {
-    color: #ffffff;
-    background: #1d4ed8;
-}
+    .team-btn-primary:hover {
+        color: #ffffff;
+        background: #1d4ed8;
+    }
 
 @media (max-width: 900px) {
     .player-teams-hero {
