@@ -148,25 +148,62 @@ namespace StageProject_RaceCore.Controllers
                     return BadRequest();
                 }
 
-                var activeSelection = await _context.PlayerSelections
-                    .FirstOrDefaultAsync(s =>
-                        s.GameSessionId == gameId &&
-                        s.PlayerId == playerId &&
-                        s.CyclistId == activeCyclistId);
+                var hasActive = activeCyclistId > 0;
+                var hasBench = benchCyclistId > 0;
 
-                var benchSelection = await _context.PlayerSelections
-                    .FirstOrDefaultAsync(s =>
-                        s.GameSessionId == gameId &&
-                        s.PlayerId == playerId &&
-                        s.CyclistId == benchCyclistId);
-
-                if (activeSelection == null || benchSelection == null)
+                if (!hasActive && !hasBench)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
 
-                activeSelection.IsActive = true;
-                benchSelection.IsActive = false;
+                PlayerSelection? activeSelection = null;
+                PlayerSelection? benchSelection = null;
+
+                if (hasActive)
+                {
+                    activeSelection = await _context.PlayerSelections
+                        .FirstOrDefaultAsync(s =>
+                            s.GameSessionId == gameId &&
+                            s.PlayerId == playerId &&
+                            s.CyclistId == activeCyclistId);
+
+                    if (activeSelection == null)
+                    {
+                        return NotFound();
+                    }
+                }
+
+                if (hasBench)
+                {
+                    benchSelection = await _context.PlayerSelections
+                        .FirstOrDefaultAsync(s =>
+                            s.GameSessionId == gameId &&
+                            s.PlayerId == playerId &&
+                            s.CyclistId == benchCyclistId);
+
+                    if (benchSelection == null)
+                    {
+                        return NotFound();
+                    }
+                }
+
+                // Swap (both present) or move into an empty slot (one side missing)
+                if (hasActive && hasBench)
+                {
+                    // Active rider becomes bench, bench rider becomes active
+                    activeSelection!.IsActive = false;
+                    benchSelection!.IsActive = true;
+                }
+                else if (hasActive)
+                {
+                    // Move active rider to an empty bench slot
+                    activeSelection!.IsActive = false;
+                }
+                else
+                {
+                    // Move bench rider to an empty active slot
+                    benchSelection!.IsActive = true;
+                }
 
                 await _context.SaveChangesAsync();
 
