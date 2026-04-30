@@ -1,12 +1,32 @@
 ﻿
 /* ===============================
    ALGEMENE KAARTEN
+================================= */
+
+.filters,
+.cyclistsOverview {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 28px;
+    margin-bottom: 0;
+    border-radius: 20px;
+}
+
+
+/* ===============================
+   TITELS IN DE KAARTEN
+================================= */
+
+h4 {
     display: block;
     margin-bottom: 8px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.08em;
     color: #2563eb;
 }
 
@@ -14,49 +34,90 @@ h3 {
     margin: 0 0 22px 0;
     font-size: 20px;
     font-weight: 800;
-    color: #111827;
+    line-height: 1.2;
+    color: #0f172a;
 }
 
 
 /* ===============================
    FILTER FORMULIER
+================================= */
+
+.cyclistsForm {
+    display: flex;
+    gap: 16px;
+    align-items: end;
+}
+
+/* ===============================
+   INPUTS EN SELECTS
+================================= */
+
+.select {
     width: 100%;
-    height: 48px;
-    border-radius: 14px;
+    height: 52px;
+    padding: 0 16px;
     border: 1px solid #d1d5db;
-    padding: 0 14px;
-    font-size: 15px;
-    background: #f9fafb;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
     color: #111827;
+    font-size: 14px;
     outline: none;
-    transition: 0.2s ease;
+    appearance: none;
+    transition: all 0.2s ease;
 }
 
     .select:focus {
         border-color: #2563eb;
         background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
     }
 
 /* ===============================
    KNOPPEN
+================================= */
+.formButton {
+    width: 80px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    border-radius: 14px;
+    height: 52px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 16px;
+    color: #ffffff;
+    font-size: 14px;
     font-weight: 700;
     text-decoration: none;
-    border: none;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+.pageBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
 }
 
 
 
 /* ===============================
    AANTAL RESULTATEN + RESET KNOP
+================================= */
+
 .countAndReset {
     display: flex;
     justify-content: space-between;
@@ -66,17 +127,21 @@ h3 {
     margin-top: 22px;
 }
 
-.countAndReset p {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
-    background: #dbeafe;
-    color: #1d4ed8;
-}
+    .countAndReset p {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        border: 1px solid rgba(191, 219, 254, 0.95);
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 800;
+        line-height: 1;
+        backdrop-filter: blur(4px);
+        margin: 0;
+    }
 
 
 /* ===============================
@@ -90,19 +155,20 @@ h3 {
 
 .cyclistsTable {
     width: 100%;
-    border-collapse: collapse;
-    min-width: 950px;
+    min-width: 700px;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
     .cyclistsTable thead th {
         text-align: left;
-        padding: 14px 16px;
         font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
         color: #6b7280;
-        border-bottom: 1px solid #e5e7eb;
         background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
     }
 
     .cyclistsTable tbody td {
@@ -110,6 +176,9 @@ h3 {
         border-bottom: 1px solid #eef2f7;
         vertical-align: middle;
         color: #111827;
+        background: #ffffff;
+        border-bottom: 1px solid #eef2f7;
+        transition: background-color 0.2s ease;
     }
 
     .cyclistsTable tbody tr:hover {
@@ -141,30 +210,50 @@ h3 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 7px 12px;
+    min-width: 100px;
+    padding: 8px 12px;
+    border: 1px solid transparent;
     border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
 }
 
 .statusActive {
     background: #dcfce7;
     color: #166534;
+    border-color: #bbf7d0;
 }
 
 .statusInactive {
     background: #fee2e2;
     color: #991b1b;
+    border-color: #fecaca;
+}
+
+.race-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
 }
 
 .raceYes {
     background: #dbeafe;
     color: #1d4ed8;
+    border-color: #bfdbfe;
 }
 
 .raceNo {
     background: #f3f4f6;
     color: #6b7280;
+    border-color: #e5e7eb;
 }
 
 
@@ -174,8 +263,7 @@ h3 {
 
 .empty {
     text-align: center;
-    padding: 40px 20px;
-    color: #6b7280;
+    font-size: 14px;
 }
 
 /* Scrollbar */
@@ -192,7 +280,7 @@ h3 {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 24px;
+    margin: 24px;
     flex-wrap: wrap;
 }
 
@@ -210,13 +298,20 @@ h3 {
 
     .pageBtn.active {
         background: #2563eb;
-        color: #ffffff;
+        color: white;
+        border-color: #2563eb;
     }
 
+/* Responsive */
+@media (max-width: 1100px) {
+    .cyclists-form {
+        grid-template-columns: 1fr 1fr;
+    }
 
-/* ===============================
-   RESPONSIVE VOOR MOBIEL
-================================= */
+    .button-group {
+        grid-column: 1 / -1;
+    }
+}
 
 @media (max-width: 768px) {
     .page {
