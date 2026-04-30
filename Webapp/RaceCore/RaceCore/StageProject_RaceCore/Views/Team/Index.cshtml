@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Teams";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
 @functions {
@@ -25,13 +25,13 @@
     <div class="team-antiforgery">
         @Html.AntiForgeryToken()
     </div>
+
     <section class="team-header-card player-teams-hero">
         <div class="team-hero-copy">
             <p class="team-page-kicker">RaceCore Game</p>
-            <div class="team-hero-title-row">
-                <h1 class="team-page-title">Teams</h1>
-                <a asp-controller="Dashboard" asp-action="Index" class="team-btn team-dashboard-btn">Dashboard</a>
-            </div>
+
+            <h1 class="team-page-title">Teams</h1>
+
             <p class="team-page-subtitle">
                 @if (Model.HasGame)
                 {
@@ -44,21 +44,27 @@
             </p>
         </div>
 
-        <div class="team-hero-stats" aria-label="Team overzicht">
-            <div>
-                <span>Spelers</span>
-                <strong>@Model.PlayerCount</strong>
+        <div class="team-hero-actions">
+            <div class="team-hero-stats" aria-label="Team overzicht">
+                <div>
+                    <span>Spelers</span>
+                    <strong>@Model.PlayerCount</strong>
+                </div>
+
+                <div>
+                    <span>Renners</span>
+                    <strong>@Model.ActiveRiderSlots</strong>
+                </div>
+
+                <div>
+                    <span>Bank</span>
+                    <strong>@Model.BenchRiderSlots</strong>
+                </div>
             </div>
 
-            <div>
-                <span>Renners</span>
-                <strong>@Model.ActiveRiderSlots</strong>
-            </div>
-
-            <div>
-                <span>Bank</span>
-                <strong>@Model.BenchRiderSlots</strong>
-            </div>
+            <a asp-controller="Dashboard" asp-action="Index" class="team-dashboard-white-btn">
+                Dashboard
+            </a>
         </div>
     </section>
 
@@ -88,6 +94,10 @@
                 <strong>@Model.FilledSlots / @Model.TotalSlots</strong>
             </div>
         </section>
+
+        <div class="team-swap-hint team-swap-hint-global" aria-live="polite">
+            Klik op een renner om te wisselen. Daarna kies je een andere renner uit de bankrenners lijst.
+        </div>
 
         <section class="player-team-grid" aria-label="Teams van spelers">
             @foreach (var playerTeam in Model.PlayerTeams)
@@ -138,7 +148,9 @@
                                     var rider = playerTeam.ActiveRiders.ElementAtOrDefault(index);
 
                                     <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "") @(index == Model.ActiveRiderSlots - 1 ? "roster-before-bench" : "")"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\" data-section=\"active\" onclick=\"selectRider(this)\" role=\"button\" tabindex=\"0\" title=\"Selecteer om te wisselen\"" : "")>
+                                        data-section="active"
+                                        onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
+                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -164,7 +176,9 @@
                                     var rider = playerTeam.BenchRiders.ElementAtOrDefault(index);
 
                                     <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\" data-section=\"bench\" onclick=\"selectRider(this)\" role=\"button\" tabindex=\"0\" title=\"Selecteer om te wisselen\"" : "")>
+                                        data-section="bench"
+                                        onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
+                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
                                         <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -191,98 +205,115 @@
 
 <script>
     (function () {
-        // selectedRow: the currently highlighted row waiting for a swap partner
         var selectedRow = null;
 
         window.selectRider = function (row) {
             var card = row.closest('.player-team-card');
 
-            // Clicking the already-selected row deselects it
             if (selectedRow === row) {
                 clearSelection();
                 return;
             }
 
-            // First pick � just highlight it
             if (!selectedRow) {
                 selectedRow = row;
                 row.classList.add('roster-row--selected');
+                enableSwapMode(card, row);
                 return;
             }
 
-            // Second pick � must be in the SAME card but OPPOSITE section
             var firstCard = selectedRow.closest('.player-team-card');
+
             if (firstCard !== card) {
-                // Different card: restart selection in new card
                 clearSelection();
                 selectedRow = row;
                 row.classList.add('roster-row--selected');
+                enableSwapMode(card, row);
                 return;
             }
 
-            var firstSection = selectedRow.dataset.section;   // 'active' or 'bench'
+            var firstSection = selectedRow.dataset.section;
             var secondSection = row.dataset.section;
 
             if (firstSection === secondSection) {
-                // Same section: move selection to the new row
                 clearSelection();
                 selectedRow = row;
                 row.classList.add('roster-row--selected');
+                enableSwapMode(card, row);
                 return;
             }
 
-            // Different sections within the same card � perform the swap
             swapRows(selectedRow, row);
             clearSelection();
         };
 
+        function enableSwapMode(card, selected) {
+            if (!card) {
+                return;
+            }
+
+            card.classList.add('swap-mode');
+
+            var selectedSection = selected.dataset.section;
+            var targetSection = selectedSection === 'active' ? 'bench' : 'active';
+
+            // Highlight valid targets in the opposite section
+            card.querySelectorAll('.roster-row[data-section]').forEach(function (row) {
+                row.classList.toggle('swap-target', row.dataset.section === targetSection);
+                row.classList.toggle('swap-dimmed', row.dataset.section === selectedSection && row !== selected);
+            });
+
+            var hint = document.querySelector('.team-swap-hint-global');
+            if (hint) {
+                hint.textContent = targetSection === 'bench'
+                    ? 'Geselecteerd. Klik nu een bankrenner (of vrije plaats) om te wisselen.'
+                    : 'Geselecteerd. Klik nu een actieve renner (of vrije plaats) om te wisselen.';
+            }
+        }
+
         function swapRows(rowA, rowB) {
-            // Swap the rider content cells (cols 1, 2, 3) and the data-section attribute.
-            // Col 0 (slot number) and the pill styling stay tied to the row's section.
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
 
             var activeRow = rowA.classList.contains('active-rider') ? rowA : rowB;
             var benchRow = activeRow === rowA ? rowB : rowA;
 
-            // Swap rider name
             var tmpName = cellsA[1].innerHTML;
             cellsA[1].innerHTML = cellsB[1].innerHTML;
             cellsB[1].innerHTML = tmpName;
 
-            // Swap pro team
             var tmpTeam = cellsA[2].innerHTML;
             cellsA[2].innerHTML = cellsB[2].innerHTML;
             cellsB[2].innerHTML = tmpTeam;
 
-            // Swap cyclist id (so a third swap would still work correctly)
             var tmpId = rowA.dataset.cyclistId;
             rowA.dataset.cyclistId = rowB.dataset.cyclistId;
             rowB.dataset.cyclistId = tmpId;
 
-            // Handle empty-slot state: a row becomes empty if the partner had no cyclist id
-            toggleEmptyState(rowA, rowB);
-            toggleEmptyState(rowB, rowA);
+            updateRowState(rowA);
+            updateRowState(rowB);
 
             persistSwap(activeRow, benchRow);
         }
 
         function persistSwap(activeRow, benchRow) {
             var card = activeRow.closest('.player-team-card');
+
             if (!card) {
                 return;
             }
 
             var gameId = document.querySelector('.team-page')?.dataset?.gameId;
             var playerId = card.dataset.playerId;
-            var activeCyclistId = activeRow.dataset.cyclistId;
-            var benchCyclistId = benchRow.dataset.cyclistId;
+            var activeCyclistId = activeRow.dataset.cyclistId || '0';
+            var benchCyclistId = benchRow.dataset.cyclistId || '0';
 
-            if (!gameId || !playerId || !activeCyclistId || !benchCyclistId) {
+            if (!gameId || !playerId) {
                 return;
             }
 
             var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
+
             if (!token) {
                 return;
             }
@@ -299,51 +330,63 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                 body: body
             }).catch(function () {
-                // UI swap already happened; if persistence fails, a refresh will restore server state.
             });
         }
 
-        function toggleEmptyState(targetRow, sourceRow) {
-            // If the source had no cyclist id, the target is now an empty slot
-            var isEmpty = !sourceRow.dataset.cyclistId || sourceRow.classList.contains('empty-slot');
-            targetRow.classList.toggle('empty-slot', isEmpty);
+        function updateRowState(row) {
+            var hasCyclist = !!row.dataset.cyclistId;
+            row.classList.toggle('empty-slot', !hasCyclist);
 
-            if (isEmpty) {
-                delete targetRow.dataset.cyclistId;
-                targetRow.removeAttribute('onclick');
-                targetRow.removeAttribute('role');
-                targetRow.removeAttribute('tabindex');
-                targetRow.removeAttribute('title');
-                // Clear the status pill cell
-                targetRow.querySelectorAll('td')[3].innerHTML = '';
-            } else {
-                // Restore interactivity if it was previously empty
-                targetRow.setAttribute('onclick', 'selectRider(this)');
-                targetRow.setAttribute('role', 'button');
-                targetRow.setAttribute('tabindex', '0');
-                targetRow.setAttribute('title', 'Selecteer om te wisselen');
-                // Restore correct pill
-                var isActive = targetRow.classList.contains('active-rider');
-                var pillClass = isActive ? 'active' : 'bench';
-                var pillLabel = isActive ? 'Renner' : 'Bank';
-                targetRow.querySelectorAll('td')[3].innerHTML =
-                    '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
+            if (!hasCyclist) {
+                delete row.dataset.cyclistId;
+                row.querySelectorAll('td')[3].innerHTML = '';
+                return;
             }
+
+            var isActive = row.classList.contains('active-rider');
+            var pillClass = isActive ? 'active' : 'bench';
+            var pillLabel = isActive ? 'Renner' : 'Bank';
+
+            row.querySelectorAll('td')[3].innerHTML =
+                '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
         }
 
         function clearSelection() {
             if (selectedRow) {
+                var card = selectedRow.closest('.player-team-card');
                 selectedRow.classList.remove('roster-row--selected');
                 selectedRow = null;
+                disableSwapMode(card);
             }
         }
 
-        // Keyboard support: Enter/Space triggers click on focused rows
+        function disableSwapMode(card) {
+            if (!card) {
+                return;
+            }
+
+            card.classList.remove('swap-mode');
+
+            card.querySelectorAll('.roster-row.swap-target').forEach(function (row) {
+                row.classList.remove('swap-target');
+            });
+
+            card.querySelectorAll('.roster-row.swap-dimmed').forEach(function (row) {
+                row.classList.remove('swap-dimmed');
+            });
+
+            var hint = document.querySelector('.team-swap-hint-global');
+            if (hint) {
+                hint.textContent = 'Klik op een renner om te wisselen. Daarna kies je een andere renner uit de bankrenners lijst.';
+            }
+        }
+
         document.addEventListener('keydown', function (e) {
             if ((e.key === 'Enter' || e.key === ' ') && document.activeElement) {
                 var row = document.activeElement.closest
                     ? document.activeElement.closest('tr[data-cyclist-id]')
                     : null;
+
                 if (row) {
                     e.preventDefault();
                     selectRider(row);
@@ -352,4 +395,3 @@
         });
     })();
 </script>
-    
