@@ -4,6 +4,7 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    // ViewModel voor de Index (Algemeen klassement)
     public class ResultVM
     {
         public string StageName { get; set; } = "";
@@ -22,6 +23,7 @@ namespace StageProject_RaceCore.Controllers
             _context = appDbContext;
         }
 
+        // Algemeen Klassement (Spelers)
         public async Task<IActionResult> Index()
         {
             var rankData = await _context.PlayerPoints
@@ -41,8 +43,10 @@ namespace StageProject_RaceCore.Controllers
             return View(rankData);
         }
 
+        // Resultaten per Rit
         public async Task<IActionResult> StageResults(int? raceId)
         {
+            // 1. Haal alle wedstrijden op voor de dropdown
             var races = await _context.Races
                 .OrderBy(r => r.Name)
                 .ThenBy(r => r.Year)
@@ -57,94 +61,85 @@ namespace StageProject_RaceCore.Controllers
             }
 
             int selectedRaceId = raceId ?? races.First().Id;
-
             ViewBag.Races = races;
             ViewBag.SelectedRaceId = selectedRaceId;
 
+            // 2. Haal alle ritten van de geselecteerde wedstrijd op
             var stages = await _context.Stages
                 .Where(s => s.RaceId == selectedRaceId)
                 .OrderBy(s => s.StageNumber)
                 .ToListAsync();
 
+            // 3. Haal de puntenregels eenmalig op voor de berekeningen
             var rules = await _context.PointsRules.ToListAsync();
 
             var stageTables = new List<object>();
 
             foreach (var stage in stages)
             {
+                // Haal de top 25 uitslag op
                 var results = await _context.StageResults
                     .Include(sr => sr.Cyclist)
                     .Where(sr => sr.StageId == stage.Id)
                     .OrderBy(sr => sr.Position)
                     .ToListAsync();
 
+                // Haal de truien op (geregistreerd via Stage Input)
                 var jerseys = await _context.Jerseys
                     .Include(j => j.Cyclist)
                     .Where(j => j.StageId == stage.Id)
                     .ToListAsync();
 
-                var top25CyclistIds = results
-                    .Select(r => r.CyclistId)
-                    .ToHashSet();
+                var top25CyclistIds = results.Select(r => r.CyclistId).ToHashSet();
 
+                // --- VERWERK TOP 25 ---
                 var rows = results.Select(sr =>
                 {
-                    int normalPoints = rules
-                        .Where(pr =>
-                            pr.Type == "Rit" &&
-                            pr.FromPosition <= sr.Position &&
-                            pr.ToPosition >= sr.Position)
+                    // Punten op basis van positie
+                    int positionPoints = rules
+                        .Where(pr => pr.Type == "Rit" && pr.FromPosition <= sr.Position && pr.ToPosition >= sr.Position)
                         .Sum(pr => pr.Points);
 
-                    var cyclistJerseys = jerseys
-                        .Where(j => j.CyclistId == sr.CyclistId)
-                        .ToList();
+                    // Truien die deze renner in deze rit heeft
+                    var cyclistJerseys = jerseys.Where(j => j.CyclistId == sr.CyclistId).ToList();
 
-                    int jerseyPoints = cyclistJerseys
-                        .Sum(j =>
-                        {
-                            string ruleType = GetRuleTypeForJersey(j.Type);
-
-                            return rules
-                                .Where(pr => pr.Type == ruleType)
-                                .Sum(pr => pr.Points);
-                        });
-
-                    string jerseyTypes = string.Join(", ",
-                        cyclistJerseys.Select(j => GetJerseyName(j.Type)));
+                    int jerseyPoints = cyclistJerseys.Sum(j =>
+                        rules.Where(pr => pr.Type == GetRuleTypeForJersey(j.Type)).Sum(pr => pr.Points)
+                    );
 
                     return new
                     {
                         Position = sr.Position.ToString(),
-                        CyclistName = sr.Cyclist != null ? sr.Cyclist.FullName : "Onbekend",
-                        Points = normalPoints,
-                        JerseyTypes = jerseyTypes,
+                        CyclistName = sr.Cyclist?.FullName ?? "Onbekend",
+                        Points = positionPoints,
+                        JerseyTypes = string.Join(", ", cyclistJerseys.Select(j => GetJerseyDisplayName(j.Type))),
                         JerseyPoints = jerseyPoints,
-                        Total = normalPoints + jerseyPoints
+                        Total = positionPoints + jerseyPoints
                     };
                 }).ToList();
 
+                // --- VERWERK TRUIDRAGERS BUITEN TOP 25 ---
                 var outsideJerseyRows = jerseys
                     .Where(j => !top25CyclistIds.Contains(j.CyclistId))
-                    .Select(j =>
+                    .GroupBy(j => j.CyclistId) // Groepeer per renner
+                    .Select(group =>
                     {
-                        string ruleType = GetRuleTypeForJersey(j.Type);
+                        var cyclist = group.First().Cyclist;
 
-                        int jerseyPoints = rules
-                            .Where(pr => pr.Type == ruleType)
-                            .Sum(pr => pr.Points);
+                        int jerseyPoints = group.Sum(j =>
+                            rules.Where(pr => pr.Type == GetRuleTypeForJersey(j.Type)).Sum(pr => pr.Points)
+                        );
 
                         return new
                         {
-                            Position = "-",
-                            CyclistName = j.Cyclist != null ? j.Cyclist.FullName : "Onbekend",
+                            Position = ">25",
+                            CyclistName = cyclist?.FullName ?? "Onbekend",
                             Points = 0,
-                            JerseyTypes = GetJerseyName(j.Type),
+                            JerseyTypes = string.Join(", ", group.Select(j => GetJerseyDisplayName(j.Type))),
                             JerseyPoints = jerseyPoints,
                             Total = jerseyPoints
                         };
-                    })
-                    .ToList();
+                    }).ToList();
 
                 stageTables.Add(new
                 {
@@ -155,26 +150,33 @@ namespace StageProject_RaceCore.Controllers
             }
 
             ViewBag.StageTables = stageTables;
-
             return View();
         }
 
+        // Matcht de database string van Stage Input met de PointsRules Type kolom
         private static string GetRuleTypeForJersey(string jerseyType)
         {
             return jerseyType switch
             {
-                "Yellow" => "RodeTrui",
+                "Red" => "RodeTrui",
                 "Green" => "GroeneTrui",
-                "Polka" => "BlauweTrui",
+                "Blue" => "BlauweTrui",
                 "White" => "WitteTrui",
+                "Yellow" => "RodeTrui", // Voor het geval 'Yellow' wordt gebruikt voor de leider
+                "Polka" => "BlauweTrui", // Voor het geval 'Polka' wordt gebruikt
                 _ => jerseyType
             };
         }
 
-        private static string GetJerseyName(string type)
+        // Voor een nette weergave in de tabel
+        private static string GetJerseyDisplayName(string type)
         {
             return type switch
             {
+                "Red" or "Yellow" => "Rode trui",
+                "Green" => "Groene trui",
+                "Blue" or "Polka" => "Blauwe trui",
+                "White" => "Witte trui",
                 "RodeTrui" => "Rode trui",
                 "GroeneTrui" => "Groene trui",
                 "BlauweTrui" => "Blauwe trui",
