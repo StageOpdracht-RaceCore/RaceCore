@@ -1,39 +1,55 @@
-﻿
-/* ===============================
-   ALGEMENE KAARTEN
-================================= */
-.back {
-    width: 180px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 16px;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
-}
-
-.filters,
-.cyclistsOverview {
-    background: #ffffff;
+﻿.cyclist-page {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 0;
-    padding: 28px;
-    margin-bottom: 0;
-    border-radius: 20px;
+    gap: 20px;
+    width: 100%;
+    padding: 24px;
 }
 
-.team-dashboard-white-btn {
-    display:flex;
+.cyclist-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: #ffffff;
+}
+
+.cyclist-header-copy {
+    min-width: 0;
+}
+
+.cyclist-page-kicker,
+.cyclist-card-kicker {
+    margin: 0 0 6px;
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.cyclist-card-kicker {
+    color: #2563eb;
+}
+
+.cyclist-page-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.cyclist-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+    font-weight: 700;
+}
+
+.cyclist-dashboard-white-btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 54px;
@@ -44,343 +60,312 @@
     font-size: 17px;
     font-weight: 900;
     text-decoration: none;
-    white-space: nowrap;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
     transition: 0.2s ease;
-    width: 120px;
 }
 
-    .team-dashboard-white-btn:hover {
+    .cyclist-dashboard-white-btn:hover {
         color: #070b3f;
         background: #f8fafc;
         transform: translateY(-2px);
     }
-/* ===============================
-   TITELS IN DE KAARTEN
-================================= */
 
-h4 {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #2563eb;
+.cyclist-filter-card,
+.cyclist-table-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
 }
 
-h3 {
-    margin: 0 0 22px 0;
-    font-size: 20px;
-    font-weight: 800;
-    line-height: 1.2;
+.cyclist-card-title h2,
+.cyclist-table-header h2 {
+    margin: 0 0 18px;
     color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
 }
 
-
-/* ===============================
-   FILTER FORMULIER
-================================= */
-
-.cyclistsForm {
-    display: flex;
+.cyclist-filter-form {
+    display: grid;
+    grid-template-columns: 1fr 260px auto;
     gap: 16px;
     align-items: end;
 }
 
-/* ===============================
-   INPUTS EN SELECTS
-================================= */
-
-.select {
-    width: 100%;
-    height: 52px;
-    padding: 0 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #111827;
-    font-size: 14px;
-    outline: none;
-    appearance: none;
-    transition: all 0.2s ease;
-}
-
-    .select:focus {
-        border-color: #2563eb;
-        background: #ffffff;
-        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
-    }
-
-/* ===============================
-   KNOPPEN
-================================= */
-.formButton {
-    width: 80px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 16px;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
-}
-
-.pageBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
-}
-
-
-
-/* ===============================
-   AANTAL RESULTATEN + RESET KNOP
-================================= */
-
-.countAndReset {
+.cyclist-form-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    margin-top: 22px;
+    flex-direction: column;
+    gap: 8px;
 }
 
-    .countAndReset p {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 16px;
-        background: #dbeafe;
-        color: #1d4ed8;
-        border: 1px solid rgba(191, 219, 254, 0.95);
-        border-radius: 999px;
-        font-size: 15px;
+    .cyclist-form-group label {
+        color: #334155;
+        font-size: 13px;
         font-weight: 800;
-        line-height: 1;
-        backdrop-filter: blur(4px);
-        margin: 0;
     }
 
+.cyclist-input {
+    width: 100%;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 0 12px;
+    color: #111827;
+    background: #ffffff;
+    outline: none;
+}
 
-/* ===============================
-   TABEL
-================================= */
+    .cyclist-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
 
-.cyclistsTableWrapper {
+.cyclist-button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.cyclist-primary-btn,
+.cyclist-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.cyclist-primary-btn {
+    color: #ffffff;
+    background: #2563eb;
+}
+
+    .cyclist-primary-btn:hover {
+        background: #1d4ed8;
+    }
+
+.cyclist-reset-btn {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+    .cyclist-reset-btn:hover {
+        color: #991b1b;
+        background: #fecaca;
+    }
+
+.cyclist-count {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    gap: 8px;
+    margin-top: 18px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.cyclist-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cyclist-table-wrapper {
     width: 100%;
     overflow-x: auto;
 }
 
-.cyclistsTable {
+.cyclist-table {
     width: 100%;
-    min-width: 700px;
-    border-collapse: separate;
-    border-spacing: 0;
+    min-width: 850px;
+    border-collapse: collapse;
 }
 
-    .cyclistsTable thead th {
+    .cyclist-table th {
         text-align: left;
+        padding: 12px;
+        color: #475569;
+        background: #f1f5f9;
         font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.02em;
+        font-weight: 900;
         white-space: nowrap;
-        color: #6b7280;
-        background: #f8fafc;
-        border-bottom: 1px solid #e5e7eb;
     }
 
-    .cyclistsTable tbody td {
-        padding: 18px 16px;
-        border-bottom: 1px solid #eef2f7;
-        vertical-align: middle;
+    .cyclist-table td {
+        padding: 14px 12px;
+        border-top: 1px solid #e5e7eb;
         color: #111827;
-        background: #ffffff;
-        border-bottom: 1px solid #eef2f7;
-        transition: background-color 0.2s ease;
+        vertical-align: middle;
     }
 
-    .cyclistsTable tbody tr:hover {
-        background: #f8fbff;
+    .cyclist-table tbody tr:hover {
+        background: #f8fafc;
     }
 
-    .cyclistsTable tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-.cyclistName {
+.cyclist-name {
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     color: #111827;
 }
 
-.cyclistTeam {
-    font-size: 13px;
-    color: #6b7280;
+.cyclist-team {
+    font-size: 14px;
+    font-weight: 700;
+    color: #64748b;
 }
 
-
-/* ===============================
-   STATUS BADGES
-================================= */
-
-.status,
-.race {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 100px;
-    padding: 8px 12px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.statusActive {
-    background: #dcfce7;
-    color: #166534;
-    border-color: #bbf7d0;
-}
-
-.statusInactive {
-    background: #fee2e2;
-    color: #991b1b;
-    border-color: #fecaca;
-}
-
+.cyclist-status,
 .race-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 56px;
+    min-width: 92px;
     padding: 8px 12px;
-    border: 1px solid transparent;
     border-radius: 999px;
+    border: 1px solid transparent;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 900;
     line-height: 1;
 }
 
-.raceYes {
-    background: #dbeafe;
+.status-active {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.status-inactive {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.race-badge {
+    min-width: 56px;
+}
+
+.race-yes {
     color: #1d4ed8;
+    background: #dbeafe;
     border-color: #bfdbfe;
 }
 
-.raceNo {
-    background: #f3f4f6;
-    color: #6b7280;
+.race-no {
+    color: #64748b;
+    background: #f1f5f9;
     border-color: #e5e7eb;
 }
 
-
-/* ===============================
-   LEGE STATE
-================================= */
-
-.empty {
-    text-align: center;
-    font-size: 14px;
+.cyclist-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 24px;
+    flex-wrap: wrap;
 }
 
-/* Scrollbar */
-.cyclistsTableWrapper::-webkit-scrollbar {
+.cyclist-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 12px;
+    color: #1e3a8a;
+    background: #eef2ff;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+    .cyclist-page-btn:hover {
+        color: #1e3a8a;
+        background: #e0e7ff;
+    }
+
+    .cyclist-page-btn.active {
+        color: #ffffff;
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+.cyclist-empty {
+    padding: 28px;
+    border-radius: 16px;
+    color: #64748b;
+    background: #f8fafc;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.cyclist-table-wrapper::-webkit-scrollbar {
     height: 10px;
 }
 
-.cyclistsTableWrapper::-webkit-scrollbar-track {
+.cyclist-table-wrapper::-webkit-scrollbar-track {
     background: #e5e7eb;
     border-radius: 999px;
 }
 
-.pagenumbers {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 24px;
-    flex-wrap: wrap;
+.cyclist-table-wrapper::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 999px;
 }
 
-.pageBtn {
-    min-height: 40px;
-    background: #eef2ff;
-    color: #1e3a8a;
-    border: 1px solid transparent;
-}
-
-    .pageBtn:hover {
-        background: #e0e7ff;
-        color: #1e3a8a;
-    }
-
-    .pageBtn.active {
-        background: #2563eb;
-        color: white;
-        border-color: #2563eb;
-    }
-
-/* Responsive */
-@media (max-width: 1100px) {
-    .cyclists-form {
+@media (max-width: 1000px) {
+    .cyclist-filter-form {
         grid-template-columns: 1fr 1fr;
     }
 
-    .button-group {
+    .cyclist-button-group {
         grid-column: 1 / -1;
     }
 }
 
 @media (max-width: 768px) {
-    .page {
+    .cyclist-page {
         padding: 14px;
     }
 
-    .header {
+    .cyclist-header-card {
+        flex-direction: column;
+        align-items: stretch;
         padding: 24px;
     }
 
-    h1,
-    h3 {
+    .cyclist-page-title {
         font-size: 26px;
     }
 
-    .cyclistsForm {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .select {
+    .cyclist-dashboard-white-btn {
         width: 100%;
     }
 
-    .countAndReset {
-        flex-direction: column;
-        align-items: stretch;
+    .cyclist-filter-form {
+        grid-template-columns: 1fr;
     }
 
-    .cyclistsTable {
-        min-width: 850px;
+    .cyclist-button-group {
+        flex-direction: column;
+    }
+
+    .cyclist-primary-btn,
+    .cyclist-reset-btn {
+        width: 100%;
     }
 }
