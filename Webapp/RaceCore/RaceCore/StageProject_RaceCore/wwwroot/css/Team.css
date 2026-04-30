@@ -5,12 +5,40 @@
     padding: 18px;
 }
 
-.team-top-actions {
+.team-antiforgery {
+    display: none;
+}
+
+.team-hero-title-row {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 12px;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
 }
+
+.team-dashboard-btn {
+    white-space: nowrap;
+    color: #ffffff;
+    background: rgba(29, 78, 216, 0.55);
+    border: 1px solid rgba(191, 219, 254, 0.35);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+    .team-dashboard-btn:hover {
+        color: #ffffff;
+        background: rgba(29, 78, 216, 0.68);
+        border-color: rgba(191, 219, 254, 0.55);
+        transform: translateY(-1px);
+    }
+
+    .team-dashboard-btn:focus-visible {
+        outline: 2px solid rgba(191, 219, 254, 0.9);
+        outline-offset: 2px;
+    }
 
 .team-header-card,
 .team-table-card,
@@ -413,6 +441,29 @@ tr[data-cyclist-id] {
         background: #f8fafc;
     }
 
+/* Hero (title card) dashboard button overrides */
+.player-teams-hero .team-dashboard-btn {
+    color: #ffffff;
+    background: rgba(29, 78, 216, 0.55);
+    border: 1px solid rgba(191, 219, 254, 0.35);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.player-teams-hero .team-dashboard-btn:hover {
+    color: #ffffff;
+    background: rgba(29, 78, 216, 0.68);
+    border-color: rgba(191, 219, 254, 0.55);
+    transform: translateY(-1px);
+}
+
+.player-teams-hero .team-dashboard-btn:focus-visible {
+    outline: 2px solid rgba(191, 219, 254, 0.9);
+    outline-offset: 2px;
+}
+
 @media (max-width: 900px) {
     .player-teams-hero {
         align-items: stretch;
@@ -451,5 +502,9 @@ tr[data-cyclist-id] {
 
     .team-hero-stats {
         grid-template-columns: 1fr;
+    }
+
+    .team-hero-title-row {
+        align-items: flex-start;
     }
 }

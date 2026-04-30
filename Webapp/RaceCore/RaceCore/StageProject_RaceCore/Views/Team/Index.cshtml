@@ -21,14 +21,17 @@
 
 <link rel="stylesheet" href="~/css/team.css" asp-append-version="true" />
 
-<div class="team-page">
-    <div class="team-top-actions">
-        <a asp-controller="Dashboard" asp-action="Index" class="team-btn team-btn-secondary">Dashboard</a>
+<div class="team-page" data-game-id="@Model.GameId">
+    <div class="team-antiforgery">
+        @Html.AntiForgeryToken()
     </div>
     <section class="team-header-card player-teams-hero">
         <div class="team-hero-copy">
             <p class="team-page-kicker">RaceCore Game</p>
-            <h1 class="team-page-title">Teams</h1>
+            <div class="team-hero-title-row">
+                <h1 class="team-page-title">Teams</h1>
+                <a asp-controller="Dashboard" asp-action="Index" class="team-btn team-dashboard-btn">Dashboard</a>
+            </div>
             <p class="team-page-subtitle">
                 @if (Model.HasGame)
                 {
@@ -94,6 +97,7 @@
                     : Math.Min(100, playerTeam.ActiveRiders.Count * 100 / Model.ActiveRiderSlots);
 
                 <article class="player-team-card"
+                         data-player-id="@playerTeam.PlayerId"
                          style="--player-color:@playerTeam.Color; --player-color-soft:@playerTeam.ColorSoft; --player-color-dark:@playerTeam.ColorDark; --player-text-color:@playerTeam.TextColor;">
                     <header class="player-team-header">
                         <div class="player-team-identity">
@@ -238,6 +242,9 @@
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
 
+            var activeRow = rowA.classList.contains('active-rider') ? rowA : rowB;
+            var benchRow = activeRow === rowA ? rowB : rowA;
+
             // Swap rider name
             var tmpName = cellsA[1].innerHTML;
             cellsA[1].innerHTML = cellsB[1].innerHTML;
@@ -256,6 +263,44 @@
             // Handle empty-slot state: a row becomes empty if the partner had no cyclist id
             toggleEmptyState(rowA, rowB);
             toggleEmptyState(rowB, rowA);
+
+            persistSwap(activeRow, benchRow);
+        }
+
+        function persistSwap(activeRow, benchRow) {
+            var card = activeRow.closest('.player-team-card');
+            if (!card) {
+                return;
+            }
+
+            var gameId = document.querySelector('.team-page')?.dataset?.gameId;
+            var playerId = card.dataset.playerId;
+            var activeCyclistId = activeRow.dataset.cyclistId;
+            var benchCyclistId = benchRow.dataset.cyclistId;
+
+            if (!gameId || !playerId || !activeCyclistId || !benchCyclistId) {
+                return;
+            }
+
+            var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
+            if (!token) {
+                return;
+            }
+
+            var body =
+                '__RequestVerificationToken=' + encodeURIComponent(token) +
+                '&gameId=' + encodeURIComponent(gameId) +
+                '&playerId=' + encodeURIComponent(playerId) +
+                '&activeCyclistId=' + encodeURIComponent(activeCyclistId) +
+                '&benchCyclistId=' + encodeURIComponent(benchCyclistId);
+
+            fetch('@Url.Action("SwapActiveBench", "Team")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: body
+            }).catch(function () {
+                // UI swap already happened; if persistence fails, a refresh will restore server state.
+            });
         }
 
         function toggleEmptyState(targetRow, sourceRow) {
