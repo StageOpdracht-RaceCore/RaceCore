@@ -25,7 +25,7 @@
     <section class="team-header-card player-teams-hero">
         <div class="team-hero-copy">
             <p class="team-page-kicker">RaceCore Game</p>
-            <h1 class="team-page-title">Spelersteams</h1>
+            <h1 class="team-page-title">Teams</h1>
             <p class="team-page-subtitle">
                 @if (Model.HasGame)
                 {
@@ -59,7 +59,7 @@
     @if (!Model.PlayerTeams.Any())
     {
         <section class="team-table-card team-empty-state">
-            <h2>Geen spelersteams gevonden</h2>
+            <h2>Geen teams gevonden</h2>
             <p>Er is nog geen actieve game met spelers of draftbeurten.</p>
             <a asp-controller="Game" asp-action="New" class="team-btn team-btn-primary">Nieuwe game starten</a>
         </section>
@@ -114,7 +114,7 @@
                         <table class="player-roster-table">
                             <thead>
                                 <tr>
-                                    <th>Slot</th>
+                                    <th>nr.</th>
                                     <th>Renner</th>
                                     <th>Ploeg</th>
                                     <th>Rol</th>
@@ -130,7 +130,7 @@
                                 {
                                     var rider = playerTeam.ActiveRiders.ElementAtOrDefault(index);
 
-                                    <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "")">
+                                    <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "") @(index == Model.ActiveRiderSlots - 1 ? "roster-before-bench" : "")">
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -153,7 +153,7 @@
                                     var rider = playerTeam.BenchRiders.ElementAtOrDefault(index);
 
                                     <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")">
-                                        <td class="slot-number">@(index + 1)</td>
+                                        <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
                                         </td>
