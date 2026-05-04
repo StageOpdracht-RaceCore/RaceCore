@@ -144,6 +144,7 @@
             const hidden = input.nextElementSibling;
             const typedValue = input.value.trim().toLowerCase();
             const option = Array.from(list.options).find(o => o.value.trim().toLowerCase() === typedValue);
+
             if (option) {
                 hidden.value = option.getAttribute("data-id");
                 input.style.borderColor = "#10b981";
@@ -154,7 +155,8 @@
         }
 
         function clearTop25Jersey(jerseyType) {
-            document.querySelectorAll('.js-jersey-checkbox[data-jersey="' + jerseyType + '"]').forEach(box => box.checked = false);
+            document.querySelectorAll('.js-jersey-checkbox[data-jersey="' + jerseyType + '"]')
+                .forEach(box => box.checked = false);
         }
 
         function clearOutsideJersey(jerseyType) {
@@ -162,22 +164,37 @@
             const hidden = document.querySelector(`input[name="${map[jerseyType]}OutsideTop25CyclistId"]`);
             if (hidden) {
                 const textInput = hidden.previousElementSibling;
-                hidden.value = ""; textInput.value = "";
+                hidden.value = "";
+                textInput.value = "";
             }
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+
             document.querySelectorAll(".js-jersey-checkbox").forEach(box => {
                 box.addEventListener("change", function () {
-                    if (this.checked) {
-                        const jerseyType = this.dataset.jersey;
-                        document.querySelectorAll(`.js-jersey-checkbox[data-jersey="${jerseyType}"]`).forEach(other => {
-                            if (other !== this) other.checked = false;
+
+                    if (!this.checked) return;
+
+                    const jerseyType = this.dataset.jersey;
+                    const currentRow = this.closest(".result-item-card");
+
+                    // ✅ 1 trui per renner (zelfde rij)
+                    currentRow.querySelectorAll(".js-jersey-checkbox").forEach(cb => {
+                        if (cb !== this) cb.checked = false;
+                    });
+
+                    // ✅ 1 trui per type (globaal)
+                    document.querySelectorAll(`.js-jersey-checkbox[data-jersey="${jerseyType}"]`)
+                        .forEach(cb => {
+                            if (cb !== this) cb.checked = false;
                         });
-                        clearOutsideJersey(jerseyType);
-                    }
+
+                    // ✅ buiten top 25 leegmaken als gekozen in top 25
+                    clearOutsideJersey(jerseyType);
                 });
             });
+
         });
     </script>
 }
