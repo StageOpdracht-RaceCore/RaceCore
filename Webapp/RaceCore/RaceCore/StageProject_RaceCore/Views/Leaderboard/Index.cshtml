@@ -8,19 +8,27 @@
 }
 
 <link rel="stylesheet" href="~/css/Leaderboard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
 
-<div class="leaderboard-page">
 
     <section class="leaderboard-hero">
+<<<<<<< Updated upstream
         <div>
             <p class="leaderboard-kicker">RaceCore Ranking</p>
             <h1 class="leaderboard-title">Leaderboard</h1>
             <p class="leaderboard-subtitle">
                 Bekijk welke speler momenteel de meeste punten heeft in deze game.
             </p>
+=======
+        <div class="leaderboardtitle-card">
+            <h6>RaceCore Ranking</h6>
+            <h1>Leaderboard</h1>
+            <p>Bekijk welke speler momenteel de meeste punten heeft in deze game.</p>
+>>>>>>> Stashed changes
         </div>
         <div>
 
+        <div>
         <form asp-controller="Leaderboard" asp-action="Index" method="get" class="leaderboard-game-form">
             <label for="gameId">Game</label>
             <select id="gameId" name="gameId" onchange="this.form.submit()">
@@ -41,10 +49,18 @@
                 }
             </select>
         </form>
+<<<<<<< Updated upstream
             <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
                 Dashboard
             </a>
             </div>
+=======
+
+        <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
+            Dashboard
+        </a>
+        </div>
+>>>>>>> Stashed changes
     </section>
 
     @if (!Model.Games.Any())
@@ -167,4 +183,7 @@
             }
         </section>
     }
+<<<<<<< Updated upstream
 </div>
+=======
+>>>>>>> Stashed changes
