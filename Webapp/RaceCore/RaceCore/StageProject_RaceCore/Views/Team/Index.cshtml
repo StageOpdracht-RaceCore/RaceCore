@@ -243,8 +243,11 @@
                 return;
             }
 
-            swapRows(selectedRow, row);
-            clearSelection();
+            try {
+                swapRows(selectedRow, row);
+            } finally {
+                clearSelection();
+            }
         };
 
         function enableSwapMode(card, selected) {
@@ -294,6 +297,32 @@
             updateRowState(rowB);
 
             persistSwap(activeRow, benchRow);
+        }
+
+        function updateRowState(row) {
+            if (!row) {
+                return;
+            }
+
+            var id = row.dataset.cyclistId;
+            var hasRider = id !== undefined && id !== '' && String(id) !== '0';
+
+            row.classList.toggle('empty-slot', !hasRider);
+
+            var cells = row.querySelectorAll('td');
+            if (cells.length < 4) {
+                return;
+            }
+
+            if (!hasRider) {
+                cells[3].innerHTML = '';
+            } else {
+                var isActiveRow = row.classList.contains('active-rider');
+                var pillClass = isActiveRow ? 'active' : 'bench';
+                var pillLabel = isActiveRow ? 'Renner' : 'Bank';
+                cells[3].innerHTML =
+                    '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
+            }
         }
 
         function persistSwap(activeRow, benchRow) {
