@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Leaderboard";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     int maxPoints = Model.HighestPoints > 0 ? Model.HighestPoints : 1;
 }
