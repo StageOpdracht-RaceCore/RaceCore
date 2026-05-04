@@ -18,11 +18,8 @@
             <p class="leaderboard-subtitle">
                 Bekijk welke speler momenteel de meeste punten heeft in deze game.
             </p>
-
-            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
-                Dashboard
-            </a>
         </div>
+        <div>
 
         <form asp-controller="Leaderboard" asp-action="Index" method="get" class="leaderboard-game-form">
             <label for="gameId">Game</label>
@@ -44,6 +41,10 @@
                 }
             </select>
         </form>
+            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
+                Dashboard
+            </a>
+            </div>
     </section>
 
     @if (!Model.Games.Any())
