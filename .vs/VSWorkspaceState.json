@@ -3,8 +3,12 @@
     "",
     "\\Webapp",
     "\\Webapp\\RaceCore",
-    "\\Webapp\\RaceCore\\RaceCore"
+    "\\Webapp\\RaceCore 23-04-26",
+    "\\Webapp\\RaceCore\\RaceCore",
+    "\\Webapp\\RaceCore\\RaceCore\\StageProject_RaceCore",
+    "\\Webapp\\RaceCore\\RaceCore\\StageProject_RaceCore\\Views",
+    "\\Webapp\\RaceCore\\RaceCore\\StageProject_RaceCore\\Views\\Leaderboard"
   ],
-  "SelectedNode": "\\Webapp\\RaceCore\\RaceCore\\RaceCore.slnx",
+  "SelectedNode": "\\Webapp\\RaceCore\\RaceCore\\StageProject_RaceCore\\Views\\Leaderboard\\Index.cshtml",
   "PreviewInSolutionExplorer": false
 }
