@@ -1,4 +1,4 @@
-﻿.leaderboard-page {
+.leaderboard-page {
     width: 100%;
     max-width: 1600px;
     margin: 0 auto;
@@ -18,31 +18,35 @@
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
 }
 
-.leaderboard-kicker {
-    margin: 0 0 8px;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #bfdbfe;
+.leaderbord-title{
+
 }
 
-.leaderboard-title {
+.leaderbord-title h6{
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #bfdbfe;
+}
+
+  .leaderbord-title h1 {
     margin: 0;
     font-size: 34px;
-    font-weight: 900;
-}
+    font-weight: bold;
+  }
 
-.leaderboard-subtitle {
-    margin: 8px 0 0;
-    max-width: 600px;
-    color: #dbeafe;
+.leaderbord-title p{
+  margin-top: 8px;
+  max-width: 600px;
+  color: #dbeafe;
 }
 .cyclist-dashboard-white-btn {
+    width:100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 54px;
+    margin-top:15px;
     padding: 0 26px;
     border-radius: 14px;
     color: #070b3f;
