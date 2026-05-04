@@ -1,8 +1,7 @@
-﻿@model StageProject_RaceCore.ViewModels.LeaderboardViewModel
+@model StageProject_RaceCore.ViewModels.LeaderboardViewModel
 
 @{
     ViewData["Title"] = "Leaderboard";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 
     int maxPoints = Model.HighestPoints > 0 ? Model.HighestPoints : 1;
 }
