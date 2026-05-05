@@ -97,6 +97,50 @@
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
+/* =========================================
+   ALERTS - NIEUWE STYLING VOOR FOUTMELDINGEN 
+   ========================================= */
+.alert-danger {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(153, 27, 27, 0.08);
+    animation: slideIn 0.3s ease-out;
+}
+
+    .alert-danger i {
+        font-size: 20px;
+    }
+
+    .alert-danger strong {
+        background: #ef4444;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 8px;
+    }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Truien */
 .jersey-flex {
     display: flex;
@@ -134,18 +178,13 @@
     border: 2px solid #94a3b8 !important;
 }
 
-/* Geselecteerde trui in top 25 */
 input[type="checkbox"]:checked + .jersey-dot {
     filter: saturate(1) opacity(1);
     transform: scale(1.2);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
-/* Truidragers buiten top 25: altijd kleur tonen */
-.pos-badge.dot-red,
-.pos-badge.dot-green,
-.pos-badge.dot-blue,
-.pos-badge.dot-white {
+.pos-badge.dot-red, .pos-badge.dot-green, .pos-badge.dot-blue, .pos-badge.dot-white {
     filter: none !important;
 }
 
@@ -186,32 +225,13 @@ input[type="checkbox"]:checked + .jersey-dot {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-    .player-btn-white:hover,
-    .player-btn-white.active {
+    .player-btn-white:hover {
         background: #eff6ff;
-        color: #1d4ed8;
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
     }
 
-/* Alerts */
-.draft-alert {
-    padding: 14px 18px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-    border: 1px solid #bbf7d0;
-    background: #ecfdf5;
-    color: #166534;
-    font-weight: 700;
-}
-
-.draft-alert-error {
-    background: #fef2f2;
-    color: #991b1b;
-    border-color: #fecaca;
-}
-
-/* Utility */
+/* Utility & Forms */
 .d-none {
     display: none !important;
 }
@@ -220,16 +240,15 @@ input[type="checkbox"]:checked + .jersey-dot {
     padding-left: 12px;
     padding-right: 12px;
 }
-.race-select-form,
-.scoring-stage-form {
+
+.race-select-form, .scoring-stage-form {
     display: flex;
     align-items: end;
     gap: 14px;
     flex-wrap: wrap;
 }
 
-.race-select-group,
-.scoring-stage-group {
+.race-select-group, .scoring-stage-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -243,83 +262,12 @@ input[type="checkbox"]:checked + .jersey-dot {
     width: min(100%, 300px);
 }
 
-    .race-select-group label,
-    .scoring-stage-group label {
+    .race-select-group label, .scoring-stage-group label {
         font-weight: 700;
         color: #374151;
     }
 
-.app-select,
-.scoring-stage-select {
-    height: 46px;
-    border-radius: 14px;
-    border: 1px solid #d1d5db;
-    background: #f9fafb;
-    color: #111827;
-    padding: 0 14px;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-    .app-select:focus,
-    .scoring-stage-select:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-.app-btn {
-    min-height: 46px;
-    padding: 0 20px;
-    border-radius: 14px;
-    border: none;
-    font-weight: 800;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.2s ease;
-}
-
-.app-btn-primary {
-    background: #2563eb;
-    color: white;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
-}
-
-    .app-btn-primary:hover {
-        background: #1d4ed8;
-        transform: translateY(-1px);
-    }
-
-.scoring-selector-form {
-    display: flex;
-    gap: 16px;
-    align-items: end;
-    flex-wrap: wrap;
-}
-
-
-.scoring-stage-group {
-    flex: 1;
-    min-width: 240px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-@media (max-width: 700px) {
-    .race-select-form,
-    .scoring-stage-form {
-        align-items: stretch;
-    }
-
-    .race-select-group,
-    .scoring-stage-group,
-    .app-btn {
-        width: 100%;
-    }
-}
-/* Responsive */
+/* Responsive Media Queries */
 @media (max-width: 900px) {
     .player-header-card {
         flex-direction: column;
@@ -334,6 +282,16 @@ input[type="checkbox"]:checked + .jersey-dot {
     .jersey-flex {
         grid-column: 2;
         justify-content: flex-start;
+    }
+}
+
+@media (max-width: 700px) {
+    .race-select-form, .scoring-stage-form {
+        align-items: stretch;
+    }
+
+    .race-select-group, .scoring-stage-group, .app-btn {
+        width: 100%;
     }
 }
 

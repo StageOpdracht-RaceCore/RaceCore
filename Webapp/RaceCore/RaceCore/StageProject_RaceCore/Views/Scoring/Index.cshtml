@@ -56,7 +56,7 @@
 
                 <div style="flex: 0 0 40%;">
                     <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">Rit kiezen</label>
-                    <select name="stageId" class="player-search-input" style="width: 100%;">
+                    <select asp-for="StageId" asp-items="stages" class="player-search-input" style="width: 100%;">
                         @foreach (var stage in stages)
                         {
                             <!option value="@stage.Value" @(stage.Selected ? "selected" : "")>
@@ -169,11 +169,16 @@
 
                     const jerseyType = this.dataset.jersey;
                     const currentRow = this.closest(".result-item-card");
-                    // ✅ buiten top 25 leegmaken als gekozen in top 25
                     clearOutsideJersey(jerseyType);
                 });
             });
 
+        });
+                document.querySelector('select[name="stageId"]').addEventListener('change', function () {
+            const hidden = document.querySelector('input[name="StageId"]');
+            if (hidden) {
+                hidden.value = this.value;
+            }
         });
     </script>
 }
