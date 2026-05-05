@@ -51,6 +51,18 @@
     font-weight: 700;
 }
 
+/* 🔥 NIEUW: wrapper voor knoppen (fix layout) */
+.result-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ===============================
+   BUTTONS (IDENTIEK AAN TEAM HERO)
+================================= */
+
+.result-history-btn,
 .result-dashboard-white-btn {
     display: inline-flex;
     align-items: center;
@@ -63,11 +75,14 @@
     font-size: 17px;
     font-weight: 900;
     text-decoration: none;
+    white-space: nowrap;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
     transition: 0.2s ease;
 }
 
+    .result-history-btn:hover,
     .result-dashboard-white-btn:hover {
+        color: #070b3f;
         background: #f8fafc;
         transform: translateY(-2px);
     }
@@ -96,7 +111,7 @@
 }
 
 /* ===============================
-   FORM (zelfde structuur als cyclist)
+   FORM
 ================================= */
 
 .race-select-form {
@@ -134,7 +149,7 @@
     }
 
 /* ===============================
-   BUTTON
+   BUTTON (FORM)
 ================================= */
 
 .app-btn {
@@ -257,6 +272,12 @@
         align-items: stretch;
     }
 
+    .result-hero-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .result-history-btn,
     .result-dashboard-white-btn {
         width: 100%;
     }

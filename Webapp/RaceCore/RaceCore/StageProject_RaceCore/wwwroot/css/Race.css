@@ -1,4 +1,6 @@
-/* Page */
+/* =========================
+   GLOBAL PAGE
+========================= */
 .race-page {
     display: flex;
     flex-direction: column;
@@ -7,97 +9,110 @@
     padding: 24px;
 }
 
-/* Cards */
-.race-header-card,
-.race-table-card,
-.race-detail-card,
-.race-stat-card,
-.race-details-hero,
-.race-form-card {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
-    border: 1px solid #e5e7eb;
-}
-
-.race-header-card,
-.race-details-hero {
+/* =========================
+   HEADER
+========================= */
+.race-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
     padding: 28px;
+    border-radius: 20px;
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: #ffffff;
 }
 
-.race-table-card,
-.race-detail-card,
-.race-stat-card,
-.race-form-card {
-    padding: 24px;
-}
-
-.race-form-card {
-    max-width: 760px;
-    width: 100%;
-    margin: 0 auto;
-}
-
-/* Header */
-.race-details-hero {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.race-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 74px;
-    height: 74px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    font-size: 28px;
-    font-weight: 800;
-    color: #ffffff;
-    background: linear-gradient(135deg, #2563eb, #0f172a);
-}
-
-.race-page-kicker,
-.race-section-kicker {
-    margin: 0 0 8px 0;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-}
-
 .race-page-kicker {
-    opacity: 0.85;
-}
-
-.race-section-kicker {
-    color: #2563eb;
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #bfdbfe;
 }
 
 .race-page-title {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     font-size: 32px;
-    font-weight: 800;
-    color: #ffffff;
+    font-weight: 900;
 }
 
 .race-page-subtitle {
     margin: 0;
     font-size: 15px;
+    font-weight: 700;
     color: #dbeafe;
 }
 
-.race-card-title {
-    margin: 0 0 22px 0;
-    font-size: 32px;
-    font-weight: 800;
-    color: #111827;
+/* =========================
+   BUTTON BASE (SHARED FIX)
+========================= */
+.race-btn,
+.race-primary-btn,
+.race-dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s ease;
+    border-radius: 12px;
 }
 
+/* =========================
+   DASHBOARD BUTTON
+========================= */
+.race-dashboard-btn {
+    min-height: 54px;
+    padding: 0 26px;
+    font-size: 17px;
+    font-weight: 900;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+
+    .race-dashboard-btn:hover {
+        transform: translateY(-2px);
+        background: #f8fafc;
+    }
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+.race-primary-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 900;
+    background: #2563eb;
+    color: #fff;
+    border: 1px solid #2563eb;
+}
+
+    .race-primary-btn:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+/* =========================
+   CARDS
+========================= */
+.race-table-card,
+.race-filter-card,
+.race-form-card,
+.race-detail-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+/* =========================
+   CARD HEADER
+========================= */
 .race-table-header {
     display: flex;
     justify-content: space-between;
@@ -105,299 +120,253 @@
     gap: 16px;
 }
 
-.race-form-header {
-    margin-bottom: 24px;
-}
-
-    .race-form-header p {
+    .race-table-header h2 {
         margin: 0;
-        color: #6b7280;
+        font-size: 20px;
+        font-weight: 900;
+        color: #0f172a;
     }
 
-/* Stats */
-.race-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+.race-card-kicker {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #2563eb;
 }
 
-.race-stat-label {
-    display: block;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 10px;
-}
-
-.race-stat-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
-}
-
-/* Detail list */
-.race-detail-list {
-    display: grid;
-    gap: 14px;
-}
-
-    .race-detail-list div {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 12px 0;
-        border-bottom: 1px solid #eef2f7;
-    }
-
-        .race-detail-list div:last-child {
-            border-bottom: none;
-        }
-
-    .race-detail-list span {
-        color: #6b7280;
-    }
-
-    .race-detail-list strong {
-        color: #111827;
-        text-align: right;
-    }
-
-/* Forms */
-.race-form-grid {
-    display: grid;
-    gap: 18px;
-}
-
-.race-form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 700;
-    color: #374151;
-}
-
-.race-form-input {
-    width: 100%;
-    height: 48px;
-    border-radius: 14px;
+/* =========================
+   INPUTS
+========================= */
+.race-input {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
     border: 1px solid #d1d5db;
-    padding: 0 14px;
-    font-size: 15px;
-    background: #f9fafb;
-    color: #111827;
+    outline: none;
     transition: 0.2s ease;
 }
 
-    .race-form-input:focus {
-        outline: none;
+    .race-input:focus {
         border-color: #2563eb;
-        background: #ffffff;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
     }
 
-/* Table */
-.race-table-responsive {
+/* =========================
+   FILTER FORM
+========================= */
+.race-filter-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.race-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .race-form-group label {
+        font-size: 13px;
+        font-weight: 800;
+        color: #334155;
+    }
+
+/* =========================
+   TABLE
+========================= */
+.race-table-wrapper {
     width: 100%;
     overflow-x: auto;
 }
 
 .race-table {
     width: 100%;
+    min-width: 850px;
     border-collapse: collapse;
-    min-width: 950px;
 }
 
-.race-table-sm {
-    min-width: 650px;
-}
+    .race-table th {
+        text-align: left;
+        padding: 12px;
+        font-size: 13px;
+        font-weight: 900;
+        background: #f1f5f9;
+        color: #475569;
+    }
 
-.race-table thead th {
-    text-align: left;
-    padding: 14px 16px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: #6b7280;
-    border-bottom: 1px solid #e5e7eb;
-    background: #f8fafc;
-}
+    .race-table td {
+        padding: 14px 12px;
+        border-top: 1px solid #e5e7eb;
+    }
 
-.race-table tbody td {
-    padding: 18px 16px;
-    border-bottom: 1px solid #eef2f7;
-    vertical-align: middle;
-    color: #111827;
-}
-
-.race-table tbody tr:hover {
-    background: #f8fbff;
-}
+    .race-table tbody tr:hover {
+        background: #f8fafc;
+    }
 
 .race-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111827;
+    font-weight: 800;
 }
 
-/* Badges */
-.race-year-badge,
-.race-count {
+/* =========================
+   BADGES (improved contrast)
+========================= */
+.race-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 7px 12px;
+    padding: 6px 12px;
     border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 900;
+    background: #f1f5f9;
+    color: #64748b;
 }
 
-.race-year-badge {
+.race-year {
     background: #dbeafe;
     color: #1d4ed8;
 }
 
-.race-count {
-    background: #f3f4f6;
-    color: #6b7280;
-}
-
-/* Buttons */
-.race-table-actions,
-.race-form-actions {
+/* =========================
+   ACTIONS
+========================= */
+.race-actions {
     display: flex;
     gap: 10px;
+    justify-content: flex-end;
     flex-wrap: wrap;
 }
 
-.race-table-actions {
-    justify-content: flex-end;
-}
-
+/* =========================
+   SECONDARY BUTTONS
+========================= */
 .race-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    border-radius: 14px;
-    font-weight: 700;
-    text-decoration: none;
+    min-height: 44px;
+    padding: 0 16px;
+    font-weight: 800;
     border: none;
-    cursor: pointer;
-    transition: 0.2s ease;
 }
 
 .btn-sm {
     min-height: 38px;
-    padding: 0 14px;
     font-size: 13px;
 }
 
-.race-btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-}
-
-    .race-btn-primary:hover {
-        background: #1d4ed8;
-        color: #ffffff;
-    }
-
-.race-btn-light {
+.race-light-btn {
     background: #eef2ff;
     color: #1e3a8a;
 }
 
-    .race-btn-light:hover {
+    .race-light-btn:hover {
         background: #e0e7ff;
-        color: #1e3a8a;
     }
 
-.race-btn-danger {
+.race-danger-btn {
     background: #dc2626;
-    color: #ffffff;
+    color: #fff;
 }
 
-    .race-btn-danger:hover {
+    .race-danger-btn:hover {
         background: #b91c1c;
-        color: #ffffff;
     }
 
-.race-delete-form {
-    display: inline-flex;
+/* =========================
+   STATS
+========================= */
+.race-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
-/* Empty */
-.race-empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #6b7280;
+.race-stat-card {
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
 }
 
-/* Helpers */
-.text-end {
-    text-align: right;
+.race-stat-label {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #64748b;
 }
 
-.text-center {
-    text-align: center;
+.race-stat-value {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f172a;
 }
 
-.text-danger {
-    display: block;
-    margin-top: 6px;
-    font-size: 13px;
-    color: #dc2626;
+/* =========================
+   INFO GRID
+========================= */
+.race-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 }
 
-/* Responsive */
-@media (max-width: 1100px) {
-    .race-stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+.race-info-item {
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+    .race-info-item span {
+        font-size: 12px;
+        font-weight: 800;
+        color: #64748b;
     }
+
+    .race-info-item strong {
+        font-size: 15px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+/* =========================
+   EMPTY STATE
+========================= */
+.race-empty {
+    padding: 28px;
+    text-align: center;
+    border-radius: 16px;
+    background: #f8fafc;
+    font-weight: 800;
+    color: #64748b;
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 768px) {
-    .race-page {
-        padding: 14px;
-    }
 
-    .race-header-card,
-    .race-details-hero,
-    .race-table-card,
-    .race-detail-card,
-    .race-stat-card,
-    .race-form-card {
-        padding: 20px;
-    }
-
-    .race-details-hero {
+    .race-header-card {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
     }
 
-    .race-page-title,
-    .race-card-title {
-        font-size: 26px;
+    .race-dashboard-btn {
+        width: 100%;
     }
 
-    .race-stats-grid {
+    .race-filter-form {
         grid-template-columns: 1fr;
     }
 
-    .race-table {
-        min-width: 850px;
-    }
-
-    .race-table-sm {
-        min-width: 650px;
-    }
-
-    .race-table-actions {
+    .race-actions {
         justify-content: flex-start;
     }
 
-    .race-form-actions,
-    .race-btn,
-    .race-delete-form {
-        width: 100%;
+    .race-stats-grid,
+    .race-info-grid {
+        grid-template-columns: 1fr;
     }
 }
