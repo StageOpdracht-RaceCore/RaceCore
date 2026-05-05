@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = "Etappe Resultaten";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var selectedRaceId = ViewBag.SelectedRaceId as int? ?? 0;

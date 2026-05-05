@@ -18,6 +18,8 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var races = await _context.Races
+                    .Include(r => r.Stages)
+                    .Include(r => r.RaceEntries)
                     .OrderByDescending(r => r.Year)
                     .ThenBy(r => r.Name)
                     .ToListAsync();
@@ -35,12 +37,12 @@ namespace StageProject_RaceCore.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(new Race());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Year,StartDate,EndDate")] Race race)
+        public async Task<IActionResult> Create(Race race)
         {
             if (!ModelState.IsValid)
             {
@@ -51,6 +53,7 @@ namespace StageProject_RaceCore.Controllers
             {
                 _context.Races.Add(race);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             catch
