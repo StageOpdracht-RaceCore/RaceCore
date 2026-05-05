@@ -19,23 +19,21 @@
     }
 }
 
-<link rel="stylesheet" href="~/css/team.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
 
-<div class="team-page" data-game-id="@Model.GameId">
+<div class="team-page dashboard-container" data-game-id="@Model.GameId">
     <div class="team-antiforgery">
         @Html.AntiForgeryToken()
     </div>
 
-    <section class="team-header-card player-teams-TitleCard">
-        <div class="team-TitleCard-copy">
-            <p class="team-page-Thing2">RaceCore Game</p>
-
-            <h1 class="team-page-title">Teams</h1>
-
-            <p class="team-page-subtitle">
+    <section class="player-teams-hero dashboard-hero">
+        <div>
+            <div class="small-title">RaceCore Game Hub</div>
+            <h1>Teams</h1>
+            <p>
                 @if (Model.HasGame)
                 {
-                    <text>@Model.RaceName - @Model.GameStatus</text>
+                    <text>Race: <strong>@Model.RaceName</strong> | Status: <strong>@Model.GameStatus</strong></text>
                 }
                 else
                 {
@@ -44,33 +42,42 @@
             </p>
         </div>
 
-        <div class="team-TitleCard-actions">
-            <div class="team-TitleCard-stats" aria-label="Team overzicht">
-                <div>
-                    <span>Spelers</span>
-                    <strong>@Model.PlayerCount</strong>
-                </div>
-
-                <div>
-                    <span>Renners</span>
-                    <strong>@Model.ActiveRiderSlots</strong>
-                </div>
-
-                <div>
-                    <span>Bank</span>
-                    <strong>@Model.BenchRiderSlots</strong>
-                </div>
-            </div>
-
+        <div class="team-hero-actions">
             <a asp-controller="Dashboard" asp-action="Index" class="team-dashboard-white-btn">
                 Dashboard
             </a>
         </div>
     </section>
 
+    <section class="stats-row team-stats-row" aria-label="Team overzicht">
+        <div class="stat-box blue">
+            <div class="stat-icon">👥</div>
+            <div>
+                <span>Spelers</span>
+                <strong>@Model.PlayerCount</strong>
+            </div>
+        </div>
+
+        <div class="stat-box orange">
+            <div class="stat-icon">🚴</div>
+            <div>
+                <span>Actief</span>
+                <strong>@Model.ActiveRiderSlots</strong>
+            </div>
+        </div>
+
+        <div class="stat-box purple">
+            <div class="stat-icon">🪑</div>
+            <div>
+                <span>Bank</span>
+                <strong>@Model.BenchRiderSlots</strong>
+            </div>
+        </div>
+    </section>
+
     @if (!Model.PlayerTeams.Any())
     {
-        <section class="team-table-card team-empty-state">
+        <section class="card team-empty-state">
             <h2>Geen teams gevonden</h2>
             <p>Er is nog geen actieve game met spelers of draftbeurten.</p>
             <a asp-controller="Game" asp-action="New" class="team-btn team-btn-primary">Nieuwe game starten</a>
@@ -78,20 +85,27 @@
     }
     else
     {
-        <section class="team-overview-strip">
-            <div>
-                <span>Game</span>
-                <strong>#@Model.GameId</strong>
-            </div>
+        <section class="card team-overview-card" aria-label="Game overzicht">
+            <div class="info-grid">
+                <div class="info-box">
+                    <span>Game</span>
+                    <strong>#@Model.GameId</strong>
+                </div>
 
-            <div>
-                <span>Race</span>
-                <strong>@Model.RaceName</strong>
-            </div>
+                <div class="info-box">
+                    <span>Race</span>
+                    <strong>@Model.RaceName</strong>
+                </div>
 
-            <div>
-                <span>Gevuld</span>
-                <strong>@Model.FilledSlots / @Model.TotalSlots</strong>
+                <div class="info-box">
+                    <span>Gevuld</span>
+                    <strong>@Model.FilledSlots / @Model.TotalSlots</strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Slots</span>
+                    <strong>@Model.TotalSlots</strong>
+                </div>
             </div>
         </section>
 
