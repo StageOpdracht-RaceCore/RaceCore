@@ -13,6 +13,7 @@
     int cyclistCount = ViewBag.CyclistCount ?? 0;
 
     var allRaces = ViewBag.Races as List<Race> ?? new List<Race>();
+    var allTeams = ViewBag.Teams as List<Team> ?? new List<Team>();
 
     var races = allRaces
         .Where(r =>
@@ -28,6 +29,8 @@
     {
         startPage = Math.Max(1, endPage - 4);
     }
+
+    bool openModal = TempData["CreateError"] != null;
 }
 
 <link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
@@ -44,10 +47,29 @@
             </p>
         </div>
 
-        <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
-            Dashboard
-        </a>
+        <div class="cyclist-header-actions">
+            <button type="button" class="cyclist-add-btn" onclick="openAddModal()">
+                + Renner toevoegen
+            </button>
+            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
+                Dashboard
+            </a>
+        </div>
     </section>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-success">
+            ✓ @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["DatabaseError"]
+        </div>
+    }
 
     <section class="cyclist-filter-card">
         <div class="cyclist-card-title">
@@ -123,6 +145,7 @@
                             {
                                 <th>@race.Name</th>
                             }
+                            <th></th>
                         </tr>
                     </thead>
 
@@ -161,6 +184,13 @@
                                         }
                                     </td>
                                 }
+                                <td>
+                                    <button type="button"
+                                            class="cyclist-delete-btn"
+                                            onclick="openDeleteModal(@cyclist.Id, '@cyclist.FullName')">
+                                        Verwijderen
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -232,3 +262,126 @@
     </section>
 
 </section>
+
+@* ── Add Cyclist Modal ──────────────────────────────────── *@
+<div id="addCyclistModal" class="cyclist-modal-backdrop" onclick="closeAddModal(event)">
+    <div class="cyclist-modal">
+        <div class="cyclist-modal-header">
+            <div>
+                <p class="cyclist-card-kicker">Nieuw</p>
+                <h2>Renner toevoegen</h2>
+            </div>
+            <button type="button" class="cyclist-modal-close" onclick="closeAddModal()">&times;</button>
+        </div>
+
+        @if (TempData["CreateError"] != null)
+        {
+            <div class="cyclist-toast cyclist-toast-error">
+                ✕ @TempData["CreateError"]
+            </div>
+        }
+
+        <form method="post" asp-action="Create" asp-controller="Cyclist" class="cyclist-modal-form">
+            @Html.AntiForgeryToken()
+
+            <div class="cyclist-form-group">
+                <label for="addFirstName">Voornaam <span class="cyclist-required">*</span></label>
+                <input id="addFirstName"
+                       type="text"
+                       name="firstName"
+                       class="cyclist-input"
+                       placeholder="bv. Tadej"
+                       required />
+            </div>
+
+            <div class="cyclist-form-group">
+                <label for="addLastName">Achternaam <span class="cyclist-required">*</span></label>
+                <input id="addLastName"
+                       type="text"
+                       name="lastName"
+                       class="cyclist-input"
+                       placeholder="bv. Pogačar"
+                       required />
+            </div>
+
+            <div class="cyclist-form-group">
+                <label for="addTeamId">Team</label>
+                <select id="addTeamId" name="teamId" class="cyclist-input">
+                    <option value="0">— Geen team —</option>
+                    @foreach (var team in allTeams)
+                    {
+                        <option value="@team.Id">@team.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="cyclist-button-group cyclist-modal-actions">
+                <button type="submit" class="cyclist-primary-btn">Opslaan</button>
+                <button type="button" class="cyclist-reset-btn" onclick="closeAddModal()">Annuleren</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* ── Delete Cyclist Modal ───────────────────────────────── *@
+<div id="deleteCyclistModal" class="cyclist-modal-backdrop" onclick="closeDeleteModal(event)">
+    <div class="cyclist-modal cyclist-modal-sm">
+        <div class="cyclist-modal-header">
+            <div>
+                <p class="cyclist-card-kicker">Verwijderen</p>
+                <h2>Renner verwijderen</h2>
+            </div>
+            <button type="button" class="cyclist-modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+
+        <p class="cyclist-delete-confirm-text">
+            Weet je zeker dat je <strong id="deleteCyclistName"></strong> wil verwijderen? Dit kan niet ongedaan worden gemaakt.
+        </p>
+
+        <form method="post" asp-action="Delete" asp-controller="Cyclist" id="deleteForm" class="cyclist-modal-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="deleteCyclistId" />
+            <div class="cyclist-button-group cyclist-modal-actions">
+                <button type="submit" class="cyclist-danger-btn">Verwijderen</button>
+                <button type="button" class="cyclist-reset-btn" onclick="closeDeleteModal()">Annuleren</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function openAddModal() {
+        document.getElementById('addCyclistModal').classList.add('active');
+        document.getElementById('addFirstName').focus();
+    }
+
+    function closeAddModal(e) {
+        if (!e || e.target === document.getElementById('addCyclistModal')) {
+            document.getElementById('addCyclistModal').classList.remove('active');
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeAddModal(); closeDeleteModal(); }
+    });
+
+    function openDeleteModal(id, name) {
+        document.getElementById('deleteCyclistId').value = id;
+        document.getElementById('deleteCyclistName').textContent = name;
+        document.getElementById('deleteCyclistModal').classList.add('active');
+    }
+
+    function closeDeleteModal(e) {
+        if (!e || e.target === document.getElementById('deleteCyclistModal')) {
+            document.getElementById('deleteCyclistModal').classList.remove('active');
+        }
+    }
+
+
+
+    @if (openModal)
+    {
+            <text>document.addEventListener('DOMContentLoaded', openAddModal);</text>
+    }
+</script>
