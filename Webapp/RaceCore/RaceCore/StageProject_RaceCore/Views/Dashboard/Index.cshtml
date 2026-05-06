@@ -35,7 +35,7 @@
 @functions {
     public string GetPlayerColor(string playerName)
     {
-        var colors = new List<string> { "#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed", "#0891b2" };
+        var colors = new List<string> { "#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4" };
 
         if (string.IsNullOrWhiteSpace(playerName))
         {
@@ -70,51 +70,183 @@
 
         return "jersey jersey-default";
     }
+
+    public string GetStatusClass(string status)
+    {
+        string value = (status ?? "").ToLower();
+
+        if (value.Contains("draft")) return "status-pill status-draft";
+        if (value.Contains("active")) return "status-pill status-active";
+        if (value.Contains("finished") || value.Contains("done")) return "status-pill status-finished";
+
+        return "status-pill status-default";
+    }
 }
 
 <div class="dashboard-container">
 
-    <section class="dashboard-hero">
-        <div>
-            <div class="small-title">RaceCore Game Hub</div>
-            <h1>@raceName</h1>
-            <p>
-                Status: <strong>@gameStatus</strong> |
-                Stage: <strong>@currentStage</strong> 
-            </p>
+    <section class="game-hero">
+        <div class="hero-main-area">
+            <div class="hero-content">
+                <div class="hero-kicker">RaceCore Game Hub</div>
+                <h1>@raceName</h1>
+
+                <div class="hero-meta">
+                    <span class="@GetStatusClass(gameStatus)">@gameStatus</span>
+                    <span>🏁 Stage @currentStage</span>
+                    <span>🎯 @Model.TotalDraftPicks picks</span>
+                </div>
+            </div>
+
+            <div class="hero-mini-stats">
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">👥</span>
+                    <div>
+                        <small>Players</small>
+                        <strong>@Model.PlayersCount</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🚴</span>
+                    <div>
+                        <small>Cyclists</small>
+                        <strong>@Model.CyclistsCount</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🎯</span>
+                    <div>
+                        <small>Draft Picks</small>
+                        <strong>@Model.TotalDraftPicks</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🏁</span>
+                    <div>
+                        <small>Status</small>
+                        <strong>@gameStatus</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-action-panel">
+            @if (gameStatus == "Draft")
+            {
+                <span class="next-label">Next mission</span>
+                <h2>Finish the draft</h2>
+
+                <a asp-controller="Draft"
+                       asp-action="Index"
+                       asp-route-gameId="@gameId"
+                       class="main-play-btn">
+                    ▶ Continue Draft
+                </a>
+            }
+            else if (gameStatus == "Active")
+            {
+                <span class="next-label">Next mission</span>
+                <h2>Enter stage results</h2>
+
+                <a asp-controller="Scoring"
+                       asp-action="Index"
+                       asp-route-raceId="@raceId"
+                       class="main-play-btn">
+                    ⚡ Go to Scoring
+                </a>
+            }
+            else
+            {
+                <span class="next-label">Game completed</span>
+                <h2>View final ranking</h2>
+
+                <a asp-controller="Leaderboard"
+                       asp-action="Index"
+                       asp-route-gameId="@gameId"
+                       class="main-play-btn">
+                    🏆 Leaderboard
+                </a>
+            }
         </div>
     </section>
 
-    <section class="stats-row">
-        <div class="stat-box blue">
-            <div class="stat-icon">👤</div>
+    <section class="game-menu-grid">
+        <a asp-controller="Game" asp-action="New" class="game-menu-card">
+            <span>➕</span>
             <div>
-                <span>Players</span>
-                <strong>@Model.PlayersCount</strong>
+                <strong>New Game</strong>
+                <small>Start nieuwe race</small>
             </div>
-        </div>
+        </a>
+        <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="game-menu-card">
+            <span>⚡</span>
+            <div>
+                <strong>Scoring</strong>
+                <small>Punten invullen</small>
+            </div>
+        </a>
 
-        <div class="stat-box orange">
-            <div class="stat-icon">🎯</div>
+        <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="game-menu-card">
+            <span>🏆</span>
             <div>
-                <span>Draft Picks</span>
-                <strong>@Model.TotalDraftPicks</strong>
+                <strong>Leaderboard</strong>
+                <small>Ranking bekijken</small>
             </div>
-        </div>
+        </a>
 
-        <div class="stat-box purple">
-            <div class="stat-icon">🏁</div>
+        <a asp-controller="History" asp-action="History" class="game-menu-card">
+            <span>📜</span>
             <div>
-                <span>Status</span>
-                <strong>@gameStatus</strong>
+                <strong>History</strong>
+                <small>Vorige games</small>
             </div>
-        </div>
+        </a>
+
+        
+
+        <a asp-controller="Cyclist" asp-action="Index" class="game-menu-card">
+            <span>🚴</span>
+            <div>
+                <strong>Cyclists</strong>
+                <small>Renners beheren</small>
+            </div>
+        </a>
+
+        <a asp-controller="Team" asp-action="Index" class="game-menu-card">
+            <span>🛡️</span>
+            <div>
+                <strong>Teams</strong>
+                <small>Ploegen bekijken</small>
+            </div>
+        </a>
+
+        <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="game-menu-card">
+            <span>🗺️</span>
+            <div>
+                <strong>Stages</strong>
+                <small>Etappes beheren</small>
+            </div>
+        </a>
+
+        
+        <a asp-controller="Draft" asp-action="Index" asp-route-gameId="@gameId" class="game-menu-card">
+            <span>🎮</span>
+            <div>
+                <strong>Draft Room</strong>
+                <small>Kies renners</small>
+            </div>
+        </a>
+
+        
     </section>
 
     <section class="main-dashboard-grid">
 
-        <div class="card">
-            <div class="card-title">
+        <div class="game-panel ranking-panel">
+            <div class="panel-title">
                 <span>Competition</span>
                 <h2>Player Ranking</h2>
             </div>
@@ -161,37 +293,37 @@
             }
         </div>
 
-        <div class="card">
-            <div class="card-title">
-                <span>Game</span>
-                <h2>Game Progress</h2>
+        <div class="game-panel progress-panel">
+            <div class="panel-title">
+                <span>Game Progress</span>
+                <h2>Current Mission</h2>
             </div>
 
-            <div class="info-grid">
-                <div class="info-box">
+            <div class="mission-box">
+                <div>
                     <span>Race</span>
                     <strong>@raceName</strong>
                 </div>
 
-                <div class="info-box">
+                <div>
                     <span>Status</span>
                     <strong>@gameStatus</strong>
                 </div>
 
-                <div class="info-box">
-                    <span>Stage</span>
+                <div>
+                    <span>Current stage</span>
                     <strong>@currentStage</strong>
                 </div>
 
-                <div class="info-box">
-                    <span>Total Picks</span>
+                <div>
+                    <span>Total picks</span>
                     <strong>@Model.TotalDraftPicks</strong>
                 </div>
             </div>
 
             <div class="draft-progress-box">
                 <div class="draft-progress-top">
-                    <span>Draft Progress</span>
+                    <span>Draft progress</span>
                     <strong>@Model.TotalDraftPicks picks</strong>
                 </div>
 
@@ -199,65 +331,14 @@
                     <div class="progress-fill green-fill" style="width:@(Model.TotalDraftPicks == 0 ? 5 : 100)%"></div>
                 </div>
             </div>
-
-            <div class="game-next-box">
-                @if (gameStatus == "Draft")
-                {
-                    <h3>Next Step</h3>
-                    <p>The game is still in draft mode. Pick all riders first.</p>
-
-                    <a asp-controller="Draft"
-                           asp-action="Index"
-                           asp-route-gameId="@gameId"
-                           class="btn-green">
-                        Continue Draft
-                    </a>
-                }
-                else if (gameStatus == "Active")
-                {
-                    <h3>Next Step</h3>
-                    <p>The draft is complete. Go to scoring to manage stages and results.</p>
-
-                    <a asp-controller="Scoring"
-                           asp-action="Index"
-                           asp-route-raceId="@raceId"
-                           class="btn-green">
-                        Go to Scoring
-                    </a>
-                }
-                else
-                {
-                    <h3>Game Finished</h3>
-                    <p>All stages have been processed. View the final leaderboard.</p>
-
-                    <a asp-controller="Result"
-                           asp-action="Index"
-                           asp-route-gameId="@gameId"
-                           class="btn-green">
-                        View Leaderboard
-                    </a>
-                }
-            </div>
-
-            <div class="dashboard-actions">
-                <a asp-controller="Game" asp-action="New" class="dashboard-action-btn">New Game</a>
-                <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Scoring</a>
-                <a asp-controller="Stage" asp-action="Index" asp-route-raceId="@raceId" class="dashboard-action-btn">Stages</a>
-                <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="dashboard-action-btn">Leaderboard</a>
-                
-                <a asp-controller="Team" asp-action="Index" class="dashboard-action-btn">Teams</a>
-                <a asp-controller="History" asp-action="History" class="dashboard-action-btn">History</a>
-                <a asp-controller="Cyclist" asp-action="Index" class="dashboard-action-btn">Cyclists</a>
-                <a asp-controller="Result" asp-action="StageResults" class="dashboard-action-btn">Stage Results</a>
-            </div>
         </div>
 
     </section>
 
     <section class="bottom-dashboard-grid">
 
-        <div class="card">
-            <div class="card-title">
+        <div class="game-panel">
+            <div class="panel-title">
                 <span>Performance</span>
                 <h2>Top Cyclists</h2>
             </div>
@@ -280,8 +361,8 @@
             }
         </div>
 
-        <div class="card">
-            <div class="card-title">
+        <div class="game-panel">
+            <div class="panel-title">
                 <span>Classifications</span>
                 <h2>Jerseys</h2>
             </div>

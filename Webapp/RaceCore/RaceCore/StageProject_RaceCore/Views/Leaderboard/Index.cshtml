@@ -4,14 +4,22 @@
     ViewData["Title"] = "Leaderboard";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
+    // Hoogste punten gebruiken voor de progress bar.
+    // Als er nog geen punten zijn, gebruiken we 1 om delen door 0 te vermijden.
     int maxPoints = Model.HighestPoints > 0 ? Model.HighestPoints : 1;
 }
 
+<!-- CSS van de Leaderboard pagina -->
 <link rel="stylesheet" href="~/css/Leaderboard.css" asp-append-version="true" />
 
 <div class="leaderboard-page">
 
+    <!-- =========================
+         HERO / HEADER
+    ========================== -->
     <section class="leaderboard-hero">
+
+        <!-- Linkerkant: titel en uitleg -->
         <div class="leaderbord-title">
             <h6>RaceCore Ranking</h6>
             <h1>Leaderboard</h1>
@@ -19,34 +27,49 @@
                 Bekijk welke speler momenteel de meeste punten heeft in deze game.
             </p>
         </div>
-        <div>
 
-        <form asp-controller="Leaderboard" asp-action="Index" method="get" class="leaderboard-game-form">
-            <label for="gameId">Game</label>
-            <select id="gameId" name="gameId" onchange="this.form.submit()">
-                @foreach (var game in Model.Games)
-                {
-                    if (game.Id == Model.SelectedGameId)
+        <!-- Rechterkant: game selectie + Done knop -->
+        <div class="leaderboard-hero-actions">
+
+            <!-- Game dropdown -->
+            <form asp-controller="Leaderboard"
+                  asp-action="Index"
+                  method="get"
+                  class="leaderboard-game-form">
+
+                <label for="gameId">Game</label>
+
+                <select id="gameId" name="gameId" onchange="this.form.submit()">
+                    @foreach (var game in Model.Games)
                     {
-                        <option value="@game.Id" selected>
-                            @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-                        </option>
+                        if (game.Id == Model.SelectedGameId)
+                        {
+                            <option value="@game.Id" selected>
+                                @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@game.Id">
+                                @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </option>
+                        }
                     }
-                    else
-                    {
-                        <option value="@game.Id">
-                            @game.Race?.Name - @game.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-                        </option>
-                    }
-                }
-            </select>
-        </form>
-            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
-                Dashboard
+                </select>
+            </form>
+
+            <!-- Done knop: zelfde stijl als Race pagina -->
+            <a asp-controller="Draft"
+                   asp-action="Index"
+                   class="leaderboard-done-btn">
+                ✔ Done
             </a>
-            </div>
+        </div>
     </section>
 
+    <!-- =========================
+         EMPTY STATE ALS ER GEEN GAME IS
+    ========================== -->
     @if (!Model.Games.Any())
     {
         <section class="leaderboard-card">
@@ -58,29 +81,42 @@
     }
     else
     {
+        <!-- =========================
+             STATS CARDS
+        ========================== -->
         <section class="leaderboard-stats">
+
+            <!-- Race naam -->
             <div class="leaderboard-stat-card">
                 <span>Race</span>
                 <strong>@Model.RaceName</strong>
             </div>
 
+            <!-- Game status -->
             <div class="leaderboard-stat-card">
                 <span>Status</span>
                 <strong>@Model.GameStatus</strong>
             </div>
 
+            <!-- Aantal spelers -->
             <div class="leaderboard-stat-card">
                 <span>Spelers</span>
                 <strong>@Model.PlayerCount</strong>
             </div>
 
+            <!-- Totaal aantal punten -->
             <div class="leaderboard-stat-card">
                 <span>Totaal punten</span>
                 <strong>@Model.TotalPoints</strong>
             </div>
         </section>
 
+        <!-- =========================
+             PLAYER RANKING CARD
+        ========================== -->
         <section class="leaderboard-card">
+
+            <!-- Titel van ranking card -->
             <div class="leaderboard-card-header">
                 <div>
                     <h2>Player Ranking</h2>
@@ -88,6 +124,7 @@
                 </div>
             </div>
 
+            <!-- Empty state als er nog geen spelers zijn -->
             @if (!Model.Rows.Any())
             {
                 <div class="leaderboard-empty">
@@ -97,8 +134,11 @@
             }
             else
             {
+                <!-- Leaderboard tabel -->
                 <div class="leaderboard-table-wrapper">
                     <table class="leaderboard-table">
+
+                        <!-- Tabel hoofding -->
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -109,24 +149,33 @@
                             </tr>
                         </thead>
 
+                        <!-- Tabel inhoud -->
                         <tbody>
                             @foreach (var row in Model.Rows)
                             {
+                                // Percentage berekenen voor de puntenbalk
                                 int percentage = maxPoints > 0
                                     ? (int)Math.Round((double)row.TotalPoints / maxPoints * 100)
                                     : 0;
 
                                 <tr>
+                                    <!-- Ranking nummer -->
                                     <td>
-                                        <span class="rank-badge rank-@row.Rank">@row.Rank</span>
+                                        <span class="rank-badge rank-@row.Rank">
+                                            @row.Rank
+                                        </span>
                                     </td>
 
+                                    <!-- Speler info -->
                                     <td>
                                         <div class="player-cell">
+
+                                            <!-- Initialen avatar -->
                                             <div class="player-avatar" style="background:@row.Color">
                                                 @row.Initials
                                             </div>
 
+                                            <!-- Naam + ID -->
                                             <div>
                                                 <strong>@row.PlayerName</strong>
                                                 <span>Player ID: @row.PlayerId</span>
@@ -134,10 +183,12 @@
                                         </div>
                                     </td>
 
+                                    <!-- Aantal renners -->
                                     <td>
                                         @row.RidersCount
                                     </td>
 
+                                    <!-- Beste renner -->
                                     <td>
                                         <div class="best-rider">
                                             <strong>@row.BestCyclistName</strong>
@@ -145,6 +196,7 @@
                                         </div>
                                     </td>
 
+                                    <!-- Punten + progress bar -->
                                     <td>
                                         <div class="points-cell">
                                             <strong>@row.TotalPoints</strong>
