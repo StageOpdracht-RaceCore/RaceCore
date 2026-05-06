@@ -2,22 +2,25 @@
 
 @{
     ViewData["Title"] = "Race Details";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Race.css"/>
+<link rel="stylesheet" href="~/css/Race.css" />
 
-<div class="race-page">
-    <section class="race-details-hero">
+<section class="race-page">
 
-        <div>
+    <!-- HERO -->
+    <section class="race-header-card">
+        <div class="race-header-copy">
             <p class="race-page-kicker">RaceCore</p>
             <h1 class="race-page-title">@Model.Name</h1>
             <p class="race-page-subtitle">@Model.Year editie</p>
         </div>
     </section>
 
+    <!-- STATS -->
     <section class="race-stats-grid">
+
         <div class="race-stat-card">
             <span class="race-stat-label">Jaar</span>
             <strong class="race-stat-value">@Model.Year</strong>
@@ -25,43 +28,53 @@
 
         <div class="race-stat-card">
             <span class="race-stat-label">Etappes</span>
-            <strong class="race-stat-value">@(Model.Stages?.Count ?? 0)</strong>
+            <strong class="race-stat-value">
+                @(Model.Stages?.Count ?? 0)
+            </strong>
         </div>
 
         <div class="race-stat-card">
             <span class="race-stat-label">Inschrijvingen</span>
-            <strong class="race-stat-value">@(Model.RaceEntries?.Count ?? 0)</strong>
+            <strong class="race-stat-value">
+                @(Model.RaceEntries?.Count ?? 0)
+            </strong>
         </div>
+
     </section>
 
-    <section class="race-detail-card">
-        <h2 class="race-card-title">Race informatie</h2>
+    <!-- INFO -->
+    <section class="race-table-card">
 
-        <div class="race-detail-list">
-            <div>
+        <p class="race-card-kicker">Details</p>
+        <h2>Race informatie</h2>
+
+        <div class="race-info-grid">
+
+            <div class="race-info-item">
                 <span>Startdatum</span>
                 <strong>@(Model.StartDate?.ToString("yyyy-MM-dd") ?? "-")</strong>
             </div>
 
-            <div>
+            <div class="race-info-item">
                 <span>Einddatum</span>
                 <strong>@(Model.EndDate?.ToString("yyyy-MM-dd") ?? "-")</strong>
             </div>
+
         </div>
+
     </section>
 
+    <!-- STAGES -->
     <section class="race-table-card">
-        <div class="race-table-header">
-            <div>
-                <p class="race-section-kicker">Overzicht</p>
-                <h2 class="race-card-title">Stages</h2>
-            </div>
-        </div>
+
+        <p class="race-card-kicker">Overzicht</p>
+        <h2>Stages</h2>
 
         @if (Model.Stages != null && Model.Stages.Any())
         {
-            <div class="race-table-responsive">
-                <table class="race-table race-table-sm">
+            <div class="race-table-wrapper">
+                <table class="race-table">
+
                     <thead>
                         <tr>
                             <th>#</th>
@@ -69,31 +82,36 @@
                             <th>Datum</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach (var stage in Model.Stages)
                         {
                             <tr>
                                 <td>
-                                    <span class="race-count">@stage.Id</span>
+                                    <span class="race-badge">@stage.Id</span>
                                 </td>
                                 <td class="race-name">@stage.Name</td>
                                 <td>@(stage.Date?.ToString("yyyy-MM-dd") ?? "-")</td>
                             </tr>
                         }
                     </tbody>
+
                 </table>
             </div>
         }
         else
         {
-            <div class="race-empty-state">
+            <div class="race-empty">
                 Geen etappes voor deze race.
             </div>
         }
+
     </section>
 
-    <div class="race-form-actions">
-        <a class="race-btn race-btn-light" asp-action="Index">Terug</a>
-        <a class="race-btn race-btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <!-- ACTIONS -->
+    <div class="race-actions">
+        <a class="race-btn race-light-btn" asp-action="Index">Terug</a>
+        <a class="race-btn race-primary-btn" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
     </div>
-</div>
+
+</section>

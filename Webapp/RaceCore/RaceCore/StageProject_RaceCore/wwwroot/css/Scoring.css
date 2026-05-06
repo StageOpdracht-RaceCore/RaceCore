@@ -80,11 +80,51 @@
     width: min(100%, 360px);
 }
 
-.scoring-stage-group {
-    width: min(100%, 300px);
+/* =========================================
+   ALERTS - NIEUWE STYLING VOOR FOUTMELDINGEN 
+   ========================================= */
+.alert-danger {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(153, 27, 27, 0.08);
+    animation: slideIn 0.3s ease-out;
 }
 
-/* Truien & Checkboxes */
+    .alert-danger i {
+        font-size: 20px;
+    }
+
+    .alert-danger strong {
+        background: #ef4444;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 8px;
+    }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Truien */
 .jersey-flex {
     display: flex;
     gap: 12px;
@@ -101,9 +141,34 @@
     border: 2px solid transparent;
 }
 
+.dot-red {
+    background: #ef4444 !important;
+    border: 2px solid #dc2626 !important;
+}
+
+.dot-green {
+    background: #10b981 !important;
+    border: 2px solid #059669 !important;
+}
+
+.dot-blue {
+    background: #2563eb !important;
+    border: 2px solid #1d4ed8 !important;
+}
+
+.dot-white {
+    background: #ffffff !important;
+    border: 2px solid #94a3b8 !important;
+}
+
 input[type="checkbox"]:checked + .jersey-dot {
     filter: saturate(1) opacity(1);
     transform: scale(1.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.pos-badge.dot-red, .pos-badge.dot-green, .pos-badge.dot-blue, .pos-badge.dot-white {
+    filter: none !important;
 }
 
 .dot-red {
@@ -126,7 +191,62 @@ input[type="checkbox"]:checked + .jersey-dot {
     border-color: #94a3b8 !important;
 }
 
-/* Alle Media Queries */
+/* Knoppen */
+.player-btn-white {
+    background: white;
+    color: #1d4ed8;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+    .player-btn-white:hover {
+        background: #eff6ff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
+    }
+
+/* Utility & Forms */
+.d-none {
+    display: none !important;
+}
+
+.px-3 {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.race-select-form, .scoring-stage-form {
+    display: flex;
+    align-items: end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.race-select-group, .scoring-stage-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.race-select-group {
+    width: min(100%, 360px);
+}
+
+.scoring-stage-group {
+    width: min(100%, 300px);
+}
+
+    .race-select-group label, .scoring-stage-group label {
+        font-weight: 700;
+        color: #374151;
+    }
+
+/* Responsive Media Queries */
 @media (max-width: 900px) {
     .player-header-card {
         flex-direction: column;
@@ -149,7 +269,7 @@ input[type="checkbox"]:checked + .jersey-dot {
         align-items: stretch;
     }
 
-    .race-select-group, .scoring-stage-group {
+    .race-select-group, .scoring-stage-group, .app-btn {
         width: 100%;
     }
 }

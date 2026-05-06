@@ -4,7 +4,7 @@
 
 @{
     ViewData["Title"] = "Etappe Resultaten";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var selectedRaceId = ViewBag.SelectedRaceId as int? ?? 0;
@@ -20,7 +20,6 @@
 
 <div class="scoring-page">
 
-    @* --- ALERTS --- *@
     @if (TempData["Error"] != null || TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger border-0 shadow-sm mb-4">
@@ -28,7 +27,6 @@
         </div>
     }
 
-    @* --- SELECTIE SECTIE (WEDSTRIJD & RIT DROPDOWNS) --- *@
     <div class="player-header-card">
         <div style="flex-grow: 1;">
             <h1 class="player-page-title">Scoring Beheer</h1>
@@ -43,14 +41,12 @@
         <form asp-controller="Scoring" asp-action="Index" method="get" id="selectionForm">
             <div style="display: flex; gap: 20px; align-items: flex-end; width: 100%;">
                 
-                @* Wedstrijd Dropdown - breedte gefixeerd op 40% *@
                 <div style="flex: 0 0 40%;">
                     <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">Wedstrijd kiezen</label>
                     <select name="raceId" class="player-search-input" onchange="this.form.submit()" style="width: 100%;">
                         <option value="">-- Selecteer Wedstrijd --</option>
                         @foreach (var race in races)
                         {
-                            @* Gebruik van <!option> zorgt dat de geselecteerde waarde blijft staan *@
                             <!option value="@race.Id" @(race.Id == selectedRaceId ? "selected" : "")>
                                 @race.Name
                             </!option>
@@ -58,10 +54,9 @@
                     </select>
                 </div>
 
-                @* Rit Dropdown - breedte gefixeerd op 40% *@
                 <div style="flex: 0 0 40%;">
                     <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">Rit kiezen</label>
-                    <select name="stageId" class="player-search-input" style="width: 100%;">
+                    <select asp-for="StageId" asp-items="stages" class="player-search-input" style="width: 100%;">
                         @foreach (var stage in stages)
                         {
                             <!option value="@stage.Value" @(stage.Selected ? "selected" : "")>
@@ -71,7 +66,6 @@
                     </select>
                 </div>
 
-                @* Laad Knop - de rest van de ruimte *@
                 <div style="flex: 1;">
                     <button type="submit" class="player-btn-white" style="height: 48px; width: 100%; border: 1px solid #d1d5db; color: #1d4ed8;">
                         Rit laden
@@ -81,7 +75,6 @@
         </form>
     </div>
 
-    @* --- SCORING FORMULIER --- *@
     @if (Model.StageId > 0)
     {
         <form asp-controller="Scoring" asp-action="SaveScores" method="post">
@@ -102,7 +95,6 @@
                 }
             </datalist>
 
-            @* Top 25 *@
             <div class="results-list">
                 @for (int i = 0; i < Model.Results.Count; i++)
                 {
@@ -123,7 +115,6 @@
                 }
             </div>
 
-            @* Buiten Top 25 *@
             <div class="player-table-card outside-jersey-card" style="margin-top:20px;">
                 <h2 class="outside-jersey-title" style="padding: 20px 24px 0; margin-bottom: -10px;">Truidragers buiten Top 25</h2>
                 <div class="results-list" style="padding: 20px;">
@@ -178,23 +169,16 @@
 
                     const jerseyType = this.dataset.jersey;
                     const currentRow = this.closest(".result-item-card");
-
-                    // ✅ 1 trui per renner (zelfde rij)
-                    currentRow.querySelectorAll(".js-jersey-checkbox").forEach(cb => {
-                        if (cb !== this) cb.checked = false;
-                    });
-
-                    // ✅ 1 trui per type (globaal)
-                    document.querySelectorAll(`.js-jersey-checkbox[data-jersey="${jerseyType}"]`)
-                        .forEach(cb => {
-                            if (cb !== this) cb.checked = false;
-                        });
-
-                    // ✅ buiten top 25 leegmaken als gekozen in top 25
                     clearOutsideJersey(jerseyType);
                 });
             });
 
+        });
+                document.querySelector('select[name="stageId"]').addEventListener('change', function () {
+            const hidden = document.querySelector('input[name="StageId"]');
+            if (hidden) {
+                hidden.value = this.value;
+            }
         });
     </script>
 }
