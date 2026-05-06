@@ -1,8 +1,8 @@
 .team-page {
     width: 100%;
-    max-width: 1600px;
+    max-width: 1500px;
     margin: 0 auto;
-    padding: 18px;
+    padding: 0;
 }
 
 .team-antiforgery {
@@ -10,65 +10,182 @@
 }
 
 /* =========================
-   ALGEMENE CARDS
+   DASHBOARD-LIKE BASE
 ========================= */
+
+.dashboard-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.card,
 .team-header-card,
 .team-table-card,
 .team-overview-strip,
 .player-team-card {
     background: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+}
+
+.card {
+    padding: 20px;
 }
 
 /* =========================
-   HERO BOVENKANT
+   HERO (DASHBOARD-LIKE)
 ========================= */
-.player-teams-hero {
+.player-teams-hero,
+.dashboard-hero,
+.player-teams-TitleCard {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    padding: 24px;
+    gap: 25px;
+    padding: 30px;
     margin-bottom: 16px;
     color: #ffffff;
-    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%);
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.18);
 }
 
-.team-hero-copy {
-    min-width: 0;
-}
-
-.team-page-kicker {
-    margin: 0 0 6px;
-    color: #bfdbfe;
+.small-title {
     font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1px;
     text-transform: uppercase;
-}
-
-.team-page-title {
-    margin: 0 0 8px;
-    font-size: 32px;
+    letter-spacing: 1px;
+    color: #93c5fd;
     font-weight: 900;
-    line-height: 1.05;
 }
 
-.team-page-subtitle {
+.player-teams-hero h1,
+.player-teams-TitleCard h1 {
+    margin: 8px 0;
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.player-teams-hero p,
+.player-teams-TitleCard p {
     margin: 0;
     color: #dbeafe;
-    font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
-/* Rechterkant: stats + dashboard knop */
-.team-hero-actions {
+/* Rechterkant: dashboard knop */
+.team-hero-actions,
+.team-TitleCard-actions {
     display: flex;
     align-items: center;
     gap: 18px;
 }
+
+.dashboard-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: 0.2s ease;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff !important;
+    font-size: 16px;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+    .dashboard-action-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    }
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stat-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 20px;
+    color: #ffffff;
+}
+
+    .stat-box span {
+        display: block;
+        font-weight: 700;
+    }
+
+    .stat-box strong {
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.blue {
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+}
+
+.orange {
+    background: linear-gradient(135deg, #f97316, #f59e0b);
+}
+
+.purple {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.team-overview-card {
+    margin-bottom: 16px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.info-box {
+    padding: 15px;
+    border-radius: 15px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+    .info-box span {
+        display: block;
+        margin-bottom: 7px;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .info-box strong {
+        display: block;
+        color: #1e1b4b;
+        font-size: 18px;
+        font-weight: 900;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
 .team-hero-stats {
     display: grid;
@@ -77,14 +194,14 @@
     min-width: 300px;
 }
 
-    .team-hero-stats div {
+    .team-TitleCard-stats div {
         padding: 13px 14px;
         border-radius: 12px;
         background: rgba(255, 255, 255, 0.13);
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .team-hero-stats span {
+    .team-TitleCard-stats span {
         display: block;
         margin-bottom: 4px;
         color: #bfdbfe;
@@ -94,7 +211,7 @@
         text-transform: uppercase;
     }
 
-    .team-hero-stats strong {
+    .team-TitleCard-stats strong {
         display: block;
         color: #ffffff;
         font-size: 24px;
@@ -167,13 +284,16 @@
 ========================= */
 .player-team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 16px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .player-team-card {
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
 }
 
 .player-team-header {
@@ -181,10 +301,28 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 16px;
-    border-top: 5px solid var(--player-color);
-    background: linear-gradient(90deg, var(--player-color-soft), #ffffff 76%);
+    padding: 18px 18px 14px;
+    border-top: none;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 1) 100%);
+    flex-wrap: wrap;
+    position: relative;
 }
+
+    .player-team-header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: linear-gradient(180deg, var(--player-color), var(--player-color-dark));
+    }
+
+    .player-team-header > * {
+        position: relative;
+        z-index: 1;
+    }
 
 .player-team-identity {
     display: flex;
@@ -199,11 +337,12 @@
     min-width: 44px;
     display: grid;
     place-items: center;
-    border-radius: 12px;
+    border-radius: 14px;
     color: var(--player-text-color);
     background: var(--player-color);
     font-size: 15px;
     font-weight: 900;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
 }
 
 .player-team-identity h2 {
@@ -227,6 +366,7 @@
     color: #0f172a;
     font-weight: 900;
     text-align: right;
+    margin-left: auto;
 }
 
     .team-completion span {
@@ -254,6 +394,8 @@
 ========================= */
 .player-roster-table-wrap {
     overflow-x: hidden;
+    flex: 1;
+    padding: 6px 12px 12px;
 }
 
 .player-roster-table {
@@ -261,11 +403,13 @@
     min-width: 0;
     border-collapse: collapse;
     table-layout: fixed;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
     .player-roster-table th,
     .player-roster-table td {
-        padding: 9px 8px;
+        padding: 10px 10px;
         border-bottom: 1px solid #e5e7eb;
         vertical-align: middle;
         min-width: 0;
@@ -310,7 +454,7 @@
 
 .roster-section-row.active-section th {
     color: var(--player-text-color);
-    background: var(--player-color);
+    background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
     padding-left: calc(8px + 0.5ch);
 }
 
@@ -493,33 +637,33 @@ tr[data-cyclist-id] {
    RESPONSIVE
 ========================= */
 @media (max-width: 900px) {
-    .player-teams-hero {
+    .player-teams-TitleCard {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .team-hero-actions {
+    .team-TitleCard-actions {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
     }
 
-    .team-hero-stats {
+    .team-TitleCard-stats {
         min-width: 0;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
     }
 
     .team-dashboard-white-btn {
         width: 100%;
     }
-
-    .team-overview-strip {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 560px) {
-    .team-page {
-        padding: 12px;
+    .info-grid {
+        grid-template-columns: 1fr;
     }
 
     .player-team-grid {
@@ -538,7 +682,11 @@ tr[data-cyclist-id] {
         text-align: left;
     }
 
-    .team-hero-stats {
+    .team-TitleCard-stats {
         grid-template-columns: 1fr;
+    }
+
+    .player-teams-hero h1 {
+        font-size: 26px;
     }
 }
