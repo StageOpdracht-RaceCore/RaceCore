@@ -85,17 +85,17 @@ namespace StageProject_RaceCore.Controllers
                     model.PlayerRanking[i].Position = i + 1;
                 }
 
-                model.TopCyclists = await _context.PlayerSelections
-                    .Where(s => s.GameSessionId == gameId)
-                    .Select(s => s.Cyclist)
+                model.TopCyclists = await _context.DraftTurns
+                    .Where(d => d.GameSessionId == gameId && d.CyclistId != null)
+                    .Select(d => d.Cyclist)
                     .Distinct()
                     .Select(c => new TopCyclistItem
                     {
                         Name = c.FirstName + " " + c.LastName,
                         Points = _context.PlayerPoints
-                            .Where(pp => pp.CyclistId == c.Id && pp.RaceId == game.RaceId)
-                            .Select(pp => (int?)pp.Points)
-                            .Sum() ?? 0
+                    .Where(pp => pp.GameSessionId == gameId && pp.CyclistId == c.Id)
+                    .Select(pp => (int?)pp.Points)
+                    .Sum() ?? 0
                     })
                     .OrderByDescending(c => c.Points)
                     .ThenBy(c => c.Name)

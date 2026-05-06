@@ -1,14 +1,19 @@
 ﻿@model StageProject_RaceCore.Models.Race
 
+@inject StageProject_RaceCore.Models.AppDbContext _context
+
 @{
     ViewData["Title"] = "Nieuwe Race";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    var cyclists = _context.Cyclists.ToList();
+     
 }
 
 <link rel="stylesheet" href="~/css/Race.css" />
 
 <section class="race-page">
 
+    ```
     <!-- HEADER -->
     <section class="race-header-card">
 
@@ -35,6 +40,7 @@
 
             <div class="race-form-grid">
 
+                <!-- BASIS INFO -->
                 <div class="race-form-group">
                     <label asp-for="Name">Naam</label>
                     <input asp-for="Name" class="race-input" />
@@ -61,6 +67,48 @@
 
             </div>
 
+            <!-- RENNERS SELECTEREN -->
+            <div class="race-form-group">
+                <label>Renners</label>
+
+                <div class="race-checkbox-list">
+                    @foreach (var cyclist in cyclists)
+                    {
+                        <label>
+                            <input type="checkbox"
+                                   name="SelectedCyclistIds"
+                                   value="@cyclist.Id" />
+                            @cyclist.FirstName
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <!-- NIEUWE RENNER -->
+            <div class="race-form-group">
+                <label>Nieuwe renner toevoegen</label>
+                <input name="NewCyclistName" class="race-input" placeholder="Naam nieuwe renner" />
+            </div>
+
+            <!-- STAGES -->
+            <div class="race-form-group">
+                <label>Stages</label>
+
+                <div id="stages-container">
+
+                    <div class="stage-item">
+                        <input name="Stages[0].Name" class="race-input" placeholder="Naam stage" />
+                        <input name="Stages[0].Date" type="date" class="race-input" />
+                    </div>
+
+                </div>
+
+                <button type="button" class="race-light-btn race-btn" onclick="addStage()">
+                    + Stage toevoegen
+                </button>
+            </div>
+
+            <!-- ACTIONS -->
             <div class="race-form-actions">
                 <button type="submit" class="race-primary-btn">
                     Race aanmaken
@@ -74,5 +122,24 @@
         </form>
 
     </section>
+    ```
 
 </section>
+
+<script>
+    let stageIndex = 1;
+
+    function addStage() {
+        const container = document.getElementById("stages-container");
+
+        const html = `
+            <div class="stage-item" style="margin-top:10px;">
+                <input name="Stages[${stageIndex}].Name" class="race-input" placeholder="Naam stage" />
+                <input name="Stages[${stageIndex}].Date" type="date" class="race-input" />
+            </div>
+        `;
+
+        container.insertAdjacentHTML("beforeend", html);
+        stageIndex++;
+    }
+</script>
