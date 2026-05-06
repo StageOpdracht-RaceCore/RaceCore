@@ -21,139 +21,114 @@ namespace StageProject_RaceCore.Controllers
                 .OrderByDescending(g => g.CreatedAt)
                 .ToListAsync();
 
-            var model = new LeaderboardViewModel();
-            model.Games = games;
+            var model = new LeaderboardViewModel { Games = games };
+            if (!games.Any()) return View(model);
 
-            if (!games.Any())
-            {
-                return View(model);
-            }
-
-            var selectedGame = gameId > 0
-                ? games.FirstOrDefault(g => g.Id == gameId)
-                : games.First();
-
-            if (selectedGame == null)
-            {
-                selectedGame = games.First();
-            }
+            var selectedGame = gameId > 0 ? games.FirstOrDefault(g => g.Id == gameId) : games.First();
+            if (selectedGame == null) selectedGame = games.First();
 
             model.SelectedGameId = selectedGame.Id;
-            model.RaceName = selectedGame.Race != null ? selectedGame.Race.Name : "Onbekende race";
+            model.RaceName = selectedGame.Race?.Name ?? "Onbekende race";
             model.GameStatus = selectedGame.Status;
-            model.CreatedAt = selectedGame.CreatedAt;
 
-            var playerIds = await _context.DraftTurns
-                .Where(d => d.GameSessionId == selectedGame.Id)
-                .Select(d => d.PlayerId)
-                .Distinct()
-                .ToListAsync();
-
+            // 1. Haal spelers en hun gekozen renners op
             var players = await _context.Players
-                .Where(p => playerIds.Contains(p.Id))
-                .OrderBy(p => p.PositionInDraft)
-                .ToListAsync();
-
-            var points = await _context.PlayerPoints
-                .Where(p => p.GameSessionId == selectedGame.Id)
-                .Include(p => p.Cyclist)
+                .Where(p => _context.PlayerSelections
+                    .Where(s => s.GameSessionId == selectedGame.Id)
+                    .Select(s => s.PlayerId).Contains(p.Id))
                 .ToListAsync();
 
             var selections = await _context.PlayerSelections
                 .Where(s => s.GameSessionId == selectedGame.Id)
                 .Include(s => s.Cyclist)
-                .ThenInclude(c => c.Team)
                 .ToListAsync();
+
+            // 2. Haal alle ritten en puntenregels op voor de live berekening
+            var stages = await _context.Stages.Where(s => s.RaceId == selectedGame.RaceId).ToListAsync();
+            var rules = await _context.PointsRules.ToListAsync();
+            var allResults = await _context.StageResults.Where(sr => stages.Select(s => s.Id).Contains(sr.StageId)).ToListAsync();
+            var allJerseys = await _context.Jerseys.Where(j => stages.Select(s => s.Id).Contains(j.StageId)).ToListAsync();
 
             foreach (var player in players)
             {
-                var playerPoints = points.Where(p => p.PlayerId == player.Id).ToList();
-                var playerSelections = selections.Where(s => s.PlayerId == player.Id).ToList();
+                int playerTotal = 0;
+                var cyclistScores = new Dictionary<int, int>();
+                var playerRiders = selections.Where(s => s.PlayerId == player.Id).Select(s => s.Cyclist).ToList();
 
-                var bestCyclist = playerPoints
-                    .Where(p => p.Cyclist != null)
-                    .GroupBy(p => p.Cyclist!)
-                    .Select(g => new
+                foreach (var cyclist in playerRiders)
+                {
+                    int cyclistTotal = 0;
+                    foreach (var stage in stages)
                     {
-                        CyclistName = g.Key.FullName,
-                        Points = g.Sum(x => x.Points)
-                    })
-                    .OrderByDescending(x => x.Points)
-                    .FirstOrDefault();
+                        // A. Ritpunten
+                        var result = allResults.FirstOrDefault(r => r.StageId == stage.Id && r.CyclistId == cyclist.Id);
+                        if (result != null)
+                        {
+                            cyclistTotal += rules
+                                .Where(r => r.Type == "Rit" && r.FromPosition <= result.Position && r.ToPosition >= result.Position)
+                                .Sum(r => r.Points);
+                        }
+
+                        // B. Truipunten
+                        var jerseys = allJerseys.Where(j => j.StageId == stage.Id && j.CyclistId == cyclist.Id);
+                        foreach (var j in jerseys)
+                        {
+                            string type = j.Type switch
+                            {
+                                "Red" => "RodeTrui",
+                                "Green" => "GroeneTrui",
+                                "Blue" => "BlauweTrui",
+                                "White" => "WitteTrui",
+                                _ => j.Type
+                            };
+                            cyclistTotal += rules.Where(r => r.Type == type).Sum(r => r.Points);
+                        }
+                    }
+                    cyclistScores[cyclist.Id] = cyclistTotal;
+                    playerTotal += cyclistTotal;
+                }
+
+                var bestRiderId = cyclistScores.OrderByDescending(x => x.Value).Select(x => x.Key).FirstOrDefault();
+                var bestRider = playerRiders.FirstOrDefault(c => c.Id == bestRiderId);
 
                 model.Rows.Add(new LeaderboardRowViewModel
                 {
                     PlayerId = player.Id,
                     PlayerName = player.Name,
                     Initials = GetInitials(player.Name),
-                    DraftPosition = player.PositionInDraft,
-                    TotalPoints = playerPoints.Sum(p => p.Points),
-                    RidersCount = playerSelections.Count,
-                    BestCyclistName = bestCyclist != null ? bestCyclist.CyclistName : "-",
-                    BestCyclistPoints = bestCyclist != null ? bestCyclist.Points : 0,
+                    TotalPoints = playerTotal,
+                    RidersCount = playerRiders.Count,
+                    BestCyclistName = bestRider?.FullName ?? "Geen",
+                    BestCyclistPoints = bestRiderId != 0 ? cyclistScores[bestRiderId] : 0,
                     Color = GetPlayerColor(player.Name)
                 });
             }
 
-            model.Rows = model.Rows
-                .OrderByDescending(r => r.TotalPoints)
-                .ThenBy(r => r.PlayerName)
-                .ToList();
-
-            int rank = 1;
-            foreach (var row in model.Rows)
-            {
-                row.Rank = rank;
-                rank++;
-            }
+            model.Rows = model.Rows.OrderByDescending(r => r.TotalPoints).ToList();
+            for (int i = 0; i < model.Rows.Count; i++) model.Rows[i].Rank = i + 1;
 
             model.TotalPoints = model.Rows.Sum(r => r.TotalPoints);
             model.PlayerCount = model.Rows.Count;
             model.HighestPoints = model.Rows.Any() ? model.Rows.Max(r => r.TotalPoints) : 0;
+
+            ViewBag.DatabaseOnline = await _context.Database.CanConnectAsync();
 
             return View(model);
         }
 
         private string GetInitials(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return "?";
-            }
-
+            if (string.IsNullOrWhiteSpace(name)) return "?";
             var parts = name.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 1)
-            {
-                return parts[0].Substring(0, 1).ToUpper();
-            }
-
-            return (parts[0].Substring(0, 1) + parts[1].Substring(0, 1)).ToUpper();
+            return parts.Length == 1
+                ? parts[0][..1].ToUpper()
+                : (parts[0][..1] + parts[1][..1]).ToUpper();
         }
 
         private string GetPlayerColor(string name)
         {
-            var colors = new List<string>
-            {
-                "#2563eb",
-                "#16a34a",
-                "#dc2626",
-                "#9333ea",
-                "#ea580c",
-                "#0891b2",
-                "#be123c",
-                "#4f46e5",
-                "#15803d",
-                "#b45309"
-            };
-
-            int hash = 0;
-
-            foreach (char c in name)
-            {
-                hash += c;
-            }
-
+            var colors = new List<string> { "#2563eb", "#16a34a", "#dc2626", "#9333ea", "#ea580c", "#0891b2" };
+            int hash = name?.GetHashCode() ?? 0;
             return colors[Math.Abs(hash) % colors.Count];
         }
     }
