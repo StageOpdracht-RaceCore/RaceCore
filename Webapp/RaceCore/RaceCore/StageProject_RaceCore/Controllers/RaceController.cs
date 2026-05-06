@@ -75,7 +75,7 @@ namespace StageProject_RaceCore.Controllers
                         CyclistId = cyclist.Id
                     });
                 }
-
+                 
                 // 3. Geselecteerde renners
                 var selectedCyclists = Request.Form["SelectedCyclistIds"];
 
