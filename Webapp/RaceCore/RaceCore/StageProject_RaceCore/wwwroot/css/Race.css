@@ -46,11 +46,11 @@
 }
 
 /* =========================
-   BUTTON BASE (SHARED FIX)
+   BUTTON BASE
 ========================= */
 .race-btn,
 .race-primary-btn,
-.race-dashboard-btn {
+.race-done-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -60,22 +60,64 @@
     border-radius: 12px;
 }
 
-/* =========================
-   DASHBOARD BUTTON
-========================= */
-.race-dashboard-btn {
-    min-height: 54px;
-    padding: 0 26px;
-    font-size: 17px;
-    font-weight: 900;
-    background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.race-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
 }
 
-    .race-dashboard-btn:hover {
-        transform: translateY(-2px);
-        background: #f8fafc;
+.race-btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+    .race-btn-primary:hover {
+        background: #1d4ed8;
+        color: white;
+    }
+
+.race-btn-light {
+    background: #eef2ff;
+    color: #1e3a8a;
+}
+
+    .race-btn-light:hover {
+        background: #e0e7ff;
+        color: #1e3a8a;
+    }
+
+.race-btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+    .race-btn-danger:hover {
+        background: #b91c1c;
+        color: white;
+    }
+
+.race-btn-done {
+    background: limegreen;
+    color: white;
+    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+}
+
+    .race-btn-done:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
     }
 
 /* =========================
@@ -212,7 +254,7 @@
 }
 
 /* =========================
-   BADGES (improved contrast)
+   BADGES
 ========================= */
 .race-badge {
     display: inline-flex;
@@ -229,6 +271,11 @@
 .race-year {
     background: #dbeafe;
     color: #1d4ed8;
+}
+
+.race-muted {
+    background: #f1f5f9;
+    color: #64748b;
 }
 
 /* =========================
@@ -347,13 +394,12 @@
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
-
     .race-header-card {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .race-dashboard-btn {
+    .race-done-btn {
         width: 100%;
     }
 
