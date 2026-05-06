@@ -51,14 +51,65 @@ namespace StageProject_RaceCore.Controllers
 
             try
             {
+                // 1. Race opslaan
                 _context.Races.Add(race);
+                await _context.SaveChangesAsync();
+
+                // 2. Nieuwe renner (optioneel)
+                var newCyclistName = Request.Form["NewCyclistName"];
+
+                if (!string.IsNullOrWhiteSpace(newCyclistName))
+                {
+                    var cyclist = new Cyclist
+                    {
+                        FirstName = newCyclistName
+                    };
+
+                    _context.Cyclists.Add(cyclist);
+                    await _context.SaveChangesAsync();
+
+                    // automatisch toevoegen aan race
+                    _context.RaceEntries.Add(new RaceEntry
+                    {
+                        RaceId = race.Id,
+                        CyclistId = cyclist.Id
+                    });
+                }
+
+                // 3. Geselecteerde renners
+                var selectedCyclists = Request.Form["SelectedCyclistIds"];
+
+                foreach (var cyclistId in selectedCyclists)
+                {
+                    _context.RaceEntries.Add(new RaceEntry
+                    {
+                        RaceId = race.Id,
+                        CyclistId = int.Parse(cyclistId)
+                    });
+                }
+
+                // 4. Stages (dynamisch)
+                int i = 0;
+                while (!string.IsNullOrEmpty(Request.Form[$"Stages[{i}].Name"]))
+                {
+                    var stage = new Stage
+                    {
+                        Name = Request.Form[$"Stages[{i}].Name"],
+                        Date = DateTime.Parse(Request.Form[$"Stages[{i}].Date"]),
+                        RaceId = race.Id
+                    };
+
+                    _context.Stages.Add(stage);
+                    i++;
+                }
+
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Database fout.";
                 return View(race);
             }
         }
