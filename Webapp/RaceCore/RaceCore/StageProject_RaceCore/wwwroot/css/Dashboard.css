@@ -204,9 +204,39 @@
 
 .game-menu-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 12px;
+}
+
+/* Rij 1 */
+.game-menu-card:nth-child(1) {
+    grid-column: 1 / span 2;
+}
+
+.game-menu-card:nth-child(2) {
+    grid-column: 3 / span 2;
+}
+
+.game-menu-card:nth-child(3) {
+    grid-column: 5 / span 2;
+}
+
+.game-menu-card:nth-child(4) {
+    grid-column: 7 / span 2;
+}
+
+/* Rij 2 gecentreerd */
+.game-menu-card:nth-child(5) {
+    grid-column: 2 / span 2;
+}
+
+.game-menu-card:nth-child(6) {
+    grid-column: 4 / span 2;
+}
+
+.game-menu-card:nth-child(7) {
+    grid-column: 6 / span 2;
 }
 
 .game-menu-card {
@@ -272,15 +302,7 @@
         text-overflow: ellipsis;
     }
 
-    /* =========================
-   RIJ 1 = PRIMARY ACTIONS
-========================= */
-
-    /* New Game */
-    /* Scoring */
-    /* Leaderboard */
-    /* History */
-
+    /* RIJ 1 = PRIMARY */
     .game-menu-card:nth-child(1),
     .game-menu-card:nth-child(2),
     .game-menu-card:nth-child(3),
@@ -291,7 +313,6 @@
         box-shadow: 0 12px 28px rgba(29, 95, 207, .24);
     }
 
-        /* ICON */
         .game-menu-card:nth-child(1) span,
         .game-menu-card:nth-child(2) span,
         .game-menu-card:nth-child(3) span,
@@ -299,7 +320,6 @@
             background: rgba(255,255,255,.16);
         }
 
-        /* SUBTEXT + ARROW */
         .game-menu-card:nth-child(1)::after,
         .game-menu-card:nth-child(2)::after,
         .game-menu-card:nth-child(3)::after,
@@ -311,7 +331,6 @@
             color: rgba(255,255,255,.84);
         }
 
-        /* HOVER */
         .game-menu-card:nth-child(1):hover,
         .game-menu-card:nth-child(2):hover,
         .game-menu-card:nth-child(3):hover,
@@ -319,18 +338,11 @@
             background: linear-gradient(135deg, #184FB0, #195FA3);
             box-shadow: 0 16px 32px rgba(24, 79, 176, .30);
         }
-    /* =========================
-   RIJ 2 = SECONDARY
-========================= */
 
-    /* Stages */
+    /* RIJ 2 = SECONDARY */
     .game-menu-card:nth-child(5),
-    /* Cyclists */
     .game-menu-card:nth-child(6),
-    /* Teams */
-    .game-menu-card:nth-child(7),
-    /* History */
-    .game-menu-card:nth-child(8) {
+    .game-menu-card:nth-child(7) {
         background: #E6F0FF;
         color: #1E3A8A !important;
         border: 1px solid #C7DBFF;
@@ -339,37 +351,32 @@
 
         .game-menu-card:nth-child(5) span,
         .game-menu-card:nth-child(6) span,
-        .game-menu-card:nth-child(7) span,
-        .game-menu-card:nth-child(8) span {
+        .game-menu-card:nth-child(7) span {
             background: rgba(37, 99, 235, .10);
             color: #2563EB;
         }
 
         .game-menu-card:nth-child(5) strong,
         .game-menu-card:nth-child(6) strong,
-        .game-menu-card:nth-child(7) strong,
-        .game-menu-card:nth-child(8) strong {
+        .game-menu-card:nth-child(7) strong {
             color: #1E3A8A;
         }
 
         .game-menu-card:nth-child(5) small,
         .game-menu-card:nth-child(6) small,
-        .game-menu-card:nth-child(7) small,
-        .game-menu-card:nth-child(8) small {
+        .game-menu-card:nth-child(7) small {
             color: #475569;
         }
 
         .game-menu-card:nth-child(5)::after,
         .game-menu-card:nth-child(6)::after,
-        .game-menu-card:nth-child(7)::after,
-        .game-menu-card:nth-child(8)::after {
+        .game-menu-card:nth-child(7)::after {
             color: rgba(30, 58, 138, .35);
         }
 
         .game-menu-card:nth-child(5):hover,
         .game-menu-card:nth-child(6):hover,
-        .game-menu-card:nth-child(7):hover,
-        .game-menu-card:nth-child(8):hover {
+        .game-menu-card:nth-child(7):hover {
             background: #DCEBFF;
             box-shadow: 0 12px 28px rgba(59, 130, 246, .14);
         }
@@ -633,6 +640,16 @@
 
     .game-menu-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .game-menu-card:nth-child(1),
+    .game-menu-card:nth-child(2),
+    .game-menu-card:nth-child(3),
+    .game-menu-card:nth-child(4),
+    .game-menu-card:nth-child(5),
+    .game-menu-card:nth-child(6),
+    .game-menu-card:nth-child(7) {
+        grid-column: auto;
     }
 }
 
