@@ -66,7 +66,7 @@
 
                 <div class="cyclist-dual-container">
 
-                    <!-- LINKS -->
+                    <!-- LINKS (alle renners) -->
                     <div class="cyclist-box">
 
                         <input type="text"
@@ -78,17 +78,20 @@
                         <div class="cyclist-list">
                             @foreach (var cyclist in cyclists)
                             {
+                                var fullName = cyclist.FirstName + " " + cyclist.LastName;
+
                                 <div class="cyclist-item"
-                                     onclick="selectCyclist(@cyclist.Id, '@cyclist.FirstName')"
+                                     onclick="selectCyclist(@cyclist.Id, '@fullName')"
                                      data-id="@cyclist.Id"
-                                     data-name="@cyclist.FirstName">
-                                    @cyclist.FirstName
+                                     data-name="@fullName">
+                                    @fullName
                                 </div>
                             }
                         </div>
+
                     </div>
 
-                    <!-- RECHTS -->
+                    <!-- RECHTS (geselecteerd) -->
                     <div class="cyclist-box">
                         <h4>Geselecteerd</h4>
                         <div id="selectedCyclists" class="cyclist-list selected"></div>
@@ -115,7 +118,7 @@
                         <input name="Stages[0].Name" class="race-input" placeholder="Naam stage" />
                         <input name="Stages[0].Date" type="date" class="race-input" />
 
-                        <button type="button" class="race-delete-btn" onclick="removeStage(this)">
+                        <button type="button" class="race-danger-btn" onclick="removeStage(this)">
                             🗑
                         </button>
                     </div>
@@ -186,7 +189,7 @@
         const items = document.querySelectorAll(".cyclist-item[data-id]");
 
         items.forEach(item => {
-            const name = item.dataset.name.toLowerCase();
+            const name = (item.dataset.name || "").toLowerCase();
             item.style.display = name.includes(value) ? "block" : "none";
         });
     }
@@ -199,7 +202,7 @@
                 <input name="Stages[${stageIndex}].Name" class="race-input" placeholder="Naam stage" />
                 <input name="Stages[${stageIndex}].Date" type="date" class="race-input" />
 
-                <button type="button" class="race-delete-btn" onclick="removeStage(this)">
+                <button type="button" class="race-danger-btn" onclick="removeStage(this)">
                     🗑
                 </button>
             </div>
@@ -211,7 +214,7 @@
 
     function removeStage(button) {
         button.closest(".stage-item").remove();
-        reindexStages();
+        reindexStages(); 
     }
 
     function reindexStages() {

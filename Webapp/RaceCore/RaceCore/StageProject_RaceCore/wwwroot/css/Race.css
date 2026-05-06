@@ -46,11 +46,11 @@
 }
 
 /* =========================
-   BUTTON BASE
+   BUTTONS BASE
 ========================= */
 .race-btn,
 .race-primary-btn,
-.race-done-btn {
+.race-dashboard-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -60,64 +60,22 @@
     border-radius: 12px;
 }
 
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-.race-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: 0.2s ease;
+/* =========================
+   DASHBOARD BUTTON
+========================= */
+.race-dashboard-btn {
+    min-height: 54px;
+    padding: 0 26px;
+    font-size: 17px;
+    font-weight: 900;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
 }
 
-.race-btn-primary {
-    background: #2563eb;
-    color: white;
-}
-
-    .race-btn-primary:hover {
-        background: #1d4ed8;
-        color: white;
-    }
-
-.race-btn-light {
-    background: #eef2ff;
-    color: #1e3a8a;
-}
-
-    .race-btn-light:hover {
-        background: #e0e7ff;
-        color: #1e3a8a;
-    }
-
-.race-btn-danger {
-    background: #dc2626;
-    color: white;
-}
-
-    .race-btn-danger:hover {
-        background: #b91c1c;
-        color: white;
-    }
-
-.race-btn-done {
-    background: limegreen;
-    color: white;
-    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
-}
-
-    .race-btn-done:hover {
-        background: #22c55e;
-        color: white;
-        transform: translateY(-1px);
+    .race-dashboard-btn:hover {
+        transform: translateY(-2px);
+        background: #f8fafc;
     }
 
 /* =========================
@@ -235,17 +193,12 @@
 }
 
 /* =========================
-   BADGES
+   STAGES
 ========================= */
 .stage-item {
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
-}
-
-.race-muted {
-    background: #f1f5f9;
-    color: #64748b;
 }
 
 /* =========================
@@ -270,7 +223,7 @@
         background: #e0e7ff;
     }
 
-.race-danger-btn {
+.race-danger-btn { 
     background: #dc2626;
     color: #fff;
 }
@@ -283,12 +236,13 @@
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
+
     .race-header-card {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .race-done-btn {
+    .race-dashboard-btn {
         width: 100%;
     }
 
