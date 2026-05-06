@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using StageProject_RaceCore.Hubs;
 using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
 
@@ -8,13 +10,15 @@ namespace StageProject_RaceCore.Controllers
     public class DraftController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<GameHub> _hubContext;
 
         private const int ActiveRidersPerPlayer = 10;
         private const int BenchRidersPerPlayer = 5;
 
-        public DraftController(AppDbContext context)
+        public DraftController(AppDbContext context, IHubContext<GameHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Index(int gameId)
@@ -134,6 +138,8 @@ namespace StageProject_RaceCore.Controllers
                     game.Status = "Active";
                     await _context.SaveChangesAsync();
 
+                    await SendDraftUpdate(gameId, true);
+
                     return RedirectToAction("Index", "Dashboard", new { gameId });
                 }
 
@@ -192,6 +198,8 @@ namespace StageProject_RaceCore.Controllers
 
                 await _context.SaveChangesAsync();
 
+                await SendDraftUpdate(gameId, draftIsFinished);
+
                 if (isActiveCyclist)
                 {
                     TempData["Success"] = currentTurn.Player.Name + " heeft actieve renner " + cyclist.FullName + " gekozen.";
@@ -221,6 +229,17 @@ namespace StageProject_RaceCore.Controllers
         {
             TempData["Error"] = "Draft wordt automatisch gemaakt via New Game.";
             return RedirectToDraft(gameId);
+        }
+
+        private async Task SendDraftUpdate(int gameId, bool draftFinished)
+        {
+            await _hubContext.Clients
+                .Group($"game-{gameId}")
+                .SendAsync("DraftUpdated", new
+                {
+                    gameId = gameId,
+                    draftFinished = draftFinished
+                });
         }
 
         private async Task FixDraftSettingsAndTurns(GameSession game)

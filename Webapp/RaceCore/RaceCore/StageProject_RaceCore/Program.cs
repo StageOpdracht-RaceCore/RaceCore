@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
+using StageProject_RaceCore.Hubs;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore
@@ -11,6 +12,12 @@ namespace StageProject_RaceCore
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+
+            // Nodig voor live multiplayer updates
+            builder.Services.AddSignalR();
+
+            // Nodig om later te onthouden wie de host/speler is
+            builder.Services.AddSession();
 
             var onlineConnection = builder.Configuration.GetConnectionString("OnlineConnection");
 
@@ -65,11 +72,17 @@ namespace StageProject_RaceCore
 
             app.UseRouting();
 
+            // Session moet na UseRouting en voor UseAuthorization
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Game}/{action=New}/{id?}");
+
+            // Live multiplayer hub
+            app.MapHub<GameHub>("/gameHub");
 
             app.Run();
         }

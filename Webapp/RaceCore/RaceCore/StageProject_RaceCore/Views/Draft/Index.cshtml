@@ -89,8 +89,6 @@
             </div>
 
             <div class="draft-header-actions">
-                
-
                 <a asp-controller="Game"
                        asp-action="New"
                        class="draft-header-btn draft-header-btn-white">
@@ -331,8 +329,6 @@
                 </div>
 
                 <div class="draft-info-list">
-                    
-
                     <div class="draft-info-item">
                         <span>Actieve renners per speler</span>
                         <strong>@ridersPerPlayer</strong>
@@ -384,14 +380,41 @@
     </div>
 </div>
 
-<script>
-    window.onload = function () {
-        if (window.location.hash == "#draft-players-section") {
-            var section = document.getElementById("draft-players-section");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 
-            if (section != null) {
-                section.scrollIntoView();
-            }
-        }
+<script>
+    const gameId = @gameId;
+
+    window.onload = function () {
+    if (window.location.hash == "#draft-players-section") {
+    var section = document.getElementById("draft-players-section");
+
+    if (section != null) {
+    section.scrollIntoView();
+    }
+    }
     };
+
+    const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/gameHub")
+    .withAutomaticReconnect()
+    .build();
+
+    connection.on("DraftUpdated", function (data) {
+    if (data.gameId === gameId) {
+    if (data.draftFinished === true) {
+    window.location.href = "/Dashboard/Index?gameId=" + gameId;
+    } else {
+    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
+    }
+    }
+    });
+
+    connection.start()
+    .then(function () {
+    connection.invoke("JoinGameGroup", gameId);
+    })
+    .catch(function (err) {
+    console.error("SignalR connection error:", err);
+    });
 </script>
