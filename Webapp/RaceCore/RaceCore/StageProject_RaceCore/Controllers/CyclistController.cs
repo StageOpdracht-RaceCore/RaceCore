@@ -13,6 +13,48 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(string firstName, string lastName, int? teamId)
+        {
+            if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                var cyclist = new Cyclist
+                {
+                    FirstName = firstName.Trim(),
+                    LastName = lastName.Trim(),
+                    TeamId = teamId == 0 ? null : teamId,
+                    IsActive = true
+                };
+
+                _context.Cyclists.Add(cyclist);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"{cyclist.FullName} is succesvol toegevoegd.";
+            }
+            else
+            {
+                TempData["CreateError"] = "Voornaam en achternaam zijn verplicht.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cyclist = await _context.Cyclists.FindAsync(id);
+            if (cyclist != null)
+            {
+                _context.Cyclists.Remove(cyclist);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"{cyclist.FullName} is verwijderd.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Index(string? search, string? status, int page = 1, int pageSize = 25)
         {
             if (page < 1) page = 1;
@@ -25,6 +67,7 @@ namespace StageProject_RaceCore.Controllers
             ViewBag.Status = status;
             ViewBag.CyclistCount = 0;
             ViewBag.Races = new List<Race>();
+            ViewBag.Teams = new List<Team>();
             ViewBag.DatabaseOnline = false;
 
             try
@@ -35,6 +78,8 @@ namespace StageProject_RaceCore.Controllers
                     r.Name.Contains("Tour") ||
                     r.Name.Contains("Vuelta"))
                     .ToListAsync();
+
+                var teams = await _context.Teams.OrderBy(t => t.Name).ToListAsync();
 
                 var query = _context.Cyclists
                     .Include(c => c.Team)
@@ -79,6 +124,7 @@ namespace StageProject_RaceCore.Controllers
                 ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalItems / pageSize));
                 ViewBag.CyclistCount = totalItems;
                 ViewBag.Races = races;
+                ViewBag.Teams = teams;
                 ViewBag.DatabaseOnline = true;
 
                 return View(cyclists);
