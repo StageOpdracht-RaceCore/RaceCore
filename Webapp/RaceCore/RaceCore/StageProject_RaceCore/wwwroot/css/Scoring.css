@@ -1,5 +1,4 @@
-﻿/* Volledige CSS inclusief alle media queries en formulier-behoud */
-
+﻿/* Algemene Pagina Layout */
 .scoring-page {
     padding: 24px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -19,13 +18,24 @@
     box-shadow: 0 10px 25px rgba(30, 58, 138, 0.15);
 }
 
-/* Kaarten & Lijst container */
+.player-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.player-page-subtitle {
+    color: #dbeafe;
+    margin: 4px 0 0;
+    opacity: 0.9;
+}
+
+/* Kaarten */
 .player-table-card {
     background: white;
     border-radius: 20px;
     border: 1px solid #e5e7eb;
     box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-    min-height: 100px; /* Zorgt dat de kaart niet inklapt als namen wegvallen */
 }
 
 .results-list {
@@ -43,41 +53,48 @@
     align-items: center;
     border: 1px solid #e5e7eb;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
 }
 
-/* Alert Styling */
-.alert-danger {
-    background-color: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-    border-radius: 16px;
-    padding: 16px 24px;
-    margin-bottom: 24px;
+    .result-item-card:hover {
+        transform: translateX(5px);
+        border-color: #2563eb;
+        background: #f8fbff;
+    }
+
+/* Positie badge */
+.pos-badge {
+    background: #f1f5f9;
+    color: #1e293b;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    animation: slideIn 0.3s ease-out;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    border: 1px solid #e2e8f0;
 }
 
-/* Formulier Elementen */
-.race-select-form, .scoring-stage-form {
-    display: flex;
-    align-items: end;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+/* Inputs */
+.player-search-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 0 16px;
+    background: #f9fafb;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
-.race-select-group, .scoring-stage-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.race-select-group {
-    width: min(100%, 360px);
-}
+    .player-search-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
 
 .alert-danger {
     background-color: #fef2f2;
@@ -131,9 +148,9 @@
     height: 38px;
     border-radius: 50%;
     cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-block;
     filter: saturate(0) opacity(0.25);
-    transition: 0.25s;
-    border: 2px solid transparent;
 }
 
 .dot-red {
@@ -166,23 +183,27 @@ input[type="checkbox"]:checked + .jersey-dot {
     filter: none !important;
 }
 
-.dot-red {
+.pos-badge.dot-red {
     background: #ef4444 !important;
+    color: white;
     border-color: #dc2626 !important;
 }
 
-.dot-green {
+.pos-badge.dot-green {
     background: #10b981 !important;
+    color: white;
     border-color: #059669 !important;
 }
 
-.dot-blue {
+.pos-badge.dot-blue {
     background: #2563eb !important;
+    color: white;
     border-color: #1d4ed8 !important;
 }
 
-.dot-white {
+.pos-badge.dot-white {
     background: #ffffff !important;
+    color: #1e293b;
     border-color: #94a3b8 !important;
 }
 
@@ -280,16 +301,9 @@ input[type="checkbox"]:checked + .jersey-dot {
     .jersey-flex {
         grid-column: auto;
     }
-}
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .pos-badge {
+        width: 40px;
+        height: 40px;
     }
 }
