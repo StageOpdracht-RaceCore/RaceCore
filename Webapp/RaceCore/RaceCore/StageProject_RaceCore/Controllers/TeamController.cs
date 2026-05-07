@@ -9,6 +9,15 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* TeamController.cs
+       Purpose: Manages player teams during a game session. Responsible
+       for listing players' teams, swapping active/bench riders and
+       helper methods for building the view model. Business rules such
+       as active/bench slots and color assignment live here.
+    */
+    /// <summary>
+    /// Controller for team views and actions used during a game session.
+    /// </summary>
     public class TeamController : Controller
     {
         private const int ActiveRiderSlots = 10;

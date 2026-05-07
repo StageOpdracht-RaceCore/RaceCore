@@ -6,6 +6,14 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* GameController.cs
+       Purpose: Handle creation and lifecycle of GameSession objects.
+       Responsibilities include creating new games, keeping track of
+       host sessions, closing stale games and providing helper APIs
+       used by the UI (stages list by race). */
+    /// <summary>
+    /// Controller to create and manage game sessions (New, Host ping, helpers).
+    /// </summary>
     public class GameController : Controller
     {
         private readonly AppDbContext _context;

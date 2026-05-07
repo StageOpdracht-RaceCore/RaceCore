@@ -8,6 +8,13 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* ScoringController.cs
+       Purpose: Manage stage scoring input and persistence. Handles
+       rendering the scoring UI, validating input (unique cyclist
+       checks) and saving StageResults and Jersey data. */
+    /// <summary>
+    /// Controller for stage scoring (input, validation, save).
+    /// </summary>
     public class ScoringController : Controller
     {
         private readonly AppDbContext _context;
