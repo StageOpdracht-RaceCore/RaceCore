@@ -5,15 +5,47 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /// <summary>
+    /// Controller voor het ophalen en tonen van racegeschiedenis,
+    /// etappes en puntenberekeningen.
+    /// </summary>
     public class HistoryController : Controller
     {
+        /// <summary>
+        /// Databasecontext voor toegang tot de applicatiedatabase.
+        /// </summary>
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Initialiseert een nieuwe instantie van de HistoryController.
+        /// </summary>
+        /// <param name="context">
+        /// Databasecontext die gebruikt wordt voor databankqueries.
+        /// </param>
         public HistoryController(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Toont het historiek-overzicht van een race.
+        /// 
+        /// Functionaliteiten:
+        /// - ophalen van races voor de dropdown
+        /// - selecteren van een race
+        /// - ophalen van etappes
+        /// - berekenen van rit- en truipunten
+        /// - opbouwen van een HistoryViewModel
+        /// - controleren van databaseconnectie
+        /// </summary>
+        /// <param name="raceId">
+        /// Optionele ID van de geselecteerde race.
+        /// Indien geen ID wordt meegegeven,
+        /// wordt de meest recente race gebruikt.
+        /// </param>
+        /// <returns>
+        /// Een View met het ingevulde HistoryViewModel.
+        /// </returns>
         public async Task<IActionResult> History(int? raceId)
         {
             // 1. Haal alle races op uit de database voor de dropdown
@@ -61,12 +93,12 @@ namespace StageProject_RaceCore.Controllers
 
                 if (winner != null)
                 {
-                    // A. Bereken rit-punten (bijv. 100 voor Piet)
+                    // A. Bereken rit-punten
                     int posPoints = rules
                         .Where(r => r.Type == "Rit" && r.FromPosition <= 1 && r.ToPosition >= 1)
                         .Sum(r => r.Points);
 
-                    // B. Bereken trui-punten (bijv. 10 voor de rode trui)
+                    // B. Bereken trui-punten
                     var jerseys = await _context.Jerseys
                         .Where(j => j.StageId == s.Id && j.CyclistId == winner.CyclistId)
                         .ToListAsync();
@@ -82,6 +114,7 @@ namespace StageProject_RaceCore.Controllers
                             "White" => "WitteTrui",
                             _ => j.Type
                         };
+
                         jerseyPoints += rules.Where(r => r.Type == ruleType).Sum(r => r.Points);
                     }
 
@@ -101,6 +134,9 @@ namespace StageProject_RaceCore.Controllers
                 });
             }
 
+            /// <summary>
+            /// ViewModel met alle gegevens voor de History View.
+            /// </summary>
             var model = new HistoryViewModel
             {
                 RaceId = race.Id,
@@ -108,9 +144,15 @@ namespace StageProject_RaceCore.Controllers
                 Stages = stageHistoryItems
             };
 
-            // Controleer of de database bereikbaar is voor de waarschuwingsbalk
+            /// <summary>
+            /// Controleert of de database bereikbaar is.
+            /// Wordt gebruikt voor een waarschuwingsmelding in de UI.
+            /// </summary>
             ViewBag.DatabaseOnline = await _context.Database.CanConnectAsync();
 
+            /// <summary>
+            /// Geeft de View terug met het ingevulde model.
+            /// </summary>
             return View(model);
         }
     }
