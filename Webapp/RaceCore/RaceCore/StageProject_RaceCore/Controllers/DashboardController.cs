@@ -63,7 +63,6 @@ namespace StageProject_RaceCore.Controllers
 
                 model.CyclistsCount = model.TotalDraftPicks;
                 model.TeamsCount = await _context.Teams.CountAsync();
-
                 model.StagesCount = await _context.Stages
                     .Where(s => s.RaceId == game.RaceId)
                     .CountAsync();
@@ -133,9 +132,7 @@ namespace StageProject_RaceCore.Controllers
 
                         return new TopCyclistItem
                         {
-                            Name = cyclist != null
-                                ? cyclist.FirstName + " " + cyclist.LastName
-                                : "Onbekende renner",
+                            Name = cyclist != null ? cyclist.FirstName + " " + cyclist.LastName : "Onbekende renner",
                             Points = c.Value
                         };
                     })

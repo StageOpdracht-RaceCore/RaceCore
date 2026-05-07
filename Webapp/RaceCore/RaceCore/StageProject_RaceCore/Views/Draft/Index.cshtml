@@ -384,70 +384,37 @@
 
 <script>
     const gameId = @gameId;
-    let isChangingPage = false;
 
     window.onload = function () {
-    if (window.location.hash === "#draft-players-section") {
-    const section = document.getElementById("draft-players-section");
+    if (window.location.hash == "#draft-players-section") {
+    var section = document.getElementById("draft-players-section");
 
-    if (section !== null) {
+    if (section != null) {
     section.scrollIntoView();
     }
     }
     };
 
-    function reloadDraftFast() {
-    if (isChangingPage) {
-    return;
-    }
-
-    isChangingPage = true;
-
-    setTimeout(function () {
-    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
-    }, 75);
-    }
-
-    function goToDashboard() {
-    if (isChangingPage) {
-    return;
-    }
-
-    isChangingPage = true;
-    window.location.href = "/Dashboard/Index?gameId=" + gameId;
-    }
-
     const connection = new signalR.HubConnectionBuilder()
     .withUrl("/gameHub")
-    .withAutomaticReconnect([0, 300, 700, 1500])
+    .withAutomaticReconnect()
     .build();
 
     connection.on("DraftUpdated", function (data) {
-    if (Number(data.gameId) !== Number(gameId)) {
-    return;
-    }
-
+    if (data.gameId === gameId) {
     if (data.draftFinished === true) {
-    goToDashboard();
-    return;
+    window.location.href = "/Dashboard/Index?gameId=" + gameId;
+    } else {
+    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
     }
-
-    reloadDraftFast();
-    });
-
-    connection.on("GoToDashboard", function (data) {
-    if (Number(data.gameId) !== Number(gameId)) {
-    return;
     }
-
-    goToDashboard();
     });
 
     connection.start()
     .then(function () {
-    return connection.invoke("JoinGameGroup", gameId);
+    connection.invoke("JoinGameGroup", gameId);
     })
     .catch(function (err) {
-    console.error("SignalR fout:", err);
+    console.error("SignalR connection error:", err);
     });
 </script>

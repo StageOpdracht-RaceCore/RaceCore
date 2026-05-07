@@ -1,4 +1,4 @@
-@model StageProject_RaceCore.ViewModels.NewGameViewModel
+﻿@model StageProject_RaceCore.ViewModels.NewGameViewModel
 
 @{
     ViewData["Title"] = "New Game";
@@ -6,12 +6,6 @@
 
     // aantal geselecteerde spelers berekenen
     int selectedPlayersCount = Model.AvailablePlayers.Count(p => p.IsSelected);
-
-    // actieve game popup data
-    int activeGameId = ViewBag.ActiveGameId ?? 0;
-    string activeGameName = ViewBag.ActiveGameName ?? "";
-    string activeGameStatus = ViewBag.ActiveGameStatus ?? "";
-    bool hasActiveGame = activeGameId > 0;
 }
 
 <link rel="stylesheet" href="~/css/NewGame.css" asp-append-version="true" />
@@ -279,38 +273,6 @@
             </div>
         </div>
     </form>
-
-    @if (hasActiveGame)
-    {
-        <div class="game-modal-overlay show" id="joinActiveGameModal">
-            <div class="game-modal">
-                <div class="game-modal-icon">🎮</div>
-
-                <h2>Game in progress</h2>
-
-                <p>
-                    Er is al een actieve game bezig:
-                    <br />
-                    <strong>@activeGameName</strong>
-                    <br />
-                    Status: <strong>@activeGameStatus</strong>
-                </p>
-
-                <div class="game-modal-actions">
-                    <button type="button" class="game-btn game-btn-light" id="declineJoinGame">
-                        Nee, nieuwe game maken
-                    </button>
-
-                    <a asp-controller="Draft"
-                       asp-action="Index"
-                       asp-route-gameId="@activeGameId"
-                       class="game-btn game-btn-start">
-                        Ja, join game
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 @section Scripts {
@@ -327,9 +289,6 @@
             const modal = document.getElementById("startGameModal");
             const openModalBtn = document.getElementById("openStartGameModal");
             const cancelModalBtn = document.getElementById("cancelStartGame");
-
-            const joinActiveGameModal = document.getElementById("joinActiveGameModal");
-            const declineJoinGame = document.getElementById("declineJoinGame");
 
             const raceSelect = document.getElementById("raceSelect");
             const stageSelect = document.getElementById("stageSelect");
@@ -431,27 +390,16 @@
             }
 
             // Popup openen
-            if (openModalBtn && modal) {
-                openModalBtn.addEventListener("click", function () {
-                    updateModalRaceName();
-                    updateModalStageName();
-                    modal.classList.add("show");
-                });
-            }
+            openModalBtn.addEventListener("click", function () {
+                updateModalRaceName();
+                updateModalStageName();
+                modal.classList.add("show");
+            });
 
             // Popup sluiten
-            if (cancelModalBtn && modal) {
-                cancelModalBtn.addEventListener("click", function () {
-                    modal.classList.remove("show");
-                });
-            }
-
-            // Join popup sluiten als gebruiker zelf een nieuwe game wil starten
-            if (declineJoinGame && joinActiveGameModal) {
-                declineJoinGame.addEventListener("click", function () {
-                    joinActiveGameModal.classList.remove("show");
-                });
-            }
+            cancelModalBtn.addEventListener("click", function () {
+                modal.classList.remove("show");
+            });
 
             // Eerste keer alles juist zetten
             updateSelectedPlayersCount();

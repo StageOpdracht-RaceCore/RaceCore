@@ -45,41 +45,12 @@ namespace StageProject_RaceCore.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var cyclist = await _context.Cyclists.FindAsync(id);
-
             if (cyclist != null)
             {
                 _context.Cyclists.Remove(cyclist);
                 await _context.SaveChangesAsync();
-
                 TempData["Success"] = $"{cyclist.FullName} is verwijderd.";
             }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // ─────────────────────────────────────────────
-        // NIEUW: Toggle Active / Inactive
-        // ─────────────────────────────────────────────
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleActive(int id)
-        {
-            var cyclist = await _context.Cyclists
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (cyclist == null)
-            {
-                TempData["DatabaseError"] = "Cyclist niet gevonden.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            cyclist.IsActive = !cyclist.IsActive;
-
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] =
-                $"{cyclist.FullName} is nu " +
-                $"{(cyclist.IsActive ? "actief" : "niet actief")}.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -90,18 +61,29 @@ namespace StageProject_RaceCore.Controllers
             if (pageSize < 1) pageSize = 25;
 
             ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = 1;
             ViewBag.PageSize = pageSize;
             ViewBag.Search = search;
             ViewBag.Status = status;
+            ViewBag.CyclistCount = 0;
+            ViewBag.Races = new List<Race>();
+            ViewBag.Teams = new List<Team>();
+            ViewBag.DatabaseOnline = false;
 
             try
             {
-                var teams = await _context.Teams
-                    .OrderBy(t => t.Name)
+                var races = await _context.Races
+                    .Where(r =>
+                    r.Name.Contains("Giro") ||
+                    r.Name.Contains("Tour") ||
+                    r.Name.Contains("Vuelta"))
                     .ToListAsync();
+
+                var teams = await _context.Teams.OrderBy(t => t.Name).ToListAsync();
 
                 var query = _context.Cyclists
                     .Include(c => c.Team)
+                    .Include(c => c.RaceEntries)
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -117,9 +99,17 @@ namespace StageProject_RaceCore.Controllers
                 if (!string.IsNullOrWhiteSpace(status))
                 {
                     if (status == "active")
+                    {
                         query = query.Where(c => c.IsActive);
+                    }
                     else if (status == "inactive")
+                    {
                         query = query.Where(c => !c.IsActive);
+                    }
+                    else if (status.StartsWith("race-") && int.TryParse(status.Replace("race-", ""), out int raceId))
+                    {
+                        query = query.Where(c => c.RaceEntries.Any(re => re.RaceId == raceId));
+                    }
                 }
 
                 var totalItems = await query.CountAsync();
@@ -133,6 +123,7 @@ namespace StageProject_RaceCore.Controllers
 
                 ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalItems / pageSize));
                 ViewBag.CyclistCount = totalItems;
+                ViewBag.Races = races;
                 ViewBag.Teams = teams;
                 ViewBag.DatabaseOnline = true;
 
@@ -140,9 +131,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] =
-                    "Database niet bereikbaar. Start OpenVPN om live gegevens te zien.";
-
+                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live gegevens te zien.";
                 return View(new List<Cyclist>());
             }
         }
