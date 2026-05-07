@@ -62,74 +62,138 @@ namespace StageProject_RaceCore.Controllers
                     .CountAsync();
 
                 model.CyclistsCount = model.TotalDraftPicks;
+                model.TeamsCount = await _context.Teams.CountAsync();
+
+                model.StagesCount = await _context.Stages
+                    .Where(s => s.RaceId == game.RaceId)
+                    .CountAsync();
+
                 model.DraftCompleted = game.Status != "Draft";
 
-                model.PlayerRanking = await _context.DraftTurns
-                    .Where(d => d.GameSessionId == gameId)
-                    .Select(d => d.Player)
-                    .Distinct()
-                    .Select(p => new PlayerRankingItem
+                var rules = await _context.PointsRules.ToListAsync();
+
+                var stageResults = await _context.StageResults
+                    .Include(sr => sr.Stage)
+                    .Include(sr => sr.Cyclist)
+                    .Where(sr => sr.Stage.RaceId == game.RaceId)
+                    .ToListAsync();
+
+                var jerseys = await _context.Jerseys
+                    .Include(j => j.Stage)
+                    .Include(j => j.Cyclist)
+                    .Where(j => j.Stage.RaceId == game.RaceId)
+                    .ToListAsync();
+
+                var cyclistPoints = new Dictionary<int, int>();
+
+                foreach (var result in stageResults)
+                {
+                    if (result.Position == null)
                     {
-                        PlayerName = p.Name,
-                        Points = _context.PlayerPoints
-                            .Where(pp => pp.PlayerId == p.Id && pp.RaceId == game.RaceId)
-                            .Select(pp => (int?)pp.Points)
-                            .Sum() ?? 0
+                        continue;
+                    }
+
+                    int points = rules
+                        .Where(r =>
+                            r.Type == "Rit" &&
+                            r.FromPosition <= result.Position &&
+                            r.ToPosition >= result.Position)
+                        .Sum(r => r.Points);
+
+                    if (!cyclistPoints.ContainsKey(result.CyclistId))
+                    {
+                        cyclistPoints[result.CyclistId] = 0;
+                    }
+
+                    cyclistPoints[result.CyclistId] += points;
+                }
+
+                foreach (var jersey in jerseys)
+                {
+                    int points = rules
+                        .Where(r => r.Type == GetRuleTypeForJersey(jersey.Type))
+                        .Sum(r => r.Points);
+
+                    if (!cyclistPoints.ContainsKey(jersey.CyclistId))
+                    {
+                        cyclistPoints[jersey.CyclistId] = 0;
+                    }
+
+                    cyclistPoints[jersey.CyclistId] += points;
+                }
+
+                model.TopCyclists = cyclistPoints
+                    .Where(c => c.Value > 0)
+                    .Select(c =>
+                    {
+                        var cyclist = stageResults
+                            .Select(sr => sr.Cyclist)
+                            .Concat(jerseys.Select(j => j.Cyclist))
+                            .FirstOrDefault(x => x.Id == c.Key);
+
+                        return new TopCyclistItem
+                        {
+                            Name = cyclist != null
+                                ? cyclist.FirstName + " " + cyclist.LastName
+                                : "Onbekende renner",
+                            Points = c.Value
+                        };
+                    })
+                    .OrderByDescending(c => c.Points)
+                    .ThenBy(c => c.Name)
+                    .Take(5)
+                    .ToList();
+
+                var playerSelections = await _context.PlayerSelections
+                    .Include(ps => ps.Player)
+                    .Include(ps => ps.Cyclist)
+                    .Where(ps => ps.GameSessionId == gameId)
+                    .ToListAsync();
+
+                model.PlayerRanking = playerSelections
+                    .GroupBy(ps => ps.Player)
+                    .Select(group => new PlayerRankingItem
+                    {
+                        PlayerName = group.Key.Name,
+                        Points = group.Sum(ps =>
+                            cyclistPoints.ContainsKey(ps.CyclistId)
+                                ? cyclistPoints[ps.CyclistId]
+                                : 0)
                     })
                     .OrderByDescending(p => p.Points)
                     .ThenBy(p => p.PlayerName)
-                    .ToListAsync();
+                    .ToList();
 
                 for (int i = 0; i < model.PlayerRanking.Count; i++)
                 {
                     model.PlayerRanking[i].Position = i + 1;
                 }
 
-                model.TopCyclists = await _context.PlayerSelections
-                    .Where(s => s.GameSessionId == gameId)
-                    .Select(s => s.Cyclist)
-                    .Distinct()
-                    .Select(c => new TopCyclistItem
-                    {
-                        Name = c.FirstName + " " + c.LastName,
-                        Points = _context.PlayerPoints
-                            .Where(pp => pp.CyclistId == c.Id && pp.RaceId == game.RaceId)
-                            .Select(pp => (int?)pp.Points)
-                            .Sum() ?? 0
-                    })
-                    .OrderByDescending(c => c.Points)
-                    .ThenBy(c => c.Name)
-                    .Take(5)
-                    .ToListAsync();
-
-                model.Jerseys = await _context.Jerseys
-                    .Include(j => j.Cyclist)
-                    .Where(j => j.Stage.RaceId == game.RaceId)
+                model.Jerseys = jerseys
                     .OrderByDescending(j => j.Stage.StageNumber)
+                    .Take(4)
                     .Select(j => new JerseyItem
                     {
                         Type = j.Type,
                         CyclistName = j.Cyclist.FirstName + " " + j.Cyclist.LastName
                     })
-                    .Take(4)
-                    .ToListAsync();
+                    .ToList();
 
-                var latestStage = await _context.Stages
-                    .Where(s => s.RaceId == game.RaceId)
-                    .OrderByDescending(s => s.StageNumber)
-                    .FirstOrDefaultAsync();
+                var latestStageWithResults = stageResults
+                    .OrderByDescending(r => r.Stage.StageNumber)
+                    .Select(r => r.Stage)
+                    .FirstOrDefault();
 
-                if (latestStage != null)
+                if (latestStageWithResults != null)
                 {
-                    model.LatestStageTitle = "Stage " + latestStage.StageNumber + " - " + latestStage.Name;
+                    model.LatestStageTitle = "Stage " + latestStageWithResults.StageNumber + " - " + latestStageWithResults.Name;
 
-                    model.LatestStageTop3 = await _context.StageResults
-                        .Include(r => r.Cyclist)
-                        .Where(r => r.StageId == latestStage.Id && r.Position != null)
+                    model.LatestStageTop3 = stageResults
+                        .Where(r => r.StageId == latestStageWithResults.Id && r.Position != null)
                         .OrderBy(r => r.Position)
                         .Take(3)
                         .Select(r => r.Position + ". " + r.Cyclist.FirstName + " " + r.Cyclist.LastName)
-                        .ToListAsync();
+                        .ToList();
                 }
             }
             catch
@@ -138,6 +202,24 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return View(model);
+        }
+
+        private static string GetRuleTypeForJersey(string jerseyType)
+        {
+            return jerseyType switch
+            {
+                "Red" => "RodeTrui",
+                "Green" => "GroeneTrui",
+                "Blue" => "BlauweTrui",
+                "White" => "WitteTrui",
+                "Yellow" => "RodeTrui",
+                "Polka" => "BlauweTrui",
+                "RodeTrui" => "RodeTrui",
+                "GroeneTrui" => "GroeneTrui",
+                "BlauweTrui" => "BlauweTrui",
+                "WitteTrui" => "WitteTrui",
+                _ => jerseyType
+            };
         }
     }
 }
