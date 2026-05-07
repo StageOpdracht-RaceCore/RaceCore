@@ -2,82 +2,130 @@
 
 @{
     ViewData["Title"] = "Races";
-    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Race.css"/>
+<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
 
-<div class="player-form-page">
-    <div class="player-table-card">
-        <div class="player-form-header">
-            <p class="player-page-kicker">RaceCore Management</p>
-            <div class="d-flex justify-content-between align-items-center">
-                <h1>Races</h1>
-                <a class="player-btn player-btn-primary" asp-controller="Game" asp-action="new">Nieuwe Race</a>
-            </div>
+<section class="race-page">
+
+    <section class="race-header-card">
+        <div class="race-header-copy">
+            <p class="race-page-kicker">RaceCore</p>
+            <h1 class="race-page-title">Races</h1>
+            <p class="race-page-subtitle">
+                Overzicht van alle races, jaren en deelnames.
+            </p>
         </div>
 
-        <div class="race-table-responsive">
-            <table class="race-table">
-                <thead>
-                    <tr>
-                        <th>Naam</th>
-                        <th>Jaar</th>
-                        <th>Start</th>
-                        <th>Einde</th>
-                        <th>Stages</th>
-                        <th>Entries</th>
-                        <th class="text-end"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var race in Model)
+        <a asp-controller="Game"
+               asp-action="New"
+               class="Race-done-btn">
+            ✓ Done
+        </a>
+    </section>
+
+    <section class="race-table-card">
+        <div class="race-table-header">
+            <div>
+                <p class="race-card-kicker">Overzicht</p>
+                <h2>Races lijst</h2>
+            </div>
+
+            <a class="race-primary-btn" asp-action="Create">
+                Nieuwe Race
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="race-table-wrapper">
+                <table class="race-table">
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th>Jaar</th>
+                            <th>Start</th>
+                            <th>Einde</th>
+                            <th>Stages</th>
+                            <th>Entries</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var race in Model)
                         {
                             <tr>
                                 <td class="race-name">@race.Name</td>
+
                                 <td>
-                                    <span class="race-year-badge">@race.Year</span>
+                                    <span class="race-badge race-year">
+                                        @race.Year
+                                    </span>
                                 </td>
-                                <td>@(race.StartDate.HasValue ? race.StartDate.Value.ToString("yyyy-MM-dd") : "-")</td>
-                                <td>@(race.EndDate.HasValue ? race.EndDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+
                                 <td>
-                                    <span class="race-count">@((race.Stages?.Count ?? 0))</span>
+                                    @(race.StartDate?.ToString("yyyy-MM-dd") ?? "-")
                                 </td>
+
                                 <td>
-                                    <span class="race-count">@((race.RaceEntries?.Count ?? 0))</span>
+                                    @(race.EndDate?.ToString("yyyy-MM-dd") ?? "-")
                                 </td>
+
+                                <td>
+                                    <span class="race-badge race-muted">
+                                        @(race.Stages?.Count ?? 0)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="race-badge race-muted">
+                                        @(race.RaceEntries?.Count ?? 0)
+                                    </span>
+                                </td>
+
                                 <td class="text-end">
-                                    <div class="race-table-actions">
-                                        <a class="race-btn race-btn-light btn-sm" asp-action="Edit" asp-route-id="@race.Id">Edit</a>
-                                        <a class="race-btn race-btn-light btn-sm" asp-action="Details" asp-route-id="@race.Id">Details</a>
+                                    <div class="race-actions">
+                                        <a asp-action="Edit"
+                                               asp-route-id="@race.Id"
+                                               class="race-btn race-light-btn btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Details"
+                                               asp-route-id="@race.Id"
+                                               class="race-btn race-light-btn btn-sm">
+                                            Details
+                                        </a>
 
                                         <form asp-action="Delete"
                                               asp-route-id="@race.Id"
                                               method="post"
                                               class="race-delete-form"
                                               onsubmit="return confirm('Race verwijderen?');">
-                                            <button type="submit" class="race-btn race-btn-danger btn-sm">Delete</button>
+
                                             @Html.AntiForgeryToken()
-                                        </form>²
+
+                                            <button type="submit"
+                                                    class="race-btn race-danger-btn btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="7">
-                                <div class="race-empty-state">
-                                    Geen races gevonden.
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="race-empty">
+                Geen races gevonden.
+            </div>
+        }
     </section>
-</div>
+
+</section>
