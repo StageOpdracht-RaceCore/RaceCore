@@ -10,6 +10,8 @@ namespace StageProject_RaceCore.Controllers
     {
         private readonly AppDbContext _context;
 
+        private const int HostTimeoutSeconds = 20;
+
         public GameController(AppDbContext context)
         {
             _context = context;
@@ -17,7 +19,10 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> New()
         {
+            await CloseDeadHostGames();
+
             var model = await BuildNewGameViewModelSafe();
+
             return View(model);
         }
 
@@ -41,6 +46,8 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewGameViewModel model)
         {
+            await CloseDeadHostGames();
+
             model.SelectedPlayerIds = model.SelectedPlayerIds
                 .Distinct()
                 .ToList();
@@ -97,6 +104,8 @@ namespace StageProject_RaceCore.Controllers
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
+                string hostSessionId = GetOrCreateHostSessionId();
+
                 var game = new GameSession
                 {
                     RaceId = model.RaceId,
@@ -105,7 +114,9 @@ namespace StageProject_RaceCore.Controllers
                     CurrentStageNumber = stage.StageNumber,
                     RidersPerPlayer = 8,
                     BenchPerPlayer = 2,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    HostSessionId = hostSessionId,
+                    LastHostPingAt = DateTime.Now
                 };
 
                 _context.GameSessions.Add(game);
@@ -127,6 +138,72 @@ namespace StageProject_RaceCore.Controllers
                 TempData["Error"] = "Start Game fout: " + ex.Message;
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HostPing(int gameId)
+        {
+            string? hostSessionId = HttpContext.Session.GetString("RaceCoreHostSessionId");
+
+            if (string.IsNullOrWhiteSpace(hostSessionId))
+            {
+                return Json(new { success = false });
+            }
+
+            var game = await _context.GameSessions
+                .FirstOrDefaultAsync(g =>
+                    g.Id == gameId &&
+                    g.HostSessionId == hostSessionId &&
+                    (g.Status == "Draft" || g.Status == "Active"));
+
+            if (game == null)
+            {
+                return Json(new { success = false });
+            }
+
+            game.LastHostPingAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        private async Task CloseDeadHostGames()
+        {
+            DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
+
+            var oldGames = await _context.GameSessions
+                .Where(g =>
+                    (g.Status == "Draft" || g.Status == "Active") &&
+                    (
+                        g.LastHostPingAt == null ||
+                        g.LastHostPingAt < limit
+                    ))
+                .ToListAsync();
+
+            if (!oldGames.Any())
+            {
+                return;
+            }
+
+            foreach (var game in oldGames)
+            {
+                game.Status = "Cancelled";
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private string GetOrCreateHostSessionId()
+        {
+            string? hostSessionId = HttpContext.Session.GetString("RaceCoreHostSessionId");
+
+            if (string.IsNullOrWhiteSpace(hostSessionId))
+            {
+                hostSessionId = Guid.NewGuid().ToString();
+                HttpContext.Session.SetString("RaceCoreHostSessionId", hostSessionId);
+            }
+
+            return hostSessionId;
         }
 
         private async Task<NewGameViewModel> BuildNewGameViewModelSafe(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)

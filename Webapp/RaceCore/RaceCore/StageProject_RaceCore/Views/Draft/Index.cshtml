@@ -417,4 +417,21 @@
     .catch(function (err) {
     console.error("SignalR connection error:", err);
     });
+
+    function sendHostPing() {
+    if (gameId <= 0) {
+    return;
+    }
+
+    fetch("/Game/HostPing?gameId=" + gameId, {
+    method: "POST",
+    headers: {
+    "X-Requested-With": "XMLHttpRequest"
+    }
+    }).catch(function () {
+    });
+    }
+
+    sendHostPing();
+    setInterval(sendHostPing, 5000);
 </script>
