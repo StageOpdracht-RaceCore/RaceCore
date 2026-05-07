@@ -425,10 +425,19 @@
 
     fetch("/Game/HostPing?gameId=" + gameId, {
     method: "POST",
+    credentials: "same-origin",
     headers: {
     "X-Requested-With": "XMLHttpRequest"
     }
-    }).catch(function () {
+    })
+    .then(function (response) {
+    return response.json();
+    })
+    .then(function (data) {
+    console.log("HostPing:", data);
+    })
+    .catch(function (error) {
+    console.error("HostPing error:", error);
     });
     }
 
