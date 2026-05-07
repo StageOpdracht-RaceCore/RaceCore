@@ -152,6 +152,11 @@ namespace StageProject_RaceCore.Controllers
         {
             try
             {
+                if (!await _context.Database.CanConnectAsync())
+                {
+                    return BadRequest();
+                }
+
                 var hasActive = activeCyclistId > 0;
                 var hasBench = benchCyclistId > 0;
 
@@ -169,8 +174,7 @@ namespace StageProject_RaceCore.Controllers
                         .FirstOrDefaultAsync(s =>
                             s.GameSessionId == gameId &&
                             s.PlayerId == playerId &&
-                            s.CyclistId == activeCyclistId &&
-                            s.IsActive == true);
+                            s.CyclistId == activeCyclistId);
 
                     if (activeSelection == null)
                     {
@@ -184,8 +188,7 @@ namespace StageProject_RaceCore.Controllers
                         .FirstOrDefaultAsync(s =>
                             s.GameSessionId == gameId &&
                             s.PlayerId == playerId &&
-                            s.CyclistId == benchCyclistId &&
-                            s.IsActive == false);
+                            s.CyclistId == benchCyclistId);
 
                     if (benchSelection == null)
                     {

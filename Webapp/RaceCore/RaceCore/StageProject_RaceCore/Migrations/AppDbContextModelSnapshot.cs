@@ -105,6 +105,12 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int>("CurrentStageNumber")
                         .HasColumnType("int");
 
+                    b.Property<string>("HostSessionId")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastHostPingAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("RaceId")
                         .HasColumnType("int");
 

@@ -19,5 +19,11 @@
         public int BenchPerPlayer { get; set; } = 2;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // HOST MULTIPLAYER
+
+        public string? HostSessionId { get; set; }
+
+        public DateTime? LastHostPingAt { get; set; }
     }
 }

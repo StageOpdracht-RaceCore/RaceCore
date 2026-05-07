@@ -15,51 +15,59 @@ namespace StageProject_RaceCore.Controllers
     /// </summary>
     public class HistoryController : Controller
     {
+        /// <summary>
+        /// Databasecontext voor toegang tot de applicatiedatabase.
+        /// </summary>
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Initialiseert een nieuwe instantie van de HistoryController.
+        /// </summary>
+        /// <param name="context">
+        /// Databasecontext die gebruikt wordt voor databankqueries.
+        /// </param>
         public HistoryController(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Toont het historiek-overzicht van een race.
+        /// 
+        /// Functionaliteiten:
+        /// - ophalen van races voor de dropdown
+        /// - selecteren van een race
+        /// - ophalen van etappes
+        /// - berekenen van rit- en truipunten
+        /// - opbouwen van een HistoryViewModel
+        /// - controleren van databaseconnectie
+        /// </summary>
+        /// <param name="raceId">
+        /// Optionele ID van de geselecteerde race.
+        /// Indien geen ID wordt meegegeven,
+        /// wordt de meest recente race gebruikt.
+        /// </param>
+        /// <returns>
+        /// Een View met het ingevulde HistoryViewModel.
+        /// </returns>
         public async Task<IActionResult> History(int? raceId)
         {
-            // 1. Haal alle races op voor de dropdown
+            // 1. Haal alle races op uit de database voor de dropdown
             var allRaces = await _context.Races.OrderByDescending(r => r.Year).ToListAsync();
+
+            // 2. Stop ze in de ViewBag zodat de View ze kan zien
             ViewBag.Races = allRaces;
+            ViewBag.SelectedRaceId = raceId;
 
-            Race race = null;
-
-            // 2. Bepaal welke race getoond moet worden (Automatische selectie logica)
+            // 3. Bepaal welke race getoond moet worden
+            Race race;
             if (raceId.HasValue)
             {
-                // Als de gebruiker zelf een race kiest uit de dropdown
                 race = allRaces.FirstOrDefault(r => r.Id == raceId.Value);
             }
             else
             {
-                // Optie A: Zoek de race van de meest recente actieve GameSession
-                var activeGame = await _context.GameSessions
-                    .Include(g => g.Race)
-                    .OrderByDescending(g => g.CreatedAt)
-                    .FirstOrDefaultAsync(g => g.Status == "Active" || g.Status == "Started");
-
-                if (activeGame != null)
-                {
-                    race = activeGame.Race;
-                }
-
-                // Optie B (Fallback): Als er geen actieve game is, pak de race die vandaag bezig is
-                if (race == null)
-                {
-                    race = allRaces.FirstOrDefault(r => r.StartDate <= DateTime.Now && r.EndDate >= DateTime.Now);
-                }
-
-                // Optie C (Laatste redmiddel): Pak de nieuwste race op basis van datum
-                if (race == null)
-                {
-                    race = allRaces.OrderByDescending(r => r.StartDate).FirstOrDefault();
-                }
+                race = allRaces.OrderByDescending(r => r.StartDate).FirstOrDefault();
             }
 
             if (race == null)
@@ -67,10 +75,7 @@ namespace StageProject_RaceCore.Controllers
                 return NotFound("Geen race gevonden in de database.");
             }
 
-            // Zorg dat de dropdown de juiste race als geselecteerd markeert
-            ViewBag.SelectedRaceId = race.Id;
-
-            // 3. Haal de etappes en puntenregels op voor de geselecteerde race
+            // 4. Haal de etappes en puntenregels op
             var stages = await _context.Stages
                 .Where(s => s.RaceId == race.Id)
                 .OrderBy(s => s.StageNumber)
@@ -79,7 +84,7 @@ namespace StageProject_RaceCore.Controllers
             var rules = await _context.PointsRules.ToListAsync();
             var stageHistoryItems = new List<StageHistoryItem>();
 
-            // 4. Loop door de etappes voor de live puntenberekening
+            // 5. Loop door de etappes voor de live puntenberekening
             foreach (var s in stages)
             {
                 // Zoek de winnaar van de rit
@@ -92,12 +97,12 @@ namespace StageProject_RaceCore.Controllers
 
                 if (winner != null)
                 {
-                    // A. Bereken rit-punten (bijv. 100 voor positie 1)
+                    // A. Bereken rit-punten
                     int posPoints = rules
                         .Where(r => r.Type == "Rit" && r.FromPosition <= 1 && r.ToPosition >= 1)
                         .Sum(r => r.Points);
 
-                    // B. Bereken trui-punten (bijv. 10 voor de rode trui)
+                    // B. Bereken trui-punten
                     var jerseys = await _context.Jerseys
                         .Where(j => j.StageId == s.Id && j.CyclistId == winner.CyclistId)
                         .ToListAsync();
@@ -113,6 +118,7 @@ namespace StageProject_RaceCore.Controllers
                             "White" => "WitteTrui",
                             _ => j.Type
                         };
+
                         jerseyPoints += rules.Where(r => r.Type == ruleType).Sum(r => r.Points);
                     }
 
@@ -132,6 +138,9 @@ namespace StageProject_RaceCore.Controllers
                 });
             }
 
+            /// <summary>
+            /// ViewModel met alle gegevens voor de History View.
+            /// </summary>
             var model = new HistoryViewModel
             {
                 RaceId = race.Id,
@@ -139,9 +148,15 @@ namespace StageProject_RaceCore.Controllers
                 Stages = stageHistoryItems
             };
 
-            // Controleer of de database bereikbaar is voor de waarschuwingsbalk
+            /// <summary>
+            /// Controleert of de database bereikbaar is.
+            /// Wordt gebruikt voor een waarschuwingsmelding in de UI.
+            /// </summary>
             ViewBag.DatabaseOnline = await _context.Database.CanConnectAsync();
 
+            /// <summary>
+            /// Geeft de View terug met het ingevulde model.
+            /// </summary>
             return View(model);
         }
     }

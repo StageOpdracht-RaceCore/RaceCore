@@ -12,7 +12,11 @@ namespace StageProject_RaceCore
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+
+            // Nodig voor live multiplayer updates
             builder.Services.AddSignalR();
+
+            // Nodig om later te onthouden wie de host/speler is
             builder.Services.AddSession();
 
             var onlineConnection = builder.Configuration.GetConnectionString("OnlineConnection");
@@ -24,6 +28,7 @@ namespace StageProject_RaceCore
             );
 
             var localSqliteConnection = $"Data Source={localDbPath}";
+
             var useLocalDatabase = !CanConnectToOnlineDatabase(onlineConnection);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -67,6 +72,7 @@ namespace StageProject_RaceCore
 
             app.UseRouting();
 
+            // Session moet na UseRouting en voor UseAuthorization
             app.UseSession();
 
             app.UseAuthorization();
@@ -75,6 +81,7 @@ namespace StageProject_RaceCore
                 name: "default",
                 pattern: "{controller=Game}/{action=New}/{id?}");
 
+            // Live multiplayer hub
             app.MapHub<GameHub>("/gameHub");
 
             app.Run();
