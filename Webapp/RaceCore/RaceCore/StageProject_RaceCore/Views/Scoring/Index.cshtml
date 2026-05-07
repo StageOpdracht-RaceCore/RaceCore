@@ -146,9 +146,7 @@
 
                         @foreach (var race in races)
                         {
-                            <!option value="@race.Id"
-                                      @(race.Id == selectedRaceId ? "selected" : "")>
-
+                            <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
                                 @race.Name
                             </option>
                         }

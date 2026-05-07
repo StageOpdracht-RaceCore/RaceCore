@@ -135,10 +135,10 @@ namespace StageProject_RaceCore.Controllers
                         Position = i,
                         CyclistId = r?.CyclistId,
                         CyclistName = r?.Cyclist?.FullName ?? "",
-                        HasYellowJersey = HasJersey(jerseys, r?.CyclistId, "Red"),
-                        HasGreenJersey = HasJersey(jerseys, r?.CyclistId, "Green"),
-                        HasPolkaJersey = HasJersey(jerseys, r?.CyclistId, "Blue"),
-                        HasWhiteJersey = HasJersey(jerseys, r?.CyclistId, "White")
+                        HasYellowJersey = HasJersey(jerseys, r.CyclistId, "Red"),
+                        HasGreenJersey = HasJersey(jerseys, r.CyclistId, "Green"),
+                        HasPolkaJersey = HasJersey(jerseys, r.CyclistId, "Blue"),
+                        HasWhiteJersey = HasJersey(jerseys, r.CyclistId, "White")
                     });
                 }
 
@@ -243,17 +243,20 @@ namespace StageProject_RaceCore.Controllers
                         Status = "Finished"
                     });
 
-                    if (r.HasYellowJersey) AddJersey(model.StageId, r.CyclistId.Value, "Red", used);
-                    if (r.HasGreenJersey) AddJersey(model.StageId, r.CyclistId.Value, "Green", used);
-                    if (r.HasPolkaJersey) AddJersey(model.StageId, r.CyclistId.Value, "Blue", used);
-                    if (r.HasWhiteJersey) AddJersey(model.StageId, r.CyclistId.Value, "White", used);
+                    if (r.HasYellowJersey) AddJerseyOnce(model.StageId, r.CyclistId.Value, "Red", used);
+                    if (r.HasGreenJersey) AddJerseyOnce(model.StageId, r.CyclistId.Value, "Green", used);
+                    if (r.HasPolkaJersey) AddJerseyOnce(model.StageId, r.CyclistId.Value, "Blue", used);
+                    if (r.HasWhiteJersey) AddJerseyOnce(model.StageId, r.CyclistId.Value, "White", used);
                 }
 
                 // --- BUITEN TOP 25 ---
-                AddOutside(model.StageId, model.YellowOutsideTop25CyclistId, "Red", used);
-                AddOutside(model.StageId, model.GreenOutsideTop25CyclistId, "Green", used);
-                AddOutside(model.StageId, model.PolkaOutsideTop25CyclistId, "Blue", used);
-                AddOutside(model.StageId, model.WhiteOutsideTop25CyclistId, "White", used);
+                AddOutsideJerseyIfNotAlreadyUsed(model.StageId, model.YellowOutsideTop25CyclistId, "Red", used);
+
+                AddOutsideJerseyIfNotAlreadyUsed(model.StageId, model.GreenOutsideTop25CyclistId, "Green", used);
+
+                AddOutsideJerseyIfNotAlreadyUsed(model.StageId, model.PolkaOutsideTop25CyclistId, "Blue", used);
+
+                AddOutsideJerseyIfNotAlreadyUsed(model.StageId, model.WhiteOutsideTop25CyclistId, "White", used);
 
                 await _context.SaveChangesAsync();
 
@@ -282,10 +285,14 @@ namespace StageProject_RaceCore.Controllers
         /// <returns>
         /// True indien de renner de trui bezit, anders false.
         /// </returns>
-        private bool HasJersey(List<Jersey> jerseys, int cyclistId, string type)
+        private bool HasJersey(List<Jersey> jerseys, int? cyclistId, string type)
         {
-            if (!cyclistId.HasValue) return false;
-            return list.Any(j => j.CyclistId == cyclistId && j.Type == type);
+            if (!cyclistId.HasValue)
+                return false;
+
+            return jerseys.Any(j =>
+                j.CyclistId == cyclistId.Value &&
+                j.Type == type);
         }
 
         /// <summary>
@@ -329,10 +336,16 @@ namespace StageProject_RaceCore.Controllers
         /// <param name="used">
         /// HashSet met reeds gebruikte truien.
         /// </param>
-        private void AddOutsideJerseyIfNotAlreadyUsed(int stageId, int? cyclistId, string type, HashSet<string> used)
+        private void AddOutsideJerseyIfNotAlreadyUsed(
+    int stageId,
+    int? cyclistId,
+    string type,
+    HashSet<string> used)
         {
-            if (!cyclistId.HasValue) return;
-            AddJersey(stageId, cyclistId.Value, type, used);
+            if (!cyclistId.HasValue)
+                return;
+
+            AddJerseyOnce(stageId, cyclistId.Value, type, used);
         }
 
         /// <summary>
