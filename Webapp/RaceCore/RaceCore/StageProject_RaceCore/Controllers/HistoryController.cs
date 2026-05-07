@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* HistoryController.cs
+       Purpose: Produce historical stage summaries and aggregated points per race.
+       The controller selects the appropriate race and computes per-stage
+       winners and a simple points aggregation for display in the History view.
+    */
     /// <summary>
-    /// Controller voor het ophalen en tonen van racegeschiedenis,
-    /// etappes en puntenberekeningen.
+    /// Controller responsible for rendering historical race and stage overviews.
     /// </summary>
     public class HistoryController : Controller
     {

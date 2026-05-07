@@ -1,4 +1,10 @@
-﻿.cyclist-page {
+/* Cyclist.css
+   Purpose: Styles for the Cyclist pages (layout, tables, filters,
+   buttons and responsive behavior). Kept as a dedicated file so
+   cyclist-specific UI rules do not pollute global styles.
+*/
+
+.cyclist-page {
     display: flex;
     flex-direction: column;
     gap: 20px;

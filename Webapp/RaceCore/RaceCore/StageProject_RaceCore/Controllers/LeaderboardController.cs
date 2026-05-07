@@ -1,10 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* LeaderboardController.cs
+       Purpose: Compute leaderboard standings for a selected game. The
+       controller aggregates player selections, stage results, and
+       jersey points to produce per-player totals and rankings.
+    */
+    /// <summary>
+    /// Controller producing leaderboard pages and helper methods for initials and colors.
+    /// </summary>
     public class LeaderboardController : Controller
     {
         private readonly AppDbContext _context;
