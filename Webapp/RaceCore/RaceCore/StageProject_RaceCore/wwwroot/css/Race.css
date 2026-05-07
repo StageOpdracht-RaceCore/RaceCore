@@ -46,7 +46,7 @@
 }
 
 /* =========================
-   BUTTON BASE (SHARED FIX)
+   BUTTONS BASE
 ========================= */
 .race-btn,
 .race-primary-btn,
@@ -111,32 +111,6 @@
 }
 
 /* =========================
-   CARD HEADER
-========================= */
-.race-table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-}
-
-    .race-table-header h2 {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 900;
-        color: #0f172a;
-    }
-
-.race-card-kicker {
-    margin: 0 0 6px;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #2563eb;
-}
-
-/* =========================
    INPUTS
 ========================= */
 .race-input {
@@ -146,6 +120,8 @@
     border: 1px solid #d1d5db;
     outline: none;
     transition: 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
     .race-input:focus {
@@ -154,15 +130,8 @@
     }
 
 /* =========================
-   FILTER FORM
+   FORM GROUP
 ========================= */
-.race-filter-form {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 16px;
-    align-items: end;
-}
-
 .race-form-group {
     display: flex;
     flex-direction: column;
@@ -176,59 +145,60 @@
     }
 
 /* =========================
-   TABLE
+   CYCLIST DUAL LIST (FIXED)
 ========================= */
-.race-table-wrapper {
+.cyclist-dual-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 20px;
     width: 100%;
-    overflow-x: auto;
 }
 
-.race-table {
-    width: 100%;
-    min-width: 850px;
-    border-collapse: collapse;
+.cyclist-box {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-    .race-table th {
-        text-align: left;
-        padding: 12px;
-        font-size: 13px;
-        font-weight: 900;
+/* SCROLL LIST */
+.cyclist-list {
+    max-height: 480px; /* beter afgestemd op ~15 items */
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #fff;
+    padding: 6px;
+}
+
+/* ITEM */
+.cyclist-item {
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #0f172a;
+    transition: 0.15s ease;
+}
+
+    .cyclist-item:hover {
         background: #f1f5f9;
-        color: #475569;
     }
 
-    .race-table td {
-        padding: 14px 12px;
-        border-top: 1px solid #e5e7eb;
-    }
-
-    .race-table tbody tr:hover {
-        background: #f8fafc;
-    }
-
-.race-name {
-    font-weight: 800;
+/* SELECTED */
+.selected-item {
+    background: #dbeafe;
+    color: #1d4ed8;
 }
 
 /* =========================
-   BADGES (improved contrast)
+   STAGES
 ========================= */
-.race-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 900;
-    background: #f1f5f9;
-    color: #64748b;
-}
-
-.race-year {
-    background: #dbeafe;
-    color: #1d4ed8;
+.stage-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 /* =========================
@@ -242,20 +212,8 @@
 }
 
 /* =========================
-   SECONDARY BUTTONS
+   LIGHT / DANGER BUTTONS
 ========================= */
-.race-btn {
-    min-height: 44px;
-    padding: 0 16px;
-    font-weight: 800;
-    border: none;
-}
-
-.btn-sm {
-    min-height: 38px;
-    font-size: 13px;
-}
-
 .race-light-btn {
     background: #eef2ff;
     color: #1e3a8a;
@@ -265,7 +223,7 @@
         background: #e0e7ff;
     }
 
-.race-danger-btn {
+.race-danger-btn { 
     background: #dc2626;
     color: #fff;
 }
@@ -273,75 +231,6 @@
     .race-danger-btn:hover {
         background: #b91c1c;
     }
-
-/* =========================
-   STATS
-========================= */
-.race-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.race-stat-card {
-    padding: 18px;
-    border-radius: 18px;
-    border: 1px solid #e5e7eb;
-    background: #fff;
-}
-
-.race-stat-label {
-    font-size: 12px;
-    font-weight: 900;
-    text-transform: uppercase;
-    color: #64748b;
-}
-
-.race-stat-value {
-    font-size: 22px;
-    font-weight: 900;
-    color: #0f172a;
-}
-
-/* =========================
-   INFO GRID
-========================= */
-.race-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.race-info-item {
-    padding: 14px;
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
-    background: #f8fafc;
-}
-
-    .race-info-item span {
-        font-size: 12px;
-        font-weight: 800;
-        color: #64748b;
-    }
-
-    .race-info-item strong {
-        font-size: 15px;
-        font-weight: 900;
-        color: #0f172a;
-    }
-
-/* =========================
-   EMPTY STATE
-========================= */
-.race-empty {
-    padding: 28px;
-    text-align: center;
-    border-radius: 16px;
-    background: #f8fafc;
-    font-weight: 800;
-    color: #64748b;
-}
 
 /* =========================
    RESPONSIVE
@@ -357,16 +246,12 @@
         width: 100%;
     }
 
-    .race-filter-form {
-        grid-template-columns: 1fr;
+    .cyclist-dual-container {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .race-actions {
-        justify-content: flex-start;
-    }
-
-    .race-stats-grid,
-    .race-info-grid {
-        grid-template-columns: 1fr;
+    .cyclist-box {
+        width: 100%;
     }
 }

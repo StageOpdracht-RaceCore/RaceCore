@@ -5,7 +5,6 @@
     background-color: #f8fafc;
 }
 
-/* Header */
 .player-header-card {
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
@@ -97,9 +96,6 @@
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
-/* =========================================
-   ALERTS - NIEUWE STYLING VOOR FOUTMELDINGEN 
-   ========================================= */
 .alert-danger {
     background-color: #fef2f2;
     color: #991b1b;
@@ -141,7 +137,6 @@
     }
 }
 
-/* Truien */
 .jersey-flex {
     display: flex;
     gap: 12px;
@@ -212,7 +207,6 @@ input[type="checkbox"]:checked + .jersey-dot {
     border-color: #94a3b8 !important;
 }
 
-/* Knoppen */
 .player-btn-white {
     background: white;
     color: #1d4ed8;
@@ -231,7 +225,6 @@ input[type="checkbox"]:checked + .jersey-dot {
         box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
     }
 
-/* Utility & Forms */
 .d-none {
     display: none !important;
 }

@@ -369,3 +369,199 @@
         width: 100%;
     }
 }
+
+/* ── Header actions ───────────────────────────────────────── */
+.cyclist-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.cyclist-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 14px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+    .cyclist-add-btn:hover {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: #ffffff;
+    }
+
+/* ── Toast notifications ──────────────────────────────────── */
+.cyclist-toast {
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.cyclist-toast-success {
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+}
+
+.cyclist-toast-error {
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    margin-bottom: 16px;
+}
+
+/* ── Modal ────────────────────────────────────────────────── */
+.cyclist-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+    .cyclist-modal-backdrop.active {
+        display: flex;
+    }
+
+.cyclist-modal {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.cyclist-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+    .cyclist-modal-header h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+.cyclist-modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    flex-shrink: 0;
+}
+
+    .cyclist-modal-close:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+.cyclist-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cyclist-modal-actions {
+    margin-top: 8px;
+}
+
+.cyclist-required {
+    color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .cyclist-header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .cyclist-add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .cyclist-modal {
+        padding: 24px;
+    }
+}
+
+/* ── Delete button (in table row) ────────────────────────── */
+.cyclist-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: none;
+    color: #202020;
+    background: #a9a9a9;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+    .cyclist-delete-btn:hover {
+        background: #656565;
+    }
+
+/* ── Danger confirm button (in modal) ────────────────────── */
+.cyclist-danger-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: none;
+    color: #ffffff;
+    background: #dc2626;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    .cyclist-danger-btn:hover {
+        background: #b91c1c;
+    }
+
+/* ── Smaller modal variant ───────────────────────────────── */
+.cyclist-modal-sm {
+    max-width: 400px;
+}
+
+.cyclist-delete-confirm-text {
+    margin: 0 0 24px;
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.6;
+}

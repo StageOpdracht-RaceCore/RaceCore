@@ -12,17 +12,8 @@
     int pageSize = ViewBag.PageSize ?? 25;
     int cyclistCount = ViewBag.CyclistCount ?? 0;
 
-    var allRaces = ViewBag.Races as List<Race> ?? new List<Race>();
-
-    var races = allRaces
-        .Where(r =>
-            r.Name.Contains("Giro", StringComparison.OrdinalIgnoreCase) ||
-            r.Name.Contains("Tour", StringComparison.OrdinalIgnoreCase) ||
-            r.Name.Contains("Vuelta", StringComparison.OrdinalIgnoreCase))
-        .ToList();
-
-    int startPage = Math.Max(1, currentPage - 2);
-    int endPage = Math.Min(totalPages, startPage + 4);
+    var startPage = Math.Max(1, currentPage - 2);
+    var endPage = Math.Min(totalPages, startPage + 4);
 
     if (endPage - startPage < 4)
     {
@@ -35,78 +26,89 @@
 
 <section class="cyclist-page">
 
+    <!-- HEADER -->
     <section class="cyclist-header-card">
         <div class="cyclist-header-copy">
             <p class="cyclist-page-kicker">RaceCore</p>
             <h1 class="cyclist-page-title">Cyclists</h1>
             <p class="cyclist-page-subtitle">
-                Bekijk alle renners, hun team, status en deelname aan grote rondes.
+                Bekijk alle renners, hun team, status en deelname.
             </p>
         </div>
 
-        <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
-            Dashboard
-        </a>
+        <div class="cyclist-header-actions">
+
+            <!-- ✅ FIX: correcte MVC navigatie -->
+            <a asp-action="Create" asp-controller="Cyclist" class="cyclist-add-btn">
+                + Renner toevoegen
+            </a>
+
+            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
+                Dashboard
+            </a>
+
+        </div>
     </section>
 
-    <section class="cyclist-filter-card">
-        <div class="cyclist-card-title">
-            <p class="cyclist-card-kicker">Filters</p>
-            <h2>Zoek cyclists</h2>
+    <!-- TOASTS -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-success">
+            ✓ @TempData["Success"]
         </div>
+    }
+
+    @if (TempData["CreateError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["CreateError"]
+        </div>
+    }
+
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["DatabaseError"]
+        </div>
+    }
+
+    <!-- FILTERS -->
+    <section class="cyclist-filter-card">
 
         <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclist-filter-form">
+
             <div class="cyclist-form-group">
-                <label for="search">Zoeken</label>
-                <input id="search"
-                       type="text"
-                       name="search"
-                       class="cyclist-input"
-                       value="@currentSearch"
-                       placeholder="Zoek op naam of team" />
+                <label>Zoeken</label>
+                <input type="text" name="search" class="cyclist-input" value="@currentSearch" />
             </div>
 
             <div class="cyclist-form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status" class="cyclist-input">
+                <label>Status</label>
+                <select name="status" class="cyclist-input">
                     <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">Alle</option>
                     <option value="active" selected="@(currentStatus == "active")">Actief</option>
                     <option value="inactive" selected="@(currentStatus == "inactive")">Niet actief</option>
-
-                    @foreach (var race in races)
-                    {
-                        var raceValue = $"race-{race.Id}";
-
-                        <option value="@raceValue" selected="@(currentStatus == raceValue)">
-                            @race.Name
-                        </option>
-                    }
                 </select>
             </div>
 
             <div class="cyclist-button-group">
-                <button type="submit" class="cyclist-primary-btn">
-                    Zoeken
-                </button>
+                <button type="submit" class="cyclist-primary-btn">Zoeken</button>
 
-                <a asp-action="Index" asp-controller="Cyclist" class="cyclist-reset-btn">
+                <a asp-action="Index" class="cyclist-reset-btn">
                     Reset
                 </a>
             </div>
+
         </form>
 
         <div class="cyclist-count">
             Aantal cyclists: <strong>@cyclistCount</strong>
         </div>
+
     </section>
 
+    <!-- TABLE -->
     <section class="cyclist-table-card">
-        <div class="cyclist-table-header">
-            <div>
-                <p class="cyclist-card-kicker">Overzicht</p>
-                <h2>Cyclists lijst</h2>
-            </div>
-        </div>
 
         @if (Model != null && Model.Any())
         {
@@ -114,15 +116,11 @@
                 <table class="cyclist-table">
                     <thead>
                         <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>Voornaam</th>
+                            <th>Achternaam</th>
                             <th>Team</th>
                             <th>Status</th>
-
-                            @foreach (var race in races)
-                            {
-                                <th>@race.Name</th>
-                            }
+                            <th>Acties</th>
                         </tr>
                     </thead>
 
@@ -130,9 +128,12 @@
                         @foreach (var cyclist in Model)
                         {
                             <tr>
-                                <td class="cyclist-name">@cyclist.FirstName</td>
-                                <td class="cyclist-name">@cyclist.LastName</td>
-                                <td class="cyclist-team">@(cyclist.Team?.Name ?? "Geen team")</td>
+                                <td>@cyclist.FirstName</td>
+                                <td>@cyclist.LastName</td>
+
+                                <td>
+                                    @(cyclist.Team != null ? cyclist.Team.Name : "Geen team")
+                                </td>
 
                                 <td>
                                     @if (cyclist.IsActive)
@@ -145,57 +146,62 @@
                                     }
                                 </td>
 
-                                @foreach (var race in races)
-                                {
-                                    bool doetMee = cyclist.RaceEntries != null &&
-                                                   cyclist.RaceEntries.Any(re => re.RaceId == race.Id);
+                                <td style="display:flex; gap:8px; align-items:center;">
 
-                                    <td>
-                                        @if (doetMee)
-                                        {
-                                            <span class="race-badge race-yes">Ja</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="race-badge race-no">Nee</span>
-                                        }
-                                    </td>
-                                }
+                                    <!-- Toggle -->
+                                    <form method="post" asp-action="ToggleActive" asp-controller="Cyclist">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@cyclist.Id" />
+
+                                        <button type="submit"
+                                                class="cyclist-delete-btn"
+                                                style="background:@(cyclist.IsActive ? "#ffd6d6" : "#dcfce7");
+                                            color:@(cyclist.IsActive ? "#bd1919" : "#166534");">
+                                            @(cyclist.IsActive ? "Inactief" : "Actief")
+                                        </button>
+                                    </form>
+
+                                    <!-- Delete -->
+                                    <form method="post" asp-action="Delete" asp-controller="Cyclist">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@cyclist.Id" />
+
+                                        <button type="submit" class="cyclist-delete-btn">
+                                            Verwijderen
+                                        </button>
+                                    </form>
+
+                                </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
 
+            <!-- PAGINATION -->
             <div class="cyclist-pagination">
+
                 @if (currentPage > 1)
                 {
                     <a asp-action="Index"
-                           asp-route-search="@currentSearch"
-                           asp-route-status="@currentStatus"
-                           asp-route-page="1"
-                           asp-route-pageSize="@pageSize"
-                           class="cyclist-page-btn">
-                        &lt;&lt; Eerste
-                    </a>
+                       asp-route-page="1"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&lt;&lt;</a>
 
                     <a asp-action="Index"
-                           asp-route-search="@currentSearch"
-                           asp-route-status="@currentStatus"
-                           asp-route-page="@(currentPage - 1)"
-                           asp-route-pageSize="@pageSize"
-                           class="cyclist-page-btn">
-                        &lt; Vorige
-                    </a>
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&lt;</a>
                 }
 
                 @for (int i = startPage; i <= endPage; i++)
                 {
                     <a asp-action="Index"
+                           asp-route-page="@i"
                            asp-route-search="@currentSearch"
                            asp-route-status="@currentStatus"
-                           asp-route-page="@i"
-                           asp-route-pageSize="@pageSize"
                            class="cyclist-page-btn @(i == currentPage ? "active" : "")">
                         @i
                     </a>
@@ -204,23 +210,18 @@
                 @if (currentPage < totalPages)
                 {
                     <a asp-action="Index"
-                           asp-route-search="@currentSearch"
-                           asp-route-status="@currentStatus"
-                           asp-route-page="@(currentPage + 1)"
-                           asp-route-pageSize="@pageSize"
-                           class="cyclist-page-btn">
-                        Volgende &gt;
-                    </a>
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&gt;</a>
 
                     <a asp-action="Index"
-                           asp-route-search="@currentSearch"
-                           asp-route-status="@currentStatus"
-                           asp-route-page="@totalPages"
-                           asp-route-pageSize="@pageSize"
-                           class="cyclist-page-btn">
-                        Laatste &gt;&gt;
-                    </a>
+                       asp-route-page="@totalPages"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&gt;&gt;</a>
                 }
+
             </div>
         }
         else
@@ -229,6 +230,7 @@
                 Geen cyclists gevonden.
             </div>
         }
+
     </section>
 
 </section>

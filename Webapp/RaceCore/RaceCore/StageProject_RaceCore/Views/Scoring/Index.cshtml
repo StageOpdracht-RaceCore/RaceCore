@@ -150,7 +150,7 @@
                                       @(race.Id == selectedRaceId ? "selected" : "")>
 
                                 @race.Name
-                            </!option>
+                            </option>
                         }
                     </select>
                 </div>
@@ -195,6 +195,7 @@
                         Rit laden
                     </button>
                 </div>
+
             </div>
         </form>
     </div>
@@ -215,6 +216,7 @@
             @Html.AntiForgeryToken()
 
             <input type="hidden" asp-for="StageId" />
+            <input type="hidden" name="raceId" value="@selectedRaceId" />
 
             @*
                 ====================================================
@@ -472,13 +474,10 @@
             const option = Array.from(list.options)
                 .find(o => o.value.trim().toLowerCase() === typedValue);
 
-            if (option) {
-                hidden.value = option.getAttribute("data-id");
-                input.style.borderColor = "#10b981";
-            } else {
-                hidden.value = "";
-                input.style.borderColor = "#d1d5db";
-            }
+            const match = Array.from(list.options)
+                .find(o => o.value.toLowerCase() === val);
+
+            hidden.value = match ? match.dataset.id : "";
         }
 
         /*
@@ -512,7 +511,7 @@
                 const textInput = hidden.previousElementSibling;
 
                 hidden.value = "";
-                textInput.value = "";
+                hidden.previousElementSibling.value = "";
             }
         }
 

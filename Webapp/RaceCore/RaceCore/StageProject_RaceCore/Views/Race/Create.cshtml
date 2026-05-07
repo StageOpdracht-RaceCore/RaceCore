@@ -1,8 +1,11 @@
 ﻿@model StageProject_RaceCore.Models.Race
 
+@inject StageProject_RaceCore.Models.AppDbContext _context
+
 @{
     ViewData["Title"] = "Nieuwe Race";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    var cyclists = _context.Cyclists.ToList();
 }
 
 <link rel="stylesheet" href="~/css/Race.css" />
@@ -30,37 +33,104 @@
     <section class="race-form-card">
 
         <form asp-action="Create" method="post">
-
             @Html.AntiForgeryToken()
 
+            <!-- BASIS INFO -->
             <div class="race-form-grid">
 
                 <div class="race-form-group">
                     <label asp-for="Name">Naam</label>
                     <input asp-for="Name" class="race-input" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="race-form-group">
                     <label asp-for="Year">Jaar</label>
                     <input asp-for="Year" type="number" class="race-input" />
-                    <span asp-validation-for="Year" class="text-danger"></span>
                 </div>
 
                 <div class="race-form-group">
                     <label asp-for="StartDate">Startdatum</label>
                     <input asp-for="StartDate" type="date" class="race-input" />
-                    <span asp-validation-for="StartDate" class="text-danger"></span>
                 </div>
 
                 <div class="race-form-group">
                     <label asp-for="EndDate">Einddatum</label>
                     <input asp-for="EndDate" type="date" class="race-input" />
-                    <span asp-validation-for="EndDate" class="text-danger"></span>
                 </div>
 
             </div>
 
+            <!-- RENNER DUAL LIST -->
+            <div class="race-form-group">
+                <label>Renners</label>
+
+                <div class="cyclist-dual-container">
+
+                    <!-- LINKS (alle renners) -->
+                    <div class="cyclist-box">
+
+                        <input type="text"
+                               id="cyclistSearch"
+                               class="race-input"
+                               placeholder="Zoek renner..."
+                               onkeyup="filterCyclists()" />
+
+                        <div class="cyclist-list">
+                            @foreach (var cyclist in cyclists)
+                            {
+                                var fullName = cyclist.FirstName + " " + cyclist.LastName;
+
+                                <div class="cyclist-item"
+                                     onclick="selectCyclist(@cyclist.Id, '@fullName')"
+                                     data-id="@cyclist.Id"
+                                     data-name="@fullName">
+                                    @fullName
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+
+                    <!-- RECHTS (geselecteerd) -->
+                    <div class="cyclist-box">
+                        <h4>Geselecteerd</h4>
+                        <div id="selectedCyclists" class="cyclist-list selected"></div>
+                    </div>
+
+                </div>
+
+                <div id="selectedInputs"></div>
+            </div>
+
+            <!-- NIEUWE RENNER -->
+            <div class="race-form-group">
+                <label>Nieuwe renner toevoegen</label>
+                <input name="NewCyclistName" class="race-input" placeholder="Naam nieuwe renner" />
+            </div>
+
+            <!-- STAGES -->
+            <div class="race-form-group">
+                <label>Stages</label>
+
+                <div id="stages-container">
+
+                    <div class="stage-item">
+                        <input name="Stages[0].Name" class="race-input" placeholder="Naam stage" />
+                        <input name="Stages[0].Date" type="date" class="race-input" />
+
+                        <button type="button" class="race-danger-btn" onclick="removeStage(this)">
+                            🗑
+                        </button>
+                    </div>
+
+                </div>
+
+                <button type="button" class="race-light-btn race-btn" onclick="addStage()">
+                    + Stage toevoegen
+                </button>
+            </div>
+
+            <!-- ACTIONS -->
             <div class="race-form-actions">
                 <button type="submit" class="race-primary-btn">
                     Race aanmaken
@@ -76,3 +146,87 @@
     </section>
 
 </section>
+
+<!-- SCRIPT -->
+<script>
+    let stageIndex = 1;
+    let selected = new Map();
+
+    function selectCyclist(id, name) {
+        if (selected.has(id)) return;
+        selected.set(id, name);
+        renderSelected();
+    }
+
+    function removeCyclist(id) {
+        selected.delete(id);
+        renderSelected();
+    }
+
+    function renderSelected() {
+        const container = document.getElementById("selectedCyclists");
+        const inputs = document.getElementById("selectedInputs");
+
+        container.innerHTML = "";
+        inputs.innerHTML = "";
+
+        selected.forEach((name, id) => {
+
+            container.innerHTML += `
+                <div class="cyclist-item selected-item" onclick="removeCyclist(${id})">
+                    ${name} ❌
+                </div>
+            `;
+
+            inputs.innerHTML += `
+                <input type="hidden" name="SelectedCyclistIds" value="${id}" />
+            `;
+        });
+    }
+
+    function filterCyclists() {
+        const value = document.getElementById("cyclistSearch").value.toLowerCase();
+        const items = document.querySelectorAll(".cyclist-item[data-id]");
+
+        items.forEach(item => {
+            const name = (item.dataset.name || "").toLowerCase();
+            item.style.display = name.includes(value) ? "block" : "none";
+        });
+    }
+
+    function addStage() {
+        const container = document.getElementById("stages-container");
+
+        const html = `
+            <div class="stage-item">
+                <input name="Stages[${stageIndex}].Name" class="race-input" placeholder="Naam stage" />
+                <input name="Stages[${stageIndex}].Date" type="date" class="race-input" />
+
+                <button type="button" class="race-danger-btn" onclick="removeStage(this)">
+                    🗑
+                </button>
+            </div>
+        `;
+
+        container.insertAdjacentHTML("beforeend", html);
+        stageIndex++;
+    }
+
+    function removeStage(button) {
+        button.closest(".stage-item").remove();
+        reindexStages(); 
+    }
+
+    function reindexStages() {
+        const stages = document.querySelectorAll(".stage-item");
+
+        stages.forEach((stage, index) => {
+            const inputs = stage.querySelectorAll("input");
+
+            inputs[0].name = `Stages[${index}].Name`;
+            inputs[1].name = `Stages[${index}].Date`;
+        });
+
+        stageIndex = stages.length;
+    }
+</script>

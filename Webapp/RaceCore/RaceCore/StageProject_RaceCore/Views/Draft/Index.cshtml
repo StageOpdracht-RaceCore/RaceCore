@@ -89,13 +89,6 @@
             </div>
 
             <div class="draft-header-actions">
-                <a asp-controller="Leaderboard"
-                       asp-action="Index"
-                       asp-route-gameId="@gameId"
-                       class="draft-header-btn draft-header-btn-white">
-                    Leaderboard
-                </a>
-
                 <a asp-controller="Game"
                        asp-action="New"
                        class="draft-header-btn draft-header-btn-white">
@@ -336,8 +329,6 @@
                 </div>
 
                 <div class="draft-info-list">
-                    
-
                     <div class="draft-info-item">
                         <span>Actieve renners per speler</span>
                         <strong>@ridersPerPlayer</strong>
@@ -389,14 +380,116 @@
     </div>
 </div>
 
-<script>
-    window.onload = function () {
-        if (window.location.hash == "#draft-players-section") {
-            var section = document.getElementById("draft-players-section");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 
-            if (section != null) {
-                section.scrollIntoView();
-            }
-        }
-    };
+<script>
+    const gameId = Number(@gameId);
+    let pageIsChanging = false;
+    let currentDraftVersion = "@pickedCount-@(currentTurn?.Id ?? 0)-@ViewBag.GameStatus";
+
+    function goToDraft() {
+    if (pageIsChanging) return;
+
+    pageIsChanging = true;
+
+    const url = "/Draft/Index?gameId=" + gameId + "&refresh=" + Date.now() + "#draft-players-section";
+    window.location.replace(url);
+    }
+
+    function goToDashboard() {
+    if (pageIsChanging) return;
+
+    pageIsChanging = true;
+
+    window.location.replace("/Dashboard/Index?gameId=" + gameId + "&refresh=" + Date.now());
+    }
+
+    window.addEventListener("load", function () {
+    const section = document.getElementById("draft-players-section");
+
+    if (section !== null) {
+    section.scrollIntoView();
+    }
+    });
+
+    const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/gameHub")
+    .withAutomaticReconnect([0, 500, 1000, 2000])
+    .build();
+
+    connection.on("DraftUpdated", function (data) {
+    console.log("DraftUpdated ontvangen:", data);
+
+    if (Number(data.gameId) !== gameId) {
+    return;
+    }
+
+    if (data.draftFinished === true || data.draftFinished === "true") {
+    goToDashboard();
+    return;
+    }
+
+    goToDraft();
+    });
+
+    connection.start()
+    .then(function () {
+    console.log("SignalR verbonden voor game:", gameId);
+    return connection.invoke("JoinGameGroup", gameId);
+    })
+    .then(function () {
+    console.log("Joined SignalR group: game-" + gameId);
+    })
+    .catch(function (err) {
+    console.error("SignalR connection error:", err);
+    });
+
+    function sendHostPing() {
+    if (gameId <= 0) return;
+
+    fetch("/Game/HostPing?gameId=" + gameId, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+    "X-Requested-With": "XMLHttpRequest"
+    }
+    }).catch(function () {});
+    }
+
+    async function checkDraftState() {
+    if (gameId <= 0 || pageIsChanging) return;
+
+    try {
+    const response = await fetch("/Draft/GetDraftState?gameId=" + gameId + "&t=" + Date.now(), {
+    method: "GET",
+    credentials: "same-origin",
+    cache: "no-store",
+    headers: {
+    "X-Requested-With": "XMLHttpRequest"
+    }
+    });
+
+    const data = await response.json();
+
+    if (!data.exists) return;
+
+    console.log("DraftState:", data);
+
+    if (data.status !== "Draft") {
+    goToDashboard();
+    return;
+    }
+
+    if (data.version !== currentDraftVersion) {
+    goToDraft();
+    }
+    } catch (error) {
+    console.error("DraftState error:", error);
+    }
+    }
+
+    sendHostPing();
+    setInterval(sendHostPing, 5000);
+
+    setInterval(checkDraftState, 1000);
 </script>
