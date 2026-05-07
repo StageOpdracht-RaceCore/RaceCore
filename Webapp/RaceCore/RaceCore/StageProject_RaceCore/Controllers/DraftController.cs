@@ -63,7 +63,7 @@ namespace StageProject_RaceCore.Controllers
 
                 var pickedCyclistIds = draftTurns
                     .Where(d => d.CyclistId != null)
-                    .Select(d => d.CyclistId.Value)
+                    .Select(d => d.CyclistId!.Value)
                     .ToList();
 
                 var cyclists = await _context.Cyclists
@@ -103,6 +103,43 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetDraftState(int gameId)
+        {
+            var game = await _context.GameSessions
+                .FirstOrDefaultAsync(g => g.Id == gameId);
+
+            if (game == null)
+            {
+                return Json(new { exists = false });
+            }
+
+            int pickedCount = await _context.DraftTurns
+                .Where(d => d.GameSessionId == gameId && d.CyclistId != null)
+                .CountAsync();
+
+            int totalTurns = await _context.DraftTurns
+                .Where(d => d.GameSessionId == gameId)
+                .CountAsync();
+
+            int currentTurnId = await _context.DraftTurns
+                .Where(d => d.GameSessionId == gameId && d.CyclistId == null)
+                .OrderBy(d => d.TurnNumber)
+                .Select(d => d.Id)
+                .FirstOrDefaultAsync();
+
+            return Json(new
+            {
+                exists = true,
+                gameId = gameId,
+                status = game.Status,
+                pickedCount = pickedCount,
+                totalTurns = totalTurns,
+                currentTurnId = currentTurnId,
+                version = pickedCount + "-" + currentTurnId + "-" + game.Status
+            });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PickCyclist(int draftTurnId, int cyclistId, int gameId)
@@ -137,9 +174,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     game.Status = "Active";
                     await _context.SaveChangesAsync();
-
                     await SendDraftUpdate(gameId, true);
-
                     return RedirectToAction("Index", "Dashboard", new { gameId });
                 }
 
@@ -174,16 +209,14 @@ namespace StageProject_RaceCore.Controllers
 
                 bool isActiveCyclist = playerPickCount < ActiveRidersPerPlayer;
 
-                var selection = new PlayerSelection
+                _context.PlayerSelections.Add(new PlayerSelection
                 {
                     GameSessionId = gameId,
                     RaceId = game.RaceId,
                     PlayerId = currentTurn.PlayerId,
                     CyclistId = cyclistId,
                     IsActive = isActiveCyclist
-                };
-
-                _context.PlayerSelections.Add(selection);
+                });
 
                 bool draftIsFinished = !await _context.DraftTurns
                     .AnyAsync(d =>
@@ -197,17 +230,11 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-
                 await SendDraftUpdate(gameId, draftIsFinished);
 
-                if (isActiveCyclist)
-                {
-                    TempData["Success"] = currentTurn.Player.Name + " heeft actieve renner " + cyclist.FullName + " gekozen.";
-                }
-                else
-                {
-                    TempData["Success"] = currentTurn.Player.Name + " heeft bankrenner " + cyclist.FullName + " gekozen.";
-                }
+                TempData["Success"] = isActiveCyclist
+                    ? currentTurn.Player.Name + " heeft actieve renner " + cyclist.FullName + " gekozen."
+                    : currentTurn.Player.Name + " heeft bankrenner " + cyclist.FullName + " gekozen.";
 
                 if (draftIsFinished)
                 {
@@ -233,13 +260,12 @@ namespace StageProject_RaceCore.Controllers
 
         private async Task SendDraftUpdate(int gameId, bool draftFinished)
         {
-            await _hubContext.Clients
-                .Group($"game-{gameId}")
-                .SendAsync("DraftUpdated", new
-                {
-                    gameId = gameId,
-                    draftFinished = draftFinished
-                });
+            await _hubContext.Clients.All.SendAsync("DraftUpdated", new
+            {
+                gameId = gameId,
+                draftFinished = draftFinished,
+                updatedAt = DateTime.Now.Ticks
+            });
         }
 
         private async Task FixDraftSettingsAndTurns(GameSession game)
@@ -279,28 +305,20 @@ namespace StageProject_RaceCore.Controllers
 
             for (int roundIndex = existingRounds; roundIndex < correctRounds; roundIndex++)
             {
-                List<int> roundPlayers;
-
-                if (roundIndex % 2 == 0)
-                {
-                    roundPlayers = playerOrder;
-                }
-                else
-                {
-                    roundPlayers = playerOrder.AsEnumerable().Reverse().ToList();
-                }
+                List<int> roundPlayers = roundIndex % 2 == 0
+                    ? playerOrder
+                    : playerOrder.AsEnumerable().Reverse().ToList();
 
                 foreach (var playerId in roundPlayers)
                 {
-                    var newTurn = new DraftTurn
+                    _context.DraftTurns.Add(new DraftTurn
                     {
                         GameSessionId = game.Id,
                         RaceId = game.RaceId,
                         PlayerId = playerId,
                         TurnNumber = nextTurnNumber
-                    };
+                    });
 
-                    _context.DraftTurns.Add(newTurn);
                     nextTurnNumber++;
                 }
             }
@@ -320,9 +338,7 @@ namespace StageProject_RaceCore.Controllers
 
             foreach (var playerGroup in playerGroups)
             {
-                var orderedPicks = playerGroup
-                    .OrderBy(d => d.TurnNumber)
-                    .ToList();
+                var orderedPicks = playerGroup.OrderBy(d => d.TurnNumber).ToList();
 
                 for (int i = 0; i < orderedPicks.Count; i++)
                 {
