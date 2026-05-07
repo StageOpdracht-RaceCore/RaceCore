@@ -12,9 +12,8 @@
     int pageSize = ViewBag.PageSize ?? 25;
     int cyclistCount = ViewBag.CyclistCount ?? 0;
 
-    var startPage = Math.Max(1, currentPage - 2);
-    var endPage = Math.Min(totalPages, startPage + 4);
-
+    var allRaces = ViewBag.Races as List<Race> ?? new List<Race>();
+    var allTeams = ViewBag.Teams as List<Team> ?? new List<Team>();
     var races = allRaces.ToList();
 
     int startPage = Math.Max(1, currentPage - 2);
@@ -24,6 +23,8 @@
     {
         startPage = Math.Max(1, endPage - 4);
     }
+
+    bool openModal = TempData["CreateError"] != null;
 }
 
 <link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
@@ -37,16 +38,15 @@
             <p class="cyclist-page-kicker">RaceCore</p>
             <h1 class="cyclist-page-title">Cyclists</h1>
             <p class="cyclist-page-subtitle">
-                Bekijk alle renners, hun team, status en deelname aan grote rondes.
+                Bekijk de renners die door spelers gekozen zijn, hun team, status en races.
             </p>
         </div>
 
         <div class="cyclist-header-actions">
 
-            <!-- ✅ FIX: correcte MVC navigatie -->
-            <a asp-action="Create" asp-controller="Cyclist" class="cyclist-add-btn">
+            <button type="button" class="cyclist-add-btn" onclick="openAddModal()">
                 + Renner toevoegen
-            </a>
+            </button>
 
             <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
                 Dashboard
@@ -81,7 +81,7 @@
     <section class="cyclist-filter-card">
         <div class="cyclist-card-title">
             <p class="cyclist-card-kicker">Filters</p>
-            <h2>Zoek cyclists</h2>
+            <h2>Zoek gekozen cyclists</h2>
         </div>
 
         <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclist-filter-form">
@@ -97,6 +97,14 @@
                     <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">Alle</option>
                     <option value="active" selected="@(currentStatus == "active")">Actief</option>
                     <option value="inactive" selected="@(currentStatus == "inactive")">Niet actief</option>
+                    @foreach (var race in races)
+                    {
+                        var raceValue = $"race-{race.Id}";
+
+                        <option value="@raceValue" selected="@(currentStatus == raceValue)">
+                            @race.Name
+                        </option>
+                    }
                 </select>
             </div>
 
@@ -134,7 +142,7 @@
                             {
                                 <th>@race.Name</th>
                             }
-                            <th></th>
+                            <th>Acties</th>
                         </tr>
                     </thead>
 
@@ -165,8 +173,9 @@
                                     }
                                 </td>
 
-                                <td style="display:flex; gap:8px; align-items:center;">
-
+                                @foreach (var race in races)
+                                {
+                                    bool doetMee = cyclistRaceIds.Contains(race.Id);
                                     <td>
                                         @if (doetMee)
                                         {
@@ -178,7 +187,38 @@
                                         }
                                     </td>
                                 }
-                                <td>
+
+                                <td class="cyclist-actions-cell">
+                                    @if (availableRaces.Any())
+                                    {
+                                        <form method="post"
+                                              asp-action="AddToRace"
+                                              asp-controller="Cyclist"
+                                              class="cyclist-row-race-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cyclistId" value="@cyclist.Id" />
+                                            <input type="hidden" name="search" value="@currentSearch" />
+                                            <input type="hidden" name="status" value="@currentStatus" />
+                                            <input type="hidden" name="page" value="@currentPage" />
+                                            <input type="hidden" name="pageSize" value="@pageSize" />
+
+                                            <select name="raceId"
+                                                    class="cyclist-row-select"
+                                                    aria-label="Race kiezen voor @cyclist.FullName"
+                                                    required>
+                                                <option value="">Race kiezen</option>
+                                                @foreach (var race in availableRaces)
+                                                {
+                                                    <option value="@race.Id">@race.Name @race.Year</option>
+                                                }
+                                            </select>
+
+                                            <button type="submit" class="cyclist-row-add-btn">
+                                                Toevoegen
+                                            </button>
+                                        </form>
+                                    }
+
                                     <button type="button"
                                             class="cyclist-delete-btn"
                                             onclick="openDeleteModal(@cyclist.Id, '@cyclist.FullName')">
@@ -296,6 +336,25 @@
                     @foreach (var team in allTeams)
                     {
                         <option value="@team.Id">@team.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="cyclist-form-group">
+                <label for="addIsActive">Status</label>
+                <select id="addIsActive" name="isActive" class="cyclist-input">
+                    <option value="true" selected>Actief</option>
+                    <option value="false">Niet actief</option>
+                </select>
+            </div>
+
+            <div class="cyclist-form-group">
+                <label for="addRaceId">Toevoegen aan bestaande race</label>
+                <select id="addRaceId" name="raceId" class="cyclist-input">
+                    <option value="0">Geen race</option>
+                    @foreach (var race in allRaces)
+                    {
+                        <option value="@race.Id">@race.Name @race.Year</option>
                     }
                 </select>
             </div>

@@ -131,26 +131,32 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> Index(string? search, string? status, int page = 1, int pageSize = 25)
         {
-            page = page < 1 ? 1 : page;
-            pageSize = pageSize < 1 ? 25 : pageSize;
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 25;
 
             ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = 1;
             ViewBag.PageSize = pageSize;
             ViewBag.Search = search;
             ViewBag.Status = status;
+            ViewBag.CyclistCount = 0;
+            ViewBag.Races = new List<Race>();
+            ViewBag.Teams = new List<Team>();
+            ViewBag.DatabaseOnline = false;
 
             try
             {
                 var races = await _context.Races
-                    .Where(r =>
-                    r.Name.Contains("Giro") ||
-                    r.Name.Contains("Tour") ||
-                    r.Name.Contains("Vuelta"))
+                    .OrderByDescending(r => r.Year)
+                    .ThenBy(r => r.Name)
                     .ToListAsync();
+
+                var teams = await _context.Teams.OrderBy(t => t.Name).ToListAsync();
 
                 var query = _context.Cyclists
                     .Include(c => c.Team)
                     .Include(c => c.RaceEntries)
+                    .Where(c => c.PlayerSelections.Any())
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -163,10 +169,21 @@ namespace StageProject_RaceCore.Controllers
                         (c.Team != null && c.Team.Name.Contains(search)));
                 }
 
-                if (status == "active")
-                    query = query.Where(c => c.IsActive);
-                else if (status == "inactive")
-                    query = query.Where(c => !c.IsActive);
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    if (status == "active")
+                    {
+                        query = query.Where(c => c.IsActive);
+                    }
+                    else if (status == "inactive")
+                    {
+                        query = query.Where(c => !c.IsActive);
+                    }
+                    else if (status.StartsWith("race-") && int.TryParse(status.Replace("race-", ""), out int raceId))
+                    {
+                        query = query.Where(c => c.RaceEntries.Any(re => re.RaceId == raceId));
+                    }
+                }
 
                 var totalItems = await query.CountAsync();
 
@@ -177,8 +194,9 @@ namespace StageProject_RaceCore.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
-                ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling(totalItems / (double)pageSize));
+                ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalItems / pageSize));
                 ViewBag.CyclistCount = totalItems;
+                ViewBag.Races = races;
                 ViewBag.Teams = teams;
                 ViewBag.DatabaseOnline = true;
 
@@ -189,67 +207,6 @@ namespace StageProject_RaceCore.Controllers
                 TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live gegevens te zien.";
                 return View(new List<Cyclist>());
             }
-        }
-
-
-
-        // ? GET: Create pagina (BELANGRIJK)
-        [HttpGet]
-        public async Task<IActionResult> Create()
-        {
-            ViewBag.Teams = await _context.Teams
-                .OrderBy(t => t.Name)
-                .ToListAsync();
-
-            return View();
-        }
-
-        // ? POST: Create cyclist
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string firstName, string lastName, int? teamId)
-        {
-            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
-            {
-                TempData["CreateError"] = "Voornaam en achternaam zijn verplicht.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var cyclist = new Cyclist
-            {
-                FirstName = firstName.Trim(),
-                LastName = lastName.Trim(),
-                TeamId = teamId, // null blijft null, geen 0 check nodig
-                IsActive = true
-            };
-
-            _context.Cyclists.Add(cyclist);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = $"{cyclist.FullName} is succesvol toegevoegd.";
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // ? DELETE
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var cyclist = await _context.Cyclists.FindAsync(id);
-
-            if (cyclist == null)
-            {
-                TempData["DatabaseError"] = "Cyclist niet gevonden.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            _context.Cyclists.Remove(cyclist);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = $"{cyclist.FullName} is verwijderd.";
-
-            return RedirectToAction(nameof(Index));
         }
 
         // ? TOGGLE ACTIVE
