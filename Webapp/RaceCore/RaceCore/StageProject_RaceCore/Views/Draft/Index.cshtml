@@ -89,13 +89,6 @@
             </div>
 
             <div class="draft-header-actions">
-                <a asp-controller="Leaderboard"
-                       asp-action="Index"
-                       asp-route-gameId="@gameId"
-                       class="draft-header-btn draft-header-btn-white">
-                    Leaderboard
-                </a>
-
                 <a asp-controller="Game"
                        asp-action="New"
                        class="draft-header-btn draft-header-btn-white">
@@ -336,8 +329,6 @@
                 </div>
 
                 <div class="draft-info-list">
-                    
-
                     <div class="draft-info-item">
                         <span>Actieve renners per speler</span>
                         <strong>@ridersPerPlayer</strong>
@@ -389,14 +380,74 @@
     </div>
 </div>
 
-<script>
-    window.onload = function () {
-        if (window.location.hash == "#draft-players-section") {
-            var section = document.getElementById("draft-players-section");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 
-            if (section != null) {
-                section.scrollIntoView();
-            }
-        }
+<script>
+    const gameId = @gameId;
+    let isChangingPage = false;
+
+    window.onload = function () {
+    if (window.location.hash === "#draft-players-section") {
+    const section = document.getElementById("draft-players-section");
+
+    if (section !== null) {
+    section.scrollIntoView();
+    }
+    }
     };
+
+    function reloadDraftFast() {
+    if (isChangingPage) {
+    return;
+    }
+
+    isChangingPage = true;
+
+    setTimeout(function () {
+    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
+    }, 75);
+    }
+
+    function goToDashboard() {
+    if (isChangingPage) {
+    return;
+    }
+
+    isChangingPage = true;
+    window.location.href = "/Dashboard/Index?gameId=" + gameId;
+    }
+
+    const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/gameHub")
+    .withAutomaticReconnect([0, 300, 700, 1500])
+    .build();
+
+    connection.on("DraftUpdated", function (data) {
+    if (Number(data.gameId) !== Number(gameId)) {
+    return;
+    }
+
+    if (data.draftFinished === true) {
+    goToDashboard();
+    return;
+    }
+
+    reloadDraftFast();
+    });
+
+    connection.on("GoToDashboard", function (data) {
+    if (Number(data.gameId) !== Number(gameId)) {
+    return;
+    }
+
+    goToDashboard();
+    });
+
+    connection.start()
+    .then(function () {
+    return connection.invoke("JoinGameGroup", gameId);
+    })
+    .catch(function (err) {
+    console.error("SignalR fout:", err);
+    });
 </script>

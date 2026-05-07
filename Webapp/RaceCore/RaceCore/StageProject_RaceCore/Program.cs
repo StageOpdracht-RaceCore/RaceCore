@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
+using StageProject_RaceCore.Hubs;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore
@@ -11,6 +12,8 @@ namespace StageProject_RaceCore
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSignalR();
+            builder.Services.AddSession();
 
             var onlineConnection = builder.Configuration.GetConnectionString("OnlineConnection");
 
@@ -21,7 +24,6 @@ namespace StageProject_RaceCore
             );
 
             var localSqliteConnection = $"Data Source={localDbPath}";
-
             var useLocalDatabase = !CanConnectToOnlineDatabase(onlineConnection);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -65,11 +67,15 @@ namespace StageProject_RaceCore
 
             app.UseRouting();
 
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Game}/{action=New}/{id?}");
+
+            app.MapHub<GameHub>("/gameHub");
 
             app.Run();
         }
