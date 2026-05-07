@@ -1,18 +1,22 @@
-﻿@model List<StageProject_RaceCore.Models.Stage>
+@model List<StageProject_RaceCore.Models.Stage>
 @using StageProject_RaceCore.Models
 
 @{
+    // Page title used by the layout
     ViewData["Title"] = "Ritten";
+    // Races and selected race id are provided by the controller via ViewBag
     var races = ViewBag.Races;
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
+    // Use the shared clean layout for consistency with other pages
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* Include stage-specific stylesheet (asp-append-version for cache busting) *@
 <link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
 
 <div class="stage-page">
 
-    <!-- HERO -->
+    @* HERO: title, subtitle and quick link to dashboard *@
     <section class="stage-header-card">
         <div class="stage-header-copy">
             <p class="stage-page-kicker">RaceCore</p>
@@ -27,7 +31,7 @@
         </a>
     </section>
 
-    <!-- FILTER -->
+    @* FILTER: select a race from dropdown; onchange submits the form *@
     <section class="stage-filter-card">
         <form asp-action="Index" method="get" class="race-select-form">
 
@@ -47,7 +51,7 @@
         </form>
     </section>
 
-    <!-- TABLE -->
+    @* TABLE: show stages for the selected race; if none, display an empty state *@
     <section class="stage-table-card">
 
         @if (Model != null && Model.Any())

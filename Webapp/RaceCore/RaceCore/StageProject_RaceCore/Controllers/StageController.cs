@@ -1,9 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* StageController.cs
+       Purpose: List stages for races and provide stage detail pages.
+       The controller prepares ViewBag values and passes Stage entities
+       to views for rendering top-25 results and jerseys.
+    */
+    /// <summary>
+    /// Controller for stage listing and detail pages.
+    /// </summary>
     public class StageController : Controller
     {
         private readonly AppDbContext _context;

@@ -5,6 +5,13 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* PlayerController.cs
+       Purpose: Handles CRUD operations and listing for Player entities.
+       Contains actions for Index, Details, Create, Edit and Delete with
+       basic error handling and TempData notifications. */
+    /// <summary>
+    /// Controller responsible for player management (list, create, edit, delete, details).
+    /// </summary>
     public class PlayerController : Controller
     {
         private readonly AppDbContext _context;

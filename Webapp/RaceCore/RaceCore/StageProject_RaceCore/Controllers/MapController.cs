@@ -1,9 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* MapController.cs
+       Purpose: Provide map pages that list stages for a selected race.
+       This controller is read-only and simply prepares the races and
+       stages data for the map view.
+    */
+    /// <summary>
+    /// Controller for map visualization pages.
+    /// </summary>
     public class MapController : Controller
     {
         private readonly AppDbContext _context;

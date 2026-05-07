@@ -7,6 +7,16 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* DraftController.cs
+       Purpose: Manage the drafting flow for a game. Responsibilities:
+       - Display draft turns and available cyclists
+       - Handle picks and draft generation
+       - Maintain draft consistency (fix turns, mark active selections)
+       This controller uses SignalR hub to broadcast draft updates.
+    */
+    /// <summary>
+    /// Controller for draft pages and actions (picking cyclists, generating turns).
+    /// </summary>
     public class DraftController : Controller
     {
         private readonly AppDbContext _context;

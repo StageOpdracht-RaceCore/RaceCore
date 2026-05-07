@@ -4,6 +4,14 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* RaceController.cs
+       Purpose: Manage races, stages and race entries. Provides CRUD
+       operations for Race objects and handles dynamic stage creation
+       during race creation. Basic error handling via TempData messages.
+    */
+    /// <summary>
+    /// Controller for creating, editing and listing races.
+    /// </summary>
     public class RaceController : Controller
     {
         private readonly AppDbContext _context;

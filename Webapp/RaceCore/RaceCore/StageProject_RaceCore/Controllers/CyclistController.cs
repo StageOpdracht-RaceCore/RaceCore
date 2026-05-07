@@ -4,6 +4,14 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* CyclistController.cs
+       Purpose: CRUD and management actions for Cyclist entities.
+       Supports listing with filters, create, delete and toggle-active
+       operations. Uses TempData for user-facing notifications.
+    */
+    /// <summary>
+    /// Controller managing cyclists (index, create, delete, toggle active).
+    /// </summary>
     public class CyclistController : Controller
     {
         private readonly AppDbContext _context;

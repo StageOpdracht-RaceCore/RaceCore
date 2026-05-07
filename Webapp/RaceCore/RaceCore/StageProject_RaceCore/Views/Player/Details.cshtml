@@ -1,13 +1,17 @@
-﻿@model StageProject_RaceCore.Models.Player
+@model StageProject_RaceCore.Models.Player
 
 @{
+    // Page title displayed in layout
     ViewData["Title"] = "Player details";
+    // Use shared clean layout for consistency
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* Include player stylesheet for consistent look *@
 <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
 <div class="player-details-page">
+    @* Header with avatar and basic info *@
     <div class="player-details-hero">
         <div class="player-details-avatar">
             @(string.IsNullOrWhiteSpace(Model.Name) ? "?" : Model.Name.Substring(0, 1).ToUpper())
@@ -22,6 +26,7 @@
         </div>
     </div>
 
+    @* Summary stats for this player *@
     <div class="player-stats-grid">
         <div class="player-stat-card">
             <span class="player-stat-label">Draft positie</span>
@@ -45,6 +50,7 @@
         </div>
     </div>
 
+    @* Detailed sections showing base info and activity lists *@
     <div class="player-details-grid">
         <div class="player-detail-card">
             <h3>Basisinformatie</h3>
@@ -66,6 +72,7 @@
         </div>
     </div>
 
+    @* Actions to edit, delete or go back to the list *@
     <div class="player-form-actions">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="player-btn player-btn-primary">Bewerken</a>
         <a asp-action="Delete" asp-route-id="@Model.Id" class="player-btn player-btn-danger">Verwijderen</a>
