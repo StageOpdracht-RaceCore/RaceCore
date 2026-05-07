@@ -10,7 +10,7 @@
         public int? TeamId { get; set; }
         public Team? Team { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public List<PlayerSelection> PlayerSelections { get; set; } = new();
         public List<RaceEntry> RaceEntries { get; set; } = new();

@@ -15,20 +15,45 @@ namespace StageProject_RaceCore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string firstName, string lastName, int? teamId)
+        public async Task<IActionResult> Create(string firstName, string lastName, int? teamId, bool isActive = true, int? raceId = null)
         {
             if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
             {
+                Race? selectedRace = null;
+
+                if (raceId.HasValue && raceId.Value > 0)
+                {
+                    selectedRace = await _context.Races.FindAsync(raceId.Value);
+
+                    if (selectedRace == null)
+                    {
+                        TempData["CreateError"] = "Geselecteerde race bestaat niet.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 var cyclist = new Cyclist
                 {
                     FirstName = firstName.Trim(),
                     LastName = lastName.Trim(),
                     TeamId = teamId == 0 ? null : teamId,
-                    IsActive = true
+                    IsActive = isActive
                 };
 
                 _context.Cyclists.Add(cyclist);
                 await _context.SaveChangesAsync();
+
+                if (selectedRace != null)
+                {
+                    _context.RaceEntries.Add(new RaceEntry
+                    {
+                        RaceId = selectedRace.Id,
+                        CyclistId = cyclist.Id,
+                        TeamId = cyclist.TeamId
+                    });
+
+                    await _context.SaveChangesAsync();
+                }
 
                 TempData["Success"] = $"{cyclist.FullName} is succesvol toegevoegd.";
             }
@@ -38,6 +63,55 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToRace(
+            int cyclistId,
+            int raceId,
+            string? search,
+            string? status,
+            int page = 1,
+            int pageSize = 25)
+        {
+            var cyclist = await _context.Cyclists
+                .Include(c => c.RaceEntries)
+                .FirstOrDefaultAsync(c => c.Id == cyclistId);
+
+            var race = await _context.Races.FindAsync(raceId);
+
+            if (cyclist == null)
+            {
+                TempData["DatabaseError"] = "Renner niet gevonden.";
+                return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
+            }
+
+            if (race == null)
+            {
+                TempData["DatabaseError"] = "Race niet gevonden.";
+                return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
+            }
+
+            bool alreadyAdded = cyclist.RaceEntries.Any(re => re.RaceId == raceId);
+
+            if (alreadyAdded)
+            {
+                TempData["Success"] = $"{cyclist.FullName} staat al in {race.Name}.";
+                return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
+            }
+
+            _context.RaceEntries.Add(new RaceEntry
+            {
+                RaceId = raceId,
+                CyclistId = cyclistId,
+                TeamId = cyclist.TeamId
+            });
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"{cyclist.FullName} is toegevoegd aan {race.Name}.";
+            return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
         }
 
         [HttpPost]
@@ -73,10 +147,8 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var races = await _context.Races
-                    .Where(r =>
-                    r.Name.Contains("Giro") ||
-                    r.Name.Contains("Tour") ||
-                    r.Name.Contains("Vuelta"))
+                    .OrderByDescending(r => r.Year)
+                    .ThenBy(r => r.Name)
                     .ToListAsync();
 
                 var teams = await _context.Teams.OrderBy(t => t.Name).ToListAsync();
@@ -84,6 +156,7 @@ namespace StageProject_RaceCore.Controllers
                 var query = _context.Cyclists
                     .Include(c => c.Team)
                     .Include(c => c.RaceEntries)
+                    .Where(c => c.PlayerSelections.Any())
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(search))
