@@ -1,13 +1,17 @@
 @model StageProject_RaceCore.ViewModels.PlayerPageViewModel
 
 @{
+    // Page title used by the layout
     ViewData["Title"] = "Players";
+    // Use the clean layout for this view
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* Link to page-specific stylesheet. asp-append-version helps with cache busting. *@
 <link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
 
 <div class="player-page">
+    @* Display success notification (set from controller via TempData) *@
     @if (TempData["Success"] != null)
     {
         <div class="player-alert player-alert-success">
@@ -15,6 +19,7 @@
         </div>
     }
 
+    @* Display error notification (set from controller via TempData) *@
     @if (TempData["Error"] != null)
     {
         <div class="player-alert player-alert-danger">
@@ -22,6 +27,7 @@
         </div>
     }
 
+    @* Header card with title, description and primary actions *@
     <div class="player-header-card">
         <div>
             <p class="player-page-kicker">RaceCore Management</p>
@@ -32,14 +38,17 @@
         </div>
 
         <div class="player-header-actions">
+            @* Link to create a new player *@
             <a asp-action="Create" class="player-btn player-btn-primary">+ Nieuwe speler</a>
+            @* Quick link to start a new game *@
             <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
                 ✓ Done
             </a>
         </div>
-        
+
     </div>
 
+    @* Quick stats about players shown in small cards *@
     <div class="player-stats-grid">
         <div class="player-stat-card">
             <span class="player-stat-label">Totaal spelers</span>
@@ -67,6 +76,7 @@
         </div>
     </div>
 
+    @* Toolbar with search form and reset action *@
     <div class="player-toolbar-card">
         <form method="get" asp-action="Index" class="player-search-form">
             <div class="player-search-group">
@@ -85,6 +95,7 @@
         </form>
     </div>
 
+    @* Main table listing players and their aggregates *@
     <div class="player-table-card">
         <div class="player-table-responsive">
             <table class="player-table">
@@ -100,6 +111,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @* If there are players, render list rows *@
                     @if (Model.Players.Any())
                     {
                         foreach (var player in Model.Players)
@@ -108,6 +120,7 @@
                                 <td>
                                     <div class="player-name-cell">
                                         <div class="player-avatar">
+                                            @* Show initial or fallback to '?' *@
                                             @(string.IsNullOrWhiteSpace(player.Name) ? "?" : player.Name.Substring(0, 1).ToUpper())
                                         </div>
                                         <div>
@@ -127,6 +140,7 @@
                                 <td>@player.PointsRecordsCount</td>
                                 <td>
                                     <div class="player-action-links">
+                                        @* CRUD links for each player *@
                                         <a asp-action="Details" asp-route-id="@player.Id" class="player-link">Details</a>
                                         <a asp-action="Edit" asp-route-id="@player.Id" class="player-link">Edit</a>
                                         <a asp-action="Delete" asp-route-id="@player.Id" class="player-link player-link-danger">Delete</a>
@@ -137,6 +151,7 @@
                     }
                     else
                     {
+                        @* Empty state when no players match filter *@
                         <tr>
                             <td colspan="7">
                                 <div class="player-empty-state">
