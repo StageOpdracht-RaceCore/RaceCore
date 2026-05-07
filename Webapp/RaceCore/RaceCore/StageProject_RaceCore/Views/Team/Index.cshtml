@@ -164,7 +164,7 @@
                                     <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "") @(index == Model.ActiveRiderSlots - 1 ? "roster-before-bench" : "")"
                                         data-section="active"
                                         onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
+                                        data-cyclist-id="@(rider?.CyclistId.ToString() ?? "")">
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -192,7 +192,7 @@
                                     <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")"
                                         data-section="bench"
                                         onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
+                                        data-cyclist-id="@(rider?.CyclistId.ToString() ?? "")">
                                         <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -289,11 +289,15 @@
         }
 
         function swapRows(rowA, rowB) {
-            var cellsA = rowA.querySelectorAll('td');
-            var cellsB = rowB.querySelectorAll('td');
-
             var activeRow = rowA.classList.contains('active-rider') ? rowA : rowB;
             var benchRow = activeRow === rowA ? rowB : rowA;
+
+            // Capture IDs before DOM mutation
+            var activeCyclistId = String(parseInt(activeRow.dataset.cyclistId, 10) || 0);
+            var benchCyclistId = String(parseInt(benchRow.dataset.cyclistId, 10) || 0);
+
+            var cellsA = rowA.querySelectorAll('td');
+            var cellsB = rowB.querySelectorAll('td');
 
             var tmpName = cellsA[1].innerHTML;
             cellsA[1].innerHTML = cellsB[1].innerHTML;
@@ -310,7 +314,7 @@
             updateRowState(rowA);
             updateRowState(rowB);
 
-            persistSwap(activeRow, benchRow);
+            persistSwap(activeRow, benchRow, activeCyclistId, benchCyclistId);
         }
 
         function updateRowState(row) {
@@ -339,27 +343,18 @@
             }
         }
 
-        function persistSwap(activeRow, benchRow) {
+        function persistSwap(activeRow, benchRow, activeCyclistId, benchCyclistId) {
             var card = activeRow.closest('.player-team-card');
-
-            if (!card) {
-                return;
-            }
+            if (!card) { return; }
 
             var gameId = document.querySelector('.team-page')?.dataset?.gameId;
             var playerId = card.dataset.playerId;
-            var activeCyclistId = activeRow.dataset.cyclistId || '0';
-            var benchCyclistId = benchRow.dataset.cyclistId || '0';
 
-            if (!gameId || !playerId) {
-                return;
-            }
+            if (!gameId || gameId === '0' || !playerId) { return; }
+            if (activeCyclistId === '0' && benchCyclistId === '0') { return; }
 
             var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
-
-            if (!token) {
-                return;
-            }
+            if (!token) { return; }
 
             var body =
                 '__RequestVerificationToken=' + encodeURIComponent(token) +
@@ -368,12 +363,37 @@
                 '&activeCyclistId=' + encodeURIComponent(activeCyclistId) +
                 '&benchCyclistId=' + encodeURIComponent(benchCyclistId);
 
+            console.log('[swap] POST body:', body);
+
             fetch('@Url.Action("SwapActiveBench", "Team")', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                 body: body
-            }).catch(function () {
+            })
+            .then(function (response) {
+                if (!response.ok) {
+                    showSwapError(card, 'Wisselen mislukt (fout ' + response.status + '). Herlaad de pagina.');
+                }
+            })
+            .catch(function () {
+                showSwapError(card, 'Wisselen mislukt: geen verbinding met de server.');
             });
+        }
+
+        function showSwapError(card, message) {
+            var existing = card.querySelector('.swap-error-msg');
+            if (existing) {
+                existing.remove();
+            }
+
+            var el = document.createElement('div');
+            el.className = 'swap-error-msg';
+            el.setAttribute('role', 'alert');
+            el.style.cssText = 'margin:8px 12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;color:#991b1b;background:#fee2e2;border:1px solid #fca5a5;';
+            el.textContent = message;
+            card.appendChild(el);
+
+            setTimeout(function () { el.remove(); }, 5000);
         }
 
         function toggleEmptyState(targetRow, sourceRow) {
