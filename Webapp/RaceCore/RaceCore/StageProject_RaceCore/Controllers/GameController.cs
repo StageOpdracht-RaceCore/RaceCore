@@ -9,7 +9,9 @@ namespace StageProject_RaceCore.Controllers
     public class GameController : Controller
     {
         private readonly AppDbContext _context;
-        private const int HostTimeoutSeconds = 20;
+
+        // Als host 60 seconden geen ping stuurt, wordt game als gestopt gezien.
+        private const int HostTimeoutSeconds = 60;
 
         public GameController(AppDbContext context)
         {
@@ -151,7 +153,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (string.IsNullOrWhiteSpace(hostSessionId))
             {
-                return Json(new { success = false });
+                return Json(new { success = false, reason = "No host session" });
             }
 
             var game = await _context.GameSessions
@@ -162,7 +164,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (game == null)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, reason = "Game not found or not host" });
             }
 
             game.LastHostPingAt = DateTime.Now;
@@ -186,12 +188,15 @@ namespace StageProject_RaceCore.Controllers
                 .FirstOrDefaultAsync();
 
             ViewBag.ActiveGameId = activeGame?.Id ?? 0;
+
             ViewBag.ActiveGameRaceName = activeGame?.Race != null
                 ? activeGame.Race.Name + " " + activeGame.Race.Year
                 : "";
+
             ViewBag.ActiveGameStageName = activeGame?.Stage != null
                 ? "Rit " + activeGame.Stage.StageNumber + " - " + activeGame.Stage.Name
                 : "";
+
             ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
         }
 
@@ -231,7 +236,10 @@ namespace StageProject_RaceCore.Controllers
             return hostSessionId;
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             try
             {
@@ -255,7 +263,10 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModel(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task<NewGameViewModel> BuildNewGameViewModel(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             selectedPlayerIds ??= new List<int>();
 
@@ -292,7 +303,8 @@ namespace StageProject_RaceCore.Controllers
                 selectedPlayerIds = players.Select(p => p.Id).ToList();
             }
 
-            int totalCyclists = await _context.Cyclists.CountAsync(c => c.IsActive);
+            int totalCyclists = await _context.Cyclists
+                .CountAsync(c => c.IsActive);
 
             return new NewGameViewModel
             {
@@ -326,7 +338,11 @@ namespace StageProject_RaceCore.Controllers
             };
         }
 
-        private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
+        private static List<DraftTurn> GenerateFairSnakeDraft(
+            int gameSessionId,
+            int raceId,
+            List<Player> players,
+            int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
             int turnNumber = 1;
