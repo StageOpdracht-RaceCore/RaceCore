@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
@@ -17,6 +17,8 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> New()
         {
+            await LoadActiveGamePopupDataSafe();
+
             var model = await BuildNewGameViewModelSafe();
             return View(model);
         }
@@ -62,6 +64,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!ModelState.IsValid)
             {
+                await LoadActiveGamePopupDataSafe();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
 
@@ -73,6 +76,7 @@ namespace StageProject_RaceCore.Controllers
                 if (race == null)
                 {
                     TempData["Error"] = "Race niet gevonden.";
+                    await LoadActiveGamePopupDataSafe();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -82,6 +86,7 @@ namespace StageProject_RaceCore.Controllers
                 if (stage == null)
                 {
                     TempData["Error"] = "Rit niet gevonden bij deze race.";
+                    await LoadActiveGamePopupDataSafe();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -90,6 +95,7 @@ namespace StageProject_RaceCore.Controllers
                 if (players.Count < 2)
                 {
                     TempData["Error"] = "Kies minstens 2 geldige spelers.";
+                    await LoadActiveGamePopupDataSafe();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -121,7 +127,48 @@ namespace StageProject_RaceCore.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = "Start Game fout: " + ex.Message;
+                await LoadActiveGamePopupDataSafe();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+            }
+        }
+
+        private async Task LoadActiveGamePopupDataSafe()
+        {
+            ViewBag.ActiveGameId = 0;
+            ViewBag.ActiveGameName = "";
+            ViewBag.ActiveGameStatus = "";
+
+            try
+            {
+                var activeGame = await _context.GameSessions
+                    .Include(g => g.Race)
+                    .Where(g => g.Status == "Draft" || g.Status == "Active")
+                    .OrderByDescending(g => g.CreatedAt)
+                    .FirstOrDefaultAsync();
+
+                if (activeGame == null)
+                {
+                    return;
+                }
+
+                ViewBag.ActiveGameId = activeGame.Id;
+                ViewBag.ActiveGameStatus = activeGame.Status;
+
+                string raceName = activeGame.Race != null
+                    ? $"{activeGame.Race.Name} {activeGame.Race.Year}"
+                    : "Actieve game";
+
+                string stageName = activeGame.CurrentStageNumber > 0
+                    ? $" - Rit {activeGame.CurrentStageNumber}"
+                    : "";
+
+                ViewBag.ActiveGameName = raceName + stageName;
+            }
+            catch
+            {
+                ViewBag.ActiveGameId = 0;
+                ViewBag.ActiveGameName = "";
+                ViewBag.ActiveGameStatus = "";
             }
         }
 

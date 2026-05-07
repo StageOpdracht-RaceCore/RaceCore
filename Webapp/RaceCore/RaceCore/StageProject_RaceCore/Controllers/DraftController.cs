@@ -137,9 +137,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     game.Status = "Active";
                     await _context.SaveChangesAsync();
-
                     await SendDraftUpdate(gameId, true);
-
                     return RedirectToAction("Index", "Dashboard", new { gameId });
                 }
 
@@ -197,7 +195,6 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-
                 await SendDraftUpdate(gameId, draftIsFinished);
 
                 if (isActiveCyclist)

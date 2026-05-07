@@ -385,11 +385,13 @@
 <script>
     const gameId = @gameId;
 
+    console.log("RaceCore SignalR gestart. Game:", gameId);
+
     window.onload = function () {
-    if (window.location.hash == "#draft-players-section") {
+    if (window.location.hash === "#draft-players-section") {
     var section = document.getElementById("draft-players-section");
 
-    if (section != null) {
+    if (section !== null) {
     section.scrollIntoView();
     }
     }
@@ -401,20 +403,22 @@
     .build();
 
     connection.on("DraftUpdated", function (data) {
-    if (data.gameId === gameId) {
-    if (data.draftFinished === true) {
-    window.location.href = "/Dashboard/Index?gameId=" + gameId;
-    } else {
-    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
-    }
-    }
+    console.log("DraftUpdated ontvangen:", data);
+
+    setTimeout(function () {
+    window.location.reload();
+    }, 300);
     });
 
     connection.start()
     .then(function () {
-    connection.invoke("JoinGameGroup", gameId);
+    console.log("SignalR verbonden");
+    return connection.invoke("JoinGameGroup", gameId);
+    })
+    .then(function () {
+    console.log("Joined game group:", gameId);
     })
     .catch(function (err) {
-    console.error("SignalR connection error:", err);
+    console.error("SignalR fout:", err);
     });
 </script>
