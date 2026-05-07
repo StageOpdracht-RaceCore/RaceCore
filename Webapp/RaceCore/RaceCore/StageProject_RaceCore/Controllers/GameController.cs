@@ -85,11 +85,7 @@ namespace StageProject_RaceCore.Controllers
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
-                var players = await _context.Players
-                    .Where(p => model.SelectedPlayerIds.Contains(p.Id))
-                    .OrderBy(p => p.PositionInDraft)
-                    .ThenBy(p => p.Id)
-                    .ToListAsync();
+                var players = await GetPlayersForNewGameDraftOrder(model.SelectedPlayerIds);
 
                 if (players.Count < 2)
                 {
@@ -103,8 +99,8 @@ namespace StageProject_RaceCore.Controllers
                     StageId = model.StageId,
                     Status = "Draft",
                     CurrentStageNumber = stage.StageNumber,
-                    RidersPerPlayer = 8,
-                    BenchPerPlayer = 2,
+                    RidersPerPlayer = 10,
+                    BenchPerPlayer = 5,
                     CreatedAt = DateTime.Now
                 };
 
@@ -225,6 +221,152 @@ namespace StageProject_RaceCore.Controllers
             };
         }
 
+        private async Task<List<Player>> GetPlayersForNewGameDraftOrder(List<int> selectedPlayerIds)
+        {
+            var selectedPlayers = await _context.Players
+                .Where(p => selectedPlayerIds.Contains(p.Id))
+                .OrderBy(p => p.PositionInDraft)
+                .ThenBy(p => p.Id)
+                .ToListAsync();
+
+            var lastFinishedGame = await _context.GameSessions
+                .Where(g => g.Status != "Draft")
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (lastFinishedGame == null)
+            {
+                return selectedPlayers;
+            }
+
+            var lastRanking = await CalculatePlayerRankingForGame(lastFinishedGame.Id);
+
+            if (!lastRanking.Any())
+            {
+                return selectedPlayers;
+            }
+
+            var oldPlayerIds = lastRanking
+                .Select(r => r.PlayerId)
+                .ToList();
+
+            // Nieuwe spelers zaten niet in vorige leaderboard, dus die komen eerst.
+            var newPlayers = selectedPlayers
+                .Where(p => !oldPlayerIds.Contains(p.Id))
+                .OrderBy(p => p.PositionInDraft)
+                .ThenBy(p => p.Id)
+                .ToList();
+
+            // Vorige leaderboard omgekeerd: laatste wordt eerst, winnaar wordt laatst.
+            var reversedLeaderboardPlayers = lastRanking
+                .Where(r => selectedPlayerIds.Contains(r.PlayerId))
+                .OrderBy(r => r.TotalPoints)
+                .ThenBy(r => r.PlayerName)
+                .Select(r => selectedPlayers.First(p => p.Id == r.PlayerId))
+                .ToList();
+
+            return newPlayers
+                .Concat(reversedLeaderboardPlayers)
+                .ToList();
+        }
+
+        private async Task<List<GamePlayerRankingResult>> CalculatePlayerRankingForGame(int gameId)
+        {
+            var game = await _context.GameSessions
+                .FirstOrDefaultAsync(g => g.Id == gameId);
+
+            if (game == null)
+            {
+                return new List<GamePlayerRankingResult>();
+            }
+
+            var selections = await _context.PlayerSelections
+                .Where(s => s.GameSessionId == gameId)
+                .Include(s => s.Player)
+                .Include(s => s.Cyclist)
+                .ToListAsync();
+
+            var stages = await _context.Stages
+                .Where(s => s.RaceId == game.RaceId)
+                .ToListAsync();
+
+            var stageIds = stages.Select(s => s.Id).ToList();
+
+            var rules = await _context.PointsRules.ToListAsync();
+
+            var allResults = await _context.StageResults
+                .Where(sr => stageIds.Contains(sr.StageId))
+                .ToListAsync();
+
+            var allJerseys = await _context.Jerseys
+                .Where(j => stageIds.Contains(j.StageId))
+                .ToListAsync();
+
+            var ranking = new List<GamePlayerRankingResult>();
+
+            foreach (var playerGroup in selections.GroupBy(s => s.PlayerId))
+            {
+                int playerTotal = 0;
+                string playerName = playerGroup.First().Player?.Name ?? "Onbekend";
+
+                foreach (var selection in playerGroup)
+                {
+                    int cyclistTotal = 0;
+
+                    foreach (var stage in stages)
+                    {
+                        var result = allResults.FirstOrDefault(r =>
+                            r.StageId == stage.Id &&
+                            r.CyclistId == selection.CyclistId);
+
+                        if (result != null && result.Position.HasValue)
+                        {
+                            cyclistTotal += rules
+                                .Where(r =>
+                                    r.Type == "Rit" &&
+                                    r.FromPosition <= result.Position.Value &&
+                                    r.ToPosition >= result.Position.Value)
+                                .Sum(r => r.Points);
+                        }
+
+                        var jerseys = allJerseys.Where(j =>
+                            j.StageId == stage.Id &&
+                            j.CyclistId == selection.CyclistId);
+
+                        foreach (var jersey in jerseys)
+                        {
+                            string type = jersey.Type switch
+                            {
+                                "Red" => "RodeTrui",
+                                "Green" => "GroeneTrui",
+                                "Blue" => "BlauweTrui",
+                                "White" => "WitteTrui",
+                                _ => jersey.Type
+                            };
+
+                            cyclistTotal += rules
+                                .Where(r => r.Type == type)
+                                .Sum(r => r.Points);
+                        }
+                    }
+
+                    playerTotal += cyclistTotal;
+                }
+
+                ranking.Add(new GamePlayerRankingResult
+                {
+                    PlayerId = playerGroup.Key,
+                    PlayerName = playerName,
+                    TotalPoints = playerTotal
+                });
+            }
+
+            return ranking
+                .OrderByDescending(r => r.TotalPoints)
+                .ThenBy(r => r.PlayerName)
+                .ToList();
+        }
+
         private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
@@ -251,6 +393,13 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return draftTurns;
+        }
+
+        private class GamePlayerRankingResult
+        {
+            public int PlayerId { get; set; }
+            public string PlayerName { get; set; } = string.Empty;
+            public int TotalPoints { get; set; }
         }
     }
 }
