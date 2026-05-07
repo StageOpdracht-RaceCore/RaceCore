@@ -10,7 +10,8 @@ namespace StageProject_RaceCore.Controllers
     {
         private readonly AppDbContext _context;
 
-        private const int HostTimeoutSeconds = 20;
+        // Als host 60 seconden geen ping stuurt, wordt game als gestopt gezien.
+        private const int HostTimeoutSeconds = 60;
 
         public GameController(AppDbContext context)
         {
@@ -20,9 +21,9 @@ namespace StageProject_RaceCore.Controllers
         public async Task<IActionResult> New()
         {
             await CloseDeadHostGames();
+            await SetActiveGameViewBag();
 
             var model = await BuildNewGameViewModelSafe();
-
             return View(model);
         }
 
@@ -69,6 +70,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!ModelState.IsValid)
             {
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
 
@@ -80,6 +82,7 @@ namespace StageProject_RaceCore.Controllers
                 if (race == null)
                 {
                     TempData["Error"] = "Race niet gevonden.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -89,6 +92,7 @@ namespace StageProject_RaceCore.Controllers
                 if (stage == null)
                 {
                     TempData["Error"] = "Rit niet gevonden bij deze race.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -101,6 +105,7 @@ namespace StageProject_RaceCore.Controllers
                 if (players.Count < 2)
                 {
                     TempData["Error"] = "Kies minstens 2 geldige spelers.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -136,6 +141,7 @@ namespace StageProject_RaceCore.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = "Start Game fout: " + ex.Message;
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
         }
@@ -147,7 +153,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (string.IsNullOrWhiteSpace(hostSessionId))
             {
-                return Json(new { success = false });
+                return Json(new { success = false, reason = "No host session" });
             }
 
             var game = await _context.GameSessions
@@ -158,13 +164,40 @@ namespace StageProject_RaceCore.Controllers
 
             if (game == null)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, reason = "Game not found or not host" });
             }
 
             game.LastHostPingAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
             return Json(new { success = true });
+        }
+
+        private async Task SetActiveGameViewBag()
+        {
+            DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
+
+            var activeGame = await _context.GameSessions
+                .Include(g => g.Race)
+                .Include(g => g.Stage)
+                .Where(g =>
+                    (g.Status == "Draft" || g.Status == "Active") &&
+                    g.LastHostPingAt != null &&
+                    g.LastHostPingAt >= limit)
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            ViewBag.ActiveGameId = activeGame?.Id ?? 0;
+
+            ViewBag.ActiveGameRaceName = activeGame?.Race != null
+                ? activeGame.Race.Name + " " + activeGame.Race.Year
+                : "";
+
+            ViewBag.ActiveGameStageName = activeGame?.Stage != null
+                ? "Rit " + activeGame.Stage.StageNumber + " - " + activeGame.Stage.Name
+                : "";
+
+            ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
         }
 
         private async Task CloseDeadHostGames()
@@ -174,10 +207,7 @@ namespace StageProject_RaceCore.Controllers
             var oldGames = await _context.GameSessions
                 .Where(g =>
                     (g.Status == "Draft" || g.Status == "Active") &&
-                    (
-                        g.LastHostPingAt == null ||
-                        g.LastHostPingAt < limit
-                    ))
+                    (g.LastHostPingAt == null || g.LastHostPingAt < limit))
                 .ToListAsync();
 
             if (!oldGames.Any())
@@ -206,7 +236,10 @@ namespace StageProject_RaceCore.Controllers
             return hostSessionId;
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             try
             {
@@ -230,7 +263,10 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModel(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task<NewGameViewModel> BuildNewGameViewModel(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             selectedPlayerIds ??= new List<int>();
 
@@ -302,7 +338,11 @@ namespace StageProject_RaceCore.Controllers
             };
         }
 
-        private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
+        private static List<DraftTurn> GenerateFairSnakeDraft(
+            int gameSessionId,
+            int raceId,
+            List<Player> players,
+            int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
             int turnNumber = 1;
