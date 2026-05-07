@@ -66,8 +66,18 @@ namespace StageProject_RaceCore.Controllers
                     .Select(d => d.CyclistId!.Value)
                     .ToList();
 
+                var raceCyclistIds = await _context.RaceEntries
+                    .Where(re => re.RaceId == game.RaceId && re.Cyclist.IsActive)
+                    .Select(re => re.CyclistId)
+                    .Distinct()
+                    .ToListAsync();
+
                 var cyclists = await _context.Cyclists
-                    .Where(c => c.IsActive && !pickedCyclistIds.Contains(c.Id))
+                    .Include(c => c.Team)
+                    .Where(c =>
+                        c.IsActive &&
+                        raceCyclistIds.Contains(c.Id) &&
+                        !pickedCyclistIds.Contains(c.Id))
                     .OrderBy(c => c.FirstName)
                     .ThenBy(c => c.LastName)
                     .ToListAsync();
@@ -184,12 +194,17 @@ namespace StageProject_RaceCore.Controllers
                     return RedirectToDraft(gameId);
                 }
 
-                var cyclist = await _context.Cyclists
-                    .FirstOrDefaultAsync(c => c.Id == cyclistId && c.IsActive);
+                var cyclist = await _context.RaceEntries
+                    .Where(re =>
+                        re.RaceId == game.RaceId &&
+                        re.CyclistId == cyclistId &&
+                        re.Cyclist.IsActive)
+                    .Select(re => re.Cyclist)
+                    .FirstOrDefaultAsync();
 
                 if (cyclist == null)
                 {
-                    TempData["Error"] = "Renner niet gevonden.";
+                    TempData["Error"] = "Deze renner hoort niet bij de gekozen race.";
                     return RedirectToDraft(gameId);
                 }
 
@@ -291,6 +306,13 @@ namespace StageProject_RaceCore.Controllers
                 .ToList();
 
             int playerCount = playerOrder.Count;
+
+            if (playerCount <= 0)
+            {
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             int correctRounds = ActiveRidersPerPlayer + BenchRidersPerPlayer;
             int correctTotalTurns = playerCount * correctRounds;
 
@@ -351,6 +373,7 @@ namespace StageProject_RaceCore.Controllers
                     if (selection != null)
                     {
                         selection.IsActive = i < ActiveRidersPerPlayer;
+                        selection.RaceId = game.RaceId;
                     }
                 }
             }
