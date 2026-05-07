@@ -9,7 +9,6 @@ namespace StageProject_RaceCore.Controllers
     public class GameController : Controller
     {
         private readonly AppDbContext _context;
-
         private const int HostTimeoutSeconds = 20;
 
         public GameController(AppDbContext context)
@@ -20,9 +19,9 @@ namespace StageProject_RaceCore.Controllers
         public async Task<IActionResult> New()
         {
             await CloseDeadHostGames();
+            await SetActiveGameViewBag();
 
             var model = await BuildNewGameViewModelSafe();
-
             return View(model);
         }
 
@@ -69,6 +68,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!ModelState.IsValid)
             {
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
 
@@ -80,6 +80,7 @@ namespace StageProject_RaceCore.Controllers
                 if (race == null)
                 {
                     TempData["Error"] = "Race niet gevonden.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -89,6 +90,7 @@ namespace StageProject_RaceCore.Controllers
                 if (stage == null)
                 {
                     TempData["Error"] = "Rit niet gevonden bij deze race.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -101,6 +103,7 @@ namespace StageProject_RaceCore.Controllers
                 if (players.Count < 2)
                 {
                     TempData["Error"] = "Kies minstens 2 geldige spelers.";
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -136,6 +139,7 @@ namespace StageProject_RaceCore.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = "Start Game fout: " + ex.Message;
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
         }
@@ -167,6 +171,30 @@ namespace StageProject_RaceCore.Controllers
             return Json(new { success = true });
         }
 
+        private async Task SetActiveGameViewBag()
+        {
+            DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
+
+            var activeGame = await _context.GameSessions
+                .Include(g => g.Race)
+                .Include(g => g.Stage)
+                .Where(g =>
+                    (g.Status == "Draft" || g.Status == "Active") &&
+                    g.LastHostPingAt != null &&
+                    g.LastHostPingAt >= limit)
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            ViewBag.ActiveGameId = activeGame?.Id ?? 0;
+            ViewBag.ActiveGameRaceName = activeGame?.Race != null
+                ? activeGame.Race.Name + " " + activeGame.Race.Year
+                : "";
+            ViewBag.ActiveGameStageName = activeGame?.Stage != null
+                ? "Rit " + activeGame.Stage.StageNumber + " - " + activeGame.Stage.Name
+                : "";
+            ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
+        }
+
         private async Task CloseDeadHostGames()
         {
             DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
@@ -174,10 +202,7 @@ namespace StageProject_RaceCore.Controllers
             var oldGames = await _context.GameSessions
                 .Where(g =>
                     (g.Status == "Draft" || g.Status == "Active") &&
-                    (
-                        g.LastHostPingAt == null ||
-                        g.LastHostPingAt < limit
-                    ))
+                    (g.LastHostPingAt == null || g.LastHostPingAt < limit))
                 .ToListAsync();
 
             if (!oldGames.Any())
@@ -267,8 +292,7 @@ namespace StageProject_RaceCore.Controllers
                 selectedPlayerIds = players.Select(p => p.Id).ToList();
             }
 
-            int totalCyclists = await _context.Cyclists
-                .CountAsync(c => c.IsActive);
+            int totalCyclists = await _context.Cyclists.CountAsync(c => c.IsActive);
 
             return new NewGameViewModel
             {
