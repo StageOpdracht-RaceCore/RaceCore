@@ -1,11 +1,20 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
+    // Page title for the error view
     ViewData["Title"] = "Error";
 }
+
+@* Error.cshtml
+   Purpose: Friendly error page displayed when an unhandled exception
+   occurs. In production this page should be generic to avoid leaking
+   sensitive information. During development use the Development
+   environment to show detailed error pages from the framework.
+*@
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 
+@* Optionally show the request id to help correlate logs and traces. *@
 @if (Model.ShowRequestId)
 {
     <p>

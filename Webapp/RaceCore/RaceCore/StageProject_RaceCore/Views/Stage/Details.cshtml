@@ -1,13 +1,18 @@
-﻿@model StageProject_RaceCore.Models.Stage
+@model StageProject_RaceCore.Models.Stage
 @using StageProject_RaceCore.Models
 
 @{
+    // Prepare view-specific data passed from the controller via ViewBag
     var top25 = ViewBag.Top25 as List<StageResult> ?? new List<StageResult>();
     var jerseys = ViewBag.Jerseys as List<StageResult> ?? new List<StageResult>();
+    // Use the shared clean layout for stage pages
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
+
+@* Stylesheet for stage views (asp-append-version for cache busting) *@
 <link rel="stylesheet" href="~/css/Stage.css" asp-append-version="true" />
 
+@* Back link to the stages index *@
 <div style="margin-bottom: 10px;">
     <a asp-action="Index" class="app-btn">
         ← Terug naar ritten
@@ -16,7 +21,7 @@
 
 <div class="stage-page">
 
-    <!-- HEADER -->
+    @* HEADER: Stage title and date *@
     <section class="stage-header-card">
         <div class="stage-details-header">
             <h1>@Model.Name</h1>
@@ -24,7 +29,9 @@
         </div>
     </section>
 
-    <!-- TOP 25 -->
+    @* TOP 25: List the top 25 finishers for the stage. If present,
+       render a table and highlight podium positions. Otherwise show
+       an empty state message. *@
     <section class="stage-table-card stage-details-section">
         <h2>Top 25</h2>
 
@@ -61,7 +68,8 @@
         }
     </section>
 
-    <!-- JERSEYS -->
+    @* JERSEYS: Show riders who held jerseys on this stage; render a
+       small table or an empty state if none are available. *@
     <section class="stage-table-card stage-details-section">
         <h2>Trui dragers</h2>
 
