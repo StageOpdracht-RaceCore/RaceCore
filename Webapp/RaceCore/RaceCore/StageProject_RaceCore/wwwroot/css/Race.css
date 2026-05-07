@@ -265,6 +265,7 @@
 .race-danger-btn { 
     background: #dc2626;
     color: #fff;
+    border:0;
 }
 
     .race-danger-btn:hover {
