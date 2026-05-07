@@ -384,12 +384,11 @@
 
 <script>
     const gameId = @gameId;
-
-    console.log("RaceCore SignalR gestart. Game:", gameId);
+    let isChangingPage = false;
 
     window.onload = function () {
     if (window.location.hash === "#draft-players-section") {
-    var section = document.getElementById("draft-players-section");
+    const section = document.getElementById("draft-players-section");
 
     if (section !== null) {
     section.scrollIntoView();
@@ -397,26 +396,56 @@
     }
     };
 
+    function reloadDraftFast() {
+    if (isChangingPage) {
+    return;
+    }
+
+    isChangingPage = true;
+
+    setTimeout(function () {
+    window.location.href = "/Draft/Index?gameId=" + gameId + "#draft-players-section";
+    }, 75);
+    }
+
+    function goToDashboard() {
+    if (isChangingPage) {
+    return;
+    }
+
+    isChangingPage = true;
+    window.location.href = "/Dashboard/Index?gameId=" + gameId;
+    }
+
     const connection = new signalR.HubConnectionBuilder()
     .withUrl("/gameHub")
-    .withAutomaticReconnect()
+    .withAutomaticReconnect([0, 300, 700, 1500])
     .build();
 
     connection.on("DraftUpdated", function (data) {
-    console.log("DraftUpdated ontvangen:", data);
+    if (Number(data.gameId) !== Number(gameId)) {
+    return;
+    }
 
-    setTimeout(function () {
-    window.location.reload();
-    }, 300);
+    if (data.draftFinished === true) {
+    goToDashboard();
+    return;
+    }
+
+    reloadDraftFast();
+    });
+
+    connection.on("GoToDashboard", function (data) {
+    if (Number(data.gameId) !== Number(gameId)) {
+    return;
+    }
+
+    goToDashboard();
     });
 
     connection.start()
     .then(function () {
-    console.log("SignalR verbonden");
     return connection.invoke("JoinGameGroup", gameId);
-    })
-    .then(function () {
-    console.log("Joined game group:", gameId);
     })
     .catch(function (err) {
     console.error("SignalR fout:", err);

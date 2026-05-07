@@ -9,6 +9,7 @@
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var selectedRaceId = ViewBag.SelectedRaceId as int? ?? 0;
     var stages = ViewBag.AvailableStages as List<SelectListItem> ?? new List<SelectListItem>();
+    int gameId = ViewBag.GameId ?? 0;
 
     string redName = ViewData["RedOutsideTop25CyclistName"]?.ToString() ?? "";
     string greenName = ViewData["GreenOutsideTop25CyclistName"]?.ToString() ?? "";
@@ -27,26 +28,40 @@
         </div>
     }
 
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm mb-4">
+            <strong>Succes:</strong> @TempData["Success"]
+        </div>
+    }
+
     <div class="player-header-card">
         <div style="flex-grow: 1;">
             <h1 class="player-page-title">Scoring Beheer</h1>
             <p class="player-page-subtitle">Selecteer de gewenste wedstrijd en etappe.</p>
         </div>
-        <a asp-controller="Dashboard" asp-action="Index" class="player-btn-white" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+
+        <a asp-controller="Dashboard"
+               asp-action="Index"
+               asp-route-gameId="@gameId"
+               class="player-btn-white"
+               style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
             <i class="fas fa-arrow-left"></i> Dashboard
         </a>
     </div>
 
-    <!-- SELECTIE FORM -->
     <div class="player-table-card" style="padding:24px; margin-bottom:24px;">
         <form asp-controller="Scoring" asp-action="Index" method="get">
+            <input type="hidden" name="gameId" value="@gameId" />
+
             <div style="display: flex; gap: 20px; align-items: flex-end; width: 100%;">
 
-                <!-- RACE -->
                 <div style="flex: 0 0 40%;">
                     <label style="font-weight:700; margin-bottom:8px; display:block;">Wedstrijd kiezen</label>
+
                     <select name="raceId" class="player-search-input" onchange="this.form.submit()">
                         <option value="">-- Selecteer Wedstrijd --</option>
+
                         @foreach (var race in races)
                         {
                             <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
@@ -56,7 +71,6 @@
                     </select>
                 </div>
 
-                <!-- STAGE -->
                 <div style="flex: 0 0 40%;">
                     <label style="font-weight:700; margin-bottom:8px; display:block;">Rit kiezen</label>
                     <select asp-for="StageId" asp-items="stages" class="player-search-input"></select>
@@ -77,16 +91,15 @@
         <form asp-controller="Scoring" asp-action="SaveScores" method="post">
             @Html.AntiForgeryToken()
 
-            <!-- BELANGRIJK -->
             <input type="hidden" asp-for="StageId" />
             <input type="hidden" name="raceId" value="@selectedRaceId" />
+            <input type="hidden" name="gameId" value="@gameId" />
 
             <div class="player-header-card">
                 <h1 class="player-page-title">Rit @Model.StageId Resultaten</h1>
                 <button type="submit" class="player-btn-white">Scores Publiceren</button>
             </div>
 
-            <!-- CYCLIST LIST -->
             <datalist id="cyclistList">
                 @foreach (var item in Model.AvailableCyclists)
                 {
@@ -94,7 +107,6 @@
                 }
             </datalist>
 
-            <!-- TOP 25 -->
             <div class="results-list">
                 @for (int i = 0; i < Model.Results.Count; i++)
                 {
@@ -115,16 +127,30 @@
                         </div>
 
                         <div class="jersey-flex">
-                            <label><input type="checkbox" asp-for="Results[i].HasYellowJersey" class="d-none js-jersey-checkbox" data-jersey="Red" /><span class="jersey-dot dot-red"></span></label>
-                            <label><input type="checkbox" asp-for="Results[i].HasGreenJersey" class="d-none js-jersey-checkbox" data-jersey="Green" /><span class="jersey-dot dot-green"></span></label>
-                            <label><input type="checkbox" asp-for="Results[i].HasPolkaJersey" class="d-none js-jersey-checkbox" data-jersey="Blue" /><span class="jersey-dot dot-blue"></span></label>
-                            <label><input type="checkbox" asp-for="Results[i].HasWhiteJersey" class="d-none js-jersey-checkbox" data-jersey="White" /><span class="jersey-dot dot-white"></span></label>
+                            <label>
+                                <input type="checkbox" asp-for="Results[i].HasYellowJersey" class="d-none js-jersey-checkbox" data-jersey="Red" />
+                                <span class="jersey-dot dot-red"></span>
+                            </label>
+
+                            <label>
+                                <input type="checkbox" asp-for="Results[i].HasGreenJersey" class="d-none js-jersey-checkbox" data-jersey="Green" />
+                                <span class="jersey-dot dot-green"></span>
+                            </label>
+
+                            <label>
+                                <input type="checkbox" asp-for="Results[i].HasPolkaJersey" class="d-none js-jersey-checkbox" data-jersey="Blue" />
+                                <span class="jersey-dot dot-blue"></span>
+                            </label>
+
+                            <label>
+                                <input type="checkbox" asp-for="Results[i].HasWhiteJersey" class="d-none js-jersey-checkbox" data-jersey="White" />
+                                <span class="jersey-dot dot-white"></span>
+                            </label>
                         </div>
                     </div>
                 }
             </div>
 
-            <!-- BUITEN TOP 25 -->
             <div class="player-table-card outside-jersey-card" style="margin-top:20px;">
                 <h2 style="padding:20px;">Truidragers buiten Top 25</h2>
 
@@ -179,11 +205,21 @@
         }
 
         function clearOutsideJersey(type) {
-            const map = { Red: "Yellow", Green: "Green", Blue: "Polka", White: "White" };
+            const map = {
+                Red: "Yellow",
+                Green: "Green",
+                Blue: "Polka",
+                White: "White"
+            };
+
             const hidden = document.querySelector(`input[name="${map[type]}OutsideTop25CyclistId"]`);
+
             if (hidden) {
                 hidden.value = "";
-                hidden.previousElementSibling.value = "";
+
+                if (hidden.previousElementSibling) {
+                    hidden.previousElementSibling.value = "";
+                }
             }
         }
 

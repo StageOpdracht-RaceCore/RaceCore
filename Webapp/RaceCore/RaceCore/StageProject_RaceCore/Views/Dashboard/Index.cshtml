@@ -154,6 +154,7 @@
                 <a asp-controller="Scoring"
                        asp-action="Index"
                        asp-route-raceId="@raceId"
+                       asp-route-gameId="@gameId"
                        class="main-play-btn">
                     ⚡ Go to Scoring
                 </a>
@@ -181,7 +182,12 @@
                 <small>Start nieuwe race</small>
             </div>
         </a>
-        <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="game-menu-card">
+
+        <a asp-controller="Scoring"
+               asp-action="Index"
+               asp-route-raceId="@raceId"
+               asp-route-gameId="@gameId"
+               class="game-menu-card">
             <span>⚡</span>
             <div>
                 <strong>Scoring</strong>
@@ -204,8 +210,6 @@
                 <small>Vorige games</small>
             </div>
         </a>
-
-        
 
         <a asp-controller="Cyclist" asp-action="Index" class="game-menu-card">
             <span>🚴</span>
@@ -230,11 +234,6 @@
                 <small>Stageresult beheren</small>
             </div>
         </a>
-
-        
-        
-
-        
     </section>
 
     <section class="main-dashboard-grid">
