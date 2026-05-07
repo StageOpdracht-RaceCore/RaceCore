@@ -520,8 +520,8 @@
     padding: 0 14px;
     border-radius: 10px;
     border: none;
-    color: #991b1b;
-    background: #fee2e2;
+    color: #202020;
+    background: #a9a9a9;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
@@ -530,7 +530,7 @@
 }
 
     .cyclist-delete-btn:hover {
-        background: #fecaca;
+        background: #656565;
     }
 
 /* ── Danger confirm button (in modal) ────────────────────── */
