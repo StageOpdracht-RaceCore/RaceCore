@@ -6,12 +6,21 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* GameController.cs
+       Purpose: Handle creation and lifecycle of GameSession objects.
+       Responsibilities include creating new games, keeping track of
+       host sessions, closing stale games and providing helper APIs
+       used by the UI (stages list by race). */
+    /// <summary>
+    /// Controller to create and manage game sessions (New, Host ping, helpers).
+    /// </summary>
     public class GameController : Controller
     {
         private readonly AppDbContext _context;
 
-        // Als host 60 seconden geen ping stuurt, wordt game als gestopt gezien.
         private const int HostTimeoutSeconds = 60;
+        private const int ActiveRidersPerPlayer = 10;
+        private const int BenchRidersPerPlayer = 5;
 
         public GameController(AppDbContext context)
         {
@@ -117,8 +126,8 @@ namespace StageProject_RaceCore.Controllers
                     StageId = model.StageId,
                     Status = "Draft",
                     CurrentStageNumber = stage.StageNumber,
-                    RidersPerPlayer = 8,
-                    BenchPerPlayer = 2,
+                    RidersPerPlayer = ActiveRidersPerPlayer,
+                    BenchPerPlayer = BenchRidersPerPlayer,
                     CreatedAt = DateTime.Now,
                     HostSessionId = hostSessionId,
                     LastHostPingAt = DateTime.Now
@@ -303,8 +312,13 @@ namespace StageProject_RaceCore.Controllers
                 selectedPlayerIds = players.Select(p => p.Id).ToList();
             }
 
-            int totalCyclists = await _context.Cyclists
-                .CountAsync(c => c.IsActive);
+            int totalCyclists = raceId > 0
+                ? await _context.RaceEntries
+                    .Where(re => re.RaceId == raceId && re.Cyclist.IsActive)
+                    .Select(re => re.CyclistId)
+                    .Distinct()
+                    .CountAsync()
+                : 0;
 
             return new NewGameViewModel
             {

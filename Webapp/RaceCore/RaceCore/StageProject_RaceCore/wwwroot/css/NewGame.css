@@ -1,501 +1,534 @@
-﻿.new-game-page {
-    padding: 20px;
-    background: white;
-    min-height: 100vh;
-    color: midnightblue;
+/* =========================================================
+   NEW GAME PAGE - MAIN CONTAINER
+========================================================= */
+.new-game-page {
+  padding: 20px;
+  background: white;
+  min-height: 100vh;
+  color: midnightblue;
 }
 
-/* HERO */
+/* =========================================================
+   HERO / HEADER SECTION
+   The prominent top area with gradients and title
+========================================================= */
 .game-hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 28px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, midnightblue, royalblue);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    margin-bottom: 18px;
-    color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, midnightblue, royalblue);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom: 18px;
+  color: white;
 }
 
 .game-hero-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .game-flag {
-    font-size: 42px;
-    opacity: 0.85;
+  font-size: 42px;
+  opacity: 0.85;
 }
 
 .game-kicker {
-    margin: 0 0 6px;
-    color: lightskyblue;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 12px;
+  margin: 0 0 6px;
+  color: lightskyblue;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
 }
 
 .game-title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 900;
-    color: white;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
 }
 
 .game-subtitle {
-    margin: 6px 0 0;
-    max-width: 650px;
-    color: white;
-    font-size: 14px;
+  margin: 6px 0 0;
+  max-width: 650px;
+  color: white;
+  font-size: 14px;
 }
 
 .game-start-box {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
-/* BUTTONS */
+/* =========================================================
+   BUTTON SYSTEM
+========================================================= */
 .game-btn {
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-weight: 800;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 14px;
-    transition: 0.18s ease;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: 0.18s ease;
 }
 
 .game-btn-start {
-    background: limegreen;
-    color: white;
-    box-shadow: 0 6px 14px rgba(50,205,50,0.4);
+  background: limegreen;
+  color: white;
+  box-shadow: 0 6px 14px rgba(50,205,50,0.4);
 }
 
 .game-btn-light {
-    background: white;
-    color: midnightblue;
-    border: 1px solid lightgray;
+  background: white;
+  color: midnightblue;
+  border: 1px solid lightgray;
 }
 
 .game-btn:hover {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
-/* ALERTS */
+/* =========================================================
+   ALERTS / NOTIFICATIONS
+========================================================= */
 .game-alert {
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    font-weight: 700;
-    font-size: 13px;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  font-weight: 700;
+  font-size: 13px;
 }
 
 .game-alert-danger {
-    background: mistyrose;
-    color: darkred;
-    border: 1px solid lightcoral;
+  background: mistyrose;
+  color: darkred;
+  border: 1px solid lightcoral;
 }
 
 .game-alert-success {
-    background: honeydew;
-    color: seagreen;
-    border: 1px solid lightgreen;
+  background: honeydew;
+  color: seagreen;
+  border: 1px solid lightgreen;
 }
 
-/* STATS */
+/* =========================================================
+   GAME STATISTICS GRID
+========================================================= */
 .game-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 .game-stat-card {
-    background: white;
-    border: 1px solid gainsboro;
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  background: white;
+  border: 1px solid gainsboro;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
+/* Icon backgrounds for stats */
 .game-stat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
 .game-icon-blue {
-    background: aliceblue;
-    color: royalblue;
+  background: aliceblue;
+  color: royalblue;
 }
 
 .game-icon-purple {
-    background: lavender;
-    color: blueviolet;
+  background: lavender;
+  color: blueviolet;
 }
 
 .game-icon-green {
-    background: honeydew;
-    color: mediumseagreen;
+  background: honeydew;
+  color: mediumseagreen;
 }
 
 .game-icon-orange {
-    background: oldlace;
-    color: orangered;
+  background: oldlace;
+  color: orangered;
 }
 
 .game-stat-label {
-    font-size: 12px;
-    color: slategray;
+  font-size: 12px;
+  color: slategray;
 }
 
 .game-stat-value {
-    font-size: 22px;
-    color: midnightblue;
-    font-weight: 900;
+  font-size: 22px;
+  color: midnightblue;
+  font-weight: 900;
 }
 
-/* LAYOUT */
+/* =========================================================
+   MAIN LAYOUT (Sidebar + Content)
+========================================================= */
 .game-layout {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 16px;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
 }
 
 .game-panel {
-    background: white;
-    border: 1px solid gainsboro;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  background: white;
+  border: 1px solid gainsboro;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
 .game-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .game-panel-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: aliceblue;
-    color: dodgerblue;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: aliceblue;
+  color: dodgerblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
 .game-panel-title {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 900;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 .game-panel-text {
-    margin-bottom: 12px;
-    font-size: 14px;
-    color: slategray;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: slategray;
 }
 
-/* FORM */
+/* =========================================================
+   FORM INPUTS
+========================================================= */
 .game-form-group {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
-    .game-form-group label {
-        font-weight: 800;
-        margin-bottom: 6px;
-        display: block;
-    }
+  .game-form-group label {
+    font-weight: 800;
+    margin-bottom: 6px;
+    display: block;
+  }
 
 .game-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid lightsteelblue;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid lightsteelblue;
 }
 
-/* INFO */
+/* =========================================================
+   INFORMATION LISTS & WARNINGS
+========================================================= */
 .game-info-list {
-    display: grid;
-    gap: 10px;
-    margin-top: 12px;
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .game-info-item {
-    padding: 12px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, midnightblue, navy);
-    color: white;
-    display: flex;
-    gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, midnightblue, navy);
+  color: white;
+  display: flex;
+  gap: 10px;
 }
 
 .game-info-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: slateblue;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: slateblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* WARNING */
 .game-warning-box {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 12px;
-    background: aliceblue;
-    border: 1px solid lightskyblue;
-    font-size: 13px;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: aliceblue;
+  border: 1px solid lightskyblue;
+  font-size: 13px;
 }
 
 .game-manage-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
 }
 
-/* PLAYERS */
+/* =========================================================
+   PLAYER SELECTION GRID
+========================================================= */
 .players-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .player-pick-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 12px;
-    background: white;
-    border: 1px solid gainsboro;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid gainsboro;
+  cursor: pointer;
 }
 
-    .player-pick-card input {
-        width: 16px;
-        height: 16px;
-    }
+  .player-pick-card input {
+    width: 16px;
+    height: 16px;
+  }
 
 .player-pick-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, royalblue, blueviolet);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, royalblue, blueviolet);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .player-pick-name {
-    font-size: 15px;
-    font-weight: 900;
+  font-size: 15px;
+  font-weight: 900;
 }
 
 .player-pick-meta {
-    font-size: 12px;
-    color: slategray;
+  font-size: 12px;
+  color: slategray;
 }
 
 .player-pick-badge {
-    margin-left: auto;
-    padding: 5px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    background: midnightblue;
-    color: white;
+  margin-left: auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: midnightblue;
+  color: white;
 }
 
-/* EMPTY */
+/* =========================================================
+   EMPTY STATE (When no players found)
+========================================================= */
 .game-empty-state {
-    grid-column: 1 / -1;
-    padding: 22px;
-    border-radius: 14px;
-    border: 1px dashed lightsteelblue;
-    background: aliceblue;
-    text-align: center;
+  grid-column: 1 / -1;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px dashed lightsteelblue;
+  background: aliceblue;
+  text-align: center;
 }
 
-    .game-empty-state h3 {
-        margin: 0 0 6px;
-        color: midnightblue;
-    }
+  .game-empty-state h3 {
+    margin: 0 0 6px;
+    color: midnightblue;
+  }
 
-    .game-empty-state p {
-        margin: 0 0 14px;
-        color: slategray;
-    }
+  .game-empty-state p {
+    margin: 0 0 14px;
+    color: slategray;
+  }
 
-/* SUMMARY */
+/* =========================================================
+   DRAFT SUMMARY BAR
+========================================================= */
 .game-draft-summary {
-    margin-top: 14px;
-    padding: 12px;
-    border-radius: 12px;
-    background: lavender;
-    display: flex;
-    gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: lavender;
+  display: flex;
+  gap: 10px;
 }
 
 .game-draft-summary-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: blueviolet;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: blueviolet;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* MODAL */
+/* =========================================================
+   MODAL OVERLAY & POPUP
+========================================================= */
 .game-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, 0.62);
-    backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 18px;
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.62);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 18px;
 }
 
-    .game-modal-overlay.show {
-        display: flex;
-    }
+  .game-modal-overlay.show {
+    display: flex;
+  }
 
 .game-modal {
-    width: 100%;
-    max-width: 430px;
-    background: white;
-    border-radius: 22px;
-    padding: 28px;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.28);
-    text-align: center;
-    animation: modalPop 0.18s ease-out;
+  width: 100%;
+  max-width: 430px;
+  background: white;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+  text-align: center;
+  animation: modalPop 0.18s ease-out;
 }
 
 .game-modal-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 14px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, midnightblue, royalblue);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, midnightblue, royalblue);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
 }
 
 .game-modal h2 {
-    margin: 0 0 10px;
-    color: midnightblue;
-    font-size: 24px;
-    font-weight: 900;
+  margin: 0 0 10px;
+  color: midnightblue;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .game-modal p {
-    margin: 0;
-    color: slategray;
-    font-size: 14px;
-    line-height: 1.5;
+  margin: 0;
+  color: slategray;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .game-modal-actions {
-    margin-top: 22px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
+/* Entrance Animation for Modal */
 @keyframes modalPop {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.96);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* RESPONSIVE */
+/* =========================================================
+   RESPONSIVE DESIGN (Media Queries)
+========================================================= */
+
+/* Desktop / Tablet Breakpoint */
 @media (max-width: 1100px) {
-    .game-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .game-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .game-layout {
-        grid-template-columns: 1fr;
-    }
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* Mobile Breakpoint */
 @media (max-width: 760px) {
-    .new-game-page {
-        padding: 12px;
-    }
+  .new-game-page {
+    padding: 12px;
+  }
 
-    .game-hero {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .game-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .game-start-box,
-    .game-start-box .game-btn {
-        width: 100%;
-    }
+  .game-start-box,
+  .game-start-box .game-btn {
+    width: 100%;
+  }
 
-    .game-title {
-        font-size: 24px;
-    }
+  .game-title {
+    font-size: 24px;
+  }
 
-    .players-grid {
-        grid-template-columns: 1fr;
-    }
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* Small Mobile Breakpoint */
 @media (max-width: 520px) {
-    .game-stats-grid {
-        grid-template-columns: 1fr;
-    }
+  .game-stats-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .game-modal {
-        padding: 22px;
-    }
+  .game-modal {
+    padding: 22px;
+  }
 
-    .game-modal-actions {
-        flex-direction: column;
-    }
+  .game-modal-actions {
+    flex-direction: column;
+  }
 
-        .game-modal-actions .game-btn {
-            width: 100%;
-        }
+    .game-modal-actions .game-btn {
+      width: 100%;
+    }
 }

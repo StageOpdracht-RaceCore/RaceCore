@@ -1,9 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /* DashboardController.cs
+       Purpose: Compose dashboard view model that aggregates game,
+       stage and player data. This controller performs read-only
+       queries to compute rankings, top cyclists and player stats.
+    */
+    /// <summary>
+    /// Controller for the main game dashboard.
+    /// </summary>
     public class DashboardController : Controller
     {
         private readonly AppDbContext _context;

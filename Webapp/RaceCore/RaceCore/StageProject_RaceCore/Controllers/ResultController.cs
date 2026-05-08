@@ -15,6 +15,13 @@ namespace StageProject_RaceCore.Controllers
         public int totalPoints { get; set; }
     }
 
+    /* ResultController.cs
+       Purpose: Provide views for game results and aggregated rankings.
+       Includes helpers to map jersey types to rule types and display names.
+    */
+    /// <summary>
+    /// Controller responsible for rendering various result views (overall leaderboard, stage results).
+    /// </summary>
     public class ResultController : Controller
     {
         private readonly AppDbContext _context;
