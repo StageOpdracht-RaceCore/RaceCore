@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* Helper methods keep null rider slots readable in the roster table. *@
 @functions {
     public string RiderName(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
     {
@@ -19,13 +20,16 @@
     }
 }
 
+@* Team-specific styles for this page. *@
 <link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
 
 <div class="team-page dashboard-container" data-game-id="@Model.GameId">
+    @* Hidden form token used by the swap request in the script below. *@
     <div class="team-antiforgery">
         @Html.AntiForgeryToken()
     </div>
 
+    @* Header shows the current game context and dashboard navigation. *@
     <section class="player-teams-hero dashboard-hero">
         <div>
             <div class="small-title">RaceCore Game Hub</div>
@@ -49,6 +53,7 @@
         </div>
     </section>
 
+    @* Summary cards mirror the team counts and slot counts from the view model. *@
     <section class="stats-row team-stats-row" aria-label="Team overzicht">
         <div class="stat-box blue">
             <div class="stat-icon">👥</div>
@@ -75,6 +80,7 @@
         </div>
     </section>
 
+    @* Empty state shown until a game has teams or draft data. *@
     @if (!Model.PlayerTeams.Any())
     {
         <section class="card team-empty-state">
@@ -85,6 +91,7 @@
     }
     else
     {
+        @* Compact game summary shown above the player roster cards. *@
         <section class="card team-overview-card" aria-label="Game overzicht">
             <div class="info-grid">
                 <div class="info-box">
@@ -109,13 +116,16 @@
             </div>
         </section>
 
+        @* Global swap instructions are updated while a rider is selected. *@
         <div class="team-swap-hint team-swap-hint-global" aria-live="polite">
             Klik op een renner om te wisselen. Daarna kies je een andere renner uit de bankrenners lijst.
         </div>
 
+        @* Render one roster card per player, split into active and bench rider slots. *@
         <section class="player-team-grid" aria-label="Teams van spelers">
             @foreach (var playerTeam in Model.PlayerTeams)
             {
+                // Tracks how full the active roster is for the progress bar.
                 var activePercent = Model.ActiveRiderSlots == 0
                     ? 0
                     : Math.Min(100, playerTeam.ActiveRiders.Count * 100 / Model.ActiveRiderSlots);
@@ -157,6 +167,7 @@
                                     <th colspan="4">Actieve renners</th>
                                 </tr>
 
+                                @* Active rows are fixed to the configured slot count so empty slots stay visible. *@
                                 @for (var index = 0; index < Model.ActiveRiderSlots; index++)
                                 {
                                     var rider = playerTeam.ActiveRiders.ElementAtOrDefault(index);
@@ -185,6 +196,7 @@
                                     <th colspan="4">Bankrenners</th>
                                 </tr>
 
+                                @* Bench rows are fixed to the configured slot count so empty slots stay visible. *@
                                 @for (var index = 0; index < Model.BenchRiderSlots; index++)
                                 {
                                     var rider = playerTeam.BenchRiders.ElementAtOrDefault(index);
@@ -219,8 +231,10 @@
 
 <script>
     (function () {
+        // Keeps selected row state local while exposing selectRider for row click handlers.
         var selectedRow = null;
 
+        // First click selects a rider; second click in the opposite section performs the swap.
         window.selectRider = function (row) {
             var card = row.closest('.player-team-card');
 
@@ -264,6 +278,7 @@
             }
         };
 
+        // Enables visual feedback for valid swap targets in the selected player's card.
         function enableSwapMode(card, selected) {
             if (!card) {
                 return;
@@ -288,6 +303,7 @@
             }
         }
 
+        // Swaps the visible rider cells first so the page responds immediately.
         function swapRows(rowA, rowB) {
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
@@ -313,6 +329,7 @@
             persistSwap(activeRow, benchRow);
         }
 
+        // Updates row styling and role labels after a rider has moved.
         function updateRowState(row) {
             if (!row) {
                 return;
@@ -339,6 +356,7 @@
             }
         }
 
+        // Persists the active and bench rider ids after the visual swap succeeds.
         function persistSwap(activeRow, benchRow) {
             var card = activeRow.closest('.player-team-card');
 
@@ -376,6 +394,7 @@
             });
         }
 
+        // Keeps empty-slot attributes and labels in sync when moving riders between rows.
         function toggleEmptyState(targetRow, sourceRow) {
             // If the source had no cyclist id, the target is now an empty slot
             var isEmpty = !sourceRow.dataset.cyclistId || sourceRow.classList.contains('empty-slot');
@@ -404,6 +423,7 @@
             }
         }
 
+        // Clears selection classes and restores the neutral hint text.
         function clearSelection() {
             if (selectedRow) {
                 var card = selectedRow.closest('.player-team-card');
@@ -413,6 +433,7 @@
             }
         }
 
+        // Removes all visual swap hints from the current player card.
         function disableSwapMode(card) {
             if (!card) {
                 return;
@@ -434,6 +455,7 @@
             }
         }
 
+        // Keyboard users can trigger a selected roster row with Enter or Space.
         document.addEventListener('keydown', function (e) {
             if ((e.key === 'Enter' || e.key === ' ') && document.activeElement) {
                 var row = document.activeElement.closest

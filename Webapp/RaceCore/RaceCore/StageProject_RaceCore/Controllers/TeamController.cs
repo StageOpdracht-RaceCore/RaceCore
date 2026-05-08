@@ -10,19 +10,20 @@ using StageProject_RaceCore.Models;
 namespace StageProject_RaceCore.Controllers
 {
     /* TeamController.cs
-       Purpose: Manages player teams during a game session. Responsible
-       for listing players' teams, swapping active/bench riders and
+       Purpose: Manages teams during a game session. Responsible
+       for listing players' teams, swapping active/benched riders and
        helper methods for building the view model. Business rules such
        as active/bench slots and color assignment live here.
     */
-    /// <summary>
-    /// Controller for team views and actions used during a game session.
-    /// </summary>
+    // Controller for team views and actions used during a game session.
     public class TeamController : Controller
     {
+        // Number of rider slots shown as active for each player.
         private const int ActiveRiderSlots = 10;
+        // Number of rider slots shown on the bench for each player.
         private const int BenchRiderSlots = 5;
 
+        // Reusable player color palette used to make each team visually distinct.
         private static readonly string[] PlayerColors =
         {
             "#2563eb",
@@ -37,11 +38,16 @@ namespace StageProject_RaceCore.Controllers
 
         private readonly AppDbContext _context;
 
+        // Creates a controller instance with the application database context.
+        // context: Database context used to load game, player, and rider data.
         public TeamController(AppDbContext context)
         {
             _context = context;
         }
 
+        // Builds the team overview for the selected game, or the latest available game when none is specified.
+        // gameId: Optional game session identifier.
+        // Returns the team overview page.
         public async Task<IActionResult> Index(int gameId = 0)
         {
             var model = new PlayerTeamsPageViewModel
@@ -59,6 +65,7 @@ namespace StageProject_RaceCore.Controllers
 
                 var game = await ResolveGame(gameId);
 
+                // Return the empty page model when no game session can be resolved.
                 if (game == null)
                 {
                     return View(model);
@@ -82,6 +89,7 @@ namespace StageProject_RaceCore.Controllers
                     .Where(s => s.GameSessionId == game.Id)
                     .ToListAsync();
 
+                // Store each selected rider's earliest draft turn so teams can be displayed in draft order.
                 var turnNumberByCyclistId = draftTurns
                     .Where(d => d.CyclistId.HasValue)
                     .GroupBy(d => d.CyclistId!.Value)
@@ -89,6 +97,7 @@ namespace StageProject_RaceCore.Controllers
                         g => g.Key,
                         g => g.Min(d => d.TurnNumber));
 
+                // Combine players from draft turns and saved selections to avoid dropping teams with partial data.
                 var players = draftTurns
                     .Where(d => d.Player != null)
                     .Select(d => d.Player)
@@ -142,6 +151,12 @@ namespace StageProject_RaceCore.Controllers
             return View(model);
         }
 
+        // Swaps riders between active and bench slots, or moves a rider into an empty opposite slot.
+        // gameId: Game session containing the selections.
+        // playerId: Player whose team is being updated.
+        // activeCyclistId: Cyclist currently in an active slot, or zero when the active slot is empty.
+        // benchCyclistId: Cyclist currently on the bench, or zero when the bench slot is empty.
+        // Returns an HTTP result describing whether the update succeeded.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SwapActiveBench(
@@ -225,6 +240,9 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
+        // Resolves the requested game session, falling back to the newest unfinished game and then the newest game overall.
+        // gameId: Requested game session identifier, or zero to use the fallback order.
+        // Returns the resolved game session, or null when no sessions exist.
         private async Task<GameSession?> ResolveGame(int gameId)
         {
             var games = _context.GameSessions
@@ -251,6 +269,11 @@ namespace StageProject_RaceCore.Controllers
                 .FirstOrDefaultAsync();
         }
 
+        // Converts saved player selections into rider view models for either active or bench slots.
+        // selections: Selections belonging to a single player.
+        // isActive: Whether to build active riders or bench riders.
+        // turnNumberByCyclistId: Draft turn lookup used for sorting and display.
+        // Returns rider view models sorted by draft order and rider name.
         private static List<PlayerTeamRiderViewModel> BuildRiders(
             IEnumerable<PlayerSelection> selections,
             bool isActive,
@@ -276,6 +299,9 @@ namespace StageProject_RaceCore.Controllers
                 .ToList();
         }
 
+        // Builds a short uppercase initials label from a player's name.
+        // name: Player display name.
+        // Returns one or two initials, or a question mark when the name is empty.
         private static string BuildInitials(string name)
         {
             var initials = name
@@ -289,6 +315,10 @@ namespace StageProject_RaceCore.Controllers
                 : new string(initials).ToUpperInvariant();
         }
 
+        // Converts a hex color into an rgba color string with the provided alpha value.
+        // color: Hex color value.
+        // alpha: Alpha channel value between transparent and opaque.
+        // Returns an rgba color string, or a blue fallback when parsing fails.
         private static string ToRgba(string color, double alpha)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -301,6 +331,10 @@ namespace StageProject_RaceCore.Controllers
                 $"rgba({red}, {green}, {blue}, {alpha:0.##})");
         }
 
+        // Darkens a hex color by the provided amount.
+        // color: Hex color value.
+        // amount: Fraction used to reduce each color channel.
+        // Returns a darkened hex color, or a blue fallback when parsing fails.
         private static string Darken(string color, double amount)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -312,6 +346,9 @@ namespace StageProject_RaceCore.Controllers
             return $"#{(int)Math.Round(red * factor):X2}{(int)Math.Round(green * factor):X2}{(int)Math.Round(blue * factor):X2}";
         }
 
+        // Selects a readable foreground color for the provided background color.
+        // color: Hex background color value.
+        // Returns a dark or light text color with better contrast against the background.
         private static string GetReadableTextColor(string color)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -323,6 +360,12 @@ namespace StageProject_RaceCore.Controllers
             return luminance > 150 ? "#111827" : "#ffffff";
         }
 
+        // Parses a six-character hex color into red, green, and blue channel values.
+        // color: Hex color value with or without a leading hash.
+        // red: Parsed red channel value.
+        // green: Parsed green channel value.
+        // blue: Parsed blue channel value.
+        // Returns true when parsing succeeds; otherwise, false.
         private static bool TryParseHexColor(
             string? color,
             out int red,
