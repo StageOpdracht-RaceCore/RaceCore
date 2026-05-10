@@ -2,11 +2,14 @@
 
 @{
     ViewData["Title"] = "Race Bewerken";
+    // Use the shared clean layout for a consistent look and feel
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* styling *@
 <link rel="stylesheet" href="~/css/Race.css" />
 
+@*Title*@
 <div class="race-page">
     <section class="race-form-card">
         <div class="race-form-header">
@@ -14,35 +17,35 @@
             <h1 class="race-card-title">Race bewerken</h1>
             <p>Pas de details van de race aan.</p>
         </div>
-
+        @*id*@
         <form asp-action="Edit" method="post" class="race-form-grid">
             @Html.AntiForgeryToken()
             <input asp-for="Id" type="hidden" />
-
+            @*name*@
             <div class="race-form-group">
                 <label asp-for="Name">Naam</label>
                 <input asp-for="Name" class="race-form-input" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-
+            @*year*@
             <div class="race-form-group">
                 <label asp-for="Year">Jaar</label>
                 <input asp-for="Year" class="race-form-input" type="number" />
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
-
+            @*start date*@
             <div class="race-form-group">
                 <label asp-for="StartDate">Startdatum</label>
                 <input asp-for="StartDate" class="race-form-input" type="date" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
-
+            @*end date*@
             <div class="race-form-group">
                 <label asp-for="EndDate">Einddatum</label>
                 <input asp-for="EndDate" class="race-form-input" type="date" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
-
+            @*submit*@
             <div class="race-form-actions">
                 <button type="submit" class="race-btn race-btn-primary">Opslaan</button>
                 <a asp-action="Index" class="race-btn race-btn-light">Annuleren</a>
