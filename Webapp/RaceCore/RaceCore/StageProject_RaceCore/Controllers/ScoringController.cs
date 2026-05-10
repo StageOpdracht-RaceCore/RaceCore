@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using StageProject_RaceCore.Hubs;
 using StageProject_RaceCore.Models;
 using StageProject_RaceCore.ViewModels;
 
@@ -17,16 +15,44 @@ namespace StageProject_RaceCore.Controllers
     /// </summary>
     public class ScoringController : Controller
     {
+        /// <summary>
+        /// Databasecontext voor toegang tot de applicatiedatabase.
+        /// </summary>
         private readonly AppDbContext _context;
-        private readonly IHubContext<GameHub> _hubContext;
 
-        public ScoringController(AppDbContext context, IHubContext<GameHub> hubContext)
+        /// <summary>
+        /// Initialiseert een nieuwe instantie van de ScoringController.
+        /// </summary>
+        /// <param name="context">
+        /// Databasecontext gebruikt voor databankoperaties.
+        /// </param>
+        public ScoringController(AppDbContext context)
         {
             _context = context;
-            _hubContext = hubContext;
         }
 
-        public async Task<IActionResult> Index(int? raceId, int? stageId, int? gameId)
+        /// <summary>
+        /// Toont de scoringpagina voor een geselecteerde wedstrijd en rit.
+        /// 
+        /// Functionaliteiten:
+        /// - ophalen van wedstrijden
+        /// - bepalen van geselecteerde race en rit
+        /// - ophalen van renners
+        /// - laden van bestaande ritresultaten
+        /// - laden van truien
+        /// - opbouwen van het ScoringViewModel
+        /// - voorbereiden van dropdowns voor de View
+        /// </summary>
+        /// <param name="raceId">
+        /// Optionele ID van de geselecteerde wedstrijd.
+        /// </param>
+        /// <param name="stageId">
+        /// Optionele ID van de geselecteerde rit.
+        /// </param>
+        /// <returns>
+        /// Een View met een ingevuld ScoringViewModel.
+        /// </returns>
+        public async Task<IActionResult> Index(int? raceId = null, int? stageId = null)
         {
             var viewModel = new ScoringViewModel();
 
@@ -42,17 +68,8 @@ namespace StageProject_RaceCore.Controllers
                     return View(viewModel);
                 }
 
-                GameSession? game = null;
-
-                if (gameId.HasValue && gameId.Value > 0)
-                {
-                    game = await _context.GameSessions
-                        .Include(g => g.Race)
-                        .FirstOrDefaultAsync(g => g.Id == gameId.Value);
-                }
-
-                int selectedRaceId = game?.RaceId
-                    ?? raceId
+                // --- BEPAAL RACE ---
+                int selectedRaceId = raceId
                     ?? (stageId.HasValue
                         ? await _context.Stages
                             .Where(s => s.Id == stageId.Value)
@@ -60,11 +77,11 @@ namespace StageProject_RaceCore.Controllers
                             .FirstOrDefaultAsync()
                         : races.First().Id);
 
+                // fallback als stage niet bestaat
                 if (selectedRaceId == 0)
-                {
                     selectedRaceId = races.First().Id;
-                }
 
+                // --- STAGES ---
                 var stages = await _context.Stages
                     .Where(s => s.RaceId == selectedRaceId)
                     .OrderBy(s => s.StageNumber)
@@ -75,22 +92,18 @@ namespace StageProject_RaceCore.Controllers
                     TempData["Error"] = "Geen ritten gevonden.";
                     ViewBag.Races = races;
                     ViewBag.SelectedRaceId = selectedRaceId;
-                    ViewBag.GameId = game?.Id ?? gameId ?? 0;
                     ViewBag.AvailableStages = new List<SelectListItem>();
                     return View(viewModel);
                 }
 
-                int? gameStageId = game?.StageId;
-
-                int selectedStageId =
-                    stageId.HasValue && stages.Any(s => s.Id == stageId.Value)
-                        ? stageId.Value
-                        : gameStageId.HasValue && stages.Any(s => s.Id == gameStageId.Value)
-                            ? gameStageId.Value
-                            : stages.First().Id;
+                // --- BEPAAL STAGE ---
+                int selectedStageId = stageId.HasValue && stages.Any(s => s.Id == stageId.Value)
+                    ? stageId.Value
+                    : stages.First().Id;
 
                 viewModel.StageId = selectedStageId;
 
+                // --- CYCLISTEN ---
                 viewModel.AvailableCyclists = await _context.Cyclists
                     .OrderBy(c => c.LastName)
                     .ThenBy(c => c.FirstName)
@@ -101,6 +114,7 @@ namespace StageProject_RaceCore.Controllers
                     })
                     .ToListAsync();
 
+                // --- RESULTATEN ---
                 var results = await _context.StageResults
                     .Where(r => r.StageId == selectedStageId)
                     .Include(r => r.Cyclist)
@@ -109,9 +123,9 @@ namespace StageProject_RaceCore.Controllers
 
                 var jerseys = await _context.Jerseys
                     .Where(j => j.StageId == selectedStageId)
-                    .Include(j => j.Cyclist)
                     .ToListAsync();
 
+                // --- TOP 25 ---
                 for (int i = 1; i <= 25; i++)
                 {
                     var r = results.FirstOrDefault(x => x.Position == i);
@@ -128,40 +142,23 @@ namespace StageProject_RaceCore.Controllers
                     });
                 }
 
-                var top25Ids = results
-                    .Select(r => r.CyclistId)
-                    .ToHashSet();
+                // --- BUITEN TOP 25 ---
+                var top25Ids = results.Select(r => r.CyclistId).ToHashSet();
 
                 SetOutsideJersey(viewModel, jerseys, top25Ids, "Red");
                 SetOutsideJersey(viewModel, jerseys, top25Ids, "Green");
                 SetOutsideJersey(viewModel, jerseys, top25Ids, "Blue");
                 SetOutsideJersey(viewModel, jerseys, top25Ids, "White");
 
-                ViewData["RedOutsideTop25CyclistName"] = GetOutsideJerseyName(jerseys, top25Ids, "Red");
-                ViewData["GreenOutsideTop25CyclistName"] = GetOutsideJerseyName(jerseys, top25Ids, "Green");
-                ViewData["BlueOutsideTop25CyclistName"] = GetOutsideJerseyName(jerseys, top25Ids, "Blue");
-                ViewData["WhiteOutsideTop25CyclistName"] = GetOutsideJerseyName(jerseys, top25Ids, "White");
-
+                // --- VIEWBAG ---
                 ViewBag.Races = races;
                 ViewBag.SelectedRaceId = selectedRaceId;
-                ViewBag.GameId = game?.Id ?? gameId ?? 0;
-
                 ViewBag.AvailableStages = stages.Select(s => new SelectListItem
                 {
                     Value = s.Id.ToString(),
                     Text = $"Rit {s.StageNumber} - {s.Name}",
                     Selected = s.Id == selectedStageId
                 }).ToList();
-
-                if (game != null)
-                {
-                    await _hubContext.Clients
-                        .Group($"game-{game.Id}")
-                        .SendAsync("GoToDashboard", new
-                        {
-                            gameId = game.Id
-                        });
-                }
             }
             catch
             {
@@ -171,25 +168,39 @@ namespace StageProject_RaceCore.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Slaat ritresultaten en truien op voor een specifieke rit.
+        /// 
+        /// Functionaliteiten:
+        /// - valideren van dubbele renners
+        /// - verwijderen van oude resultaten
+        /// - opslaan van nieuwe resultaten
+        /// - opslaan van truien
+        /// - tonen van succes- of foutmeldingen
+        /// </summary>
+        /// <param name="model">
+        /// ScoringViewModel met alle ritresultaten en trui-informatie.
+        /// </param>
+        /// <returns>
+        /// Redirect naar de juiste pagina na opslaan.
+        /// </returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveScores(ScoringViewModel model, int raceId, int gameId)
+        public async Task<IActionResult> SaveScores(ScoringViewModel model, int raceId)
         {
             try
             {
                 if (model.StageId <= 0)
-                {
-                    return RedirectToAction("Index", new { raceId, gameId });
-                }
+                    return RedirectToAction("Index");
 
                 var stage = await _context.Stages.FindAsync(model.StageId);
-
                 if (stage == null)
                 {
                     TempData["Error"] = "Rit niet gevonden.";
-                    return RedirectToAction("Index", new { raceId, gameId });
+                    return RedirectToAction("Index");
                 }
 
+                // --- DUPLICATES CHECK ---
                 var ids = model.Results
                     .Where(r => r.CyclistId.HasValue)
                     .Select(r => r.CyclistId.Value)
@@ -206,19 +217,20 @@ namespace StageProject_RaceCore.Controllers
                 {
                     var rider = await _context.Cyclists.FindAsync(duplicate.Key);
                     TempData["Error"] = $"Renner '{rider?.FullName}' staat dubbel.";
-                    return RedirectToAction("Index", new { stageId = model.StageId, raceId, gameId });
+                    return RedirectToAction("Index", new { stageId = model.StageId, raceId });
                 }
 
+                // --- DELETE OUDE DATA ---
                 var oldResults = _context.StageResults.Where(r => r.StageId == model.StageId);
                 var oldJerseys = _context.Jerseys.Where(j => j.StageId == model.StageId);
 
                 _context.StageResults.RemoveRange(oldResults);
                 _context.Jerseys.RemoveRange(oldJerseys);
-
                 await _context.SaveChangesAsync();
 
                 var used = new HashSet<string>();
 
+                // --- SAVE TOP 25 ---
                 foreach (var r in model.Results.OrderBy(x => x.Position))
                 {
                     if (!r.CyclistId.HasValue) continue;
@@ -237,6 +249,7 @@ namespace StageProject_RaceCore.Controllers
                     if (r.HasWhiteJersey) AddJersey(model.StageId, r.CyclistId.Value, "White", used);
                 }
 
+                // --- BUITEN TOP 25 ---
                 AddOutside(model.StageId, model.YellowOutsideTop25CyclistId, "Red", used);
                 AddOutside(model.StageId, model.GreenOutsideTop25CyclistId, "Green", used);
                 AddOutside(model.StageId, model.PolkaOutsideTop25CyclistId, "Blue", used);
@@ -244,33 +257,52 @@ namespace StageProject_RaceCore.Controllers
 
                 await _context.SaveChangesAsync();
 
-                if (gameId > 0)
-                {
-                    await _hubContext.Clients
-                        .Group($"game-{gameId}")
-                        .SendAsync("ScoresUpdated", new
-                        {
-                            gameId = gameId,
-                            updatedAt = DateTime.Now.Ticks
-                        });
-                }
-
                 TempData["Success"] = "Opgeslagen!";
-                return RedirectToAction("Index", new { stageId = model.StageId, raceId, gameId });
+                return RedirectToAction("Index", new { stageId = model.StageId, raceId });
             }
             catch
             {
                 TempData["Error"] = "Opslaan mislukt.";
-                return RedirectToAction("Index", new { stageId = model.StageId, raceId, gameId });
+                return RedirectToAction("Index", new { stageId = model.StageId, raceId });
             }
         }
 
-        private bool HasJersey(List<Jersey> list, int? cyclistId, string type)
+        /// <summary>
+        /// Controleert of een renner een specifieke trui bezit.
+        /// </summary>
+        /// <param name="jerseys">
+        /// Lijst met truien van een rit.
+        /// </param>
+        /// <param name="cyclistId">
+        /// ID van de renner.
+        /// </param>
+        /// <param name="type">
+        /// Type trui dat gecontroleerd moet worden.
+        /// </param>
+        /// <returns>
+        /// True indien de renner de trui bezit, anders false.
+        /// </returns>
+        private bool HasJersey(List<Jersey> jerseys, int cyclistId, string type)
         {
             if (!cyclistId.HasValue) return false;
-            return list.Any(j => j.CyclistId == cyclistId.Value && j.Type == type);
+            return list.Any(j => j.CyclistId == cyclistId && j.Type == type);
         }
 
+        /// <summary>
+        /// Zet een truihouder buiten de top 25 in het ViewModel.
+        /// </summary>
+        /// <param name="vm">
+        /// Het scoring viewmodel.
+        /// </param>
+        /// <param name="jerseys">
+        /// Lijst met truien.
+        /// </param>
+        /// <param name="top25">
+        /// HashSet met IDs van renners binnen de top 25.
+        /// </param>
+        /// <param name="type">
+        /// Type trui dat verwerkt wordt.
+        /// </param>
         private void SetOutsideJersey(ScoringViewModel vm, List<Jersey> jerseys, HashSet<int> top25, string type)
         {
             var j = jerseys.FirstOrDefault(x => x.Type == type && !top25.Contains(x.CyclistId));
@@ -282,19 +314,43 @@ namespace StageProject_RaceCore.Controllers
             if (type == "White") vm.WhiteOutsideTop25CyclistId = j.CyclistId;
         }
 
-        private string GetOutsideJerseyName(List<Jersey> jerseys, HashSet<int> top25, string type)
-        {
-            var j = jerseys.FirstOrDefault(x => x.Type == type && !top25.Contains(x.CyclistId));
-            return j?.Cyclist?.FullName ?? "";
-        }
-
-        private void AddOutside(int stageId, int? cyclistId, string type, HashSet<string> used)
+        /// <summary>
+        /// Voegt een trui toe indien deze nog niet gebruikt werd.
+        /// </summary>
+        /// <param name="stageId">
+        /// ID van de rit.
+        /// </param>
+        /// <param name="cyclistId">
+        /// ID van de renner.
+        /// </param>
+        /// <param name="type">
+        /// Type trui.
+        /// </param>
+        /// <param name="used">
+        /// HashSet met reeds gebruikte truien.
+        /// </param>
+        private void AddOutsideJerseyIfNotAlreadyUsed(int stageId, int? cyclistId, string type, HashSet<string> used)
         {
             if (!cyclistId.HasValue) return;
             AddJersey(stageId, cyclistId.Value, type, used);
         }
 
-        private void AddJersey(int stageId, int cyclistId, string type, HashSet<string> used)
+        /// <summary>
+        /// Voegt een trui éénmalig toe aan de database.
+        /// </summary>
+        /// <param name="stageId">
+        /// ID van de rit.
+        /// </param>
+        /// <param name="cyclistId">
+        /// ID van de renner.
+        /// </param>
+        /// <param name="type">
+        /// Type trui.
+        /// </param>
+        /// <param name="used">
+        /// HashSet met reeds gebruikte truien.
+        /// </param>
+        private void AddJerseyOnce(int stageId, int cyclistId, string type, HashSet<string> used)
         {
             if (used.Contains(type)) return;
 

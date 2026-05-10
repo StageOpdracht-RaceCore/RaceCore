@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
@@ -18,6 +18,9 @@ namespace StageProject_RaceCore.Controllers
     {
         private readonly AppDbContext _context;
 
+        // Als host 60 seconden geen ping stuurt, wordt game als gestopt gezien.
+        private const int HostTimeoutSeconds = 60;
+
         public GameController(AppDbContext context)
         {
             _context = context;
@@ -25,7 +28,8 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> New()
         {
-            await LoadActiveGamePopupDataSafe();
+            await CloseDeadHostGames();
+            await SetActiveGameViewBag();
 
             var model = await BuildNewGameViewModelSafe();
             return View(model);
@@ -51,6 +55,8 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewGameViewModel model)
         {
+            await CloseDeadHostGames();
+
             model.SelectedPlayerIds = model.SelectedPlayerIds
                 .Distinct()
                 .ToList();
@@ -72,7 +78,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!ModelState.IsValid)
             {
-                await LoadActiveGamePopupDataSafe();
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
 
@@ -84,7 +90,7 @@ namespace StageProject_RaceCore.Controllers
                 if (race == null)
                 {
                     TempData["Error"] = "Race niet gevonden.";
-                    await LoadActiveGamePopupDataSafe();
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
@@ -94,18 +100,24 @@ namespace StageProject_RaceCore.Controllers
                 if (stage == null)
                 {
                     TempData["Error"] = "Rit niet gevonden bij deze race.";
-                    await LoadActiveGamePopupDataSafe();
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
 
-                var players = await GetPlayersForNewGameDraftOrder(model.SelectedPlayerIds);
+                var players = await _context.Players
+                    .Where(p => model.SelectedPlayerIds.Contains(p.Id))
+                    .OrderBy(p => p.PositionInDraft)
+                    .ThenBy(p => p.Id)
+                    .ToListAsync();
 
                 if (players.Count < 2)
                 {
                     TempData["Error"] = "Kies minstens 2 geldige spelers.";
-                    await LoadActiveGamePopupDataSafe();
+                    await SetActiveGameViewBag();
                     return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
                 }
+
+                string hostSessionId = GetOrCreateHostSessionId();
 
                 var game = new GameSession
                 {
@@ -113,9 +125,11 @@ namespace StageProject_RaceCore.Controllers
                     StageId = model.StageId,
                     Status = "Draft",
                     CurrentStageNumber = stage.StageNumber,
-                    RidersPerPlayer = 10,
-                    BenchPerPlayer = 5,
-                    CreatedAt = DateTime.Now
+                    RidersPerPlayer = 8,
+                    BenchPerPlayer = 2,
+                    CreatedAt = DateTime.Now,
+                    HostSessionId = hostSessionId,
+                    LastHostPingAt = DateTime.Now
                 };
 
                 _context.GameSessions.Add(game);
@@ -135,52 +149,105 @@ namespace StageProject_RaceCore.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = "Start Game fout: " + ex.Message;
-                await LoadActiveGamePopupDataSafe();
+                await SetActiveGameViewBag();
                 return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
             }
         }
 
-        private async Task LoadActiveGamePopupDataSafe()
+        [HttpPost]
+        public async Task<IActionResult> HostPing(int gameId)
         {
-            ViewBag.ActiveGameId = 0;
-            ViewBag.ActiveGameName = "";
-            ViewBag.ActiveGameStatus = "";
+            string? hostSessionId = HttpContext.Session.GetString("RaceCoreHostSessionId");
 
-            try
+            if (string.IsNullOrWhiteSpace(hostSessionId))
             {
-                var activeGame = await _context.GameSessions
-                    .Include(g => g.Race)
-                    .Where(g => g.Status == "Draft" || g.Status == "Active")
-                    .OrderByDescending(g => g.CreatedAt)
-                    .FirstOrDefaultAsync();
-
-                if (activeGame == null)
-                {
-                    return;
-                }
-
-                ViewBag.ActiveGameId = activeGame.Id;
-                ViewBag.ActiveGameStatus = activeGame.Status;
-
-                string raceName = activeGame.Race != null
-                    ? $"{activeGame.Race.Name} {activeGame.Race.Year}"
-                    : "Actieve game";
-
-                string stageName = activeGame.CurrentStageNumber > 0
-                    ? $" - Rit {activeGame.CurrentStageNumber}"
-                    : "";
-
-                ViewBag.ActiveGameName = raceName + stageName;
+                return Json(new { success = false, reason = "No host session" });
             }
-            catch
+
+            var game = await _context.GameSessions
+                .FirstOrDefaultAsync(g =>
+                    g.Id == gameId &&
+                    g.HostSessionId == hostSessionId &&
+                    (g.Status == "Draft" || g.Status == "Active"));
+
+            if (game == null)
             {
-                ViewBag.ActiveGameId = 0;
-                ViewBag.ActiveGameName = "";
-                ViewBag.ActiveGameStatus = "";
+                return Json(new { success = false, reason = "Game not found or not host" });
             }
+
+            game.LastHostPingAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task SetActiveGameViewBag()
+        {
+            DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
+
+            var activeGame = await _context.GameSessions
+                .Include(g => g.Race)
+                .Include(g => g.Stage)
+                .Where(g =>
+                    (g.Status == "Draft" || g.Status == "Active") &&
+                    g.LastHostPingAt != null &&
+                    g.LastHostPingAt >= limit)
+                .OrderByDescending(g => g.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            ViewBag.ActiveGameId = activeGame?.Id ?? 0;
+
+            ViewBag.ActiveGameRaceName = activeGame?.Race != null
+                ? activeGame.Race.Name + " " + activeGame.Race.Year
+                : "";
+
+            ViewBag.ActiveGameStageName = activeGame?.Stage != null
+                ? "Rit " + activeGame.Stage.StageNumber + " - " + activeGame.Stage.Name
+                : "";
+
+            ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
+        }
+
+        private async Task CloseDeadHostGames()
+        {
+            DateTime limit = DateTime.Now.AddSeconds(-HostTimeoutSeconds);
+
+            var oldGames = await _context.GameSessions
+                .Where(g =>
+                    (g.Status == "Draft" || g.Status == "Active") &&
+                    (g.LastHostPingAt == null || g.LastHostPingAt < limit))
+                .ToListAsync();
+
+            if (!oldGames.Any())
+            {
+                return;
+            }
+
+            foreach (var game in oldGames)
+            {
+                game.Status = "Cancelled";
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private string GetOrCreateHostSessionId()
+        {
+            string? hostSessionId = HttpContext.Session.GetString("RaceCoreHostSessionId");
+
+            if (string.IsNullOrWhiteSpace(hostSessionId))
+            {
+                hostSessionId = Guid.NewGuid().ToString();
+                HttpContext.Session.SetString("RaceCoreHostSessionId", hostSessionId);
+            }
+
+            return hostSessionId;
+        }
+
+        private async Task<NewGameViewModel> BuildNewGameViewModelSafe(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             try
             {
@@ -204,7 +271,10 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
-        private async Task<NewGameViewModel> BuildNewGameViewModel(int selectedRaceId = 0, int selectedStageId = 0, List<int>? selectedPlayerIds = null)
+        private async Task<NewGameViewModel> BuildNewGameViewModel(
+            int selectedRaceId = 0,
+            int selectedStageId = 0,
+            List<int>? selectedPlayerIds = null)
         {
             selectedPlayerIds ??= new List<int>();
 
@@ -276,153 +346,11 @@ namespace StageProject_RaceCore.Controllers
             };
         }
 
-        private async Task<List<Player>> GetPlayersForNewGameDraftOrder(List<int> selectedPlayerIds)
-        {
-            var selectedPlayers = await _context.Players
-                .Where(p => selectedPlayerIds.Contains(p.Id))
-                .OrderBy(p => p.PositionInDraft)
-                .ThenBy(p => p.Id)
-                .ToListAsync();
-
-            var lastFinishedGame = await _context.GameSessions
-                .Where(g => g.Status != "Draft")
-                .OrderByDescending(g => g.CreatedAt)
-                .FirstOrDefaultAsync();
-
-            if (lastFinishedGame == null)
-            {
-                return selectedPlayers;
-            }
-
-            var lastRanking = await CalculatePlayerRankingForGame(lastFinishedGame.Id);
-
-            if (!lastRanking.Any())
-            {
-                return selectedPlayers;
-            }
-
-            var oldPlayerIds = lastRanking
-                .Select(r => r.PlayerId)
-                .ToList();
-
-            // Nieuwe spelers zaten niet in vorige leaderboard, dus die komen eerst.
-            var newPlayers = selectedPlayers
-                .Where(p => !oldPlayerIds.Contains(p.Id))
-                .OrderBy(p => p.PositionInDraft)
-                .ThenBy(p => p.Id)
-                .ToList();
-
-            // Vorige leaderboard omgekeerd: laatste wordt eerst, winnaar wordt laatst.
-            var reversedLeaderboardPlayers = lastRanking
-                .Where(r => selectedPlayerIds.Contains(r.PlayerId))
-                .OrderBy(r => r.TotalPoints)
-                .ThenBy(r => r.PlayerName)
-                .Select(r => selectedPlayers.First(p => p.Id == r.PlayerId))
-                .ToList();
-
-            return newPlayers
-                .Concat(reversedLeaderboardPlayers)
-                .ToList();
-        }
-
-        private async Task<List<GamePlayerRankingResult>> CalculatePlayerRankingForGame(int gameId)
-        {
-            var game = await _context.GameSessions
-                .FirstOrDefaultAsync(g => g.Id == gameId);
-
-            if (game == null)
-            {
-                return new List<GamePlayerRankingResult>();
-            }
-
-            var selections = await _context.PlayerSelections
-                .Where(s => s.GameSessionId == gameId)
-                .Include(s => s.Player)
-                .Include(s => s.Cyclist)
-                .ToListAsync();
-
-            var stages = await _context.Stages
-                .Where(s => s.RaceId == game.RaceId)
-                .ToListAsync();
-
-            var stageIds = stages.Select(s => s.Id).ToList();
-
-            var rules = await _context.PointsRules.ToListAsync();
-
-            var allResults = await _context.StageResults
-                .Where(sr => stageIds.Contains(sr.StageId))
-                .ToListAsync();
-
-            var allJerseys = await _context.Jerseys
-                .Where(j => stageIds.Contains(j.StageId))
-                .ToListAsync();
-
-            var ranking = new List<GamePlayerRankingResult>();
-
-            foreach (var playerGroup in selections.GroupBy(s => s.PlayerId))
-            {
-                int playerTotal = 0;
-                string playerName = playerGroup.First().Player?.Name ?? "Onbekend";
-
-                foreach (var selection in playerGroup)
-                {
-                    int cyclistTotal = 0;
-
-                    foreach (var stage in stages)
-                    {
-                        var result = allResults.FirstOrDefault(r =>
-                            r.StageId == stage.Id &&
-                            r.CyclistId == selection.CyclistId);
-
-                        if (result != null && result.Position.HasValue)
-                        {
-                            cyclistTotal += rules
-                                .Where(r =>
-                                    r.Type == "Rit" &&
-                                    r.FromPosition <= result.Position.Value &&
-                                    r.ToPosition >= result.Position.Value)
-                                .Sum(r => r.Points);
-                        }
-
-                        var jerseys = allJerseys.Where(j =>
-                            j.StageId == stage.Id &&
-                            j.CyclistId == selection.CyclistId);
-
-                        foreach (var jersey in jerseys)
-                        {
-                            string type = jersey.Type switch
-                            {
-                                "Red" => "RodeTrui",
-                                "Green" => "GroeneTrui",
-                                "Blue" => "BlauweTrui",
-                                "White" => "WitteTrui",
-                                _ => jersey.Type
-                            };
-
-                            cyclistTotal += rules
-                                .Where(r => r.Type == type)
-                                .Sum(r => r.Points);
-                        }
-                    }
-
-                    playerTotal += cyclistTotal;
-                }
-
-                ranking.Add(new GamePlayerRankingResult
-                {
-                    PlayerId = playerGroup.Key,
-                    PlayerName = playerName,
-                    TotalPoints = playerTotal
-                });
-            }
-
-            return ranking
-                .OrderByDescending(r => r.TotalPoints)
-                .ThenBy(r => r.PlayerName)
-                .ToList();
-        }
-
-        private static List<DraftTurn> GenerateFairSnakeDraft(int gameSessionId, int raceId, List<Player> players, int totalRounds)
+        private static List<DraftTurn> GenerateFairSnakeDraft(
+            int gameSessionId,
+            int raceId,
+            List<Player> players,
+            int totalRounds)
         {
             var draftTurns = new List<DraftTurn>();
             int turnNumber = 1;
@@ -448,13 +376,6 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return draftTurns;
-        }
-
-        private class GamePlayerRankingResult
-        {
-            public int PlayerId { get; set; }
-            public string PlayerName { get; set; } = string.Empty;
-            public int TotalPoints { get; set; }
         }
     }
 }
