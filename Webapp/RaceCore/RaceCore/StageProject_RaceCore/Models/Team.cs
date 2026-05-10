@@ -3,121 +3,123 @@ using System.Linq;
 
 namespace StageProject_RaceCore.Models
 {
-    // Represents a cycling team with its riders and race participation records.
+    // Represents a real-world professional cycling team (e.g. Jumbo-Visma).
+    // Cyclists belong to a Team; a Team is not the same as a player's fantasy squad.
     public class Team
     {
-        // Points awarded for a tunic result.
+        // Points awarded when a cyclist wins a stage wearing the leader's tunic.
         public const int TunicPoints = 10;
 
-        // Unique database identifier for the team.
         public int Id { get; set; }
 
-        // Full team name shown in the application.
+        // Full name of the pro team, e.g. "Team Visma | Lease a Bike".
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        // Short team code or abbreviation.
+        // Short identifier used in standings, e.g. "VIS".
         [Required]
         public string Tag { get; set; } = string.Empty;
 
-        // Cyclists currently linked to this team.
+        // All cyclists registered under this pro team.
         public List<Cyclist> Cyclists { get; set; } = new();
-        // Race entries where this team participates.
+
+        // All race entries where this team participated.
         public List<RaceEntry> RaceEntries { get; set; } = new();
 
-        // Number of linked cyclists marked as active.
+        // Number of cyclists on this team who are currently active in a game selection.
         public int ActiveCyclistsCount => Cyclists.Count(c => c.IsActive);
-        // Number of linked cyclists currently marked as bench riders.
+
+        // Number of cyclists on this team who are currently on the bench.
         public int BenchCyclistsCount => Cyclists.Count(c => !c.IsActive);
     }
 
-    // Page-level model used by the Teams overview view.
+    // Top-level view model for the Teams page.
+    // Carries all data needed to render the full page: game context, slot config, and all player teams.
     public class PlayerTeamsPageViewModel
     {
-        // Current game session identifier.
+        // ID of the currently active game session (0 if no game is active).
         public int GameId { get; set; }
 
-        // Race identifier connected to the current game.
+        // ID of the race associated with the active game session.
         public int RaceId { get; set; }
 
-        // Display name for the selected race.
+        // Display name shown in the banner section, e.g. "Tour de France 2024".
+        // Defaults to a fallback message when no game is active.
         public string RaceName { get; set; } = "Geen actieve game";
 
-        // Status label for the current game.
+        // Current lifecycle status of the game, e.g. "Draft", "Active", "Finished".
         public string GameStatus { get; set; } = string.Empty;
 
-        // Number of active rider slots shown for each player.
+        // Maximum number of active (starting) riders each player is allowed to field.
         public int ActiveRiderSlots { get; set; } = 10;
 
-        // Number of bench rider slots shown for each player.
+        // Maximum number of bench (reserve) riders each player is allowed to keep.
         public int BenchRiderSlots { get; set; } = 5;
 
-        // Team rosters grouped by player.
+        // One entry per player, each containing their full roster.
         public List<PlayerTeamViewModel> PlayerTeams { get; set; } = new();
 
-        // Indicates whether the page is tied to an existing game.
+        // True when an actual game session is loaded (GameId was resolved from the database).
         public bool HasGame => GameId > 0;
 
-        // Number of players with a team in the overview.
+        // Total number of players participating in the current game.
         public int PlayerCount => PlayerTeams.Count;
 
-        // Total number of rider slots currently filled across all players.
+        // Total number of rider slots that have been filled across all player teams.
         public int FilledSlots => PlayerTeams.Sum(t => t.ActiveRiders.Count + t.BenchRiders.Count);
 
-        // Total rider capacity across all player teams.
+        // Maximum possible filled slots: every player filling every active + bench slot.
         public int TotalSlots => PlayerCount * (ActiveRiderSlots + BenchRiderSlots);
     }
 
-    // View model for one player's active and bench rosters.
+    // View model for a single player's fantasy team within the Teams page.
+    // Contains identity info, colour theming, and the player's roster split by active/bench.
     public class PlayerTeamViewModel
     {
-        // Player identifier used when saving swaps.
         public int PlayerId { get; set; }
 
-        // Player name shown on the team card.
         public string PlayerName { get; set; } = string.Empty;
 
-        // Short label shown inside the player avatar.
+        // Two-letter initials derived from the player's name, shown in the avatar bubble.
         public string Initials { get; set; } = "?";
 
-        // Player's draft order position.
+        // The player's position in the snake draft order (1 = first pick overall).
         public int PositionInDraft { get; set; }
 
-        // Main player color used for card accents.
+        // Primary accent colour for this player's card, as a CSS hex string.
         public string Color { get; set; } = "#2563eb";
 
-        // Soft version of the player color used for row backgrounds.
+        // Low-opacity version of the primary colour used for row backgrounds.
         public string ColorSoft { get; set; } = "rgba(37, 99, 235, 0.12)";
 
-        // Dark version of the player color used for gradients.
+        // Darker shade of the primary colour used for gradients and hover states.
         public string ColorDark { get; set; } = "#1e40af";
 
-        // Foreground color chosen for readable text on the player color.
+        // Foreground colour (white or near-black) chosen for legible contrast on the primary colour.
         public string TextColor { get; set; } = "#ffffff";
 
-        // Riders currently assigned to active slots.
+        // Cyclists currently in the starting lineup (IsActive = true), ordered by draft turn.
         public List<PlayerTeamRiderViewModel> ActiveRiders { get; set; } = new();
 
-        // Riders currently assigned to bench slots.
+        // Cyclists currently on the bench (IsActive = false), ordered by draft turn.
         public List<PlayerTeamRiderViewModel> BenchRiders { get; set; } = new();
     }
 
-    // View model for one rider row in a player roster.
+    // View model for a single cyclist row inside a player's roster table.
     public class PlayerTeamRiderViewModel
     {
-        // Cyclist identifier used by the swap endpoint.
         public int CyclistId { get; set; }
 
-        // Full rider name shown in the roster.
+        // First + last name combined, e.g. "Wout van Aert".
         public string FullName { get; set; } = string.Empty;
 
-        // Professional team name shown next to the rider.
+        // Name of the pro team this cyclist rides for, e.g. "Team Visma | Lease a Bike".
         public string ProTeamName { get; set; } = string.Empty;
 
-        // Draft pick number used for ordering and display.
+        // The draft turn number on which this cyclist was picked (used for sorting).
         public int PickNumber { get; set; }
 
-        // Indicates whether this rider is in an active slot.
+        // True when the cyclist is in the starting lineup; false when on the bench.
         public bool IsActive { get; set; }
     }
 }
