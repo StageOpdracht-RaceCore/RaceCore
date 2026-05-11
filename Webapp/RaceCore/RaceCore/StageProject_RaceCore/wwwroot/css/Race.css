@@ -146,6 +146,7 @@
 
 .race-form-input {
   display: flex;
+
   gap: 12px;
   flex-wrap: wrap;
   border: 0;
