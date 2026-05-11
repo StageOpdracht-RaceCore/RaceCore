@@ -1,71 +1,290 @@
-﻿@model StageProject_RaceCore.Models.Race
+﻿@model StageProject_RaceCore.ViewModels.RaceCreateViewModel
 
 @{
-    var cyclists = ViewBag.Cyclists as List<StageProject_RaceCore.Models.Cyclist>;
+    ViewData["Title"] = "Nieuwe Race";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
-<form asp-action="Create" method="post">
+<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
 
-    <!-- RACE INFO -->
-    <input asp-for="Name" class="form-control" placeholder="Naam" />
+<div class="race-create-container">
 
-    <input asp-for="Year" type="number" class="form-control" />
+    <!-- PAGINA HEADER -->
+    <div class="race-create-header">
+        <div>
+            <p class="race-label">RaceCore beheer</p>
+            <h1>Nieuwe Race Toevoegen</h1>
+            <p class="race-subtitle">
+                Maak een nieuwe race aan, selecteer de deelnemende wielrenners en voeg dynamisch stages toe.
+            </p>
+        </div>
 
-    <input asp-for="StartDate" type="date" class="form-control" />
-    <input asp-for="EndDate" type="date" class="form-control" />
+        <a asp-action="Index" class="race-back-btn">
+            ← Terug
+        </a>
+    </div>
 
-    <hr />
+    <!-- FORMULIER -->
+    <form asp-action="Create" method="post" class="race-create-form">
+        @Html.AntiForgeryToken()
 
-    <!-- CYCLISTS -->
-    <h3>Cyclists</h3>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    @foreach (var c in cyclists)
-    {
-        <label>
-            <input type="checkbox"
-                   name="selectedCyclists"
-                   value="@c.Id" />
-            @c.FullName
-        </label>
-        <br />
-    }
+        <!-- RACE GEGEVENS -->
+        <section class="race-card">
+            <div class="race-card-header">
+                <h2>Race gegevens</h2>
+                <p>Vul de basisinformatie van de race in.</p>
+            </div>
 
-    <hr />
+            <div class="race-grid">
+                <div class="form-group">
+                    <label asp-for="Name">Race naam</label>
+                    <input asp-for="Name" class="form-control" placeholder="Bijvoorbeeld: Tour de France" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
 
-    <!-- STAGES -->
-    <h3>Stages</h3>
+                <div class="form-group">
+                    <label asp-for="Year">Jaar</label>
+                    <input asp-for="Year" class="form-control" type="number" min="1900" max="2100" />
+                    <span asp-validation-for="Year" class="text-danger"></span>
+                </div>
 
-    <div id="stages-container"></div>
+                <div class="form-group">
+                    <label asp-for="StartDate">Begindatum</label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
 
-    <button type="button" id="add-stage">+ Stage</button>
+                <div class="form-group">
+                    <label asp-for="EndDate">Einddatum</label>
+                    <input asp-for="EndDate" class="form-control" type="date" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
 
-    <hr />
+        <!-- CYCLISTS SELECTEREN -->
+        <section class="race-card">
+            <div class="race-card-header">
+                <h2>Deelnemende wielrenners</h2>
+                <p>Selecteer alleen de renners die echt meedoen aan deze race.</p>
+            </div>
 
-    <button type="submit">Save</button>
+            <div class="cyclist-tools">
+                <input type="text"
+                       id="cyclistSearch"
+                       class="form-control"
+                       placeholder="Zoek wielrenner op naam of team..." />
 
-</form>
-<script>
-    function getNextIndex() {
-        return document.querySelectorAll("#stages-container input[name*='Name']").length;
-    }
+                <button type="button" class="small-action-btn" onclick="selectVisibleCyclists()">
+                    Zichtbare selecteren
+                </button>
 
-    document.getElementById("add-stage").addEventListener("click", function () {
+                <button type="button" class="small-action-btn danger" onclick="clearCyclists()">
+                    Alles wissen
+                </button>
+            </div>
 
-        const index = getNextIndex();
-        const container = document.getElementById("stages-container");
+            <span asp-validation-for="SelectedCyclistIds" class="text-danger"></span>
 
-        const html = `
-        <div style="margin-bottom:10px;">
-            <input name="Stages[${index}].Name" class="form-control" placeholder="Stage naam" />
-            <input name="Stages[${index}].Date" type="date" class="form-control" />
+            <div class="cyclist-list" id="cyclistList">
+                @foreach (var cyclist in Model.AvailableCyclists)
+                {
+                    var fullName = $"{cyclist.FirstName} {cyclist.LastName}";
+                    var teamName = cyclist.Team?.Name ?? "Geen team";
 
-            <button type="button" onclick="this.parentElement.remove()">
-                Delete
+                    <label class="cyclist-item"
+                           data-search="@($"{fullName} {teamName}".ToLower())">
+                        <input type="checkbox"
+                               name="SelectedCyclistIds"
+                               value="@cyclist.Id"
+                        @(Model.SelectedCyclistIds.Contains(cyclist.Id) ? "checked" : "") />
+
+                        <span class="cyclist-name">@fullName</span>
+                        <span class="cyclist-team">@teamName</span>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <!-- STAGES TOEVOEGEN -->
+        <section class="race-card">
+            <div class="race-card-header stage-header">
+                <div>
+                    <h2>Stages</h2>
+                    <p>Voeg alle ritten/stages toe met naam en datum.</p>
+                </div>
+
+                <button type="button" class="add-stage-btn" onclick="addStage()">
+                    + Stage toevoegen
+                </button>
+            </div>
+
+            <span asp-validation-for="Stages" class="text-danger"></span>
+
+            <div id="stagesContainer" class="stages-container">
+                @if (Model.Stages.Any())
+                {
+                    for (int i = 0; i < Model.Stages.Count; i++)
+                    {
+                        <div class="stage-row">
+                            <div class="stage-number">@(i + 1)</div>
+
+                            <div class="form-group">
+                                <label>Stage naam</label>
+                                <input name="Stages[@i].Name"
+                                       value="@Model.Stages[i].Name"
+                                       class="form-control"
+                                       placeholder="Bijvoorbeeld: Rit 1 - Brussel naar Namen" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Datum</label>
+                                <input name="Stages[@i].Date"
+                                       value="@(Model.Stages[i].Date?.ToString("yyyy-MM-dd"))"
+                                       class="form-control"
+                                       type="date" />
+                            </div>
+
+                            <button type="button" class="remove-stage-btn" onclick="removeStage(this)">
+                                ×
+                            </button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="stage-row">
+                        <div class="stage-number">1</div>
+
+                        <div class="form-group">
+                            <label>Stage naam</label>
+                            <input name="Stages[0].Name"
+                                   class="form-control"
+                                   placeholder="Bijvoorbeeld: Rit 1 - Brussel naar Namen" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Datum</label>
+                            <input name="Stages[0].Date"
+                                   class="form-control"
+                                   type="date" />
+                        </div>
+
+                        <button type="button" class="remove-stage-btn" onclick="removeStage(this)">
+                            ×
+                        </button>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <!-- OPSLAAN -->
+        <div class="form-actions">
+            <a asp-action="Index" class="cancel-btn">Annuleren</a>
+
+            <button type="submit" class="save-race-btn">
+                Race opslaan
             </button>
         </div>
-        `;
+    </form>
+</div>
 
-        container.insertAdjacentHTML("beforeend", html);
-    });
-</script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // ==============================
+        // CYCLISTS FILTEREN
+        // ==============================
+        const searchInput = document.getElementById("cyclistSearch");
+        const cyclistItems = document.querySelectorAll(".cyclist-item");
+
+        searchInput.addEventListener("input", function () {
+            const value = this.value.toLowerCase();
+
+            cyclistItems.forEach(item => {
+                const searchText = item.dataset.search;
+                item.style.display = searchText.includes(value) ? "flex" : "none";
+            });
+        });
+
+        function selectVisibleCyclists() {
+            document.querySelectorAll(".cyclist-item").forEach(item => {
+                if (item.style.display !== "none") {
+                    item.querySelector("input[type='checkbox']").checked = true;
+                }
+            });
+        }
+
+        function clearCyclists() {
+            document.querySelectorAll(".cyclist-item input[type='checkbox']").forEach(cb => {
+                cb.checked = false;
+            });
+        }
+
+        // ==============================
+        // STAGES DYNAMISCH TOEVOEGEN
+        // ==============================
+        function addStage() {
+            const container = document.getElementById("stagesContainer");
+            const index = container.querySelectorAll(".stage-row").length;
+
+            const row = document.createElement("div");
+            row.className = "stage-row";
+
+            row.innerHTML = `
+                <div class="stage-number">${index + 1}</div>
+
+                <div class="form-group">
+                    <label>Stage naam</label>
+                    <input name="Stages[${index}].Name"
+                           class="form-control"
+                           placeholder="Bijvoorbeeld: Rit ${index + 1}" />
+                </div>
+
+                <div class="form-group">
+                    <label>Datum</label>
+                    <input name="Stages[${index}].Date"
+                           class="form-control"
+                           type="date" />
+                </div>
+
+                <button type="button" class="remove-stage-btn" onclick="removeStage(this)">
+                    ×
+                </button>
+            `;
+
+            container.appendChild(row);
+            refreshStageIndexes();
+        }
+
+        function removeStage(button) {
+            const container = document.getElementById("stagesContainer");
+            const rows = container.querySelectorAll(".stage-row");
+
+            if (rows.length <= 1) {
+                alert("Er moet minstens 1 stage blijven staan.");
+                return;
+            }
+
+            button.closest(".stage-row").remove();
+            refreshStageIndexes();
+        }
+
+        function refreshStageIndexes() {
+            const rows = document.querySelectorAll(".stage-row");
+
+            rows.forEach((row, index) => {
+                row.querySelector(".stage-number").innerText = index + 1;
+
+                const nameInput = row.querySelector("input[name*='.Name']");
+                const dateInput = row.querySelector("input[name*='.Date']");
+
+                nameInput.name = `Stages[${index}].Name`;
+                dateInput.name = `Stages[${index}].Date`;
+            });
+        }
+    </script>
+}
