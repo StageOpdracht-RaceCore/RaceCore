@@ -26,10 +26,7 @@
     <div class="race-details-modern-hero">
 
         <div class="race-details-modern-left">
-
-            <p class="race-label">
-                RaceCore beheer
-            </p>
+            <p class="race-label">RaceCore beheer</p>
 
             <h1>@Model.Name</h1>
 
@@ -38,7 +35,6 @@
             </p>
 
             <div class="race-details-modern-badges">
-
                 <div class="race-modern-badge">
                     <span>Jaar</span>
                     <strong>@Model.Year</strong>
@@ -53,29 +49,36 @@
                     <span>Renners</span>
                     <strong>@raceEntries.Count</strong>
                 </div>
-
             </div>
-
         </div>
 
         <div class="race-details-modern-actions">
 
+
+            <a asp-action="Index"
+                   class="race-btn race-btn-done">
+                ✓ Done
+            </a>
             <a asp-action="Edit"
                    asp-route-id="@Model.Id"
                    class="race-primary-btn">
                 Race bewerken
             </a>
 
-            <a asp-action="Delete"
-                   asp-route-id="@Model.Id"
-                   class="race-danger-btn">
-                Verwijderen
-            </a>
+            <form asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  class="race-delete-inline-form"
+                  onsubmit="return confirmRaceDelete('@Model.Name', @stages.Count, @raceEntries.Count);">
 
-            <a asp-action="Index"
-                   class="race-btn race-btn-done">
-                ✓ Done
-            </a>
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="race-danger-btn">
+                    Race verwijderen
+                </button>
+            </form>
+
+            
 
         </div>
 
@@ -142,13 +145,11 @@
                                 </div>
 
                                 <div class="race-modern-stage-content">
-
                                     <strong>@stage.Name</strong>
 
                                     <span>
                                         @(stage.Date?.ToString("dd/MM/yyyy") ?? "Geen datum")
                                     </span>
-
                                 </div>
 
                             </div>
@@ -187,12 +188,10 @@
 
                 <!-- SEARCH -->
                 <div class="race-modern-search-box">
-
                     <input type="text"
                            id="cyclistSearch"
                            class="form-control"
                            placeholder="Zoek wielrenner..." />
-
                 </div>
 
                 <!-- SCROLL AREA -->
@@ -223,11 +222,8 @@
                                 </div>
 
                                 <div class="race-modern-cyclist-content">
-
                                     <strong>@fullName</strong>
-
                                     <span>@teamName</span>
-
                                 </div>
 
                             </div>
@@ -248,28 +244,37 @@
 @section Scripts {
 
     <script>
+        const cyclistSearch = document.getElementById("cyclistSearch");
 
-        const cyclistSearch =
-            document.getElementById("cyclistSearch");
+        if (cyclistSearch) {
+            cyclistSearch.addEventListener("input", function () {
 
-        cyclistSearch.addEventListener("input", function () {
+                const value = this.value.toLowerCase();
 
-            const value =
-                this.value.toLowerCase();
+                document
+                    .querySelectorAll(".race-modern-cyclist-item")
+                    .forEach(item => {
 
-            document
-                .querySelectorAll(".race-modern-cyclist-item")
-                .forEach(item => {
+                        const text = item.dataset.search;
 
-                    const text =
-                        item.dataset.search;
+                        item.style.display =
+                            text.includes(value)
+                                ? "flex"
+                                : "none";
+                    });
+            });
+        }
 
-                    item.style.display =
-                        text.includes(value)
-                            ? "flex"
-                            : "none";
-                });
-        });
+        function confirmRaceDelete(raceName, stageCount, riderCount) {
+            const message =
+                "Ben je zeker dat je deze race volledig wilt verwijderen?\n\n" +
+                "Race: " + raceName + "\n" +
+                "Stages: " + stageCount + "\n" +
+                "Wielrenners gekoppeld: " + riderCount + "\n\n" +
+                "Dit verwijdert ook alle gekoppelde gegevens van deze race uit de database.\n" +
+                "Deze actie kan niet ongedaan gemaakt worden.";
 
+            return confirm(message);
+        }
     </script>
 }
