@@ -28,17 +28,8 @@
     display: none;
 }
 
-.dashboard-container {
-    width: 100%;
-    max-width: 1500px;
-    margin: 0 auto;
-}
-
 /* Shared surface style applied to all major panels on the page. */
 .card,
-.team-header-card,
-.team-table-card,
-.team-overview-strip,
 .player-team-card {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -52,10 +43,9 @@
 
 /* ── 2. Page banner ─────────────────────────────────────────────────────────── */
 
-/* Full-width dark-blue gradient banner at the top of the page. */
+/* Full-width dark-blue gradient banner at the top of the page (race name, status, nav link). */
 .team-page-banner,
-.page-banner,
-.player-teams-TitleCard {
+.page-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -77,51 +67,24 @@
     font-weight: 900;
 }
 
-.team-page-banner h1,
-.player-teams-TitleCard h1 {
+.team-page-banner h1 {
     margin: 8px 0;
     font-size: 34px;
     font-weight: 900;
 }
 
-.team-page-banner p,
-.player-teams-TitleCard p {
+.team-page-banner p {
     margin: 0;
     color: #dbeafe;
     font-weight: 600;
 }
 
-.team-banner-actions,
-.team-TitleCard-actions {
+.team-banner-actions {
     display: flex;
     align-items: center;
     gap: 18px;
 }
 
-/* Solid blue CTA button used inside the banner for navigation links. */
-.dashboard-action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 54px;
-    padding: 0 18px;
-    border-radius: 14px;
-    font-weight: 900;
-    text-align: center;
-    text-decoration: none !important;
-    white-space: nowrap;
-    transition: 0.2s ease;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: #ffffff !important;
-    font-size: 16px;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-}
-
-    .dashboard-action-btn:hover {
-        transform: translateY(-2px);
-        color: #ffffff !important;
-        background: linear-gradient(135deg, #1d4ed8, #1e40af);
-    }
 
 /* ── 3. Stats row ───────────────────────────────────────────────────────────── */
 
@@ -212,37 +175,6 @@
         white-space: nowrap;
     }
 
-/* Stats shown inside the banner on larger screens. */
-.team-banner-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(82px, 1fr));
-    gap: 10px;
-    min-width: 300px;
-}
-
-.team-TitleCard-stats div {
-    padding: 13px 14px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.13);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.team-TitleCard-stats span {
-    display: block;
-    margin-bottom: 4px;
-    color: #bfdbfe;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.7px;
-    text-transform: uppercase;
-}
-
-.team-TitleCard-stats strong {
-    display: block;
-    color: #ffffff;
-    font-size: 24px;
-    line-height: 1;
-}
 
 /* White pill button used inside the banner (e.g. "Dashboard" link). */
 .team-dashboard-white-btn {
@@ -544,10 +476,6 @@
 
 /* ── 7. Empty state ─────────────────────────────────────────────────────────── */
 
-.team-table-card {
-    padding: 24px;
-}
-
 .team-empty-state h2 {
     margin: 0 0 8px;
     color: #111827;
@@ -560,7 +488,7 @@
     font-weight: 700;
 }
 
-/* Generic button base — extend with .team-btn-primary or .team-btn-secondary. */
+/* Generic button base — extend with .team-btn-primary. */
 .team-btn {
     display: inline-flex;
     align-items: center;
@@ -584,16 +512,6 @@
         background: #1d4ed8;
     }
 
-.team-btn-secondary {
-    color: #0f172a;
-    background: #ffffff;
-    border: 1px solid rgba(148, 163, 184, 0.8);
-}
-
-    .team-btn-secondary:hover {
-        color: #0f172a;
-        background: #f8fafc;
-    }
 
 /* ── 8. Swap interaction ────────────────────────────────────────────────────── */
 
@@ -647,19 +565,15 @@ tr[data-cyclist-id] {
 
 @media (max-width: 900px) {
     /* Stack the banner content vertically on medium screens. */
-    .player-teams-TitleCard {
+    .team-page-banner {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .team-TitleCard-actions {
+    .team-banner-actions {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .team-TitleCard-stats {
-        min-width: 0;
     }
 
     .stats-row {
@@ -692,10 +606,6 @@ tr[data-cyclist-id] {
         width: 100%;
         min-width: 0;
         text-align: left;
-    }
-
-    .team-TitleCard-stats {
-        grid-template-columns: 1fr;
     }
 
     .team-page-banner h1 {

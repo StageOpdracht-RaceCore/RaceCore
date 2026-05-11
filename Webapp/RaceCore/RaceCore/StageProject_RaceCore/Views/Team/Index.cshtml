@@ -21,7 +21,7 @@
 
 <link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
 
-<div class="team-page dashboard-container" data-game-id="@Model.GameId">
+<div class="team-page" data-game-id="@Model.GameId">
     <div class="team-antiforgery">
         @Html.AntiForgeryToken()
     </div>
@@ -49,7 +49,7 @@
         </div>
     </section>
 
-    <section class="stats-row team-stats-row" aria-label="Team overzicht">
+    <section class="stats-row" aria-label="Team overzicht">
         <div class="stat-box blue">
             <div class="stat-icon">👥</div>
             <div>
@@ -221,42 +221,31 @@
     (function () {
         var selectedRow = null;
 
-        window.selectRider = function (row) {
+        function selectRow(row) {
             var card = row.closest('.player-team-card');
+            selectedRow = row;
+            row.classList.add('roster-row--selected');
+            enableSwapMode(card, row);
+        }
 
+        window.selectRider = function (row) {
+            // Clicking the already-selected row cancels the selection.
             if (selectedRow === row) {
                 clearSelection();
                 return;
             }
 
-            if (!selectedRow) {
-                selectedRow = row;
-                row.classList.add('roster-row--selected');
-                enableSwapMode(card, row);
-                return;
-            }
+            // If a different card, different section, or no prior selection: re-select this row.
+            var sameCard = selectedRow && selectedRow.closest('.player-team-card') === row.closest('.player-team-card');
+            var sameSection = selectedRow && selectedRow.dataset.section === row.dataset.section;
 
-            var firstCard = selectedRow.closest('.player-team-card');
-
-            if (firstCard !== card) {
+            if (!selectedRow || !sameCard || sameSection) {
                 clearSelection();
-                selectedRow = row;
-                row.classList.add('roster-row--selected');
-                enableSwapMode(card, row);
+                selectRow(row);
                 return;
             }
 
-            var firstSection = selectedRow.dataset.section;
-            var secondSection = row.dataset.section;
-
-            if (firstSection === secondSection) {
-                clearSelection();
-                selectedRow = row;
-                row.classList.add('roster-row--selected');
-                enableSwapMode(card, row);
-                return;
-            }
-
+            // Same card, opposite section: perform the swap.
             try {
                 swapRows(selectedRow, row);
             } finally {
@@ -363,7 +352,6 @@
                 '&activeCyclistId=' + encodeURIComponent(activeCyclistId) +
                 '&benchCyclistId=' + encodeURIComponent(benchCyclistId);
 
-            console.log('[swap] POST body:', body);
 
             fetch('@Url.Action("SwapActiveBench", "Team")', {
                 method: 'POST',
@@ -396,33 +384,6 @@
             setTimeout(function () { el.remove(); }, 5000);
         }
 
-        function toggleEmptyState(targetRow, sourceRow) {
-            // If the source had no cyclist id, the target is now an empty slot
-            var isEmpty = !sourceRow.dataset.cyclistId || sourceRow.classList.contains('empty-slot');
-            targetRow.classList.toggle('empty-slot', isEmpty);
-
-            if (isEmpty) {
-                delete targetRow.dataset.cyclistId;
-                targetRow.removeAttribute('onclick');
-                targetRow.removeAttribute('role');
-                targetRow.removeAttribute('tabindex');
-                targetRow.removeAttribute('title');
-                // Clear the status pill cell
-                targetRow.querySelectorAll('td')[3].innerHTML = '';
-            } else {
-                // Restore interactivity if it was previously empty
-                targetRow.setAttribute('onclick', 'selectRider(this)');
-                targetRow.setAttribute('role', 'button');
-                targetRow.setAttribute('tabindex', '0');
-                targetRow.setAttribute('title', 'Selecteer om te wisselen');
-                // Restore correct pill
-                var isActive = targetRow.classList.contains('active-rider');
-                var pillClass = isActive ? 'active' : 'bench';
-                var pillLabel = isActive ? 'Renner' : 'Bank';
-                targetRow.querySelectorAll('td')[3].innerHTML =
-                    '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
-            }
-        }
 
         function clearSelection() {
             if (selectedRow) {
