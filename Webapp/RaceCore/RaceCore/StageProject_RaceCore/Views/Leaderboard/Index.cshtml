@@ -3,13 +3,8 @@
 @{
     ViewData["Title"] = "Leaderboard";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
-
-    // Hoogste punten gebruiken voor de progress bar.
-    // Als er nog geen punten zijn, gebruiken we 1 om delen door 0 te vermijden.
-    int maxPoints = Model.HighestPoints > 0 ? Model.HighestPoints : 1;
 }
 
-<!-- CSS van de Leaderboard pagina -->
 <link rel="stylesheet" href="~/css/Leaderboard.css" asp-append-version="true" />
 
 <div class="leaderboard-page">
@@ -19,13 +14,11 @@
     ========================== -->
     <section class="leaderboard-hero">
 
-        <!-- Linkerkant: titel en uitleg -->
+        <!-- Linkerkant: titel -->
         <div class="leaderbord-title">
             <h6>RaceCore Ranking</h6>
             <h1>Leaderboard</h1>
-            <p>
-                Bekijk welke speler momenteel de meeste punten heeft in deze game.
-            </p>
+            <p>Bekijk per rit hoeveel punten elke speler heeft behaald.</p>
         </div>
 
         <!-- Rechterkant: game selectie + Done knop -->
@@ -58,7 +51,7 @@
                 </select>
             </form>
 
-            <!-- Done knop: zelfde stijl als Race pagina -->
+            <!-- Done knop -->
             <a asp-controller="Dashboard"
                    asp-action="Index"
                    class="leaderboard-done-btn">
@@ -104,7 +97,7 @@
                 <strong>@Model.PlayerCount</strong>
             </div>
 
-            <!-- Totaal aantal punten -->
+            <!-- Totaal punten -->
             <div class="leaderboard-stat-card">
                 <span>Totaal punten</span>
                 <strong>@Model.TotalPoints</strong>
@@ -112,102 +105,105 @@
         </section>
 
         <!-- =========================
-             PLAYER RANKING CARD
+             EXCEL-ACHTIGE PUNTENTABEL
         ========================== -->
         <section class="leaderboard-card">
 
-            <!-- Titel van ranking card -->
+            <!-- Header van de kaart -->
             <div class="leaderboard-card-header">
                 <div>
-                    <h2>Player Ranking</h2>
-                    <p>Rangschikking op basis van alle punten in deze game.</p>
+                    <h2>Score per rit</h2>
+                    <p>Elke rij is een rit. Elke kolom is een speler.</p>
                 </div>
             </div>
 
             <!-- Empty state als er nog geen spelers zijn -->
-            @if (!Model.Rows.Any())
+            @if (!Model.Players.Any())
             {
                 <div class="leaderboard-empty">
                     <h2>Nog geen spelers</h2>
-                    <p>Er zijn nog geen draft turns of spelers gekoppeld aan deze game.</p>
+                    <p>Er zijn nog geen spelers gekoppeld aan deze game.</p>
                 </div>
             }
             else
             {
-                <!-- Leaderboard tabel -->
+                <!-- Scrollbare tabel -->
                 <div class="leaderboard-table-wrapper">
-                    <table class="leaderboard-table">
+                    <table class="leaderboard-score-table">
 
                         <!-- Tabel hoofding -->
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Player</th>
-                                <th>Renners</th>
-                                <th>Beste renner</th>
-                                <th>Punten</th>
+                                <th class="stage-column">Rit</th>
+
+                                @foreach (var player in Model.Players)
+                                {
+                                    <th class="player-header" style="--player-color:@player.Color">
+                                        @player.PlayerName
+                                    </th>
+                                }
                             </tr>
                         </thead>
 
                         <!-- Tabel inhoud -->
                         <tbody>
-                            @foreach (var row in Model.Rows)
+
+                            <!-- Ritten -->
+                            @foreach (var stageRow in Model.StageRows)
                             {
-                                // Percentage berekenen voor de puntenbalk
-                                int percentage = maxPoints > 0
-                                    ? (int)Math.Round((double)row.TotalPoints / maxPoints * 100)
-                                    : 0;
-
                                 <tr>
-                                    <!-- Ranking nummer -->
-                                    <td>
-                                        <span class="rank-badge rank-@row.Rank">
-                                            @row.Rank
-                                        </span>
+                                    <td class="stage-name">
+                                        Rit @stageRow.StageNumber
                                     </td>
 
-                                    <!-- Speler info -->
-                                    <td>
-                                        <div class="player-cell">
+                                    @foreach (var player in Model.Players)
+                                    {
+                                        int points = stageRow.PointsPerPlayer.ContainsKey(player.PlayerId)
+                                            ? stageRow.PointsPerPlayer[player.PlayerId]
+                                            : 0;
 
-                                            <!-- Initialen avatar -->
-                                            <div class="player-avatar" style="background:@row.Color">
-                                                @row.Initials
-                                            </div>
-
-                                            <!-- Naam + ID -->
-                                            <div>
-                                                <strong>@row.PlayerName</strong>
-                                                <span>Player ID: @row.PlayerId</span>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <!-- Aantal renners -->
-                                    <td>
-                                        @row.RidersCount
-                                    </td>
-
-                                    <!-- Beste renner -->
-                                    <td>
-                                        <div class="best-rider">
-                                            <strong>@row.BestCyclistName</strong>
-                                            <span>@row.BestCyclistPoints punten</span>
-                                        </div>
-                                    </td>
-
-                                    <!-- Punten + progress bar -->
-                                    <td>
-                                        <div class="points-cell">
-                                            <strong>@row.TotalPoints</strong>
-
-                                            <div class="points-bar">
-                                                <div style="width:@percentage%; background:@row.Color"></div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                        <td class="points-number">
+                                            @points
+                                        </td>
+                                    }
                                 </tr>
                             }
+
+                            <!-- Eindafrekening -->
+                            <tr class="final-row">
+                                <td class="stage-name">
+                                    Eindafrekening
+                                </td>
+
+                                @foreach (var player in Model.Players)
+                                {
+                                    int finalPoints = Model.FinalSettlementPoints.ContainsKey(player.PlayerId)
+                                        ? Model.FinalSettlementPoints[player.PlayerId]
+                                        : 0;
+
+                                    <td class="points-number">
+                                        @finalPoints
+                                    </td>
+                                }
+                            </tr>
+
+                            <!-- Totaal -->
+                            <tr class="total-row">
+                                <td class="stage-name">
+                                    TOTAAL
+                                </td>
+
+                                @foreach (var player in Model.Players)
+                                {
+                                    int total = Model.TotalPointsPerPlayer.ContainsKey(player.PlayerId)
+                                        ? Model.TotalPointsPerPlayer[player.PlayerId]
+                                        : 0;
+
+                                    <td class="points-number">
+                                        @total
+                                    </td>
+                                }
+                            </tr>
                         </tbody>
                     </table>
                 </div>

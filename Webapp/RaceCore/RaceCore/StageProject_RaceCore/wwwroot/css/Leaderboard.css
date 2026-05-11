@@ -25,7 +25,7 @@
 }
 
 /* ========================================
-   TITEL LINKS
+   HERO TITLE
 ======================================== */
 .leaderbord-title h6 {
     margin-bottom: 8px;
@@ -47,34 +47,13 @@
 }
 
 /* ========================================
-   DONE BUTTON
-   Zelfde style als Race pagina
+   HERO ACTIONS
 ======================================== */
-.leaderboard-done-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 14px;
-    background: limegreen;
-    color: white;
-    font-size: 15px;
-    font-weight: 800;
-    text-decoration: none;
-    cursor: pointer;
-    transition: 0.2s ease;
-    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+.leaderboard-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
-
-    /* Hover effect */
-    .leaderboard-done-btn:hover {
-        background: #22c55e;
-        color: white;
-        transform: translateY(-1px);
-    }
 
 /* ========================================
    GAME SELECT FORM
@@ -102,6 +81,34 @@
 
     .leaderboard-game-form option {
         color: #111827;
+    }
+
+/* ========================================
+   DONE BUTTON
+======================================== */
+.leaderboard-done-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 14px;
+    background: limegreen;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+}
+
+    .leaderboard-done-btn:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
     }
 
 /* ========================================
@@ -168,189 +175,173 @@
     }
 
 /* ========================================
-   TABLE
+   TABLE WRAPPER
 ======================================== */
 .leaderboard-table-wrapper {
     width: 100%;
     overflow-x: auto;
+    border-radius: 16px;
 }
 
-.leaderboard-table {
+/* ========================================
+   SCORE TABLE
+======================================== */
+.leaderboard-score-table {
     width: 100%;
+    min-width: 760px;
     border-collapse: separate;
-    border-spacing: 0 0.5rem;
-}
-
-    /* Table headers */
-    .leaderboard-table th {
-        padding: 16px 14px;
-        color: #334155;
-        background: #f8fafc;
-        font-size: 13px;
-        text-align: left;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-top: 2px solid #cbd5e1;
-        border-bottom: 2px solid #cbd5e1;
-        font-weight: 900;
-    }
-
-        .leaderboard-table th:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
-        }
-
-        .leaderboard-table th:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
-    /* Table cells */
-    .leaderboard-table td {
-        padding: 16px 14px;
-        background-color: #ffffff;
-        border-top: 1px solid #e2e8f0;
-        border-bottom: 1px solid #e2e8f0;
-        color: #1e293b;
-        vertical-align: middle;
-    }
-
-        .leaderboard-table td:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
-            border-left: 1px solid #e2e8f0;
-        }
-
-        .leaderboard-table td:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-            border-right: 1px solid #e2e8f0;
-        }
-
-    /* Hover row effect */
-    .leaderboard-table tbody tr {
-        transition: background-color 0.2s ease;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-
-        .leaderboard-table tbody tr:hover td {
-            background-color: #f1f5f9;
-        }
-
-/* ========================================
-   RANK BADGES
-======================================== */
-.rank-badge {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    font-weight: 900;
-    color: #0f172a;
-    background: #e5e7eb;
-}
-
-.rank-1 {
-    color: white;
-    background: #f59e0b;
-}
-
-.rank-2 {
-    color: white;
-    background: #64748b;
-}
-
-.rank-3 {
-    color: white;
-    background: #b45309;
-}
-
-/* ========================================
-   PLAYER INFO
-======================================== */
-.player-cell {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.player-avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 900;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
-}
-
-.player-cell strong {
-    display: block;
-    font-weight: 900;
-    color: #0f172a;
-}
-
-.player-cell span {
-    display: block;
-    margin-top: 3px;
-    font-size: 12px;
-    color: #64748b;
-}
-
-/* ========================================
-   DRAFT STATUS PILL
-======================================== */
-.draft-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 11px;
-    border-radius: 999px;
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-weight: 900;
-}
-
-/* ========================================
-   BEST RIDER
-======================================== */
-.best-rider strong {
-    display: block;
-    color: #0f172a;
-}
-
-.best-rider span {
-    display: block;
-    margin-top: 3px;
-    color: #64748b;
-    font-size: 12px;
-}
-
-/* ========================================
-   POINTS BAR
-======================================== */
-.points-cell strong {
-    display: block;
-    margin-bottom: 7px;
-    color: #0f172a;
-    font-size: 18px;
-    font-weight: 900;
-}
-
-.points-bar {
-    width: 150px;
-    height: 9px;
+    border-spacing: 0;
     overflow: hidden;
-    border-radius: 999px;
-    background: #e5e7eb;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
 }
 
-    .points-bar div {
-        height: 100%;
-        border-radius: 999px;
+    /* ========================================
+   TABLE CELLS
+======================================== */
+    .leaderboard-score-table th,
+    .leaderboard-score-table td {
+        padding: 10px 12px;
+        border-right: 1px solid #d1d5db;
+        border-bottom: 1px solid #d1d5db;
+        font-size: 14px;
+    }
+
+        .leaderboard-score-table th:last-child,
+        .leaderboard-score-table td:last-child {
+            border-right: none;
+        }
+
+    .leaderboard-score-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ========================================
+   TABLE HEADER
+======================================== */
+    .leaderboard-score-table th {
+        color: #020617;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    /* ========================================
+   FIRST COLUMN
+======================================== */
+    .leaderboard-score-table .stage-column {
+        width: 160px;
+        text-align: left;
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   PLAYER HEADER COLORS
+   Donker - licht - donker - licht
+======================================== */
+
+    .leaderboard-score-table thead th:nth-child(2) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(3) {
+        background: #f3f4f6;
+    }
+
+    .leaderboard-score-table thead th:nth-child(4) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(5) {
+        background: #f3f4f6;
+    }
+
+    .leaderboard-score-table thead th:nth-child(6) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(7) {
+        background: #f3f4f6;
+    }
+
+    /* ========================================
+   STAGE NAMES
+======================================== */
+    .leaderboard-score-table .stage-name {
+        color: #020617;
+        font-weight: 800;
+        text-align: left;
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   PLAYER COLUMN COLORS
+   Donker - licht - donker - licht
+======================================== */
+
+    .leaderboard-score-table tbody td:nth-child(2) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(3) {
+        background: #f8fafc;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(4) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(5) {
+        background: #f8fafc;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(6) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(7) {
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   POINT NUMBERS
+======================================== */
+    .leaderboard-score-table .points-number {
+        color: #020617;
+        text-align: right;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ========================================
+   ROW HOVER
+======================================== */
+    .leaderboard-score-table tbody tr:hover td:not(.stage-name) {
+        filter: brightness(0.97);
+    }
+
+    /* ========================================
+   FINAL ROW
+======================================== */
+    .leaderboard-score-table .final-row td {
+        padding-top: 18px;
+        font-weight: 900;
+        background: #d1d5db !important;
+    }
+
+    /* ========================================
+   TOTAL ROW
+======================================== */
+    .leaderboard-score-table .total-row td {
+        color: #020617;
+        font-size: 20px;
+        font-weight: 900;
+        background: white !important;
+        border-top: 3px solid #0f172a;
+    }
+
+    .leaderboard-score-table .total-row .stage-name {
+        font-size: 20px;
     }
 
 /* ========================================
@@ -382,6 +373,10 @@
         flex-direction: column;
     }
 
+    .leaderboard-hero-actions {
+        width: 100%;
+    }
+
     .leaderboard-game-form {
         min-width: 100%;
     }
@@ -402,7 +397,7 @@
         padding: 18px;
     }
 
-    .leaderboard-title {
+    .leaderbord-title h1 {
         font-size: 26px;
     }
 
@@ -410,7 +405,18 @@
         grid-template-columns: 1fr;
     }
 
-    .points-bar {
-        width: 110px;
+    .leaderboard-score-table {
+        min-width: 620px;
     }
+
+        .leaderboard-score-table th,
+        .leaderboard-score-table td {
+            padding: 7px 8px;
+            font-size: 13px;
+        }
+
+        .leaderboard-score-table .total-row td,
+        .leaderboard-score-table .total-row .stage-name {
+            font-size: 17px;
+        }
 }
