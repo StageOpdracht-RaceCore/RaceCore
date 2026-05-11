@@ -423,200 +423,254 @@
 }
 
 /* =========================
-   PRO DETAILS PAGE
+   MODERN DETAILS PAGE
 ========================= */
-.race-pro-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
+.race-details-modern-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
 }
 
-.race-pro-stat-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 20px;
-    padding: 18px;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+.race-details-modern-left {
+    flex: 1;
 }
 
-    .race-pro-stat-card span {
+.race-details-modern-badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.race-modern-badge {
+    min-width: 110px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+}
+
+    .race-modern-badge span {
         display: block;
-        margin-bottom: 8px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 900;
-        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: .04em;
+        color: #dbeafe;
+        margin-bottom: 4px;
     }
 
-    .race-pro-stat-card strong {
-        display: block;
-        font-size: 24px;
+    .race-modern-badge strong {
+        font-size: 20px;
         font-weight: 950;
-        color: #0f172a;
+        color: #ffffff;
     }
 
-.race-pro-details-grid {
+.race-details-modern-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 220px;
+}
+
+/* =========================
+   MAIN GRID DETAILS
+========================= */
+.race-modern-main-grid {
     display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: 18px;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 20px;
     align-items: start;
 }
 
-.race-pro-info-list {
+.race-modern-left-column,
+.race-modern-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =========================
+   INFO GRID DETAILS
+========================= */
+.race-modern-info-grid {
     display: grid;
     gap: 10px;
 }
 
-    .race-pro-info-list div {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 13px 14px;
-        border-radius: 14px;
-        background: #f8fafc;
-        border: 1px solid #e5e7eb;
-    }
+.race-modern-info-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
 
-    .race-pro-info-list span {
+    .race-modern-info-item span {
         font-size: 13px;
         font-weight: 900;
         color: #64748b;
     }
 
-    .race-pro-info-list strong {
+    .race-modern-info-item strong {
         font-size: 14px;
         font-weight: 950;
         color: #0f172a;
         text-align: right;
     }
 
-.race-pro-stage-list {
-    display: grid;
-    gap: 10px;
+/* =========================
+   STAGES TIMELINE DETAILS
+========================= */
+.race-modern-stage-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.race-pro-stage-item {
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 12px;
+.race-modern-stage-card {
+    display: flex;
     align-items: center;
-    padding: 12px;
+    gap: 14px;
+    padding: 14px;
     border-radius: 16px;
     background: #f8fafc;
     border: 1px solid #e5e7eb;
 }
 
-.race-pro-stage-number {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: #dbeafe;
-    color: #1d4ed8;
+.race-modern-stage-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 18px;
     font-weight: 950;
+    flex-shrink: 0;
 }
 
-.race-pro-stage-content strong {
+.race-modern-stage-content strong {
     display: block;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 950;
     color: #0f172a;
 }
 
-.race-pro-stage-content span {
+.race-modern-stage-content span {
     display: block;
-    margin-top: 3px;
+    margin-top: 4px;
     font-size: 12px;
     font-weight: 800;
     color: #64748b;
 }
 
-.race-pro-section-header {
+/* =========================
+   CYCLISTS DETAILS SCROLL SECTION
+========================= */
+.race-modern-cyclist-section {
+    height: 100%;
+}
+
+.race-modern-cyclist-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 14px;
 }
 
-.race-pro-count-badge {
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: #eef2ff;
-    color: #1e3a8a;
-    font-size: 12px;
-    font-weight: 950;
-    white-space: nowrap;
+.race-modern-search-box {
+    margin-bottom: 14px;
 }
 
-.race-pro-cyclist-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+.race-modern-cyclist-scroll {
+    max-height: 620px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+    .race-modern-cyclist-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .race-modern-cyclist-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+
+    .race-modern-cyclist-scroll::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 999px;
+    }
+
+.race-modern-cyclist-list {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.race-pro-cyclist-card {
+.race-modern-cyclist-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
+    gap: 14px;
+    padding: 14px;
     border-radius: 16px;
     background: #f8fafc;
     border: 1px solid #e5e7eb;
     transition: 0.18s ease;
 }
 
-    .race-pro-cyclist-card:hover {
+    .race-modern-cyclist-item:hover {
         background: #eff6ff;
         border-color: #bfdbfe;
-        transform: translateY(-1px);
     }
 
-.race-pro-cyclist-avatar {
-    width: 42px;
-    height: 42px;
+.race-modern-cyclist-avatar {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2563eb, #0f172a);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 950;
     flex-shrink: 0;
 }
 
-.race-pro-cyclist-info {
+.race-modern-cyclist-content {
     min-width: 0;
 }
 
-    .race-pro-cyclist-info strong {
+    .race-modern-cyclist-content strong {
         display: block;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 950;
         color: #0f172a;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
-    .race-pro-cyclist-info span {
+    .race-modern-cyclist-content span {
         display: inline-flex;
-        margin-top: 4px;
-        max-width: 100%;
-        padding: 4px 8px;
+        margin-top: 5px;
+        padding: 4px 10px;
         border-radius: 999px;
         background: #eef2ff;
         color: #1e3a8a;
         font-size: 11px;
         font-weight: 900;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
+/* =========================
+   EMPTY STATE
+========================= */
 .race-pro-empty {
     padding: 24px;
     border-radius: 16px;
@@ -630,16 +684,6 @@
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 1200px) {
-    .race-pro-stats-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .race-pro-cyclist-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 1100px) {
     .race-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -658,12 +702,12 @@
         grid-template-columns: 44px 1fr 180px 44px;
     }
 
-    .race-pro-details-grid {
+    .race-modern-main-grid {
         grid-template-columns: 1fr;
     }
 
-    .race-pro-cyclist-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .race-modern-cyclist-scroll {
+        max-height: 500px;
     }
 }
 
@@ -674,10 +718,15 @@
     }
 
     .race-header-card,
-    .race-create-header {
+    .race-create-header,
+    .race-details-modern-hero {
         flex-direction: column;
         align-items: stretch;
         padding: 22px;
+    }
+
+    .race-details-modern-actions {
+        min-width: unset;
     }
 
     .race-btn,
@@ -698,14 +747,12 @@
     .race-grid,
     .cyclist-tools,
     .cyclist-tools-edit,
-    .cyclist-list,
-    .race-pro-stats-grid,
-    .race-pro-cyclist-grid {
+    .cyclist-list {
         grid-template-columns: 1fr;
     }
 
     .stage-header,
-    .race-pro-section-header {
+    .race-modern-cyclist-header {
         flex-direction: column;
         align-items: stretch;
     }
@@ -725,12 +772,16 @@
         width: 100%;
     }
 
-    .race-pro-info-list div {
+    .race-modern-info-item {
         flex-direction: column;
     }
 
-    .race-pro-info-list strong {
-        text-align: left;
+        .race-modern-info-item strong {
+            text-align: left;
+        }
+
+    .race-modern-cyclist-scroll {
+        max-height: 420px;
     }
 
     .cyclist-dual-container {
