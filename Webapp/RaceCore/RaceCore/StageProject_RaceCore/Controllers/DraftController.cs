@@ -7,23 +7,10 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
-    /* DraftController.cs
-       Purpose: Manage the drafting flow for a game. Responsibilities:
-       - Display draft turns and available cyclists
-       - Handle picks and draft generation
-       - Maintain draft consistency (fix turns, mark active selections)
-       This controller uses SignalR hub to broadcast draft updates.
-    */
-    /// <summary>
-    /// Controller for draft pages and actions (picking cyclists, generating turns).
-    /// </summary>
     public class DraftController : Controller
     {
         private readonly AppDbContext _context;
         private readonly IHubContext<GameHub> _hubContext;
-
-        private const int ActiveRidersPerPlayer = 10;
-        private const int BenchRidersPerPlayer = 5;
 
         public DraftController(AppDbContext context, IHubContext<GameHub> hubContext)
         {
@@ -60,7 +47,7 @@ namespace StageProject_RaceCore.Controllers
                     return RedirectToAction("New", "Game");
                 }
 
-                await FixDraftSettingsAndTurns(game);
+                await FixDraftTurnsIfNeeded(game);
 
                 var draftTurns = await _context.DraftTurns
                     .Include(d => d.Player)
@@ -110,8 +97,8 @@ namespace StageProject_RaceCore.Controllers
                 ViewBag.DatabaseOnline = true;
                 ViewBag.PlayerCount = draftTurns.Select(d => d.PlayerId).Distinct().Count();
                 ViewBag.NoDraft = !draftTurns.Any();
-                ViewBag.RidersPerPlayer = ActiveRidersPerPlayer;
-                ViewBag.BenchPerPlayer = BenchRidersPerPlayer;
+                ViewBag.RidersPerPlayer = game.RidersPerPlayer;
+                ViewBag.BenchPerPlayer = game.BenchPerPlayer;
 
                 return View(model);
             }
@@ -156,7 +143,9 @@ namespace StageProject_RaceCore.Controllers
                 pickedCount = pickedCount,
                 totalTurns = totalTurns,
                 currentTurnId = currentTurnId,
-                version = pickedCount + "-" + currentTurnId + "-" + game.Status
+                ridersPerPlayer = game.RidersPerPlayer,
+                benchPerPlayer = game.BenchPerPlayer,
+                version = pickedCount + "-" + currentTurnId + "-" + game.Status + "-" + game.RidersPerPlayer + "-" + game.BenchPerPlayer
             });
         }
 
@@ -174,9 +163,6 @@ namespace StageProject_RaceCore.Controllers
                     TempData["Error"] = "Game niet gevonden.";
                     return RedirectToAction("New", "Game");
                 }
-
-                game.RidersPerPlayer = ActiveRidersPerPlayer;
-                game.BenchPerPlayer = BenchRidersPerPlayer;
 
                 if (game.Status != "Draft")
                 {
@@ -232,7 +218,7 @@ namespace StageProject_RaceCore.Controllers
                 int playerPickCount = await _context.PlayerSelections
                     .CountAsync(s => s.GameSessionId == gameId && s.PlayerId == currentTurn.PlayerId);
 
-                bool isActiveCyclist = playerPickCount < ActiveRidersPerPlayer;
+                bool isActiveCyclist = playerPickCount < game.RidersPerPlayer;
 
                 _context.PlayerSelections.Add(new PlayerSelection
                 {
@@ -293,10 +279,17 @@ namespace StageProject_RaceCore.Controllers
             });
         }
 
-        private async Task FixDraftSettingsAndTurns(GameSession game)
+        private async Task FixDraftTurnsIfNeeded(GameSession game)
         {
-            game.RidersPerPlayer = ActiveRidersPerPlayer;
-            game.BenchPerPlayer = BenchRidersPerPlayer;
+            if (game.RidersPerPlayer <= 0)
+            {
+                game.RidersPerPlayer = 12;
+            }
+
+            if (game.BenchPerPlayer < 0)
+            {
+                game.BenchPerPlayer = 6;
+            }
 
             var draftTurns = await _context.DraftTurns
                 .Where(d => d.GameSessionId == game.Id)
@@ -323,12 +316,29 @@ namespace StageProject_RaceCore.Controllers
                 return;
             }
 
-            int correctRounds = ActiveRidersPerPlayer + BenchRidersPerPlayer;
+            int correctRounds = game.RidersPerPlayer + game.BenchPerPlayer;
             int correctTotalTurns = playerCount * correctRounds;
 
-            if (draftTurns.Count >= correctTotalTurns)
+            if (draftTurns.Count == correctTotalTurns)
             {
                 await _context.SaveChangesAsync();
+                return;
+            }
+
+            if (draftTurns.Count > correctTotalTurns)
+            {
+                var removableTurns = draftTurns
+                    .Where(d => d.CyclistId == null)
+                    .OrderByDescending(d => d.TurnNumber)
+                    .Take(draftTurns.Count - correctTotalTurns)
+                    .ToList();
+
+                if (removableTurns.Count == draftTurns.Count - correctTotalTurns)
+                {
+                    _context.DraftTurns.RemoveRange(removableTurns);
+                    await _context.SaveChangesAsync();
+                }
+
                 return;
             }
 
@@ -382,7 +392,7 @@ namespace StageProject_RaceCore.Controllers
 
                     if (selection != null)
                     {
-                        selection.IsActive = i < ActiveRidersPerPlayer;
+                        selection.IsActive = i < game.RidersPerPlayer;
                         selection.RaceId = game.RaceId;
                     }
                 }

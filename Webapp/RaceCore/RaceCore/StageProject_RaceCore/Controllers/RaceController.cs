@@ -248,6 +248,7 @@ namespace StageProject_RaceCore.Controllers
                 .Include(r => r.Stages)
                 .Include(r => r.RaceEntries)
                     .ThenInclude(re => re.Cyclist)
+                        .ThenInclude(c => c.Team)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (race == null) return NotFound();
@@ -255,6 +256,7 @@ namespace StageProject_RaceCore.Controllers
             return View(race);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -276,19 +278,51 @@ namespace StageProject_RaceCore.Controllers
             var race = await _context.Races
                 .Include(r => r.Stages)
                 .Include(r => r.RaceEntries)
+                .Include(r => r.PlayerSelections)
+                .Include(r => r.DraftTurns)
+                .Include(r => r.PlayerPoints)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (race != null)
+            if (race == null)
             {
-                _context.RaceEntries.RemoveRange(race.RaceEntries);
-                _context.Stages.RemoveRange(race.Stages);
-                _context.Races.Remove(race);
-
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Race succesvol verwijderd.";
+                TempData["Error"] = "Race niet gevonden.";
+                return RedirectToAction(nameof(Index));
             }
 
+            var stageIds = race.Stages
+                .Select(s => s.Id)
+                .ToList();
+
+            var stageResults = await _context.StageResults
+                .Where(sr => stageIds.Contains(sr.StageId))
+                .ToListAsync();
+
+            var jerseys = await _context.Jerseys
+                .Where(j => stageIds.Contains(j.StageId))
+                .ToListAsync();
+
+            var stagePlayerPoints = await _context.PlayerPoints
+                .Where(pp => pp.StageId != null && stageIds.Contains(pp.StageId.Value))
+                .ToListAsync();
+
+            var gameSessions = await _context.GameSessions
+                .Where(gs => gs.RaceId == id)
+                .ToListAsync();
+
+            _context.Jerseys.RemoveRange(jerseys);
+            _context.StageResults.RemoveRange(stageResults);
+            _context.PlayerPoints.RemoveRange(stagePlayerPoints);
+            _context.PlayerPoints.RemoveRange(race.PlayerPoints);
+            _context.PlayerSelections.RemoveRange(race.PlayerSelections);
+            _context.DraftTurns.RemoveRange(race.DraftTurns);
+            _context.GameSessions.RemoveRange(gameSessions);
+            _context.RaceEntries.RemoveRange(race.RaceEntries);
+            _context.Stages.RemoveRange(race.Stages);
+            _context.Races.Remove(race);
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Race en alle gekoppelde gegevens zijn succesvol verwijderd.";
             return RedirectToAction(nameof(Index));
         }
 

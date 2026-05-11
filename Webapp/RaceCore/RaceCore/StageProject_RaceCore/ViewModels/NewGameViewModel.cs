@@ -8,10 +8,19 @@ namespace StageProject_RaceCore.ViewModels
         [Required(ErrorMessage = "Kies een race.")]
         public int RaceId { get; set; }
 
+        [Required(ErrorMessage = "Kies een rit.")]
         public int StageId { get; set; }
 
         [Required(ErrorMessage = "Kies minstens 2 spelers.")]
         public List<int> SelectedPlayerIds { get; set; } = new();
+
+        [Range(1, 30, ErrorMessage = "Actieve renners moet tussen 1 en 30 zijn.")]
+        public int RidersPerPlayer { get; set; } = 12;
+
+        [Range(0, 30, ErrorMessage = "Bankrenners moet tussen 0 en 30 zijn.")]
+        public int BenchPerPlayer { get; set; } = 6;
+
+        public int TotalPicksPerPlayer => RidersPerPlayer + BenchPerPlayer;
 
         public List<SelectListItem> AvailableRaces { get; set; } = new();
 
