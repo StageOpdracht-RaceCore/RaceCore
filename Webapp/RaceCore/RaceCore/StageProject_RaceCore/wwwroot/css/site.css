@@ -634,3 +634,9 @@ td {
     width: 30px !important;
     height: 30px !important;
 }
+
+.race-edit-section {
+  display: flex;
+  flex-direction: column;
+
+}

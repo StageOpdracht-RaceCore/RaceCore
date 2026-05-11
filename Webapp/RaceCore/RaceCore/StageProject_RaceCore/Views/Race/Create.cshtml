@@ -1,4 +1,4 @@
-﻿@model StageProject_RaceCore.Models.Race
+@model StageProject_RaceCore.Models.Race
 
 @inject StageProject_RaceCore.Models.AppDbContext _context
 
@@ -33,7 +33,6 @@
     <section class="race-form-card">
 
         <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
 
             <!-- BASIS INFO -->
             <div class="race-form-grid">

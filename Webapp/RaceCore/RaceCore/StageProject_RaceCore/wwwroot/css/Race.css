@@ -144,15 +144,21 @@
         color: #334155;
     }
 
+.race-form-input {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 0;
+}
 /* =========================
    CYCLIST DUAL LIST (FIXED)
 ========================= */
 .cyclist-dual-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 20px;
-    width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
 }
 
 .cyclist-box {
