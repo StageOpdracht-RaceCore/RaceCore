@@ -59,42 +59,26 @@
 
             <div class="scoring-field">
                 <label>Wedstrijd kiezen</label>
+
                 <select name="raceId">
                     @foreach (var race in races)
                     {
-                        if (race.Id == selectedRaceId)
-                        {
-                            <option value="@race.Id" selected>
-                                @race.Name
-                            </option>
-                        }
-                        else
-                        {
-                            <option value="@race.Id">
-                                @race.Name
-                            </option>
-                        }
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name
+                        </option>
                     }
                 </select>
             </div>
 
             <div class="scoring-field">
                 <label>Rit kiezen</label>
+
                 <select name="stageId">
                     @foreach (var stage in stages)
                     {
-                        if (stage.Selected)
-                        {
-                            <option value="@stage.Value" selected>
-                                @stage.Text
-                            </option>
-                        }
-                        else
-                        {
-                            <option value="@stage.Value">
-                                @stage.Text
-                            </option>
-                        }
+                        <option value="@stage.Value" selected="@stage.Selected">
+                            @stage.Text
+                        </option>
                     }
                 </select>
             </div>
@@ -129,7 +113,6 @@
         <datalist id="cyclistList"></datalist>
 
         <section class="scoring-results-list">
-
             @for (int i = 0; i < Model.Results.Count; i++)
             {
                 <div class="scoring-result-row">
@@ -138,8 +121,7 @@
                         @Model.Results[i].Position
                     </div>
 
-                    <input type="hidden"
-                           asp-for="Results[i].Position" />
+                    <input type="hidden" asp-for="Results[i].Position" />
 
                     <input type="hidden"
                            asp-for="Results[i].CyclistId"
@@ -187,7 +169,6 @@
                     </div>
                 </div>
             }
-
         </section>
 
         <section class="scoring-section-header scoring-jersey-header">
@@ -197,7 +178,10 @@
         <section class="scoring-card scoring-outside-jerseys">
 
             <div class="outside-jersey-row">
-                <label>Rode trui buiten Top 25</label>
+                <label class="outside-jersey-label">
+                    <span class="outside-jersey-dot outside-red"></span>
+                    Rode trui buiten Top 25
+                </label>
 
                 <input type="hidden"
                        asp-for="YellowOutsideTop25CyclistId"
@@ -216,7 +200,10 @@
             </div>
 
             <div class="outside-jersey-row">
-                <label>Groene trui buiten Top 25</label>
+                <label class="outside-jersey-label">
+                    <span class="outside-jersey-dot outside-green"></span>
+                    Groene trui buiten Top 25
+                </label>
 
                 <input type="hidden"
                        asp-for="GreenOutsideTop25CyclistId"
@@ -235,7 +222,10 @@
             </div>
 
             <div class="outside-jersey-row">
-                <label>Blauwe trui buiten Top 25</label>
+                <label class="outside-jersey-label">
+                    <span class="outside-jersey-dot outside-blue"></span>
+                    Blauwe trui buiten Top 25
+                </label>
 
                 <input type="hidden"
                        asp-for="PolkaOutsideTop25CyclistId"
@@ -254,7 +244,10 @@
             </div>
 
             <div class="outside-jersey-row">
-                <label>Witte trui buiten Top 25</label>
+                <label class="outside-jersey-label">
+                    <span class="outside-jersey-dot outside-white"></span>
+                    Witte trui buiten Top 25
+                </label>
 
                 <input type="hidden"
                        asp-for="WhiteOutsideTop25CyclistId"
@@ -286,21 +279,24 @@
 
     function getHiddenInput(textInput) {
         const row = textInput.closest(".scoring-result-row, .outside-jersey-row");
+        if (!row) return null;
 
-        if (!row) {
-            return null;
+        if (textInput.classList.contains("js-cyclist-name")) {
+            return row.querySelector(".js-cyclist-id");
         }
 
-        return row.querySelector("input[type='hidden']");
+        if (textInput.classList.contains("js-outside-jersey-name")) {
+            return row.querySelector(".js-outside-jersey-id");
+        }
+
+        return null;
     }
 
     function getSelectedCyclistIds(exceptInput) {
         const selectedIds = new Set();
 
         document.querySelectorAll(".js-cyclist-name, .js-outside-jersey-name").forEach(input => {
-            if (input === exceptInput) {
-                return;
-            }
+            if (input === exceptInput) return;
 
             const hidden = getHiddenInput(input);
 
@@ -332,10 +328,7 @@
 
     function syncCyclistId(input) {
         const hidden = getHiddenInput(input);
-
-        if (!hidden) {
-            return;
-        }
+        if (!hidden) return;
 
         const typedName = input.value.trim().toLowerCase();
 
@@ -361,9 +354,7 @@
             hidden.value = "";
             input.value = "";
             input.classList.add("is-invalid");
-
             alert("Deze renner is al gekozen. Kies een andere renner.");
-
             updateCyclistList(input);
             return;
         }
@@ -373,38 +364,17 @@
     }
 
     function clearOutsideJersey(type) {
-        const checkboxMap = {
-            Red: "HasYellowJersey",
-            Green: "HasGreenJersey",
-            Blue: "HasPolkaJersey",
-            White: "HasWhiteJersey"
-        };
-
-        const checkedCheckbox = Array.from(document.querySelectorAll("input[type='checkbox']"))
-            .find(cb => cb.name.includes(checkboxMap[type]) && cb.checked);
-
-        if (!checkedCheckbox) {
-            return;
-        }
-
         const outsideInput = document.querySelector(`.js-outside-jersey-name[data-jersey='${type}']`);
         const outsideHidden = document.querySelector(`.js-outside-jersey-id[data-jersey='${type}']`);
 
-        if (outsideInput) {
-            outsideInput.value = "";
-        }
-
-        if (outsideHidden) {
-            outsideHidden.value = "";
-        }
+        if (outsideInput) outsideInput.value = "";
+        if (outsideHidden) outsideHidden.value = "";
     }
 
     function clearTop25Jersey(type) {
         const outsideHidden = document.querySelector(`.js-outside-jersey-id[data-jersey='${type}']`);
 
-        if (!outsideHidden || !outsideHidden.value) {
-            return;
-        }
+        if (!outsideHidden || !outsideHidden.value) return;
 
         const checkboxMap = {
             Red: "HasYellowJersey",
@@ -450,8 +420,10 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".js-cyclist-name, .js-outside-jersey-name").forEach(input => {
-            syncCyclistId(input);
-        });
+        const firstInput = document.querySelector(".js-cyclist-name, .js-outside-jersey-name");
+
+        if (firstInput) {
+            updateCyclistList(firstInput);
+        }
     });
 </script>
