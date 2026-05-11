@@ -164,7 +164,6 @@ namespace StageProject_RaceCore.Controllers
                 var query = _context.Cyclists
                     .Include(c => c.Team)
                     .Include(c => c.RaceEntries)
-                    .Where(c => c.PlayerSelections.Any())
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(search))
