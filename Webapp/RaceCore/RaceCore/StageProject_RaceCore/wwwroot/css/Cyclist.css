@@ -195,7 +195,7 @@
 
 .cyclist-table {
     width: 100%;
-    min-width: 850px;
+    min-width: 1080px;
     border-collapse: collapse;
 }
 
@@ -273,6 +273,56 @@
     background: #f1f5f9;
     border-color: #e5e7eb;
 }
+
+.cyclist-actions-cell {
+    min-width: 260px;
+}
+
+.cyclist-row-race-form {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) auto;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.cyclist-row-select {
+    min-width: 0;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 0 10px;
+    color: #111827;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    outline: none;
+}
+
+    .cyclist-row-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+.cyclist-row-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: none;
+    color: #14532d;
+    background: #dcfce7;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+    .cyclist-row-add-btn:hover {
+        background: #bbf7d0;
+    }
 
 .cyclist-pagination {
     display: flex;
@@ -449,6 +499,8 @@
     padding: 32px;
     width: 100%;
     max-width: 480px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
 }
 
