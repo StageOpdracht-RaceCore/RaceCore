@@ -4,6 +4,8 @@ namespace StageProject_RaceCore.ViewModels
 {
     public class ScoringViewModel
     {
+        public int GameSessionId { get; set; }
+
         public int StageId { get; set; }
 
         public List<SelectListItem> AvailableCyclists { get; set; } = new();

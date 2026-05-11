@@ -2,32 +2,6 @@
     ============================================================
     View: Scoring/Index.cshtml
     ============================================================
-
-    Doel:
-    Deze pagina wordt gebruikt voor het beheren van ritresultaten
-    en truien binnen een wedstrijd.
-
-    Functionaliteiten:
-    - wedstrijd selecteren
-    - rit selecteren
-    - ritresultaten invoeren
-    - truien toekennen
-    - resultaten opslaan
-    - validatie via JavaScript
-
-    Gebruikt model:
-    ScoringViewModel
-
-    Gebruikte ViewBag waarden:
-    - ViewBag.Races
-    - ViewBag.SelectedRaceId
-    - ViewBag.AvailableStages
-
-    Gebruikte ViewData waarden:
-    - RedOutsideTop25CyclistName
-    - GreenOutsideTop25CyclistName
-    - BlueOutsideTop25CyclistName
-    - WhiteOutsideTop25CyclistName
 *@
 
 @model StageProject_RaceCore.ViewModels.ScoringViewModel
@@ -35,48 +9,23 @@
 @using StageProject_RaceCore.Models
 
 @{
-    /*
-        ========================================================
-        Pagina instellingen
-        ========================================================
-    */
     ViewData["Title"] = "Etappe Resultaten";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
-    /*
-        ========================================================
-        Gegevens ophalen uit ViewBag
-        ========================================================
-    */
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var selectedRaceId = ViewBag.SelectedRaceId as int? ?? 0;
     var stages = ViewBag.AvailableStages as List<SelectListItem> ?? new List<SelectListItem>();
 
-    /*
-        ========================================================
-        Namen van truidragers buiten top 25
-        ========================================================
-    */
     string redName = ViewData["RedOutsideTop25CyclistName"]?.ToString() ?? "";
     string greenName = ViewData["GreenOutsideTop25CyclistName"]?.ToString() ?? "";
     string blueName = ViewData["BlueOutsideTop25CyclistName"]?.ToString() ?? "";
     string whiteName = ViewData["WhiteOutsideTop25CyclistName"]?.ToString() ?? "";
 }
 
-@*
-    ============================================================
-    CSS bestand voor scoringpagina
-    ============================================================
-*@
 <link rel="stylesheet" href="~/css/Scoring.css" asp-append-version="true" />
 
 <div class="scoring-page">
 
-    @*
-        ========================================================
-        Foutmeldingen tonen
-        ========================================================
-    *@
     @if (TempData["Error"] != null || TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger border-0 shadow-sm mb-4">
@@ -84,53 +33,38 @@
         </div>
     }
 
-    @*
-        ========================================================
-        Pagina header
-        ========================================================
-    *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm mb-4">
+            <strong>Gelukt:</strong> @TempData["Success"]
+        </div>
+    }
+
     <div class="player-header-card">
         <div style="flex-grow: 1;">
             <h1 class="player-page-title">Scoring Beheer</h1>
-
             <p class="player-page-subtitle">
                 Selecteer de gewenste wedstrijd en etappe.
             </p>
         </div>
 
-        @*
-            Navigatie terug naar dashboard
-        *@
         <a asp-controller="Dashboard"
-           asp-action="Index"
-           class="player-btn-white"
-           style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-
+               asp-action="Index"
+               class="player-btn-white"
+               style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
             <i class="fas fa-arrow-left"></i> Dashboard
         </a>
     </div>
 
-    @*
-        ========================================================
-        Selectieformulier voor wedstrijd en rit
-        ========================================================
-    *@
     <div class="player-table-card" style="padding:24px; margin-bottom:24px;">
-
         <form asp-controller="Scoring"
               asp-action="Index"
               method="get"
               id="selectionForm">
 
-            <div style="display: flex; gap: 20px; align-items: flex-end; width: 100%;">
+            <div style="display: flex; gap: 20px; align-items: flex-end; width: 100%; flex-wrap: wrap;">
 
-                @*
-                    ====================================================
-                    Wedstrijd selectie
-                    ====================================================
-                *@
-                <div style="flex: 0 0 40%;">
-
+                <div style="flex: 1 1 320px;">
                     <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">
                         Wedstrijd kiezen
                     </label>
@@ -140,9 +74,7 @@
                             onchange="this.form.submit()"
                             style="width: 100%;">
 
-                        <option value="">
-                            -- Selecteer Wedstrijd --
-                        </option>
+                        <option value="">-- Selecteer Wedstrijd --</option>
 
                         @foreach (var race in races)
                         {
@@ -153,13 +85,7 @@
                     </select>
                 </div>
 
-                @*
-                    ====================================================
-                    Rit selectie
-                    ====================================================
-                *@
-                <div style="flex: 0 0 40%;">
-
+                <div style="flex: 1 1 320px;">
                     <label style="font-weight:700; display:block; margin-bottom:8px; color: #374151;">
                         Rit kiezen
                     </label>
@@ -168,28 +94,14 @@
                             asp-items="stages"
                             class="player-search-input"
                             style="width: 100%;">
-
-                        @foreach (var stage in stages)
-                        {
-                            <!option value="@stage.Value"
-                                      @(stage.Selected ? "selected" : "")>
-
-                                @stage.Text
-                            </!option>
-                        }
+                        <option value="">-- Selecteer Rit --</option>
                     </select>
                 </div>
 
-                @*
-                    ====================================================
-                    Knop om ritgegevens te laden
-                    ====================================================
-                *@
-                <div style="flex: 1;">
+                <div style="flex: 0 0 160px;">
                     <button type="submit"
                             class="player-btn-white"
                             style="height: 48px; width: 100%; border: 1px solid #d1d5db; color: #1d4ed8;">
-
                         Rit laden
                     </button>
                 </div>
@@ -198,13 +110,6 @@
         </form>
     </div>
 
-    @*
-        ========================================================
-        Resultatenformulier
-        ========================================================
-
-        Enkel zichtbaar wanneer een rit geselecteerd is.
-    *@
     @if (Model.StageId > 0)
     {
         <form asp-controller="Scoring"
@@ -213,14 +118,10 @@
 
             @Html.AntiForgeryToken()
 
+            <input type="hidden" asp-for="GameSessionId" />
             <input type="hidden" asp-for="StageId" />
             <input type="hidden" name="raceId" value="@selectedRaceId" />
 
-            @*
-                ====================================================
-                Header van ritresultaten
-                ====================================================
-            *@
             <div class="player-header-card">
                 <div style="flex-grow: 1;">
                     <h1 class="player-page-title">
@@ -233,49 +134,24 @@
                 </button>
             </div>
 
-            @*
-                ====================================================
-                Datalist met alle renners
-                ====================================================
-
-                Wordt gebruikt voor autocomplete.
-            *@
             <datalist id="cyclistList">
                 @foreach (var item in Model.AvailableCyclists)
                 {
-                    <option value="@item.Text"
-                            data-id="@item.Value">
-
-                    </option>
+                    <option value="@item.Text" data-id="@item.Value"></option>
                 }
             </datalist>
 
-            @*
-                ====================================================
-                Resultatenlijst Top 25
-                ====================================================
-            *@
             <div class="results-list">
-
                 @for (int i = 0; i < Model.Results.Count; i++)
                 {
                     <div class="result-item-card">
-
-                        @*
-                            Positie badge
-                        *@
                         <div class="pos-badge">
                             @Model.Results[i].Position
                         </div>
 
-                        <input type="hidden"
-                               asp-for="Results[i].Position" />
+                        <input type="hidden" asp-for="Results[i].Position" />
 
-                        @*
-                            Renner invoerveld
-                        *@
                         <div class="px-3" style="flex-grow:1;">
-
                             <input type="text"
                                    list="cyclistList"
                                    class="player-search-input js-cyclist-name"
@@ -284,21 +160,15 @@
                                    autocomplete="off"
                                    placeholder="Zoek renner..." />
 
-                            <input type="hidden"
-                                   asp-for="Results[i].CyclistId" />
+                            <input type="hidden" asp-for="Results[i].CyclistId" />
                         </div>
 
-                        @*
-                            Truien selectie
-                        *@
                         <div class="jersey-flex">
-
                             <label>
                                 <input type="checkbox"
                                        asp-for="Results[i].HasYellowJersey"
                                        class="d-none js-jersey-checkbox"
                                        data-jersey="Red" />
-
                                 <span class="jersey-dot dot-red"></span>
                             </label>
 
@@ -307,7 +177,6 @@
                                        asp-for="Results[i].HasGreenJersey"
                                        class="d-none js-jersey-checkbox"
                                        data-jersey="Green" />
-
                                 <span class="jersey-dot dot-green"></span>
                             </label>
 
@@ -316,7 +185,6 @@
                                        asp-for="Results[i].HasPolkaJersey"
                                        class="d-none js-jersey-checkbox"
                                        data-jersey="Blue" />
-
                                 <span class="jersey-dot dot-blue"></span>
                             </label>
 
@@ -325,7 +193,6 @@
                                        asp-for="Results[i].HasWhiteJersey"
                                        class="d-none js-jersey-checkbox"
                                        data-jersey="White" />
-
                                 <span class="jersey-dot dot-white"></span>
                             </label>
                         </div>
@@ -333,101 +200,65 @@
                 }
             </div>
 
-            @*
-                ====================================================
-                Truidragers buiten top 25
-                ====================================================
-            *@
-            <div class="player-table-card outside-jersey-card"
-                 style="margin-top:20px;">
-
-                <h2 class="outside-jersey-title"
-                    style="padding: 20px 24px 0; margin-bottom: -10px;">
-
+            <div class="player-table-card outside-jersey-card" style="margin-top:20px;">
+                <h2 class="outside-jersey-title" style="padding: 20px 24px 0; margin-bottom: -10px;">
                     Truidragers buiten Top 25
                 </h2>
 
                 <div class="results-list" style="padding: 20px;">
 
-                    @*
-                        Rode trui
-                    *@
                     <div class="result-item-card">
                         <div class="pos-badge dot-red"></div>
-
                         <div class="px-3" style="flex-grow:1;">
-
                             <input type="text"
                                    list="cyclistList"
                                    class="player-search-input js-outside-jersey-name"
                                    value="@redName"
                                    oninput="syncId(this); clearTop25Jersey('Red');"
                                    placeholder="Rode trui..." />
-
-                            <input type="hidden"
-                                   asp-for="YellowOutsideTop25CyclistId" />
+                            <input type="hidden" asp-for="YellowOutsideTop25CyclistId" />
                         </div>
                     </div>
 
-                    @*
-                        Groene trui
-                    *@
                     <div class="result-item-card">
                         <div class="pos-badge dot-green"></div>
-
                         <div class="px-3" style="flex-grow:1;">
-
                             <input type="text"
                                    list="cyclistList"
                                    class="player-search-input js-outside-jersey-name"
                                    value="@greenName"
                                    oninput="syncId(this); clearTop25Jersey('Green');"
                                    placeholder="Groene trui..." />
-
-                            <input type="hidden"
-                                   asp-for="GreenOutsideTop25CyclistId" />
+                            <input type="hidden" asp-for="GreenOutsideTop25CyclistId" />
                         </div>
                     </div>
 
-                    @*
-                        Blauwe trui
-                    *@
                     <div class="result-item-card">
                         <div class="pos-badge dot-blue"></div>
-
                         <div class="px-3" style="flex-grow:1;">
-
                             <input type="text"
                                    list="cyclistList"
                                    class="player-search-input js-outside-jersey-name"
                                    value="@blueName"
                                    oninput="syncId(this); clearTop25Jersey('Blue');"
                                    placeholder="Blauwe trui..." />
-
-                            <input type="hidden"
-                                   asp-for="PolkaOutsideTop25CyclistId" />
+                            <input type="hidden" asp-for="PolkaOutsideTop25CyclistId" />
                         </div>
                     </div>
 
-                    @*
-                        Witte trui
-                    *@
                     <div class="result-item-card">
                         <div class="pos-badge dot-white"></div>
-
                         <div class="px-3" style="flex-grow:1;">
-
                             <input type="text"
                                    list="cyclistList"
                                    class="player-search-input js-outside-jersey-name"
                                    value="@whiteName"
                                    oninput="syncId(this); clearTop25Jersey('White');"
                                    placeholder="Witte trui..." />
-
-                            <input type="hidden"
-                                   asp-for="WhiteOutsideTop25CyclistId" />
+                            <input type="hidden" asp-for="WhiteOutsideTop25CyclistId" />
                         </div>
                     </div>
+
                 </div>
             </div>
         </form>
@@ -435,64 +266,30 @@
 </div>
 
 @section Scripts {
-
-    @*
-        ============================================================
-        JavaScript functionaliteiten
-        ============================================================
-
-        syncId():
-        koppelt een gekozen rennernaam aan een verborgen ID.
-
-        clearTop25Jersey():
-        verwijdert dezelfde trui uit de top 25.
-
-        clearOutsideJersey():
-        verwijdert een buiten-top25 trui.
-
-        DOMContentLoaded:
-        registreert checkbox events.
-
-        stageId change:
-        synchroniseert geselecteerde rit.
-    *@
-
     <script>
-
-        /*
-            Synchroniseert naam van renner met verborgen ID.
-        */
         function syncId(input) {
-
             const list = document.getElementById("cyclistList");
             const hidden = input.nextElementSibling;
 
+            if (!list || !hidden) {
+                return;
+            }
+
             const typedValue = input.value.trim().toLowerCase();
 
-            const option = Array.from(list.options)
-                .find(o => o.value.trim().toLowerCase() === typedValue);
-
             const match = Array.from(list.options)
-                .find(o => o.value.toLowerCase() === val);
+                .find(o => o.value.trim().toLowerCase() === typedValue);
 
             hidden.value = match ? match.dataset.id : "";
         }
 
-        /*
-            Verwijdert dezelfde trui uit top 25 selectie.
-        */
         function clearTop25Jersey(jerseyType) {
-
             document.querySelectorAll(
                 '.js-jersey-checkbox[data-jersey="' + jerseyType + '"]'
             ).forEach(box => box.checked = false);
         }
 
-        /*
-            Verwijdert buiten-top25 trui.
-        */
         function clearOutsideJersey(jerseyType) {
-
             const map = {
                 'Red': 'Yellow',
                 'Green': 'Green',
@@ -505,48 +302,36 @@
             );
 
             if (hidden) {
-
                 const textInput = hidden.previousElementSibling;
-
                 hidden.value = "";
-                hidden.previousElementSibling.value = "";
+
+                if (textInput) {
+                    textInput.value = "";
+                }
             }
         }
 
-        /*
-            Wordt uitgevoerd wanneer pagina geladen is.
-        */
         document.addEventListener("DOMContentLoaded", function () {
-
             document.querySelectorAll(".js-jersey-checkbox")
                 .forEach(box => {
-
                     box.addEventListener("change", function () {
-
                         if (!this.checked) return;
 
-                        const jerseyType = this.dataset.jersey;
-                        const currentRow = this.closest(".result-item-card");
-
-                        clearOutsideJersey(jerseyType);
+                        clearOutsideJersey(this.dataset.jersey);
                     });
                 });
+
+            const stageSelect = document.querySelector('select[name="StageId"]');
+
+            if (stageSelect) {
+                stageSelect.addEventListener("change", function () {
+                    const hidden = document.querySelector('input[name="StageId"]');
+
+                    if (hidden) {
+                        hidden.value = this.value;
+                    }
+                });
+            }
         });
-
-        /*
-            Synchroniseert geselecteerde rit.
-        */
-        document.querySelector('select[name="stageId"]')
-            .addEventListener('change', function () {
-
-                const hidden = document.querySelector(
-                    'input[name="StageId"]'
-                );
-
-                if (hidden) {
-                    hidden.value = this.value;
-                }
-            });
-
     </script>
 }
