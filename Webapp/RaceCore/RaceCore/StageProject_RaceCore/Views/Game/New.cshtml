@@ -12,6 +12,9 @@
     string activeGameStatus = ViewBag.ActiveGameStatus ?? "";
 
     string joinController = activeGameStatus == "Draft" ? "Draft" : "Dashboard";
+
+    int totalDraftRounds = Model.RidersPerPlayer + Model.BenchPerPlayer;
+    int totalDraftPicks = selectedPlayersCount * totalDraftRounds;
 }
 
 <link rel="stylesheet" href="~/css/NewGame.css" asp-append-version="true" />
@@ -26,6 +29,11 @@
     @if (TempData["Success"] != null)
     {
         <div class="game-alert game-alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="game-alert game-alert-danger">@TempData["DatabaseError"]</div>
     }
 
     @if (activeGameId > 0)
@@ -75,7 +83,7 @@
                     <h1 class="game-title">New Game</h1>
 
                     <p class="game-subtitle">
-                        Stel je race klaar, kies een rit, kies de spelers en start direct een nieuwe snake draft.
+                        Stel je race klaar, kies een rit, kies de spelers en bepaal hoeveel actieve renners en bankrenners elke speler krijgt.
                     </p>
                 </div>
             </div>
@@ -138,7 +146,7 @@
                 </div>
 
                 <p class="game-panel-text">
-                    Kies eerst de race. Daarna kies je de rit waarmee je de game wilt starten.
+                    Kies eerst de race, daarna de rit en stel het aantal renners per speler in.
                 </p>
 
                 <div class="game-form-group">
@@ -155,6 +163,48 @@
                         <option value="">-- Kies een rit --</option>
                     </select>
                     <span asp-validation-for="StageId" class="text-danger"></span>
+                </div>
+
+                <div class="game-form-group">
+                    <label asp-for="RidersPerPlayer">Actieve renners per speler</label>
+                    <input asp-for="RidersPerPlayer"
+                           type="number"
+                           min="1"
+                           max="30"
+                           class="game-input"
+                           id="ridersPerPlayerInput" />
+                    <span asp-validation-for="RidersPerPlayer" class="text-danger"></span>
+                </div>
+
+                <div class="game-form-group">
+                    <label asp-for="BenchPerPlayer">Bankrenners per speler</label>
+                    <input asp-for="BenchPerPlayer"
+                           type="number"
+                           min="0"
+                           max="30"
+                           class="game-input"
+                           id="benchPerPlayerInput" />
+                    <span asp-validation-for="BenchPerPlayer" class="text-danger"></span>
+                </div>
+
+                <div class="game-warning-box">
+                    ℹ Draft instellingen<br />
+                    <span>
+                        Per speler:
+                        <strong id="summaryActive">@Model.RidersPerPlayer</strong> actief +
+                        <strong id="summaryBench">@Model.BenchPerPlayer</strong> bank =
+                        <strong id="summaryTotal">@totalDraftRounds</strong> rondes.
+                    </span>
+                    <br />
+                    <span>
+                        Totaal nodig:
+                        <strong id="summaryNeeded">@totalDraftPicks</strong> renners.
+                    </span>
+                    <br />
+                    <span>
+                        Beschikbaar in deze race:
+                        <strong>@Model.TotalCyclists</strong> renners.
+                    </span>
                 </div>
 
                 @if (!Model.AvailableRaces.Any())
@@ -186,6 +236,7 @@
                     <a asp-controller="Player" asp-action="Index" class="game-btn game-btn-light">
                         👥 Players beheren
                     </a>
+
                     <a asp-controller="Cyclist" asp-action="Index" class="game-btn game-btn-light">
                         🚴 Cyclists beheren
                     </a>
@@ -266,7 +317,9 @@
                     <div class="game-draft-summary-icon">🏆</div>
                     <div>
                         <strong>Fair Snake Draft</strong>
-                        <span>10 rondes</span>
+                        <span id="draftSummaryText">
+                            @totalDraftRounds rondes per speler
+                        </span>
                     </div>
                 </div>
             </div>
@@ -282,6 +335,12 @@
                     Game <strong id="modalRaceName">de gekozen race</strong> wordt gestart.
                     <br />
                     Rit: <strong id="modalStageName">de gekozen rit</strong>
+                    <br />
+                    Actief: <strong id="modalActive">@Model.RidersPerPlayer</strong> renners per speler
+                    <br />
+                    Bank: <strong id="modalBench">@Model.BenchPerPlayer</strong> renners per speler
+                    <br />
+                    Totaal nodig: <strong id="modalNeeded">@totalDraftPicks</strong> renners
                 </p>
 
                 <div class="game-modal-actions">
@@ -320,12 +379,66 @@
             const modalRaceName = document.getElementById("modalRaceName");
             const modalStageName = document.getElementById("modalStageName");
 
+            const ridersInput = document.getElementById("ridersPerPlayerInput");
+            const benchInput = document.getElementById("benchPerPlayerInput");
+
+            const summaryActive = document.getElementById("summaryActive");
+            const summaryBench = document.getElementById("summaryBench");
+            const summaryTotal = document.getElementById("summaryTotal");
+            const summaryNeeded = document.getElementById("summaryNeeded");
+            const draftSummaryText = document.getElementById("draftSummaryText");
+
+            const modalActive = document.getElementById("modalActive");
+            const modalBench = document.getElementById("modalBench");
+            const modalNeeded = document.getElementById("modalNeeded");
+
+            function getSelectedPlayersCount() {
+                return document.querySelectorAll(".player-checkbox:checked").length;
+            }
+
+            function getNumberValue(input, fallback) {
+                if (!input) {
+                    return fallback;
+                }
+
+                const value = parseInt(input.value, 10);
+
+                if (Number.isNaN(value)) {
+                    return fallback;
+                }
+
+                return value;
+            }
+
             function updateSelectedPlayersCount() {
-                const count = document.querySelectorAll(".player-checkbox:checked").length;
+                const count = getSelectedPlayersCount();
 
                 if (selectedCount) {
                     selectedCount.textContent = count;
                 }
+
+                updateDraftSummary();
+            }
+
+            function updateDraftSummary() {
+                const selectedPlayers = getSelectedPlayersCount();
+                const active = Math.max(1, getNumberValue(ridersInput, 12));
+                const bench = Math.max(0, getNumberValue(benchInput, 6));
+                const totalRounds = active + bench;
+                const needed = selectedPlayers * totalRounds;
+
+                if (summaryActive) summaryActive.textContent = active;
+                if (summaryBench) summaryBench.textContent = bench;
+                if (summaryTotal) summaryTotal.textContent = totalRounds;
+                if (summaryNeeded) summaryNeeded.textContent = needed;
+
+                if (draftSummaryText) {
+                    draftSummaryText.textContent = totalRounds + " rondes per speler";
+                }
+
+                if (modalActive) modalActive.textContent = active;
+                if (modalBench) modalBench.textContent = bench;
+                if (modalNeeded) modalNeeded.textContent = needed;
             }
 
             function updateModalRaceName() {
@@ -385,6 +498,16 @@
 
             checkboxes.forEach(cb => cb.addEventListener("change", updateSelectedPlayersCount));
 
+            if (ridersInput) {
+                ridersInput.addEventListener("input", updateDraftSummary);
+                ridersInput.addEventListener("change", updateDraftSummary);
+            }
+
+            if (benchInput) {
+                benchInput.addEventListener("input", updateDraftSummary);
+                benchInput.addEventListener("change", updateDraftSummary);
+            }
+
             if (raceSelect) {
                 raceSelect.addEventListener("change", function () {
                     updateModalRaceName();
@@ -398,6 +521,8 @@
 
             if (openModalBtn && modal) {
                 openModalBtn.addEventListener("click", function () {
+                    updateSelectedPlayersCount();
+                    updateDraftSummary();
                     updateModalRaceName();
                     updateModalStageName();
                     modal.classList.add("show");
@@ -417,6 +542,7 @@
             }
 
             updateSelectedPlayersCount();
+            updateDraftSummary();
             updateModalRaceName();
             updateModalStageName();
         });

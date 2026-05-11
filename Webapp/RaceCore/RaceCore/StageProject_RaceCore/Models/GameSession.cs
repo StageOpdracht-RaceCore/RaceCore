@@ -14,13 +14,11 @@
 
         public int CurrentStageNumber { get; set; } = 0;
 
-        public int RidersPerPlayer { get; set; } = 8;
+        public int RidersPerPlayer { get; set; } = 12;
 
-        public int BenchPerPlayer { get; set; } = 2;
+        public int BenchPerPlayer { get; set; } = 6;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        // HOST MULTIPLAYER
 
         public string? HostSessionId { get; set; }
 
