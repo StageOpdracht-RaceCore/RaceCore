@@ -76,26 +76,37 @@
     font-family: inherit;
 }
 
+
+
 /* =========================
    DASHBOARD / BACK BUTTON
 ========================= */
-.race-dashboard-btn,
-.race-back-btn {
-    min-height: 54px;
-    padding: 0 26px;
-    font-size: 17px;
-    font-weight: 900;
-    background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
-    white-space: nowrap;
+
+.race-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.race-btn-done {
+    background: limegreen;
+    color: white;
+    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
 }
 
-    .race-dashboard-btn:hover,
-    .race-back-btn:hover {
-        transform: translateY(-2px);
-        background: #f8fafc;
+    .race-btn-done:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
     }
+
 
 /* =========================
    PRIMARY BUTTON
