@@ -1,351 +1,423 @@
-﻿/* Algemene Pagina Layout */
+﻿/* ============================================================
+   SCORING PAGINA - BASIS
+   ============================================================ */
+
 .scoring-page {
     padding: 24px;
+    min-height: 100vh;
+    background: #f8fafc;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-color: #f8fafc;
 }
 
-.player-header-card {
+/* ============================================================
+   MELDINGEN
+   ============================================================ */
+
+.scoring-alert {
+    border-radius: 18px;
+    padding: 18px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+    .scoring-alert strong {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+.scoring-alert-error {
+    background: #fff1f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+    .scoring-alert-error strong {
+        background: #ef4444;
+        color: white;
+    }
+
+.scoring-alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #bbf7d0;
+}
+
+    .scoring-alert-success strong {
+        background: #10b981;
+        color: white;
+    }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.scoring-hero,
+.scoring-section-header {
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
-    border-radius: 20px;
-    padding: 32px;
-    margin-bottom: 24px;
+    border-radius: 22px;
+    padding: 28px 30px;
+    margin-bottom: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.15);
+    box-shadow: 0 12px 28px rgba(30, 58, 138, 0.18);
 }
 
-.player-page-title {
-    font-size: 28px;
-    font-weight: 800;
-    margin: 0;
-}
-
-.player-page-subtitle {
-    color: #dbeafe;
-    margin: 4px 0 0;
-    opacity: 0.9;
-}
-
-/* Kaarten */
-.player-table-card {
-    background: white;
-    border-radius: 20px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-}
-
-.results-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.result-item-card {
-    background: white;
-    border-radius: 16px;
-    padding: 16px 24px;
-    display: grid;
-    grid-template-columns: 80px 1.5fr 1fr;
-    align-items: center;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
-    transition: transform 0.2s, border-color 0.2s, background 0.2s;
-}
-
-    .result-item-card:hover {
-        transform: translateX(5px);
-        border-color: #2563eb;
-        background: #f8fbff;
+    .scoring-hero h1,
+    .scoring-section-header h2 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
     }
 
-/* Positie badge */
-.pos-badge {
-    background: #f1f5f9;
-    color: #1e293b;
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 18px;
-    border: 1px solid #e2e8f0;
-}
-
-/* Inputs */
-.player-search-input {
-    width: 100%;
-    height: 48px;
-    border-radius: 12px;
-    border: 1px solid #d1d5db;
-    padding: 0 16px;
-    background: #f9fafb;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-    .player-search-input:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    .scoring-hero p {
+        margin: 8px 0 0;
+        color: #dbeafe;
+        font-weight: 500;
     }
 
-.alert-danger {
-    background-color: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-    border-radius: 16px;
-    padding: 16px 24px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 12px rgba(153, 27, 27, 0.08);
-    animation: slideIn 0.3s ease-out;
-}
-
-    .alert-danger i {
-        font-size: 20px;
-    }
-
-    .alert-danger strong {
-        background: #ef4444;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-right: 8px;
-    }
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.jersey-flex {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.jersey-dot {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+.scoring-dashboard-btn,
+.scoring-publish-btn,
+.scoring-load-btn {
+    border: none;
+    text-decoration: none;
     cursor: pointer;
-    transition: all 0.25s ease;
-    display: inline-block;
-    filter: saturate(0) opacity(0.25);
+    border-radius: 12px;
+    font-weight: 900;
+    transition: 0.2s ease;
+    white-space: nowrap;
 }
 
-.dot-red {
-    background: #ef4444 !important;
-    border: 2px solid #dc2626 !important;
-}
-
-.dot-green {
-    background: #10b981 !important;
-    border: 2px solid #059669 !important;
-}
-
-.dot-blue {
-    background: #2563eb !important;
-    border: 2px solid #1d4ed8 !important;
-}
-
-.dot-white {
-    background: #ffffff !important;
-    border: 2px solid #94a3b8 !important;
-}
-
-input[type="checkbox"]:checked + .jersey-dot {
-    filter: saturate(1) opacity(1);
-    transform: scale(1.2);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-}
-
-.pos-badge.dot-red, .pos-badge.dot-green, .pos-badge.dot-blue, .pos-badge.dot-white {
-    filter: none !important;
-}
-
-.pos-badge.dot-red {
-    background: #ef4444 !important;
-    color: white;
-    border-color: #dc2626 !important;
-}
-
-.pos-badge.dot-green {
-    background: #10b981 !important;
-    color: white;
-    border-color: #059669 !important;
-}
-
-.pos-badge.dot-blue {
-    background: #2563eb !important;
-    color: white;
-    border-color: #1d4ed8 !important;
-}
-
-.pos-badge.dot-white {
-    background: #ffffff !important;
-    color: #1e293b;
-    border-color: #94a3b8 !important;
-}
-
-.player-btn-white {
+.scoring-dashboard-btn,
+.scoring-publish-btn {
     background: white;
     color: #1d4ed8;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 14px 24px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
-    .player-btn-white:hover {
+    .scoring-dashboard-btn:hover,
+    .scoring-publish-btn:hover {
+        transform: translateY(-2px);
         background: #eff6ff;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.18);
+        color: #1d4ed8;
     }
 
-.player-header-card .player-btn-white {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-sizing: border-box;
-    position: relative;
-    height: 54px;
-    min-height: 54px;
-    min-width: 168px;
-    padding: 0 26px;
-    gap: 0 !important;
-    border-radius: 14px;
-    border: none;
-    color: #070b3f;
-    background: #ffffff;
-    font-size: 17px !important;
-    font-weight: 900 !important;
-    line-height: 1;
-    text-decoration: none;
-    text-align: center;
-    white-space: nowrap;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
-    transition: 0.2s ease;
+.scoring-jersey-header {
+    margin-top: 26px;
 }
 
-    .player-header-card .player-btn-white i {
-        position: absolute;
-        left: 22px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 17px !important;
-        line-height: 1;
-    }
+/* ============================================================
+   KAARTEN EN FILTER
+   ============================================================ */
 
-    .player-header-card .player-btn-white:hover {
-        color: #070b3f;
-        background: #f8fafc;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
-    }
-
-.d-none {
-    display: none !important;
+.scoring-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
 }
 
-.px-3 {
-    padding-left: 12px;
-    padding-right: 12px;
-}
-
-.race-select-form, .scoring-stage-form {
-    display: flex;
+.scoring-filter-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 190px;
     align-items: end;
-    gap: 14px;
-    flex-wrap: wrap;
+    gap: 22px;
 }
 
-.race-select-group, .scoring-stage-group {
+.scoring-field {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.race-select-group {
-    width: min(100%, 360px);
+    .scoring-field label {
+        font-size: 18px;
+        font-weight: 900;
+        color: #1e293b;
+    }
+
+    .scoring-field select {
+        height: 48px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 0 18px;
+        background: #f8fafc;
+        font-size: 15px;
+        font-weight: 800;
+        color: #020617;
+    }
+
+        .scoring-field select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+        }
+
+.scoring-load-btn {
+    height: 58px;
+    background: white;
+    color: #1d4ed8;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
-.scoring-stage-group {
-    width: min(100%, 300px);
+    .scoring-load-btn:hover {
+        background: #eff6ff;
+        transform: translateY(-2px);
+    }
+
+/* ============================================================
+   RESULTATEN LIJST
+   ============================================================ */
+
+.scoring-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
-    .race-select-group label, .scoring-stage-group label {
-        font-weight: 700;
-        color: #374151;
+.scoring-result-row {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 86px minmax(260px, 1fr) 230px;
+    align-items: center;
+    gap: 26px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+
+    .scoring-result-row:hover {
+        border-color: #2563eb;
+        background: #fbfdff;
     }
 
-/* Responsive Media Queries */
-@media (max-width: 900px) {
-    .player-header-card {
-        flex-direction: column;
-        align-items: flex-start;
+.scoring-position {
+    width: 54px;
+    height: 54px;
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.scoring-rider-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    padding: 0 18px;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 800;
+    box-sizing: border-box;
+}
+
+    .scoring-rider-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
     }
 
-    .result-item-card {
-        grid-template-columns: 60px 1fr;
-        gap: 14px;
+    .scoring-rider-input.is-invalid {
+        border-color: #ef4444;
+        background: #fff1f2;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
     }
 
-    .jersey-flex {
+/* ============================================================
+   TRUIEN BOLLETJES BIJ TOP 25
+   ============================================================ */
+
+.scoring-jersey-options {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.jersey-dot {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    cursor: pointer;
+    position: relative;
+}
+
+    .jersey-dot input {
+        display: none;
+    }
+
+    .jersey-dot span {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: block;
+        opacity: 0.25;
+        filter: grayscale(1);
+        transition: 0.2s ease;
+        box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.10);
+    }
+
+.jersey-red span {
+    background: #ef4444;
+}
+
+.jersey-green span {
+    background: #22c55e;
+}
+
+.jersey-blue span {
+    background: #2563eb;
+}
+
+.jersey-white span {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+}
+
+.jersey-dot input:checked + span {
+    opacity: 1;
+    filter: grayscale(0);
+    transform: scale(1.12);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+}
+
+/* ============================================================
+   TRUIEN BUITEN TOP 25
+   ============================================================ */
+
+.scoring-outside-jerseys {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+}
+
+.outside-jersey-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.outside-jersey-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    color: #1e293b;
+}
+
+.outside-jersey-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
+.outside-red {
+    background: #ef4444;
+}
+
+.outside-green {
+    background: #22c55e;
+}
+
+.outside-blue {
+    background: #2563eb;
+}
+
+.outside-white {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+    .scoring-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .scoring-load-btn {
+        width: 100%;
+    }
+
+    .scoring-result-row {
+        grid-template-columns: 70px 1fr;
+    }
+
+    .scoring-jersey-options {
         grid-column: 2;
         justify-content: flex-start;
+    }
+
+    .scoring-outside-jerseys {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 700px) {
-    .race-select-form, .scoring-stage-form {
-        align-items: stretch;
-    }
-
-    .race-select-group, .scoring-stage-group, .app-btn {
-        width: 100%;
-    }
-}
-
-@media (max-width: 600px) {
     .scoring-page {
-        padding: 16px;
-    }
-
-    .result-item-card {
         padding: 14px;
+    }
+
+    .scoring-hero,
+    .scoring-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px;
+    }
+
+        .scoring-hero h1,
+        .scoring-section-header h2 {
+            font-size: 25px;
+        }
+
+    .scoring-dashboard-btn,
+    .scoring-publish-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .scoring-result-row {
         grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 18px;
     }
 
-    .jersey-flex {
+    .scoring-jersey-options {
         grid-column: auto;
+        justify-content: flex-start;
     }
 
-    .pos-badge {
-        width: 40px;
-        height: 40px;
+    .scoring-position {
+        width: 48px;
+        height: 48px;
+        font-size: 19px;
     }
 }
