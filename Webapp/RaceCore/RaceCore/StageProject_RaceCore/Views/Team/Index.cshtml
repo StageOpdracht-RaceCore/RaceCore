@@ -163,7 +163,10 @@
 
                                     <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "") @(index == Model.ActiveRiderSlots - 1 ? "roster-before-bench" : "")"
                                         data-section="active"
-                                        onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
+                                        onclick="@(rider != null ? "selectRider(this)" : null)"
+                                        role="@(rider != null ? "button" : null)"
+                                        tabindex="@(rider != null ? "0" : null)"
+                                        title="@(rider != null ? "Selecteer om te wisselen" : null)"
                                         @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
@@ -191,7 +194,10 @@
 
                                     <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")"
                                         data-section="bench"
-                                        onclick="selectRider(this)" role="button" tabindex="0" title="Selecteer om te wisselen"
+                                        onclick="@(rider != null ? "selectRider(this)" : null)"
+                                        role="@(rider != null ? "button" : null)"
+                                        tabindex="@(rider != null ? "0" : null)"
+                                        title="@(rider != null ? "Selecteer om te wisselen" : null)"
                                         @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
                                         <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
@@ -222,6 +228,11 @@
         var selectedRow = null;
 
         window.selectRider = function (row) {
+            if (!hasCyclist(row)) {
+                clearSelection();
+                return;
+            }
+
             var card = row.closest('.player-team-card');
 
             if (selectedRow === row) {
@@ -276,24 +287,30 @@
 
             // Highlight valid targets in the opposite section
             card.querySelectorAll('.roster-row[data-section]').forEach(function (row) {
-                row.classList.toggle('swap-target', row.dataset.section === targetSection);
+                row.classList.toggle('swap-target', row.dataset.section === targetSection && hasCyclist(row));
                 row.classList.toggle('swap-dimmed', row.dataset.section === selectedSection && row !== selected);
             });
 
             var hint = document.querySelector('.team-swap-hint-global');
             if (hint) {
                 hint.textContent = targetSection === 'bench'
-                    ? 'Geselecteerd. Klik nu een bankrenner (of vrije plaats) om te wisselen.'
-                    : 'Geselecteerd. Klik nu een actieve renner (of vrije plaats) om te wisselen.';
+                    ? 'Geselecteerd. Klik nu een bankrenner om te wisselen.'
+                    : 'Geselecteerd. Klik nu een actieve renner om te wisselen.';
             }
         }
 
         function swapRows(rowA, rowB) {
+            if (!hasCyclist(rowA) || !hasCyclist(rowB)) {
+                return;
+            }
+
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
 
             var activeRow = rowA.classList.contains('active-rider') ? rowA : rowB;
             var benchRow = activeRow === rowA ? rowB : rowA;
+            var originalActiveCyclistId = activeRow.dataset.cyclistId;
+            var originalBenchCyclistId = benchRow.dataset.cyclistId;
 
             var tmpName = cellsA[1].innerHTML;
             cellsA[1].innerHTML = cellsB[1].innerHTML;
@@ -310,7 +327,7 @@
             updateRowState(rowA);
             updateRowState(rowB);
 
-            persistSwap(activeRow, benchRow);
+            persistSwap(activeRow, originalActiveCyclistId, originalBenchCyclistId);
         }
 
         function updateRowState(row) {
@@ -339,7 +356,16 @@
             }
         }
 
-        function persistSwap(activeRow, benchRow) {
+        function hasCyclist(row) {
+            if (!row) {
+                return false;
+            }
+
+            var id = row.dataset.cyclistId;
+            return id !== undefined && id !== '' && String(id) !== '0';
+        }
+
+        function persistSwap(activeRow, activeCyclistId, benchCyclistId) {
             var card = activeRow.closest('.player-team-card');
 
             if (!card) {
@@ -348,8 +374,6 @@
 
             var gameId = document.querySelector('.team-page')?.dataset?.gameId;
             var playerId = card.dataset.playerId;
-            var activeCyclistId = activeRow.dataset.cyclistId || '0';
-            var benchCyclistId = benchRow.dataset.cyclistId || '0';
 
             if (!gameId || !playerId) {
                 return;
