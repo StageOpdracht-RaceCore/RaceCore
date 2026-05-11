@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
+using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
@@ -25,76 +26,87 @@ namespace StageProject_RaceCore.Controllers
             return View(races);
         }
 
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Cyclists = _context.Cyclists
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.LastName)
-                .ToList();
-
-            return View(new Race
+            var model = new RaceCreateViewModel
             {
-                Year = DateTime.Now.Year
-            });
+                Year = DateTime.Now.Year,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today,
+                AvailableCyclists = await GetAvailableCyclists()
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Race race, int[] selectedCyclists)
+        public async Task<IActionResult> Create(RaceCreateViewModel model)
         {
-            // Safety check
-            if (!ModelState.IsValid)
+            if (model.EndDate != null && model.StartDate != null && model.EndDate < model.StartDate)
             {
-                ViewBag.Cyclists = _context.Cyclists.ToList();
-                return View(race);
+                ModelState.AddModelError(nameof(model.EndDate), "Einddatum mag niet vroeger zijn dan begindatum.");
             }
 
-            // Save parent first
+            if (!model.SelectedCyclistIds.Any())
+            {
+                ModelState.AddModelError(nameof(model.SelectedCyclistIds), "Selecteer minstens 1 wielrenner.");
+            }
+
+            var validStages = model.Stages
+                .Where(s => !string.IsNullOrWhiteSpace(s.Name))
+                .ToList();
+
+            if (!validStages.Any())
+            {
+                ModelState.AddModelError(nameof(model.Stages), "Voeg minstens 1 stage toe.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.AvailableCyclists = await GetAvailableCyclists();
+                return View(model);
+            }
+
+            var race = new Race
+            {
+                Name = model.Name.Trim(),
+                Year = model.Year,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate
+            };
+
             _context.Races.Add(race);
             await _context.SaveChangesAsync();
 
-            // ------------------------
-            // CYCLISTS
-            // ------------------------
-            if (selectedCyclists != null && selectedCyclists.Length > 0)
+            foreach (var cyclistId in model.SelectedCyclistIds.Distinct())
             {
-                foreach (var id in selectedCyclists)
+                _context.RaceEntries.Add(new RaceEntry
                 {
-                    _context.RaceEntries.Add(new RaceEntry
-                    {
-                        RaceId = race.Id,
-                        CyclistId = id,
-                        Status = "Active"
-                    });
-                }
+                    RaceId = race.Id,
+                    CyclistId = cyclistId,
+                    Status = "Active"
+                });
             }
 
-            // ------------------------
-            // STAGES (ROBUST FIX)
-            // ------------------------
-            if (race.Stages != null && race.Stages.Count > 0)
+            int stageNumber = 1;
+
+            foreach (var stage in validStages)
             {
-                int stageNr = 1;
-
-                foreach (var stage in race.Stages)
+                _context.Stages.Add(new Stage
                 {
-                    if (stage == null || string.IsNullOrWhiteSpace(stage.Name))
-                        continue;
-
-                    _context.Stages.Add(new Stage
-                    {
-                        RaceId = race.Id,
-                        StageNumber = stageNr++,
-                        Name = stage.Name,
-                        Date = stage.Date
-                    });
-                }
+                    RaceId = race.Id,
+                    StageNumber = stageNumber++,
+                    Name = stage.Name.Trim(),
+                    Date = stage.Date
+                });
             }
 
-            // Save children
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            TempData["Success"] = "Race succesvol aangemaakt.";
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -127,6 +139,7 @@ namespace StageProject_RaceCore.Controllers
             var race = await _context.Races
                 .Include(r => r.Stages)
                 .Include(r => r.RaceEntries)
+                    .ThenInclude(re => re.Cyclist)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (race == null) return NotFound();
@@ -145,6 +158,7 @@ namespace StageProject_RaceCore.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var race = await _context.Races.FindAsync(id);
@@ -156,6 +170,16 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<List<Cyclist>> GetAvailableCyclists()
+        {
+            return await _context.Cyclists
+                .Include(c => c.Team)
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.LastName)
+                .ThenBy(c => c.FirstName)
+                .ToListAsync();
         }
     }
 }
