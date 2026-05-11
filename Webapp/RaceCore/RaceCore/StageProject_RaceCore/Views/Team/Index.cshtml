@@ -49,32 +49,6 @@
         </div>
     </section>
 
-    <section class="stats-row team-stats-row" aria-label="Team overzicht">
-        <div class="stat-box blue">
-            <div class="stat-icon">👥</div>
-            <div>
-                <span>Spelers</span>
-                <strong>@Model.PlayerCount</strong>
-            </div>
-        </div>
-
-        <div class="stat-box orange">
-            <div class="stat-icon">🚴</div>
-            <div>
-                <span>Actief</span>
-                <strong>@Model.ActiveRiderSlots</strong>
-            </div>
-        </div>
-
-        <div class="stat-box purple">
-            <div class="stat-icon">🪑</div>
-            <div>
-                <span>Bank</span>
-                <strong>@Model.BenchRiderSlots</strong>
-            </div>
-        </div>
-    </section>
-
     @if (!Model.PlayerTeams.Any())
     {
         <section class="card team-empty-state">
@@ -86,6 +60,32 @@
     else
     {
         <section class="card team-overview-card" aria-label="Game overzicht">
+            <section class="stats-row team-stats-row" aria-label="Team overzicht">
+                <div class="stat-box blue">
+                    <div class="stat-icon">👥</div>
+                    <div>
+                        <span>Spelers</span>
+                        <strong>@Model.PlayerCount</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box orange">
+                    <div class="stat-icon">🚴</div>
+                    <div>
+                        <span>Actief</span>
+                        <strong>@Model.ActiveRiderSlots</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box purple">
+                    <div class="stat-icon">🪑</div>
+                    <div>
+                        <span>Bank</span>
+                        <strong>@Model.BenchRiderSlots</strong>
+                    </div>
+                </div>
+            </section>
+
             <div class="info-grid">
                 <div class="info-box">
                     <span>Game</span>

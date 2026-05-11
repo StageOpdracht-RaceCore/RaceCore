@@ -93,49 +93,62 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    margin-bottom: 16px;
 }
+
+    .team-overview-card .info-grid {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid #e2e8f0;
+    }
 
 .stat-box {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 20px;
-    border-radius: 20px;
-    color: #ffffff;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
 }
 
     .stat-box span {
         display: block;
-        font-weight: 700;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
     }
 
     .stat-box strong {
-        font-size: 28px;
-        font-weight: 900;
+        color: #0f172a;
+        font-size: 22px;
+        font-weight: 950;
     }
 
 /* Icon container inside each stat box. */
 .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
     display: grid;
     place-items: center;
-    background: rgba(255, 255, 255, 0.2);
+    font-size: 16px;
 }
 
 /* Colour modifier classes applied to .stat-box elements. */
-.blue {
-    background: linear-gradient(135deg, #2563eb, #38bdf8);
+.blue .stat-icon {
+    background: #eff6ff;
+    color: #2563eb;
 }
 
-.orange {
-    background: linear-gradient(135deg, #f97316, #f59e0b);
+.orange .stat-icon {
+    background: #fff7ed;
+    color: #f97316;
 }
 
-.purple {
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
+.purple .stat-icon {
+    background: #f5f3ff;
+    color: #7c3aed;
 }
 
 /* ── 4. Game overview card ──────────────────────────────────────────────────── */
