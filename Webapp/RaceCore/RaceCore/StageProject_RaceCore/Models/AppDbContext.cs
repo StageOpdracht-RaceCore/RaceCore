@@ -137,8 +137,14 @@ namespace StageProject_RaceCore.Models
 
             // STAGE RESULT
             modelBuilder.Entity<StageResult>()
-                .HasIndex(sr => new { sr.StageId, sr.CyclistId })
+                .HasIndex(sr => new { sr.GameSessionId, sr.StageId, sr.CyclistId })
                 .IsUnique();
+
+            modelBuilder.Entity<StageResult>()
+                .HasOne(sr => sr.GameSession)
+                .WithMany()
+                .HasForeignKey(sr => sr.GameSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<StageResult>()
                 .HasOne(sr => sr.Stage)
@@ -150,6 +156,29 @@ namespace StageProject_RaceCore.Models
                 .HasOne(sr => sr.Cyclist)
                 .WithMany(c => c.StageResults)
                 .HasForeignKey(sr => sr.CyclistId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // JERSEY
+            modelBuilder.Entity<Jersey>()
+                .HasIndex(j => new { j.GameSessionId, j.StageId, j.Type })
+                .IsUnique();
+
+            modelBuilder.Entity<Jersey>()
+                .HasOne(j => j.GameSession)
+                .WithMany()
+                .HasForeignKey(j => j.GameSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Jersey>()
+                .HasOne(j => j.Stage)
+                .WithMany()
+                .HasForeignKey(j => j.StageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Jersey>()
+                .HasOne(j => j.Cyclist)
+                .WithMany(c => c.Jerseys)
+                .HasForeignKey(j => j.CyclistId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // PLAYER POINTS

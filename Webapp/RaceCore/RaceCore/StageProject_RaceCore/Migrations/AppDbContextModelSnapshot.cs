@@ -144,18 +144,24 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int>("CyclistId")
                         .HasColumnType("int");
 
+                    b.Property<int>("GameSessionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StageId")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CyclistId");
 
                     b.HasIndex("StageId");
+
+                    b.HasIndex("GameSessionId", "StageId", "Type")
+                        .IsUnique();
 
                     b.ToTable("Jerseys");
                 });
@@ -403,6 +409,9 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int>("CyclistId")
                         .HasColumnType("int");
 
+                    b.Property<int>("GameSessionId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Position")
                         .HasColumnType("int");
 
@@ -417,7 +426,9 @@ namespace StageProject_RaceCore.Migrations
 
                     b.HasIndex("CyclistId");
 
-                    b.HasIndex("StageId", "CyclistId")
+                    b.HasIndex("StageId");
+
+                    b.HasIndex("GameSessionId", "StageId", "CyclistId")
                         .IsUnique();
 
                     b.ToTable("StageResults");
@@ -516,6 +527,12 @@ namespace StageProject_RaceCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StageProject_RaceCore.Models.GameSession", "GameSession")
+                        .WithMany()
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
                         .WithMany()
                         .HasForeignKey("StageId")
@@ -523,6 +540,8 @@ namespace StageProject_RaceCore.Migrations
                         .IsRequired();
 
                     b.Navigation("Cyclist");
+
+                    b.Navigation("GameSession");
 
                     b.Navigation("Stage");
                 });
@@ -648,6 +667,12 @@ namespace StageProject_RaceCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StageProject_RaceCore.Models.GameSession", "GameSession")
+                        .WithMany()
+                        .HasForeignKey("GameSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
                         .WithMany("Results")
                         .HasForeignKey("StageId")
@@ -655,6 +680,8 @@ namespace StageProject_RaceCore.Migrations
                         .IsRequired();
 
                     b.Navigation("Cyclist");
+
+                    b.Navigation("GameSession");
 
                     b.Navigation("Stage");
                 });
