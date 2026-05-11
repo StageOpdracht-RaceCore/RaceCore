@@ -4,23 +4,6 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
-    /*
-        ============================================================
-        Controller: CyclistController
-        ============================================================
-
-        Doel:
-        Deze controller beheert alle acties voor wielrenners.
-
-        Functionaliteiten:
-        - wielrenners tonen
-        - wielrenners zoeken/filteren
-        - wielrenner toevoegen
-        - wielrenner koppelen aan race
-        - wielrenner verwijderen
-        - wielrenner actief/inactief zetten
-    */
-
     public class CyclistController : Controller
     {
         // ============================================================
@@ -136,6 +119,20 @@ namespace StageProject_RaceCore.Controllers
         // ============================================================
         // CREATE - NIEUWE WIELRENNER TOEVOEGEN
         // ============================================================
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Teams = await _context.Teams
+                .OrderBy(t => t.Name)
+                .ToListAsync();
+
+            ViewBag.Races = await _context.Races
+                .OrderByDescending(r => r.Year)
+                .ThenBy(r => r.Name)
+                .ToListAsync();
+
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
