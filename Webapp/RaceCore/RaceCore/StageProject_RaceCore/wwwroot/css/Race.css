@@ -25,6 +25,7 @@
     border-radius: 20px;
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: #ffffff;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
 }
 
 .race-page-kicker,
@@ -64,38 +65,29 @@
 .cancel-btn,
 .add-stage-btn,
 .small-action-btn,
-.remove-stage-btn {
+.remove-stage-btn,
+.race-light-btn,
+.race-danger-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all .2s ease;
-    border-radius: 12px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 14px;
     border: 0;
     font-family: inherit;
-}
-
-
-
-/* =========================
-   DASHBOARD / BACK BUTTON
-========================= */
-
-.race-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 18px;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 900;
     text-decoration: none;
     cursor: pointer;
     transition: 0.2s ease;
 }
+
+/* =========================
+   DONE BUTTON
+========================= */
 .race-btn-done {
+    min-height: 46px;
     background: limegreen;
     color: white;
     box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
@@ -107,17 +99,12 @@
         transform: translateY(-1px);
     }
 
-
 /* =========================
-   PRIMARY BUTTON
+   PRIMARY / DANGER / CANCEL BUTTONS
 ========================= */
 .race-primary-btn,
 .save-race-btn,
 .add-stage-btn {
-    min-height: 44px;
-    padding: 0 18px;
-    font-size: 14px;
-    font-weight: 900;
     background: #2563eb;
     color: #fff;
     border: 1px solid #2563eb;
@@ -128,6 +115,30 @@
     .add-stage-btn:hover {
         background: #1d4ed8;
         border-color: #1d4ed8;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+.race-light-btn,
+.cancel-btn {
+    background: #eef2ff;
+    color: #1e3a8a;
+}
+
+    .race-light-btn:hover,
+    .cancel-btn:hover {
+        background: #e0e7ff;
+        color: #1e3a8a;
+    }
+
+.race-danger-btn {
+    background: #dc2626;
+    color: #fff;
+}
+
+    .race-danger-btn:hover {
+        background: #b91c1c;
+        color: #fff;
         transform: translateY(-1px);
     }
 
@@ -139,7 +150,7 @@
 .race-form-card,
 .race-detail-card,
 .race-card {
-    background: #fff;
+    background: #ffffff;
     border-radius: 20px;
     padding: 24px;
     border: 1px solid #e5e7eb;
@@ -235,11 +246,11 @@
     margin-bottom: 14px;
 }
 
+.cyclist-tools-edit {
+    grid-template-columns: 1fr 240px auto auto;
+}
+
 .small-action-btn {
-    min-height: 44px;
-    padding: 0 14px;
-    font-size: 13px;
-    font-weight: 900;
     background: #eef2ff;
     color: #1e3a8a;
 }
@@ -369,6 +380,7 @@
 .remove-stage-btn {
     width: 44px;
     height: 44px;
+    padding: 0;
     font-size: 24px;
     font-weight: 900;
     background: #fee2e2;
@@ -383,47 +395,13 @@
    ACTIONS
 ========================= */
 .race-actions,
-.form-actions {
+.form-actions,
+.race-detail-top-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
     flex-wrap: wrap;
 }
-
-.cancel-btn {
-    min-height: 44px;
-    padding: 0 18px;
-    font-size: 14px;
-    font-weight: 900;
-    background: #f1f5f9;
-    color: #0f172a;
-}
-
-    .cancel-btn:hover {
-        background: #e2e8f0;
-    }
-
-/* =========================
-   LIGHT / DANGER BUTTONS
-========================= */
-.race-light-btn {
-    background: #eef2ff;
-    color: #1e3a8a;
-}
-
-    .race-light-btn:hover {
-        background: #e0e7ff;
-    }
-
-.race-danger-btn {
-    background: #dc2626;
-    color: #fff;
-    border: 0;
-}
-
-    .race-danger-btn:hover {
-        background: #b91c1c;
-    }
 
 /* =========================
    VALIDATIE
@@ -445,8 +423,223 @@
 }
 
 /* =========================
+   PRO DETAILS PAGE
+========================= */
+.race-pro-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.race-pro-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+    .race-pro-stat-card span {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 900;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .race-pro-stat-card strong {
+        display: block;
+        font-size: 24px;
+        font-weight: 950;
+        color: #0f172a;
+    }
+
+.race-pro-details-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.race-pro-info-list {
+    display: grid;
+    gap: 10px;
+}
+
+    .race-pro-info-list div {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 13px 14px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+    }
+
+    .race-pro-info-list span {
+        font-size: 13px;
+        font-weight: 900;
+        color: #64748b;
+    }
+
+    .race-pro-info-list strong {
+        font-size: 14px;
+        font-weight: 950;
+        color: #0f172a;
+        text-align: right;
+    }
+
+.race-pro-stage-list {
+    display: grid;
+    gap: 10px;
+}
+
+.race-pro-stage-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.race-pro-stage-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 950;
+}
+
+.race-pro-stage-content strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 950;
+    color: #0f172a;
+}
+
+.race-pro-stage-content span {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+}
+
+.race-pro-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+.race-pro-count-badge {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #1e3a8a;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.race-pro-cyclist-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.race-pro-cyclist-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    transition: 0.18s ease;
+}
+
+    .race-pro-cyclist-card:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        transform: translateY(-1px);
+    }
+
+.race-pro-cyclist-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #0f172a);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 950;
+    flex-shrink: 0;
+}
+
+.race-pro-cyclist-info {
+    min-width: 0;
+}
+
+    .race-pro-cyclist-info strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 950;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .race-pro-cyclist-info span {
+        display: inline-flex;
+        margin-top: 4px;
+        max-width: 100%;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #1e3a8a;
+        font-size: 11px;
+        font-weight: 900;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+.race-pro-empty {
+    padding: 24px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    color: #64748b;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
+@media (max-width: 1200px) {
+    .race-pro-stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .race-pro-cyclist-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 1100px) {
     .race-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -456,9 +649,21 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .cyclist-tools-edit {
+        grid-template-columns: 1fr 220px;
+    }
+
     .stage-row,
     .stage-item {
         grid-template-columns: 44px 1fr 180px 44px;
+    }
+
+    .race-pro-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .race-pro-cyclist-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -475,8 +680,13 @@
         padding: 22px;
     }
 
+    .race-btn,
     .race-dashboard-btn,
-    .race-back-btn {
+    .race-back-btn,
+    .race-primary-btn,
+    .race-danger-btn,
+    .cancel-btn,
+    .save-race-btn {
         width: 100%;
     }
 
@@ -487,11 +697,15 @@
 
     .race-grid,
     .cyclist-tools,
-    .cyclist-list {
+    .cyclist-tools-edit,
+    .cyclist-list,
+    .race-pro-stats-grid,
+    .race-pro-cyclist-grid {
         grid-template-columns: 1fr;
     }
 
-    .stage-header {
+    .stage-header,
+    .race-pro-section-header {
         flex-direction: column;
         align-items: stretch;
     }
@@ -506,12 +720,17 @@
         align-items: stretch;
     }
 
-    .stage-number {
+    .stage-number,
+    .remove-stage-btn {
         width: 100%;
     }
 
-    .remove-stage-btn {
-        width: 100%;
+    .race-pro-info-list div {
+        flex-direction: column;
+    }
+
+    .race-pro-info-list strong {
+        text-align: left;
     }
 
     .cyclist-dual-container {
@@ -524,12 +743,13 @@
     }
 
     .race-actions,
-    .form-actions {
+    .form-actions,
+    .race-detail-top-actions {
         flex-direction: column;
     }
 
-    .cancel-btn,
-    .save-race-btn {
+    .race-pro-count-badge {
         width: 100%;
+        text-align: center;
     }
 }
