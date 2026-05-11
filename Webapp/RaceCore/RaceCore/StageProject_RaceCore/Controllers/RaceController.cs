@@ -4,14 +4,6 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
-    /* RaceController.cs
-       Purpose: Manage races, stages and race entries. Provides CRUD
-       operations for Race objects and handles dynamic stage creation
-       during race creation. Basic error handling via TempData messages.
-    */
-    /// <summary>
-    /// Controller for creating, editing and listing races.
-    /// </summary>
     public class RaceController : Controller
     {
         private readonly AppDbContext _context;
@@ -23,204 +15,144 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var races = await _context.Races
-                    .Include(r => r.Stages)
-                    .Include(r => r.RaceEntries)
-                    .OrderByDescending(r => r.Year)
-                    .ThenBy(r => r.Name)
-                    .ToListAsync();
+            var races = await _context.Races
+                .Include(r => r.Stages)
+                .Include(r => r.RaceEntries)
+                .OrderByDescending(r => r.Year)
+                .ThenBy(r => r.Name)
+                .ToListAsync();
 
-                ViewBag.DatabaseOnline = true;
-                return View(races);
-            }
-            catch
-            {
-                ViewBag.DatabaseOnline = false;
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live races te zien.";
-                return View(new List<Race>());
-            }
+            return View(races);
         }
 
         public IActionResult Create()
         {
-            return View(new Race());
+            ViewBag.Cyclists = _context.Cyclists
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.LastName)
+                .ToList();
+
+            return View(new Race
+            {
+                Year = DateTime.Now.Year
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Race race)
+        public async Task<IActionResult> Create(Race race, int[] selectedCyclists)
         {
+            // Safety check
             if (!ModelState.IsValid)
             {
+                ViewBag.Cyclists = _context.Cyclists.ToList();
                 return View(race);
             }
 
-            try
+            // Save parent first
+            _context.Races.Add(race);
+            await _context.SaveChangesAsync();
+
+            // ------------------------
+            // CYCLISTS
+            // ------------------------
+            if (selectedCyclists != null && selectedCyclists.Length > 0)
             {
-                // 1. Race opslaan
-                _context.Races.Add(race);
-                await _context.SaveChangesAsync();
-
-                // 2. Nieuwe renner (optioneel)
-                var newCyclistName = Request.Form["NewCyclistName"];
-
-                if (!string.IsNullOrWhiteSpace(newCyclistName))
-                {
-                    var cyclist = new Cyclist
-                    {
-                        FirstName = newCyclistName
-                    };
-
-                    _context.Cyclists.Add(cyclist);
-                    await _context.SaveChangesAsync();
-
-                    // automatisch toevoegen aan race
-                    _context.RaceEntries.Add(new RaceEntry
-                    {
-                        RaceId = race.Id,
-                        CyclistId = cyclist.Id
-                    });
-                }
-                 
-                // 3. Geselecteerde renners
-                var selectedCyclists = Request.Form["SelectedCyclistIds"];
-
-                foreach (var cyclistId in selectedCyclists)
+                foreach (var id in selectedCyclists)
                 {
                     _context.RaceEntries.Add(new RaceEntry
                     {
                         RaceId = race.Id,
-                        CyclistId = int.Parse(cyclistId)
+                        CyclistId = id,
+                        Status = "Active"
                     });
                 }
-
-                // 4. Stages (dynamisch)
-                int i = 0;
-                while (!string.IsNullOrEmpty(Request.Form[$"Stages[{i}].Name"]))
-                {
-                    var stage = new Stage
-                    {
-                        Name = Request.Form[$"Stages[{i}].Name"],
-                        Date = DateTime.Parse(Request.Form[$"Stages[{i}].Date"]),
-                        RaceId = race.Id
-                    };
-
-                    _context.Stages.Add(stage);
-                    i++;
-                }
-
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
             }
-            catch
+
+            // ------------------------
+            // STAGES (ROBUST FIX)
+            // ------------------------
+            if (race.Stages != null && race.Stages.Count > 0)
             {
-                TempData["Error"] = "Database fout.";
-                return View(race);
+                int stageNr = 1;
+
+                foreach (var stage in race.Stages)
+                {
+                    if (stage == null || string.IsNullOrWhiteSpace(stage.Name))
+                        continue;
+
+                    _context.Stages.Add(new Stage
+                    {
+                        RaceId = race.Id,
+                        StageNumber = stageNr++,
+                        Name = stage.Name,
+                        Date = stage.Date
+                    });
+                }
             }
+
+            // Save children
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            try
-            {
-                var race = await _context.Races.FindAsync(id);
-                if (race == null) return NotFound();
+            var race = await _context.Races.FindAsync(id);
+            if (race == null) return NotFound();
 
-                return View(race);
-            }
-            catch
-            {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
-                return RedirectToAction(nameof(Index));
-            }
+            return View(race);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Year,StartDate,EndDate")] Race race)
+        public async Task<IActionResult> Edit(Race race)
         {
-            if (id != race.Id) return NotFound();
-
             if (!ModelState.IsValid)
-            {
                 return View(race);
-            }
 
-            try
-            {
-                _context.Races.Update(race);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
-                return View(race);
-            }
+            _context.Races.Update(race);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            try
-            {
-                var race = await _context.Races
-                    .Include(r => r.Stages)
-                    .Include(r => r.RaceEntries)
-                    .FirstOrDefaultAsync(r => r.Id == id);
+            var race = await _context.Races
+                .Include(r => r.Stages)
+                .Include(r => r.RaceEntries)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
-                if (race == null) return NotFound();
+            if (race == null) return NotFound();
 
-                return View(race);
-            }
-            catch
-            {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
-                return RedirectToAction(nameof(Index));
-            }
+            return View(race);
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            try
-            {
-                var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == id);
-                if (race == null) return NotFound();
+            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == id);
+            if (race == null) return NotFound();
 
-                return View(race);
-            }
-            catch
-            {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
-                return RedirectToAction(nameof(Index));
-            }
+            return View(race);
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                var race = await _context.Races.FindAsync(id);
+            var race = await _context.Races.FindAsync(id);
 
-                if (race != null)
-                {
-                    _context.Races.Remove(race);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            catch
+            if (race != null)
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                _context.Races.Remove(race);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
