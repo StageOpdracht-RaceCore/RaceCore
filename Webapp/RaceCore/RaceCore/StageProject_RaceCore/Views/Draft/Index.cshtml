@@ -244,9 +244,12 @@
                         {
                             foreach (var player in playerRows)
                             {
-                                var isActive = currentTurn != null && player.NextTurn != null && player.NextTurn.Id == currentTurn.Id;
+                                var isActive = currentTurn != null &&
+                                               player.NextTurn != null &&
+                                               player.NextTurn.Id == currentTurn.Id;
 
                                 var initial = "?";
+
                                 if (!string.IsNullOrWhiteSpace(player.PlayerName))
                                 {
                                     initial = player.PlayerName.Substring(0, 1).ToUpper();
@@ -453,7 +456,10 @@
 <script>
     const gameId = Number(@gameId);
     let pageIsChanging = false;
-    let currentDraftVersion = "@pickedCount-@(currentTurn?.Id ?? 0)-@ViewBag.GameStatus";
+
+    // Deze versie moet exact hetzelfde formaat hebben als GetDraftState in DraftController.
+    // Anders denkt de pagina elke seconde dat er iets veranderd is en refresht hij vanzelf.
+    let currentDraftVersion = "@pickedCount-@(currentTurn?.Id ?? 0)-@ViewBag.GameStatus-@ridersPerPlayer-@benchPerPlayer";
 
     function normalizeText(value) {
     return value
@@ -465,7 +471,6 @@
 
     document.querySelectorAll(".draft-combobox").forEach(function (box) {
     const input = box.querySelector(".draft-combobox-input");
-    const list = box.querySelector(".draft-combobox-list");
     const options = Array.from(box.querySelectorAll(".draft-combobox-option"));
     const empty = box.querySelector(".draft-combobox-empty");
     const form = box.closest("form");
@@ -560,7 +565,9 @@
     });
 
     function goToDraft() {
-    if (pageIsChanging) return;
+    if (pageIsChanging) {
+    return;
+    }
 
     pageIsChanging = true;
 
@@ -569,7 +576,9 @@
     }
 
     function goToDashboard() {
-    if (pageIsChanging) return;
+    if (pageIsChanging) {
+    return;
+    }
 
     pageIsChanging = true;
 
@@ -579,7 +588,7 @@
     window.addEventListener("load", function () {
     const section = document.getElementById("draft-players-section");
 
-    if (section !== null) {
+    if (section !== null && window.location.hash === "#draft-players-section") {
     section.scrollIntoView();
     }
     });
@@ -617,7 +626,9 @@
     });
 
     function sendHostPing() {
-    if (gameId <= 0) return;
+    if (gameId <= 0) {
+    return;
+    }
 
     fetch("/Game/HostPing?gameId=" + gameId, {
     method: "POST",
@@ -625,11 +636,13 @@
     headers: {
     "X-Requested-With": "XMLHttpRequest"
     }
-    }).catch(function () {});
+    }).catch(function () { });
     }
 
     async function checkDraftState() {
-    if (gameId <= 0 || pageIsChanging) return;
+    if (gameId <= 0 || pageIsChanging) {
+    return;
+    }
 
     try {
     const response = await fetch("/Draft/GetDraftState?gameId=" + gameId + "&t=" + Date.now(), {
@@ -643,7 +656,9 @@
 
     const data = await response.json();
 
-    if (!data.exists) return;
+    if (!data.exists) {
+    return;
+    }
 
     console.log("DraftState:", data);
 
