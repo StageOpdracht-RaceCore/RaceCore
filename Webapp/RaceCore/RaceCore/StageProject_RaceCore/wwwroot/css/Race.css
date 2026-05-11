@@ -1,18 +1,22 @@
 /* =========================
    GLOBAL PAGE
 ========================= */
-.race-page {
+.race-page,
+.race-create-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    max-width: 1420px;
+    margin: 0 auto;
     padding: 24px;
 }
 
 /* =========================
    HEADER
 ========================= */
-.race-header-card {
+.race-header-card,
+.race-create-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -23,7 +27,8 @@
     color: #ffffff;
 }
 
-.race-page-kicker {
+.race-page-kicker,
+.race-label {
     margin: 0 0 6px;
     font-size: 11px;
     font-weight: 900;
@@ -32,13 +37,16 @@
     color: #bfdbfe;
 }
 
-.race-page-title {
+.race-page-title,
+.race-create-header h1 {
     margin: 0 0 8px;
     font-size: 32px;
     font-weight: 900;
+    color: #ffffff;
 }
 
-.race-page-subtitle {
+.race-page-subtitle,
+.race-subtitle {
     margin: 0;
     font-size: 15px;
     font-weight: 700;
@@ -50,7 +58,13 @@
 ========================= */
 .race-btn,
 .race-primary-btn,
-.race-dashboard-btn {
+.race-dashboard-btn,
+.race-back-btn,
+.save-race-btn,
+.cancel-btn,
+.add-stage-btn,
+.small-action-btn,
+.remove-stage-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -58,12 +72,15 @@
     cursor: pointer;
     transition: all .2s ease;
     border-radius: 12px;
+    border: 0;
+    font-family: inherit;
 }
 
 /* =========================
-   DASHBOARD BUTTON
+   DASHBOARD / BACK BUTTON
 ========================= */
-.race-dashboard-btn {
+.race-dashboard-btn,
+.race-back-btn {
     min-height: 54px;
     padding: 0 26px;
     font-size: 17px;
@@ -71,9 +88,11 @@
     background: #ffffff;
     color: #0f172a;
     box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+    white-space: nowrap;
 }
 
-    .race-dashboard-btn:hover {
+    .race-dashboard-btn:hover,
+    .race-back-btn:hover {
         transform: translateY(-2px);
         background: #f8fafc;
     }
@@ -81,7 +100,9 @@
 /* =========================
    PRIMARY BUTTON
 ========================= */
-.race-primary-btn {
+.race-primary-btn,
+.save-race-btn,
+.add-stage-btn {
     min-height: 44px;
     padding: 0 18px;
     font-size: 14px;
@@ -91,7 +112,9 @@
     border: 1px solid #2563eb;
 }
 
-    .race-primary-btn:hover {
+    .race-primary-btn:hover,
+    .save-race-btn:hover,
+    .add-stage-btn:hover {
         background: #1d4ed8;
         border-color: #1d4ed8;
         transform: translateY(-1px);
@@ -103,17 +126,74 @@
 .race-table-card,
 .race-filter-card,
 .race-form-card,
-.race-detail-card {
+.race-detail-card,
+.race-card {
     background: #fff;
     border-radius: 20px;
     padding: 24px;
     border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
 }
+
+.race-card-header {
+    margin-bottom: 16px;
+}
+
+    .race-card-header h2 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .race-card-header p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+/* =========================
+   FORM
+========================= */
+.race-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.race-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 14px;
+}
+
+.race-form-group,
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .race-form-group label,
+    .form-group label {
+        font-size: 13px;
+        font-weight: 800;
+        color: #334155;
+    }
 
 /* =========================
    INPUTS
 ========================= */
-.race-input {
+.race-input,
+.form-control {
     height: 44px;
     padding: 0 12px;
     border-radius: 12px;
@@ -122,44 +202,112 @@
     transition: 0.2s ease;
     width: 100%;
     box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    background: #ffffff;
 }
 
-    .race-input:focus {
+    .race-input:focus,
+    .form-control:focus {
         border-color: #2563eb;
         box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
     }
 
 /* =========================
-   FORM GROUP
+   CYCLISTS SELECTEREN
 ========================= */
-.race-form-group {
-    display: flex;
-    flex-direction: column;
+.cyclist-tools {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.small-action-btn {
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 900;
+    background: #eef2ff;
+    color: #1e3a8a;
+}
+
+    .small-action-btn:hover {
+        background: #e0e7ff;
+    }
+
+    .small-action-btn.danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+        .small-action-btn.danger:hover {
+            background: #fecaca;
+        }
+
+.cyclist-list {
+    max-height: 520px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background: #f8fafc;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
 }
 
-    .race-form-group label {
-        font-size: 13px;
-        font-weight: 800;
-        color: #334155;
+.cyclist-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #0f172a;
+    transition: 0.15s ease;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+    .cyclist-item:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
     }
 
-.race-form-input {
-  display: flex;
+    .cyclist-item input {
+        width: 16px;
+        height: 16px;
+        accent-color: #2563eb;
+    }
 
-  gap: 12px;
-  flex-wrap: wrap;
-  border: 0;
+.cyclist-name {
+    font-size: 14px;
+    font-weight: 900;
+    color: #0f172a;
 }
+
+.cyclist-team {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
 /* =========================
-   CYCLIST DUAL LIST (FIXED)
+   OUDE DUAL LIST SUPPORT
 ========================= */
 .cyclist-dual-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 20px;
-  width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
 }
 
 .cyclist-box {
@@ -169,31 +317,6 @@
     gap: 10px;
 }
 
-/* SCROLL LIST */
-.cyclist-list {
-    max-height: 480px; /* beter afgestemd op ~15 items */
-    overflow-y: auto;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #fff;
-    padding: 6px;
-}
-
-/* ITEM */
-.cyclist-item {
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 700;
-    color: #0f172a;
-    transition: 0.15s ease;
-}
-
-    .cyclist-item:hover {
-        background: #f1f5f9;
-    }
-
-/* SELECTED */
 .selected-item {
     background: #dbeafe;
     color: #1d4ed8;
@@ -202,21 +325,98 @@
 /* =========================
    STAGES
 ========================= */
-.stage-item {
+.stages-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 12px;
 }
+
+.stage-row,
+.stage-item {
+    display: grid;
+    grid-template-columns: 44px 1fr 220px 44px;
+    gap: 10px;
+    align-items: end;
+    padding: 12px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+.stage-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 950;
+}
+
+.remove-stage-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    font-weight: 900;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+    .remove-stage-btn:hover {
+        background: #fecaca;
+    }
+
+.race-done-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 14px;
+  background: limegreen;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+}
+
+  /* Hover effect */
+  .race-done-btn:hover {
+    background: #22c55e;
+    color: white;
+    transform: translateY(-1px);
+  }
 
 /* =========================
    ACTIONS
 ========================= */
-.race-actions {
+.race-actions,
+.form-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
     flex-wrap: wrap;
 }
+
+.cancel-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 900;
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+    .cancel-btn:hover {
+        background: #e2e8f0;
+    }
 
 /* =========================
    LIGHT / DANGER BUTTONS
@@ -230,10 +430,10 @@
         background: #e0e7ff;
     }
 
-.race-danger-btn { 
+.race-danger-btn {
     background: #dc2626;
     color: #fff;
-    border:0;
+    border: 0;
 }
 
     .race-danger-btn:hover {
@@ -241,16 +441,91 @@
     }
 
 /* =========================
+   VALIDATIE
+========================= */
+.text-danger {
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.validation-summary,
+.validation-summary-errors {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 800;
+    border: 1px solid #fecaca;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
+    .race-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-    .race-header-card {
+    .cyclist-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stage-row,
+    .stage-item {
+        grid-template-columns: 44px 1fr 180px 44px;
+    }
+}
+
+@media (max-width: 768px) {
+    .race-page,
+    .race-create-container {
+        padding: 14px;
+    }
+
+    .race-header-card,
+    .race-create-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 22px;
+    }
+
+    .race-dashboard-btn,
+    .race-back-btn {
+        width: 100%;
+    }
+
+    .race-page-title,
+    .race-create-header h1 {
+        font-size: 25px;
+    }
+
+    .race-grid,
+    .cyclist-tools,
+    .cyclist-list {
+        grid-template-columns: 1fr;
+    }
+
+    .stage-header {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .race-dashboard-btn {
+    .add-stage-btn {
+        width: 100%;
+    }
+
+    .stage-row,
+    .stage-item {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .stage-number {
+        width: 100%;
+    }
+
+    .remove-stage-btn {
         width: 100%;
     }
 
@@ -260,6 +535,16 @@
     }
 
     .cyclist-box {
+        width: 100%;
+    }
+
+    .race-actions,
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .save-race-btn {
         width: 100%;
     }
 }
