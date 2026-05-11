@@ -13,12 +13,14 @@ namespace StageProject_RaceCore.Controllers
         Doel:
         Deze controller maakt de leaderboard pagina.
 
-        Nieuwe werking:
-        - spelers worden kolommen
-        - ritten worden rijen
-        - per rit zie je hoeveel punten elke speler heeft
-        - onderaan komt Eindafrekening
-        - onderaan komt TOTAAL
+        Belangrijk:
+        - Alleen volledig afgewerkte games komen in de dropdown
+        - Draft / Active / Cancelled games worden niet getoond
+        - Spelers worden kolommen
+        - Ritten worden rijen
+        - Per rit zie je hoeveel punten elke speler heeft
+        - Onderaan komt Eindafrekening
+        - Onderaan komt TOTAAL
     */
 
     public class LeaderboardController : Controller
@@ -36,9 +38,12 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> Index(int gameId = 0)
         {
-            // Alle games ophalen voor de dropdown
+            // Alleen afgewerkte games ophalen voor de dropdown
             var games = await _context.GameSessions
                 .Include(g => g.Race)
+                .Where(g =>
+                    g.Status == "Finished" ||
+                    g.Status == "Done")
                 .OrderByDescending(g => g.CreatedAt)
                 .ToListAsync();
 
@@ -47,23 +52,31 @@ namespace StageProject_RaceCore.Controllers
                 Games = games
             };
 
-            // Als er nog geen games zijn, toon lege pagina
+            // Als er geen afgewerkte games zijn
             if (!games.Any())
             {
+                model.RaceName = "Geen afgewerkte game";
+                model.GameStatus = "Geen";
+                model.PlayerCount = 0;
+                model.TotalPoints = 0;
+
+                ViewBag.DatabaseOnline = await _context.Database.CanConnectAsync();
+
                 return View(model);
             }
 
-            // Geselecteerde game bepalen
+            // Geselecteerde afgewerkte game bepalen
             var selectedGame = gameId > 0
                 ? games.FirstOrDefault(g => g.Id == gameId)
                 : games.FirstOrDefault();
 
+            // Als iemand via URL een gameId meegeeft die niet afgewerkt is
             if (selectedGame == null)
             {
                 selectedGame = games.First();
             }
 
-            // Basisinfo invullen
+            // Basisinformatie voor de pagina
             model.SelectedGameId = selectedGame.Id;
             model.RaceName = selectedGame.Race?.Name ?? "Onbekende race";
             model.GameStatus = selectedGame.Status;
@@ -90,12 +103,12 @@ namespace StageProject_RaceCore.Controllers
             {
                 PlayerId = p.Id,
                 PlayerName = p.Name,
-                Color = GetPlayerColor(p.Name)
+                Color = "#d1d5db"
             }).ToList();
 
             model.PlayerCount = model.Players.Count;
 
-            // Alle ritten van de race ophalen
+            // Alle ritten van de gekozen race ophalen
             var stages = await _context.Stages
                 .Where(s => s.RaceId == selectedGame.RaceId)
                 .OrderBy(s => s.StageNumber)
@@ -185,7 +198,6 @@ namespace StageProject_RaceCore.Controllers
             }
 
             // Eindafrekening voorlopig op 0 per speler
-            // Later kan je hier aparte eindpunten toevoegen als je daarvoor een tabel maakt
             foreach (var player in players)
             {
                 model.FinalSettlementPoints[player.Id] = 0;
@@ -228,28 +240,6 @@ namespace StageProject_RaceCore.Controllers
                 "White" => "WitteTrui",
                 _ => type
             };
-        }
-
-        // ============================================================
-        // HELPER - SPELER KLEUR
-        // ============================================================
-
-        private string GetPlayerColor(string name)
-        {
-            var colors = new List<string>
-            {
-                "#3b82f6",
-                "#f59e0b",
-                "#22c55e",
-                "#db2777",
-                "#ca8a04",
-                "#9333ea",
-                "#0891b2",
-                "#dc2626"
-            };
-
-            int hash = name?.GetHashCode() ?? 0;
-            return colors[Math.Abs(hash) % colors.Count];
         }
     }
 }

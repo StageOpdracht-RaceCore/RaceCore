@@ -24,15 +24,19 @@
         <!-- Rechterkant: game selectie + Done knop -->
         <div class="leaderboard-hero-actions">
 
-            <!-- Game dropdown -->
+            <!-- Game dropdown: toont alleen afgewerkte games -->
             <form asp-controller="Leaderboard"
                   asp-action="Index"
                   method="get"
                   class="leaderboard-game-form">
 
-                <label for="gameId">Game</label>
+                <label for="gameId">Afgewerkte game</label>
 
-                <select id="gameId" name="gameId" onchange="this.form.submit()">
+                <select id="gameId"
+                        name="gameId"
+                        onchange="this.form.submit()"
+                        disabled="@(!Model.Games.Any())">
+
                     @foreach (var game in Model.Games)
                     {
                         if (game.Id == Model.SelectedGameId)
@@ -61,14 +65,14 @@
     </section>
 
     <!-- =========================
-         EMPTY STATE ALS ER GEEN GAME IS
+         EMPTY STATE ALS ER GEEN AFGEWERKTE GAME IS
     ========================== -->
     @if (!Model.Games.Any())
     {
         <section class="leaderboard-card">
             <div class="leaderboard-empty">
-                <h2>Geen game gevonden</h2>
-                <p>Start eerst een nieuwe game voordat het leaderboard punten kan tonen.</p>
+                <h2>Geen afgewerkte games gevonden</h2>
+                <p>Alleen games die volledig klaar zijn worden hier getoond.</p>
             </div>
         </section>
     }
@@ -117,12 +121,12 @@
                 </div>
             </div>
 
-            <!-- Empty state als er nog geen spelers zijn -->
+            <!-- Empty state als er geen spelers zijn -->
             @if (!Model.Players.Any())
             {
                 <div class="leaderboard-empty">
                     <h2>Nog geen spelers</h2>
-                    <p>Er zijn nog geen spelers gekoppeld aan deze game.</p>
+                    <p>Er zijn geen spelers gekoppeld aan deze afgewerkte game.</p>
                 </div>
             }
             else
@@ -138,7 +142,7 @@
 
                                 @foreach (var player in Model.Players)
                                 {
-                                    <th class="player-header" style="--player-color:@player.Color">
+                                    <th class="player-header">
                                         @player.PlayerName
                                     </th>
                                 }
