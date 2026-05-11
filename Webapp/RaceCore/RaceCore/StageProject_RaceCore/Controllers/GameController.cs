@@ -6,21 +6,11 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
-    /* GameController.cs
-       Purpose: Handle creation and lifecycle of GameSession objects.
-       Responsibilities include creating new games, keeping track of
-       host sessions, closing stale games and providing helper APIs
-       used by the UI (stages list by race). */
-    /// <summary>
-    /// Controller to create and manage game sessions (New, Host ping, helpers).
-    /// </summary>
     public class GameController : Controller
     {
         private readonly AppDbContext _context;
 
         private const int HostTimeoutSeconds = 60;
-        private const int ActiveRidersPerPlayer = 10;
-        private const int BenchRidersPerPlayer = 5;
 
         public GameController(AppDbContext context)
         {
@@ -77,10 +67,33 @@ namespace StageProject_RaceCore.Controllers
                 ModelState.AddModelError(nameof(model.SelectedPlayerIds), "Kies minstens 2 spelers.");
             }
 
+            if (model.RidersPerPlayer < 1)
+            {
+                ModelState.AddModelError(nameof(model.RidersPerPlayer), "Actieve renners moet minstens 1 zijn.");
+            }
+
+            if (model.BenchPerPlayer < 0)
+            {
+                ModelState.AddModelError(nameof(model.BenchPerPlayer), "Bankrenners mag niet negatief zijn.");
+            }
+
+            int totalPicksPerPlayer = model.RidersPerPlayer + model.BenchPerPlayer;
+
+            if (totalPicksPerPlayer <= 0)
+            {
+                ModelState.AddModelError("", "Totaal aantal picks moet groter zijn dan 0.");
+            }
+
             if (!ModelState.IsValid)
             {
                 await SetActiveGameViewBag();
-                return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+
+                return View(await BuildNewGameViewModelSafe(
+                    model.RaceId,
+                    model.StageId,
+                    model.SelectedPlayerIds,
+                    model.RidersPerPlayer,
+                    model.BenchPerPlayer));
             }
 
             try
@@ -92,7 +105,13 @@ namespace StageProject_RaceCore.Controllers
                 {
                     TempData["Error"] = "Race niet gevonden.";
                     await SetActiveGameViewBag();
-                    return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+
+                    return View(await BuildNewGameViewModelSafe(
+                        model.RaceId,
+                        model.StageId,
+                        model.SelectedPlayerIds,
+                        model.RidersPerPlayer,
+                        model.BenchPerPlayer));
                 }
 
                 var stage = await _context.Stages
@@ -102,7 +121,13 @@ namespace StageProject_RaceCore.Controllers
                 {
                     TempData["Error"] = "Rit niet gevonden bij deze race.";
                     await SetActiveGameViewBag();
-                    return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+
+                    return View(await BuildNewGameViewModelSafe(
+                        model.RaceId,
+                        model.StageId,
+                        model.SelectedPlayerIds,
+                        model.RidersPerPlayer,
+                        model.BenchPerPlayer));
                 }
 
                 var players = await _context.Players
@@ -115,7 +140,36 @@ namespace StageProject_RaceCore.Controllers
                 {
                     TempData["Error"] = "Kies minstens 2 geldige spelers.";
                     await SetActiveGameViewBag();
-                    return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+
+                    return View(await BuildNewGameViewModelSafe(
+                        model.RaceId,
+                        model.StageId,
+                        model.SelectedPlayerIds,
+                        model.RidersPerPlayer,
+                        model.BenchPerPlayer));
+                }
+
+                int availableCyclistsCount = await _context.RaceEntries
+                    .Where(re => re.RaceId == model.RaceId && re.Cyclist.IsActive)
+                    .Select(re => re.CyclistId)
+                    .Distinct()
+                    .CountAsync();
+
+                int neededCyclistsCount = players.Count * totalPicksPerPlayer;
+
+                if (availableCyclistsCount < neededCyclistsCount)
+                {
+                    TempData["Error"] =
+                        $"Niet genoeg renners voor deze draft. Nodig: {neededCyclistsCount}, beschikbaar in deze race: {availableCyclistsCount}.";
+
+                    await SetActiveGameViewBag();
+
+                    return View(await BuildNewGameViewModelSafe(
+                        model.RaceId,
+                        model.StageId,
+                        model.SelectedPlayerIds,
+                        model.RidersPerPlayer,
+                        model.BenchPerPlayer));
                 }
 
                 string hostSessionId = GetOrCreateHostSessionId();
@@ -126,8 +180,8 @@ namespace StageProject_RaceCore.Controllers
                     StageId = model.StageId,
                     Status = "Draft",
                     CurrentStageNumber = stage.StageNumber,
-                    RidersPerPlayer = ActiveRidersPerPlayer,
-                    BenchPerPlayer = BenchRidersPerPlayer,
+                    RidersPerPlayer = model.RidersPerPlayer,
+                    BenchPerPlayer = model.BenchPerPlayer,
                     CreatedAt = DateTime.Now,
                     HostSessionId = hostSessionId,
                     LastHostPingAt = DateTime.Now
@@ -136,14 +190,18 @@ namespace StageProject_RaceCore.Controllers
                 _context.GameSessions.Add(game);
                 await _context.SaveChangesAsync();
 
-                int totalRounds = game.RidersPerPlayer + game.BenchPerPlayer;
-
-                var draftTurns = GenerateFairSnakeDraft(game.Id, race.Id, players, totalRounds);
+                var draftTurns = GenerateFairSnakeDraft(
+                    game.Id,
+                    race.Id,
+                    players,
+                    totalPicksPerPlayer);
 
                 _context.DraftTurns.AddRange(draftTurns);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"Game {race.Name} {race.Year} - Rit {stage.StageNumber} is gestart.";
+                TempData["Success"] =
+                    $"Game {race.Name} {race.Year} - Rit {stage.StageNumber} is gestart. " +
+                    $"Draft: {model.RidersPerPlayer} actief + {model.BenchPerPlayer} bank.";
 
                 return RedirectToAction("Index", "Draft", new { gameId = game.Id });
             }
@@ -151,7 +209,13 @@ namespace StageProject_RaceCore.Controllers
             {
                 TempData["Error"] = "Start Game fout: " + ex.Message;
                 await SetActiveGameViewBag();
-                return View(await BuildNewGameViewModelSafe(model.RaceId, model.StageId, model.SelectedPlayerIds));
+
+                return View(await BuildNewGameViewModelSafe(
+                    model.RaceId,
+                    model.StageId,
+                    model.SelectedPlayerIds,
+                    model.RidersPerPlayer,
+                    model.BenchPerPlayer));
             }
         }
 
@@ -248,11 +312,18 @@ namespace StageProject_RaceCore.Controllers
         private async Task<NewGameViewModel> BuildNewGameViewModelSafe(
             int selectedRaceId = 0,
             int selectedStageId = 0,
-            List<int>? selectedPlayerIds = null)
+            List<int>? selectedPlayerIds = null,
+            int ridersPerPlayer = 12,
+            int benchPerPlayer = 6)
         {
             try
             {
-                return await BuildNewGameViewModel(selectedRaceId, selectedStageId, selectedPlayerIds);
+                return await BuildNewGameViewModel(
+                    selectedRaceId,
+                    selectedStageId,
+                    selectedPlayerIds,
+                    ridersPerPlayer,
+                    benchPerPlayer);
             }
             catch
             {
@@ -263,6 +334,8 @@ namespace StageProject_RaceCore.Controllers
                     RaceId = selectedRaceId,
                     StageId = selectedStageId,
                     SelectedPlayerIds = selectedPlayerIds ?? new List<int>(),
+                    RidersPerPlayer = ridersPerPlayer,
+                    BenchPerPlayer = benchPerPlayer,
                     AvailableRaces = new List<SelectListItem>(),
                     AvailableStages = new List<SelectListItem>(),
                     AvailablePlayers = new List<PlayerSelectItemViewModel>(),
@@ -275,7 +348,9 @@ namespace StageProject_RaceCore.Controllers
         private async Task<NewGameViewModel> BuildNewGameViewModel(
             int selectedRaceId = 0,
             int selectedStageId = 0,
-            List<int>? selectedPlayerIds = null)
+            List<int>? selectedPlayerIds = null,
+            int ridersPerPlayer = 12,
+            int benchPerPlayer = 6)
         {
             selectedPlayerIds ??= new List<int>();
 
@@ -325,6 +400,8 @@ namespace StageProject_RaceCore.Controllers
                 RaceId = raceId,
                 StageId = stageId,
                 SelectedPlayerIds = selectedPlayerIds,
+                RidersPerPlayer = ridersPerPlayer,
+                BenchPerPlayer = benchPerPlayer,
                 TotalStages = stages.Count,
                 TotalCyclists = totalCyclists,
 

@@ -11,14 +11,6 @@ namespace StageProject_RaceCore.Controllers
 {
     public class TeamController : Controller
     {
-        // Maximum number of cyclists a player can field in the starting lineup.
-        private const int ActiveRiderSlots = 10;
-
-        // Maximum number of cyclists a player can keep on the bench.
-        private const int BenchRiderSlots = 5;
-
-        // Colour palette cycled across player cards in display order.
-        // Chosen for contrast and visual distinctiveness against white card backgrounds.
         private static readonly string[] PlayerColors =
         {
             "#2563eb",
@@ -38,18 +30,12 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
-        // GET /Team or GET /Team?gameId=X
-        // Loads the Teams overview page. Resolves the target game session (either the one
-        // explicitly requested via gameId, the most recent non-finished game, or the latest
-        // game overall), then builds a PlayerTeamsPageViewModel containing every player's
-        // full roster split into active riders and bench riders.
         public async Task<IActionResult> Index(int gameId = 0)
         {
-            // Start with an empty view model so the page renders gracefully if anything fails.
             var model = new PlayerTeamsPageViewModel
             {
-                ActiveRiderSlots = ActiveRiderSlots,
-                BenchRiderSlots = BenchRiderSlots
+                ActiveRiderSlots = 12,
+                BenchRiderSlots = 6
             };
 
             try
@@ -66,20 +52,22 @@ namespace StageProject_RaceCore.Controllers
                     return View(model);
                 }
 
+                int activeSlots = game.RidersPerPlayer > 0 ? game.RidersPerPlayer : 12;
+                int benchSlots = game.BenchPerPlayer >= 0 ? game.BenchPerPlayer : 6;
+
                 model.GameId = game.Id;
                 model.RaceId = game.RaceId;
                 model.RaceName = $"{game.Race.Name} {game.Race.Year}";
                 model.GameStatus = game.Status;
+                model.ActiveRiderSlots = activeSlots;
+                model.BenchRiderSlots = benchSlots;
 
-                // Load every draft turn for this game session, ordered chronologically.
-                // DraftTurns record which player picked which cyclist on which turn.
                 var draftTurns = await _context.DraftTurns
                     .Include(d => d.Player)
                     .Where(d => d.GameSessionId == game.Id)
                     .OrderBy(d => d.TurnNumber)
                     .ToListAsync();
 
-                // Load every player selection for this game, including the cyclist and their pro team.
                 var selections = await _context.PlayerSelections
                     .Include(s => s.Player)
                     .Include(s => s.Cyclist)
@@ -87,8 +75,6 @@ namespace StageProject_RaceCore.Controllers
                     .Where(s => s.GameSessionId == game.Id)
                     .ToListAsync();
 
-                // Build a lookup of cyclist → earliest draft turn number so riders can be
-                // displayed in pick order rather than insertion order.
                 var turnNumberByCyclistId = draftTurns
                     .Where(d => d.CyclistId.HasValue)
                     .GroupBy(d => d.CyclistId!.Value)
@@ -96,8 +82,6 @@ namespace StageProject_RaceCore.Controllers
                         g => g.Key,
                         g => g.Min(d => d.TurnNumber));
 
-                // Collect the distinct set of players from both draft turns and selections,
-                // then order by their draft position so cards appear in a consistent order.
                 var players = draftTurns
                     .Where(d => d.Player != null)
                     .Select(d => d.Player)
@@ -110,14 +94,25 @@ namespace StageProject_RaceCore.Controllers
                     .ThenBy(p => p.Name)
                     .ToList();
 
-                // Build one PlayerTeamViewModel per player, assigning a colour from the
-                // palette and splitting their selections into active and bench lists.
                 for (var index = 0; index < players.Count; index++)
                 {
                     var player = players[index];
                     var color = PlayerColors[index % PlayerColors.Length];
+
                     var playerSelections = selections
                         .Where(s => s.PlayerId == player.Id)
+                        .ToList();
+
+                    var orderedRiders = BuildRiders(playerSelections, turnNumberByCyclistId);
+
+                    var activeRiders = orderedRiders
+                        .Where(r => r.IsActive)
+                        .Take(activeSlots)
+                        .ToList();
+
+                    var benchRiders = orderedRiders
+                        .Where(r => !r.IsActive)
+                        .Take(benchSlots)
                         .ToList();
 
                     model.PlayerTeams.Add(new PlayerTeamViewModel
@@ -130,18 +125,8 @@ namespace StageProject_RaceCore.Controllers
                         ColorSoft = ToRgba(color, 0.12),
                         ColorDark = Darken(color, 0.22),
                         TextColor = GetReadableTextColor(color),
-                        ActiveRiders = BuildRiders(
-                            playerSelections,
-                            isActive: true,
-                            turnNumberByCyclistId)
-                            .Take(ActiveRiderSlots)
-                            .ToList(),
-                        BenchRiders = BuildRiders(
-                            playerSelections,
-                            isActive: false,
-                            turnNumberByCyclistId)
-                            .Take(BenchRiderSlots)
-                            .ToList()
+                        ActiveRiders = activeRiders,
+                        BenchRiders = benchRiders
                     });
                 }
             }
@@ -153,12 +138,6 @@ namespace StageProject_RaceCore.Controllers
             return View(model);
         }
 
-        // POST /Team/SwapActiveBench
-        // Moves a cyclist between the active lineup and the bench for a specific player in a game.
-        // Accepts up to two cyclist IDs:
-        //   activeCyclistId — the cyclist currently active who should move to the bench (0 = empty slot).
-        //   benchCyclistId  — the cyclist currently on the bench who should become active (0 = empty slot).
-        // At least one must be non-zero; if only one is provided the other slot is treated as empty.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SwapActiveBench(
@@ -169,10 +148,20 @@ namespace StageProject_RaceCore.Controllers
         {
             try
             {
+                var game = await _context.GameSessions
+                    .FirstOrDefaultAsync(g => g.Id == gameId);
+
+                if (game == null)
+                {
+                    return NotFound();
+                }
+
+                int activeSlots = game.RidersPerPlayer > 0 ? game.RidersPerPlayer : 12;
+                int benchSlots = game.BenchPerPlayer >= 0 ? game.BenchPerPlayer : 6;
+
                 var hasActive = activeCyclistId > 0;
                 var hasBench = benchCyclistId > 0;
 
-                // Reject requests where both IDs are zero — nothing to swap.
                 if (!hasActive && !hasBench)
                 {
                     return BadRequest();
@@ -181,7 +170,6 @@ namespace StageProject_RaceCore.Controllers
                 PlayerSelection? activeSelection = null;
                 PlayerSelection? benchSelection = null;
 
-                // Look up the active cyclist's selection record, verifying it is currently active.
                 if (hasActive)
                 {
                     activeSelection = await _context.PlayerSelections
@@ -197,7 +185,6 @@ namespace StageProject_RaceCore.Controllers
                     }
                 }
 
-                // Look up the bench cyclist's selection record, verifying it is currently inactive.
                 if (hasBench)
                 {
                     benchSelection = await _context.PlayerSelections
@@ -213,20 +200,39 @@ namespace StageProject_RaceCore.Controllers
                     }
                 }
 
+                int currentActiveCount = await _context.PlayerSelections
+                    .CountAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.IsActive == true);
+
+                int currentBenchCount = await _context.PlayerSelections
+                    .CountAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.IsActive == false);
+
                 if (hasActive && hasBench)
                 {
-                    // Full swap: active rider moves to bench, bench rider becomes active.
                     activeSelection!.IsActive = false;
                     benchSelection!.IsActive = true;
                 }
                 else if (hasActive)
                 {
-                    // One-sided: move an active rider into an empty bench slot.
+                    if (currentBenchCount >= benchSlots)
+                    {
+                        return BadRequest("Bank is vol.");
+                    }
+
                     activeSelection!.IsActive = false;
                 }
                 else
                 {
-                    // One-sided: move a bench rider into an empty active slot.
+                    if (currentActiveCount >= activeSlots)
+                    {
+                        return BadRequest("Actieve ploeg is vol.");
+                    }
+
                     benchSelection!.IsActive = true;
                 }
 
@@ -241,8 +247,6 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
-        // Resolves which game session to display.
-        // Priority: explicit gameId → most recent non-finished game → most recent game overall.
         private async Task<GameSession?> ResolveGame(int gameId)
         {
             var games = _context.GameSessions
@@ -255,7 +259,7 @@ namespace StageProject_RaceCore.Controllers
             }
 
             var currentGame = await games
-                .Where(g => g.Status != "Finished")
+                .Where(g => g.Status != "Finished" && g.Status != "Cancelled")
                 .OrderByDescending(g => g.CreatedAt)
                 .FirstOrDefaultAsync();
 
@@ -269,15 +273,12 @@ namespace StageProject_RaceCore.Controllers
                 .FirstOrDefaultAsync();
         }
 
-        // Filters a player's selections to either active or bench riders, sorts them by
-        // draft turn number (i.e. pick order), and projects them into view model rows.
         private static List<PlayerTeamRiderViewModel> BuildRiders(
             IEnumerable<PlayerSelection> selections,
-            bool isActive,
             IReadOnlyDictionary<int, int> turnNumberByCyclistId)
         {
             return selections
-                .Where(s => s.IsActive == isActive && s.Cyclist != null)
+                .Where(s => s.Cyclist != null)
                 .OrderBy(s => turnNumberByCyclistId.TryGetValue(s.CyclistId, out var turnNumber)
                     ? turnNumber
                     : int.MaxValue)
@@ -291,13 +292,11 @@ namespace StageProject_RaceCore.Controllers
                     PickNumber = turnNumberByCyclistId.TryGetValue(s.CyclistId, out var turnNumber)
                         ? turnNumber
                         : 0,
-                    IsActive = isActive
+                    IsActive = s.IsActive
                 })
                 .ToList();
         }
 
-        // Produces a two-letter initials string from the first two words of a name.
-        // e.g. "Wout van Aert" → "WV". Falls back to "?" for empty names.
         private static string BuildInitials(string name)
         {
             var initials = name
@@ -311,8 +310,6 @@ namespace StageProject_RaceCore.Controllers
                 : new string(initials).ToUpperInvariant();
         }
 
-        // Converts a CSS hex colour to an rgba() string with the given alpha value.
-        // Used to produce the soft background tint for active-rider rows.
         private static string ToRgba(string color, double alpha)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -325,8 +322,6 @@ namespace StageProject_RaceCore.Controllers
                 $"rgba({red}, {green}, {blue}, {alpha:0.##})");
         }
 
-        // Darkens a hex colour by the given amount (0–1) by scaling each RGB channel down.
-        // Used to produce gradient end colours and hover shades for player cards.
         private static string Darken(string color, double amount)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -338,8 +333,6 @@ namespace StageProject_RaceCore.Controllers
             return $"#{(int)Math.Round(red * factor):X2}{(int)Math.Round(green * factor):X2}{(int)Math.Round(blue * factor):X2}";
         }
 
-        // Returns "#ffffff" (white) or "#111827" (near-black) depending on the perceived
-        // luminance of the background colour, so text remains legible at all times.
         private static string GetReadableTextColor(string color)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -351,8 +344,6 @@ namespace StageProject_RaceCore.Controllers
             return luminance > 150 ? "#111827" : "#ffffff";
         }
 
-        // Parses a 6-digit hex colour string (with or without leading #) into R, G, B components.
-        // Returns false and zeroes if the string is null, empty, or not a valid hex colour.
         private static bool TryParseHexColor(
             string? color,
             out int red,
