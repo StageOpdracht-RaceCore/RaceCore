@@ -1207,3 +1207,173 @@ body {
         font-size: 0.86rem;
     }
 }
+/* ===============================
+   FIX: WEBSITE-LAYOUT ZONDER SECTION CARD
+================================= */
+
+.draft-website-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    align-items: start;
+    overflow: visible;
+}
+
+.draft-players-area {
+    min-width: 0;
+    overflow: visible;
+}
+
+.draft-info-area {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.draft-page-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+    .draft-page-section-title h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #111827;
+    }
+
+    .draft-page-section-title p {
+        margin: 6px 0 0;
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
+    .draft-page-section-title span {
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #eef4ff;
+        color: #1d4ed8;
+        font-weight: 800;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+.draft-table {
+    position: relative;
+    overflow: visible;
+    background: #ffffff;
+    border: 1px solid #e7edf5;
+    border-radius: 22px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.draft-table-body,
+.draft-row,
+.draft-cell,
+.draft-selection-cell,
+.draft-pick-form {
+    overflow: visible;
+}
+
+.draft-row {
+    position: relative;
+}
+
+    .draft-row.active {
+        z-index: 100;
+    }
+
+.draft-combobox {
+    position: relative;
+    width: 100%;
+    z-index: 500;
+}
+
+.draft-combobox-input {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 800;
+    outline: none;
+    background: #ffffff;
+    color: #0f172a;
+}
+
+    .draft-combobox-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+.draft-combobox-list {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+    padding: 6px;
+}
+
+.draft-combobox.open .draft-combobox-list {
+    display: block;
+}
+
+.draft-combobox-option {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+    .draft-combobox-option:hover,
+    .draft-combobox-option.active {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+.draft-combobox-empty {
+    padding: 12px;
+    color: #64748b;
+    font-weight: 800;
+    display: none;
+}
+
+@media (max-width: 1250px) {
+    .draft-website-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .draft-info-area {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .draft-page-section-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .draft-table {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+}
