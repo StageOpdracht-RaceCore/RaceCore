@@ -340,7 +340,8 @@ namespace StageProject_RaceCore.Controllers
                     AvailableStages = new List<SelectListItem>(),
                     AvailablePlayers = new List<PlayerSelectItemViewModel>(),
                     TotalStages = 0,
-                    TotalCyclists = 0
+                    TotalCyclists = 0,
+                    AvailableRaceCyclists = 0
                 };
             }
         }
@@ -387,7 +388,9 @@ namespace StageProject_RaceCore.Controllers
                 selectedPlayerIds = players.Select(p => p.Id).ToList();
             }
 
-            int totalCyclists = raceId > 0
+            int totalCyclists = await _context.Cyclists.CountAsync();
+
+            int availableRaceCyclists = raceId > 0
                 ? await _context.RaceEntries
                     .Where(re => re.RaceId == raceId && re.Cyclist.IsActive)
                     .Select(re => re.CyclistId)
@@ -404,6 +407,7 @@ namespace StageProject_RaceCore.Controllers
                 BenchPerPlayer = benchPerPlayer,
                 TotalStages = stages.Count,
                 TotalCyclists = totalCyclists,
+                AvailableRaceCyclists = availableRaceCyclists,
 
                 AvailableRaces = races.Select(r => new SelectListItem
                 {
