@@ -156,9 +156,9 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(viewModel);
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database fout.";
+                TempData["Error"] = "Database fout: " + GetFullErrorMessage(ex);
                 return View(viewModel);
             }
         }
@@ -169,6 +169,8 @@ namespace StageProject_RaceCore.Controllers
         {
             try
             {
+                model.Results ??= new List<StageResultViewModel>();
+
                 if (model.GameSessionId <= 0 || model.StageId <= 0)
                 {
                     TempData["Error"] = "Game of rit ontbreekt.";
@@ -210,6 +212,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     var rider = await _context.Cyclists.FindAsync(duplicate.Key);
                     TempData["Error"] = $"Renner '{rider?.FullName}' staat dubbel.";
+
                     return RedirectToAction("Index", new
                     {
                         raceId = game.RaceId,
@@ -255,16 +258,24 @@ namespace StageProject_RaceCore.Controllers
                     });
 
                     if (result.HasYellowJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Red", usedJerseys);
+                    }
 
                     if (result.HasGreenJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Green", usedJerseys);
+                    }
 
                     if (result.HasPolkaJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Blue", usedJerseys);
+                    }
 
                     if (result.HasWhiteJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "White", usedJerseys);
+                    }
                 }
 
                 AddOutsideJerseyIfNotAlreadyUsed(model.GameSessionId, model.StageId, model.YellowOutsideTop25CyclistId, "Red", usedJerseys);
@@ -283,18 +294,23 @@ namespace StageProject_RaceCore.Controllers
 
                 await RebuildPlayerPointsForStage(model.GameSessionId, model.StageId);
 
-                TempData["Success"] = "Scores opgeslagen.";
+                TempData["Success"] = "Scores gepubliceerd.";
+
+                return RedirectToAction("StageResults", "Result", new
+                {
+                    raceId = game.RaceId
+                });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Opslaan mislukt: " + GetFullErrorMessage(ex);
+
                 return RedirectToAction("Index", new
                 {
-                    raceId = game.RaceId,
+                    raceId,
                     stageId = model.StageId,
                     gameId = model.GameSessionId
                 });
-            }
-            catch
-            {
-                TempData["Error"] = "Opslaan mislukt.";
-                return RedirectToAction("Index", new { raceId, stageId = model.StageId, gameId = model.GameSessionId });
             }
         }
 
@@ -480,6 +496,16 @@ namespace StageProject_RaceCore.Controllers
                 "WitteTrui" => "WitteTrui",
                 _ => jerseyType
             };
+        }
+
+        private static string GetFullErrorMessage(Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                return ex.Message;
+            }
+
+            return ex.Message + " | Inner: " + ex.InnerException.Message;
         }
     }
 }
