@@ -31,6 +31,8 @@ namespace StageProject_RaceCore.ViewModels
         public int TotalStages { get; set; }
 
         public int TotalCyclists { get; set; }
+
+        public int AvailableRaceCyclists { get; set; }
     }
 
     public class PlayerSelectItemViewModel

@@ -16,33 +16,34 @@ namespace StageProject_RaceCore.ViewModels
 
         public int TotalPoints { get; set; }
 
-        public int HighestPoints { get; set; }
-
         public List<GameSession> Games { get; set; } = new();
 
-        public List<LeaderboardRowViewModel> Rows { get; set; } = new();
+        public List<LeaderboardPlayerColumnViewModel> Players { get; set; } = new();
+
+        public List<LeaderboardStageRowViewModel> StageRows { get; set; } = new();
+
+        public Dictionary<int, int> FinalSettlementPoints { get; set; } = new();
+
+        public Dictionary<int, int> TotalPointsPerPlayer { get; set; } = new();
     }
 
-    public class LeaderboardRowViewModel
+    public class LeaderboardPlayerColumnViewModel
     {
-        public int Rank { get; set; }
-
         public int PlayerId { get; set; }
 
         public string PlayerName { get; set; } = "";
 
-        public string Initials { get; set; } = "?";
-
-        public int DraftPosition { get; set; }
-
-        public int TotalPoints { get; set; }
-
-        public int RidersCount { get; set; }
-
-        public string BestCyclistName { get; set; } = "-";
-
-        public int BestCyclistPoints { get; set; }
-
         public string Color { get; set; } = "#2563eb";
+    }
+
+    public class LeaderboardStageRowViewModel
+    {
+        public int StageId { get; set; }
+
+        public int StageNumber { get; set; }
+
+        public string StageName { get; set; } = "";
+
+        public Dictionary<int, int> PointsPerPlayer { get; set; } = new();
     }
 }
