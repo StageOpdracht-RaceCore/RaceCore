@@ -220,17 +220,13 @@ namespace StageProject_RaceCore.Controllers
                     }
                 }
 
-                int currentActiveCount = await _context.PlayerSelections
-                    .CountAsync(s =>
-                        s.GameSessionId == gameId &&
-                        s.PlayerId == playerId &&
-                        s.IsActive == true);
+                var allPlayerSelections = await _context.PlayerSelections
+                    .Where(s => s.GameSessionId == gameId && s.PlayerId == playerId)
+                    .ToListAsync();
 
-                int currentBenchCount = await _context.PlayerSelections
-                    .CountAsync(s =>
-                        s.GameSessionId == gameId &&
-                        s.PlayerId == playerId &&
-                        s.IsActive == false);
+                int currentActiveCount = allPlayerSelections.Count(s => s.IsActive);
+                int currentBenchCount = allPlayerSelections.Count(s =>
+                    !s.IsActive && !_disqualified.ContainsKey(DqKey(gameId, playerId, s.CyclistId)));
 
                 if (hasActive && hasBench)
                 {
