@@ -117,9 +117,6 @@ namespace StageProject_RaceCore.Migrations
                     b.Property<int>("RidersPerPlayer")
                         .HasColumnType("int");
 
-                    b.Property<int>("StageId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -127,8 +124,6 @@ namespace StageProject_RaceCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RaceId");
-
-                    b.HasIndex("StageId");
 
                     b.ToTable("GameSessions");
                 });
@@ -508,15 +503,7 @@ namespace StageProject_RaceCore.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StageProject_RaceCore.Models.Stage", "Stage")
-                        .WithMany()
-                        .HasForeignKey("StageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Race");
-
-                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("StageProject_RaceCore.Models.Jersey", b =>

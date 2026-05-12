@@ -47,16 +47,12 @@ namespace StageProject_RaceCore.Models
                 .OnDelete(DeleteBehavior.Cascade);
 
             // GAME SESSION
+            // Een game hoort bij één volledige race.
+            // Een game hoort NIET meer bij één aparte rit.
             modelBuilder.Entity<GameSession>()
                 .HasOne(gs => gs.Race)
                 .WithMany()
                 .HasForeignKey(gs => gs.RaceId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<GameSession>()
-                .HasOne(gs => gs.Stage)
-                .WithMany()
-                .HasForeignKey(gs => gs.StageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // CYCLIST
@@ -136,6 +132,8 @@ namespace StageProject_RaceCore.Models
                 .OnDelete(DeleteBehavior.Cascade);
 
             // STAGE RESULT
+            // Resultaten blijven WEL per rit.
+            // Daarom blijft StageResult gekoppeld aan GameSession + Stage.
             modelBuilder.Entity<StageResult>()
                 .HasIndex(sr => new { sr.GameSessionId, sr.StageId, sr.CyclistId })
                 .IsUnique();
@@ -159,6 +157,7 @@ namespace StageProject_RaceCore.Models
                 .OnDelete(DeleteBehavior.Cascade);
 
             // JERSEY
+            // Truien blijven WEL per rit.
             modelBuilder.Entity<Jersey>()
                 .HasIndex(j => new { j.GameSessionId, j.StageId, j.Type })
                 .IsUnique();

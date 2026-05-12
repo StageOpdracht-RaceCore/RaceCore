@@ -26,22 +26,6 @@ namespace StageProject_RaceCore.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetStagesByRace(int raceId)
-        {
-            var stages = await _context.Stages
-                .Where(s => s.RaceId == raceId)
-                .OrderBy(s => s.StageNumber)
-                .Select(s => new
-                {
-                    id = s.Id,
-                    text = "Rit " + s.StageNumber + " - " + s.Name
-                })
-                .ToListAsync();
-
-            return Json(stages);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewGameViewModel model)
@@ -55,11 +39,6 @@ namespace StageProject_RaceCore.Controllers
             if (model.RaceId <= 0)
             {
                 ModelState.AddModelError(nameof(model.RaceId), "Kies een race.");
-            }
-
-            if (model.StageId <= 0)
-            {
-                ModelState.AddModelError(nameof(model.StageId), "Kies een rit.");
             }
 
             if (model.SelectedPlayerIds.Count < 2)
@@ -90,7 +69,6 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(await BuildNewGameViewModelSafe(
                     model.RaceId,
-                    model.StageId,
                     model.SelectedPlayerIds,
                     model.RidersPerPlayer,
                     model.BenchPerPlayer));
@@ -99,6 +77,7 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var race = await _context.Races
+                    .Include(r => r.Stages)
                     .FirstOrDefaultAsync(r => r.Id == model.RaceId);
 
                 if (race == null)
@@ -108,23 +87,6 @@ namespace StageProject_RaceCore.Controllers
 
                     return View(await BuildNewGameViewModelSafe(
                         model.RaceId,
-                        model.StageId,
-                        model.SelectedPlayerIds,
-                        model.RidersPerPlayer,
-                        model.BenchPerPlayer));
-                }
-
-                var stage = await _context.Stages
-                    .FirstOrDefaultAsync(s => s.Id == model.StageId && s.RaceId == model.RaceId);
-
-                if (stage == null)
-                {
-                    TempData["Error"] = "Rit niet gevonden bij deze race.";
-                    await SetActiveGameViewBag();
-
-                    return View(await BuildNewGameViewModelSafe(
-                        model.RaceId,
-                        model.StageId,
                         model.SelectedPlayerIds,
                         model.RidersPerPlayer,
                         model.BenchPerPlayer));
@@ -143,7 +105,6 @@ namespace StageProject_RaceCore.Controllers
 
                     return View(await BuildNewGameViewModelSafe(
                         model.RaceId,
-                        model.StageId,
                         model.SelectedPlayerIds,
                         model.RidersPerPlayer,
                         model.BenchPerPlayer));
@@ -166,7 +127,6 @@ namespace StageProject_RaceCore.Controllers
 
                     return View(await BuildNewGameViewModelSafe(
                         model.RaceId,
-                        model.StageId,
                         model.SelectedPlayerIds,
                         model.RidersPerPlayer,
                         model.BenchPerPlayer));
@@ -177,9 +137,8 @@ namespace StageProject_RaceCore.Controllers
                 var game = new GameSession
                 {
                     RaceId = model.RaceId,
-                    StageId = model.StageId,
                     Status = "Draft",
-                    CurrentStageNumber = stage.StageNumber,
+                    CurrentStageNumber = 0,
                     RidersPerPlayer = model.RidersPerPlayer,
                     BenchPerPlayer = model.BenchPerPlayer,
                     CreatedAt = DateTime.Now,
@@ -200,7 +159,7 @@ namespace StageProject_RaceCore.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] =
-                    $"Game {race.Name} {race.Year} - Rit {stage.StageNumber} is gestart. " +
+                    $"Game {race.Name} {race.Year} is gestart. " +
                     $"Draft: {model.RidersPerPlayer} actief + {model.BenchPerPlayer} bank.";
 
                 return RedirectToAction("Index", "Draft", new { gameId = game.Id });
@@ -212,7 +171,6 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(await BuildNewGameViewModelSafe(
                     model.RaceId,
-                    model.StageId,
                     model.SelectedPlayerIds,
                     model.RidersPerPlayer,
                     model.BenchPerPlayer));
@@ -252,7 +210,6 @@ namespace StageProject_RaceCore.Controllers
 
             var activeGame = await _context.GameSessions
                 .Include(g => g.Race)
-                .Include(g => g.Stage)
                 .Where(g =>
                     (g.Status == "Draft" || g.Status == "Active") &&
                     g.LastHostPingAt != null &&
@@ -266,8 +223,8 @@ namespace StageProject_RaceCore.Controllers
                 ? activeGame.Race.Name + " " + activeGame.Race.Year
                 : "";
 
-            ViewBag.ActiveGameStageName = activeGame?.Stage != null
-                ? "Rit " + activeGame.Stage.StageNumber + " - " + activeGame.Stage.Name
+            ViewBag.ActiveGameStageName = activeGame?.Race != null
+                ? "Alle ritten van deze race"
                 : "";
 
             ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
@@ -311,7 +268,6 @@ namespace StageProject_RaceCore.Controllers
 
         private async Task<NewGameViewModel> BuildNewGameViewModelSafe(
             int selectedRaceId = 0,
-            int selectedStageId = 0,
             List<int>? selectedPlayerIds = null,
             int ridersPerPlayer = 12,
             int benchPerPlayer = 6)
@@ -320,7 +276,6 @@ namespace StageProject_RaceCore.Controllers
             {
                 return await BuildNewGameViewModel(
                     selectedRaceId,
-                    selectedStageId,
                     selectedPlayerIds,
                     ridersPerPlayer,
                     benchPerPlayer);
@@ -332,12 +287,10 @@ namespace StageProject_RaceCore.Controllers
                 return new NewGameViewModel
                 {
                     RaceId = selectedRaceId,
-                    StageId = selectedStageId,
                     SelectedPlayerIds = selectedPlayerIds ?? new List<int>(),
                     RidersPerPlayer = ridersPerPlayer,
                     BenchPerPlayer = benchPerPlayer,
                     AvailableRaces = new List<SelectListItem>(),
-                    AvailableStages = new List<SelectListItem>(),
                     AvailablePlayers = new List<PlayerSelectItemViewModel>(),
                     TotalStages = 0,
                     TotalCyclists = 0,
@@ -348,7 +301,6 @@ namespace StageProject_RaceCore.Controllers
 
         private async Task<NewGameViewModel> BuildNewGameViewModel(
             int selectedRaceId = 0,
-            int selectedStageId = 0,
             List<int>? selectedPlayerIds = null,
             int ridersPerPlayer = 12,
             int benchPerPlayer = 6)
@@ -372,16 +324,7 @@ namespace StageProject_RaceCore.Controllers
 
             int raceId = selectedRace?.Id ?? 0;
 
-            var stages = selectedRace == null
-                ? new List<Stage>()
-                : selectedRace.Stages.OrderBy(s => s.StageNumber).ToList();
-
-            int stageId = selectedStageId;
-
-            if (stageId <= 0 && stages.Any())
-            {
-                stageId = stages.First().Id;
-            }
+            int totalStages = selectedRace?.Stages?.Count ?? 0;
 
             if (!selectedPlayerIds.Any())
             {
@@ -401,11 +344,10 @@ namespace StageProject_RaceCore.Controllers
             return new NewGameViewModel
             {
                 RaceId = raceId,
-                StageId = stageId,
                 SelectedPlayerIds = selectedPlayerIds,
                 RidersPerPlayer = ridersPerPlayer,
                 BenchPerPlayer = benchPerPlayer,
-                TotalStages = stages.Count,
+                TotalStages = totalStages,
                 TotalCyclists = totalCyclists,
                 AvailableRaceCyclists = availableRaceCyclists,
 
@@ -414,13 +356,6 @@ namespace StageProject_RaceCore.Controllers
                     Value = r.Id.ToString(),
                     Text = $"{r.Name} {r.Year} ({r.Stages.Count} ritten)",
                     Selected = r.Id == raceId
-                }).ToList(),
-
-                AvailableStages = stages.Select(s => new SelectListItem
-                {
-                    Value = s.Id.ToString(),
-                    Text = $"Rit {s.StageNumber} - {s.Name}",
-                    Selected = s.Id == stageId
                 }).ToList(),
 
                 AvailablePlayers = players.Select(p => new PlayerSelectItemViewModel

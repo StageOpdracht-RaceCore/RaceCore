@@ -83,7 +83,8 @@
                     <h1 class="game-title">New Game</h1>
 
                     <p class="game-subtitle">
-                        Stel je race klaar, kies een rit, kies de spelers en bepaal hoeveel actieve renners en bankrenners elke speler krijgt.
+                        Kies één volledige race. De game geldt automatisch voor alle ritten binnen die race.
+                        Daarna kies je de spelers en bepaal je hoeveel actieve renners en bankrenners elke speler krijgt.
                     </p>
                 </div>
             </div>
@@ -131,7 +132,7 @@
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-blue">⛰</div>
                 <div>
-                    <span class="game-stat-label">Ritten</span>
+                    <span class="game-stat-label">Ritten in race</span>
                     <strong class="game-stat-value">@Model.TotalStages</strong>
                 </div>
             </div>
@@ -146,7 +147,7 @@
                 </div>
 
                 <p class="game-panel-text">
-                    Kies eerst de race, daarna de rit en stel het aantal renners per speler in.
+                    Kies de volledige race. Je hoeft geen aparte rit meer te kiezen, want deze game loopt over alle ritten van de gekozen race.
                 </p>
 
                 <div class="game-form-group">
@@ -157,12 +158,15 @@
                     <span asp-validation-for="RaceId" class="text-danger"></span>
                 </div>
 
-                <div class="game-form-group">
-                    <label asp-for="StageId">Rit</label>
-                    <select asp-for="StageId" asp-items="Model.AvailableStages" class="game-input" id="stageSelect">
-                        <option value="">-- Kies een rit --</option>
-                    </select>
-                    <span asp-validation-for="StageId" class="text-danger"></span>
+                <div class="game-warning-box">
+                    ℹ Race structuur<br />
+                    <span>
+                        Deze game wordt gekoppeld aan de volledige race.
+                    </span>
+                    <br />
+                    <span>
+                        Scoring gebeurt later per rit binnen deze race.
+                    </span>
                 </div>
 
                 <div class="game-form-group">
@@ -211,13 +215,6 @@
                 {
                     <div class="game-alert game-alert-danger">
                         Er zijn nog geen races. Maak eerst een race aan.
-                    </div>
-                }
-
-                @if (!Model.AvailableStages.Any() && Model.AvailableRaces.Any())
-                {
-                    <div class="game-alert game-alert-danger">
-                        Deze race heeft nog geen ritten. Maak eerst ritten aan voor deze race.
                     </div>
                 }
 
@@ -337,7 +334,7 @@
                 <p>
                     Game <strong id="modalRaceName">de gekozen race</strong> wordt gestart.
                     <br />
-                    Rit: <strong id="modalStageName">de gekozen rit</strong>
+                    Deze game geldt voor <strong>alle ritten van deze race</strong>.
                     <br />
                     Actief: <strong id="modalActive">@Model.RidersPerPlayer</strong> renners per speler
                     <br />
@@ -366,8 +363,12 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const storageKey = "RaceCore_NewGame_Settings";
+
             const selectedCount = document.getElementById("selectedPlayersCount");
             const checkboxes = document.querySelectorAll(".player-checkbox");
+
+            const form = document.getElementById("newGameForm");
 
             const modal = document.getElementById("startGameModal");
             const openModalBtn = document.getElementById("openStartGameModal");
@@ -377,10 +378,7 @@
             const closeActiveGameModal = document.getElementById("closeActiveGameModal");
 
             const raceSelect = document.getElementById("raceSelect");
-            const stageSelect = document.getElementById("stageSelect");
-
             const modalRaceName = document.getElementById("modalRaceName");
-            const modalStageName = document.getElementById("modalStageName");
 
             const ridersInput = document.getElementById("ridersPerPlayerInput");
             const benchInput = document.getElementById("benchPerPlayerInput");
@@ -411,6 +409,66 @@
                 }
 
                 return value;
+            }
+
+            function getSelectedPlayerIds() {
+                return Array.from(document.querySelectorAll(".player-checkbox:checked"))
+                    .map(cb => cb.value);
+            }
+
+            function saveSettings() {
+                const settings = {
+                    raceId: raceSelect ? raceSelect.value : "",
+                    ridersPerPlayer: ridersInput ? ridersInput.value : "12",
+                    benchPerPlayer: benchInput ? benchInput.value : "6",
+                    selectedPlayerIds: getSelectedPlayerIds()
+                };
+
+                localStorage.setItem(storageKey, JSON.stringify(settings));
+            }
+
+            function loadSettings() {
+                const saved = localStorage.getItem(storageKey);
+
+                if (!saved) {
+                    return;
+                }
+
+                let settings = null;
+
+                try {
+                    settings = JSON.parse(saved);
+                } catch {
+                    localStorage.removeItem(storageKey);
+                    return;
+                }
+
+                if (raceSelect && settings.raceId) {
+                    const raceExists = Array.from(raceSelect.options)
+                        .some(option => option.value === settings.raceId);
+
+                    if (raceExists) {
+                        raceSelect.value = settings.raceId;
+                    }
+                }
+
+                if (ridersInput && settings.ridersPerPlayer) {
+                    ridersInput.value = settings.ridersPerPlayer;
+                }
+
+                if (benchInput && settings.benchPerPlayer) {
+                    benchInput.value = settings.benchPerPlayer;
+                }
+
+                if (Array.isArray(settings.selectedPlayerIds)) {
+                    checkboxes.forEach(cb => {
+                        cb.checked = settings.selectedPlayerIds.includes(cb.value);
+                    });
+                }
+            }
+
+            function clearSettingsAfterStart() {
+                localStorage.removeItem(storageKey);
             }
 
             function updateSelectedPlayersCount() {
@@ -455,71 +513,44 @@
                         : "de gekozen race";
             }
 
-            function updateModalStageName() {
-                if (!stageSelect || !modalStageName) return;
+            loadSettings();
 
-                const selectedOption = stageSelect.options[stageSelect.selectedIndex];
-
-                modalStageName.textContent =
-                    selectedOption && selectedOption.value !== ""
-                        ? selectedOption.text
-                        : "de gekozen rit";
-            }
-
-            async function loadStagesForRace() {
-                if (!raceSelect || !stageSelect) return;
-
-                const raceId = raceSelect.value;
-                stageSelect.innerHTML = '<option value="">-- Kies een rit --</option>';
-
-                if (!raceId) {
-                    updateModalStageName();
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/Game/GetStagesByRace?raceId=${raceId}`);
-                    const stages = await response.json();
-
-                    stages.forEach(stage => {
-                        const option = document.createElement("option");
-                        option.value = stage.id;
-                        option.textContent = stage.text;
-                        stageSelect.appendChild(option);
-                    });
-
-                    if (stages.length > 0) {
-                        stageSelect.value = stages[0].id;
-                    }
-
-                    updateModalStageName();
-                } catch {
-                    stageSelect.innerHTML = '<option value="">Ritten konden niet geladen worden</option>';
-                    updateModalStageName();
-                }
-            }
-
-            checkboxes.forEach(cb => cb.addEventListener("change", updateSelectedPlayersCount));
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", function () {
+                    updateSelectedPlayersCount();
+                    saveSettings();
+                });
+            });
 
             if (ridersInput) {
-                ridersInput.addEventListener("input", updateDraftSummary);
-                ridersInput.addEventListener("change", updateDraftSummary);
+                ridersInput.addEventListener("input", function () {
+                    updateDraftSummary();
+                    saveSettings();
+                });
+
+                ridersInput.addEventListener("change", function () {
+                    updateDraftSummary();
+                    saveSettings();
+                });
             }
 
             if (benchInput) {
-                benchInput.addEventListener("input", updateDraftSummary);
-                benchInput.addEventListener("change", updateDraftSummary);
+                benchInput.addEventListener("input", function () {
+                    updateDraftSummary();
+                    saveSettings();
+                });
+
+                benchInput.addEventListener("change", function () {
+                    updateDraftSummary();
+                    saveSettings();
+                });
             }
 
             if (raceSelect) {
                 raceSelect.addEventListener("change", function () {
                     updateModalRaceName();
-                    loadStagesForRace();
+                    saveSettings();
                 });
-            }
-
-            if (stageSelect) {
-                stageSelect.addEventListener("change", updateModalStageName);
             }
 
             if (openModalBtn && modal) {
@@ -527,7 +558,7 @@
                     updateSelectedPlayersCount();
                     updateDraftSummary();
                     updateModalRaceName();
-                    updateModalStageName();
+                    saveSettings();
                     modal.classList.add("show");
                 });
             }
@@ -544,10 +575,16 @@
                 });
             }
 
+            if (form) {
+                form.addEventListener("submit", function () {
+                    clearSettingsAfterStart();
+                });
+            }
+
             updateSelectedPlayersCount();
             updateDraftSummary();
             updateModalRaceName();
-            updateModalStageName();
+            saveSettings();
         });
     </script>
 }

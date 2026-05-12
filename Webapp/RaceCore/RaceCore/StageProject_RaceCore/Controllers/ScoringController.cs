@@ -72,9 +72,7 @@ namespace StageProject_RaceCore.Controllers
 
                 int selectedStageId = stageId.HasValue && stages.Any(s => s.Id == stageId.Value)
                     ? stageId.Value
-                    : selectedGame.StageId > 0 && stages.Any(s => s.Id == selectedGame.StageId)
-                        ? selectedGame.StageId
-                        : stages.First().Id;
+                    : stages.First().Id;
 
                 viewModel.StageId = selectedStageId;
 
