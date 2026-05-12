@@ -68,6 +68,9 @@ namespace StageProject_RaceCore.Models
         // Total number of rider slots that have been filled across all player teams.
         public int FilledSlots => PlayerTeams.Sum(t => t.ActiveRiders.Count + t.BenchRiders.Count);
 
+        // Maximum number of disqualified rider slots (for consistent table layout).
+        public int DisqualifiedRiderSlots { get; set; }
+
         // Maximum possible filled slots: every player filling every active + bench slot.
         public int TotalSlots => PlayerCount * (ActiveRiderSlots + BenchRiderSlots);
     }
@@ -103,6 +106,9 @@ namespace StageProject_RaceCore.Models
 
         // Cyclists currently on the bench (IsActive = false), ordered by draft turn.
         public List<PlayerTeamRiderViewModel> BenchRiders { get; set; } = new();
+
+        // Cyclists that have been disqualified.
+        public List<PlayerTeamRiderViewModel> DisqualifiedRiders { get; set; } = new();
     }
 
     // View model for a single cyclist row inside a player's roster table.
@@ -121,5 +127,8 @@ namespace StageProject_RaceCore.Models
 
         // True when the cyclist is in the starting lineup; false when on the bench.
         public bool IsActive { get; set; }
+
+        // True when the cyclist has been disqualified.
+        public bool IsDisqualified { get; set; }
     }
 }
