@@ -149,12 +149,13 @@
                                     <th>Renner</th>
                                     <th>Ploeg</th>
                                     <th>Rol</th>
+                                    <th></th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr class="roster-section-row active-section">
-                                    <th colspan="4">Actieve renners</th>
+                                    <th colspan="5">Actieve renners</th>
                                 </tr>
 
                                 @for (var index = 0; index < Model.ActiveRiderSlots; index++)
@@ -163,11 +164,11 @@
 
                                     <tr class="roster-row active-rider @(rider == null ? "empty-slot" : "") @(index == Model.ActiveRiderSlots - 1 ? "roster-before-bench" : "")"
                                         data-section="active"
-                                        onclick="@(rider != null ? "selectRider(this)" : null)"
-                                        role="@(rider != null ? "button" : null)"
-                                        tabindex="@(rider != null ? "0" : null)"
-                                        title="@(rider != null ? "Selecteer om te wisselen" : null)"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
+                                        onclick="selectRider(this)"
+                                        role="button"
+                                        tabindex="0"
+                                        title="@(rider != null ? "Selecteer om te wisselen" : "Vrije plaats")"
+                                        data-cyclist-id="@(rider?.CyclistId ?? 0)">
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -181,11 +182,17 @@
                                                 <span class="status-pill active">Renner</span>
                                             }
                                         </td>
+                                        <td>
+                                            @if (rider != null)
+                                            {
+                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>
+                                            }
+                                        </td>
                                     </tr>
                                 }
 
                                 <tr class="roster-section-row bench-section">
-                                    <th colspan="4">Bankrenners</th>
+                                    <th colspan="5">Bankrenners</th>
                                 </tr>
 
                                 @for (var index = 0; index < Model.BenchRiderSlots; index++)
@@ -194,11 +201,11 @@
 
                                     <tr class="roster-row bench-rider @(rider == null ? "empty-slot" : "")"
                                         data-section="bench"
-                                        onclick="@(rider != null ? "selectRider(this)" : null)"
-                                        role="@(rider != null ? "button" : null)"
-                                        tabindex="@(rider != null ? "0" : null)"
-                                        title="@(rider != null ? "Selecteer om te wisselen" : null)"
-                                        @(rider != null ? $"data-cyclist-id=\"{rider.CyclistId}\"" : "")>
+                                        onclick="selectRider(this)"
+                                        role="button"
+                                        tabindex="0"
+                                        title="@(rider != null ? "Selecteer om te wisselen" : "Vrije plaats")"
+                                        data-cyclist-id="@(rider?.CyclistId ?? 0)">
                                         <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
                                             <span class="rider-name">@RiderName(rider)</span>
@@ -212,7 +219,41 @@
                                                 <span class="status-pill bench">Bank</span>
                                             }
                                         </td>
+                                        <td>
+                                            @if (rider != null)
+                                            {
+                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>
+                                            }
+                                        </td>
                                     </tr>
+                                }
+
+                                @if (playerTeam.DisqualifiedRiders.Any())
+                                {
+                                    <tr class="roster-section-row disqualified-section">
+                                        <th colspan="5">Gedisqualificeerd</th>
+                                    </tr>
+
+                                    @foreach (var rider in playerTeam.DisqualifiedRiders)
+                                    {
+                                        <tr class="roster-row disqualified-rider"
+                                            data-section="disqualified"
+                                            data-cyclist-id="@rider.CyclistId">
+                                            <td class="slot-number"></td>
+                                            <td>
+                                                <span class="rider-name">@rider.FullName</span>
+                                            </td>
+                                            <td>
+                                                <span class="rider-team">@rider.ProTeamName</span>
+                                            </td>
+                                            <td>
+                                                <span class="status-pill disqualified">DQ</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualificeer">UNDQ</button>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -229,16 +270,18 @@
 
         window.selectRider = function (row) {
             if (!hasCyclist(row)) {
-                clearSelection();
-                return;
+                if (!selectedRow) {
+                    clearSelection();
+                    return;
+                }
+            } else {
+                if (selectedRow === row) {
+                    clearSelection();
+                    return;
+                }
             }
 
             var card = row.closest('.player-team-card');
-
-            if (selectedRow === row) {
-                clearSelection();
-                return;
-            }
 
             if (!selectedRow) {
                 selectedRow = row;
@@ -251,9 +294,11 @@
 
             if (firstCard !== card) {
                 clearSelection();
-                selectedRow = row;
-                row.classList.add('roster-row--selected');
-                enableSwapMode(card, row);
+                if (hasCyclist(row)) {
+                    selectedRow = row;
+                    row.classList.add('roster-row--selected');
+                    enableSwapMode(card, row);
+                }
                 return;
             }
 
@@ -262,9 +307,11 @@
 
             if (firstSection === secondSection) {
                 clearSelection();
-                selectedRow = row;
-                row.classList.add('roster-row--selected');
-                enableSwapMode(card, row);
+                if (hasCyclist(row)) {
+                    selectedRow = row;
+                    row.classList.add('roster-row--selected');
+                    enableSwapMode(card, row);
+                }
                 return;
             }
 
@@ -285,9 +332,9 @@
             var selectedSection = selected.dataset.section;
             var targetSection = selectedSection === 'active' ? 'bench' : 'active';
 
-            // Highlight valid targets in the opposite section
+            // Highlight valid targets in the opposite section (including empty slots)
             card.querySelectorAll('.roster-row[data-section]').forEach(function (row) {
-                row.classList.toggle('swap-target', row.dataset.section === targetSection && hasCyclist(row));
+                row.classList.toggle('swap-target', row.dataset.section === targetSection);
                 row.classList.toggle('swap-dimmed', row.dataset.section === selectedSection && row !== selected);
             });
 
@@ -300,10 +347,6 @@
         }
 
         function swapRows(rowA, rowB) {
-            if (!hasCyclist(rowA) || !hasCyclist(rowB)) {
-                return;
-            }
-
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
 
@@ -347,12 +390,15 @@
 
             if (!hasRider) {
                 cells[3].innerHTML = '';
+                cells[4].innerHTML = '';
             } else {
                 var isActiveRow = row.classList.contains('active-rider');
                 var pillClass = isActiveRow ? 'active' : 'bench';
                 var pillLabel = isActiveRow ? 'Renner' : 'Bank';
                 cells[3].innerHTML =
                     '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
+                cells[4].innerHTML =
+                    '<button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>';
             }
         }
 
@@ -398,6 +444,173 @@
                 body: body
             }).catch(function () {
             });
+        }
+
+        window.disqualifyRider = function (event, button) {
+            event.stopPropagation();
+
+            var row = button.closest('tr');
+            if (!row || !hasCyclist(row)) return;
+
+            var card = row.closest('.player-team-card');
+            if (!card) return;
+
+            var tbody = row.closest('tbody');
+            if (!tbody) return;
+
+            var cells = row.querySelectorAll('td');
+            var cyclistId = row.dataset.cyclistId;
+            var riderName = cells[1] ? cells[1].textContent.trim() : '';
+            var riderTeam = cells[2] ? cells[2].textContent.trim() : '';
+
+            // Clear the source row (make it an empty but clickable swap target)
+            row.dataset.cyclistId = '0';
+            row.classList.add('empty-slot');
+            cells[1].innerHTML = '<span class="rider-name">Vrije plaats</span>';
+            cells[2].innerHTML = '<span class="rider-team">-</span>';
+            cells[3].innerHTML = '';
+            cells[4].innerHTML = '';
+            row.setAttribute('title', 'Vrije plaats');
+
+            // Find or create the disqualified section header
+            var dqHeader = tbody.querySelector('.disqualified-section');
+            if (!dqHeader) {
+                dqHeader = document.createElement('tr');
+                dqHeader.className = 'roster-section-row disqualified-section';
+                var th = document.createElement('th');
+                th.colSpan = 5;
+                th.textContent = 'Gedisqualificeerd';
+                dqHeader.appendChild(th);
+                tbody.appendChild(dqHeader);
+            }
+
+            // Create the disqualified rider row
+            var dqRow = document.createElement('tr');
+            dqRow.className = 'roster-row disqualified-rider';
+            dqRow.dataset.section = 'disqualified';
+            dqRow.dataset.cyclistId = cyclistId;
+
+            var td0 = document.createElement('td');
+            td0.className = 'slot-number';
+            dqRow.appendChild(td0);
+
+            var td1 = document.createElement('td');
+            td1.innerHTML = '<span class="rider-name">' + escapeHtml(riderName) + '</span>';
+            dqRow.appendChild(td1);
+
+            var td2 = document.createElement('td');
+            td2.innerHTML = '<span class="rider-team">' + escapeHtml(riderTeam) + '</span>';
+            dqRow.appendChild(td2);
+
+            var td3 = document.createElement('td');
+            td3.innerHTML = '<span class="status-pill disqualified">DQ</span>';
+            dqRow.appendChild(td3);
+
+            var td4 = document.createElement('td');
+            td4.innerHTML = '<button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualificeer">UNDQ</button>';
+            dqRow.appendChild(td4);
+
+            // Append after the last disqualified row, or after the header
+            var lastDq = tbody.querySelector('.disqualified-rider:last-of-type');
+            if (lastDq) {
+                lastDq.parentNode.insertBefore(dqRow, lastDq.nextSibling);
+            } else {
+                dqHeader.parentNode.insertBefore(dqRow, dqHeader.nextSibling);
+            }
+
+            // Persist to server
+            var gameId = document.querySelector('.team-page')?.dataset?.gameId;
+            var playerId = card.dataset.playerId;
+            var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
+
+            if (gameId && playerId && token) {
+                var body =
+                    '__RequestVerificationToken=' + encodeURIComponent(token) +
+                    '&gameId=' + encodeURIComponent(gameId) +
+                    '&playerId=' + encodeURIComponent(playerId) +
+                    '&cyclistId=' + encodeURIComponent(cyclistId);
+
+                fetch('@Url.Action("DisqualifyCyclist", "Team")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body
+                }).catch(function () {});
+            }
+        };
+
+        window.undisqualifyRider = function (event, button) {
+            event.stopPropagation();
+
+            var row = button.closest('tr');
+            if (!row) return;
+
+            var card = row.closest('.player-team-card');
+            if (!card) return;
+
+            var tbody = row.closest('tbody');
+            if (!tbody) return;
+
+            var cells = row.querySelectorAll('td');
+            var cyclistId = row.dataset.cyclistId;
+            var riderName = cells[1] ? cells[1].textContent.trim() : '';
+            var riderTeam = cells[2] ? cells[2].textContent.trim() : '';
+
+            var gameId = document.querySelector('.team-page')?.dataset?.gameId;
+            var playerId = card.dataset.playerId;
+            var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
+
+            // Remove the disqualified row
+            row.parentNode.removeChild(row);
+
+            // If no more disqualified rows remain, remove the section header
+            var remaining = tbody.querySelectorAll('.disqualified-rider');
+            if (remaining.length === 0) {
+                var dqHeader = tbody.querySelector('.disqualified-section');
+                if (dqHeader) dqHeader.parentNode.removeChild(dqHeader);
+            }
+
+            // Find the first empty slot (active first, then bench) and fill it
+            var emptyRow = null;
+            var sections = ['.active-rider', '.bench-rider'];
+            for (var s = 0; s < sections.length && !emptyRow; s++) {
+                var rows = tbody.querySelectorAll(sections[s]);
+                for (var i = 0; i < rows.length; i++) {
+                    var r = rows[i];
+                    var id = r.dataset.cyclistId;
+                    if (id === undefined || id === '' || String(id) === '0') {
+                        emptyRow = r;
+                        break;
+                    }
+                }
+            }
+            if (emptyRow) {
+                emptyRow.dataset.cyclistId = cyclistId;
+                emptyRow.classList.remove('empty-slot');
+                emptyRow.querySelectorAll('td')[1].innerHTML = '<span class="rider-name">' + escapeHtml(riderName) + '</span>';
+                emptyRow.querySelectorAll('td')[2].innerHTML = '<span class="rider-team">' + escapeHtml(riderTeam) + '</span>';
+                updateRowState(emptyRow);
+            }
+
+            // Persist to server
+            if (gameId && playerId && token) {
+                var body =
+                    '__RequestVerificationToken=' + encodeURIComponent(token) +
+                    '&gameId=' + encodeURIComponent(gameId) +
+                    '&playerId=' + encodeURIComponent(playerId) +
+                    '&cyclistId=' + encodeURIComponent(cyclistId);
+
+                fetch('@Url.Action("UndisqualifyCyclist", "Team")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body
+                }).catch(function () {});
+            }
+        };
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
         }
 
         function toggleEmptyState(targetRow, sourceRow) {

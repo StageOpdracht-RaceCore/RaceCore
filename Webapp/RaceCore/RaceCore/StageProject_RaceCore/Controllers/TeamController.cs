@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,6 +12,10 @@ namespace StageProject_RaceCore.Controllers
 {
     public class TeamController : Controller
     {
+        private static readonly ConcurrentDictionary<string, byte> _disqualified = new();
+
+        private static string DqKey(int g, int p, int c) => $"{g}:{p}:{c}";
+
         private static readonly string[] PlayerColors =
         {
             "#2563eb",
@@ -106,13 +111,25 @@ namespace StageProject_RaceCore.Controllers
                     var orderedRiders = BuildRiders(playerSelections, turnNumberByCyclistId);
 
                     var activeRiders = orderedRiders
-                        .Where(r => r.IsActive)
+                        .Where(r => r.IsActive && !_disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
                         .Take(activeSlots)
                         .ToList();
 
                     var benchRiders = orderedRiders
-                        .Where(r => !r.IsActive)
+                        .Where(r => !r.IsActive && !_disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
                         .Take(benchSlots)
+                        .ToList();
+
+                    var dqRiders = orderedRiders
+                        .Where(r => _disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
+                        .Select(r => new PlayerTeamRiderViewModel
+                        {
+                            CyclistId = r.CyclistId,
+                            FullName = r.FullName,
+                            ProTeamName = r.ProTeamName,
+                            IsActive = false,
+                            IsDisqualified = true
+                        })
                         .ToList();
 
                     model.PlayerTeams.Add(new PlayerTeamViewModel
@@ -126,9 +143,12 @@ namespace StageProject_RaceCore.Controllers
                         ColorDark = Darken(color, 0.22),
                         TextColor = GetReadableTextColor(color),
                         ActiveRiders = activeRiders,
-                        BenchRiders = benchRiders
+                        BenchRiders = benchRiders,
+                        DisqualifiedRiders = dqRiders
                     });
                 }
+
+                model.DisqualifiedRiderSlots = model.PlayerTeams.Max(t => t.DisqualifiedRiders.Count);
             }
             catch (Exception ex)
             {
@@ -237,6 +257,62 @@ namespace StageProject_RaceCore.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DisqualifyCyclist(int gameId, int playerId, int cyclistId)
+        {
+            try
+            {
+                var selection = await _context.PlayerSelections
+                    .FirstOrDefaultAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.CyclistId == cyclistId);
+
+                if (selection == null) return NotFound();
+
+                _disqualified[DqKey(gameId, playerId, cyclistId)] = 0;
+                selection.IsActive = false;
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UndisqualifyCyclist(int gameId, int playerId, int cyclistId)
+        {
+            try
+            {
+                var selection = await _context.PlayerSelections
+                    .FirstOrDefaultAsync(s =>
+                        s.GameSessionId == gameId &&
+                        s.PlayerId == playerId &&
+                        s.CyclistId == cyclistId);
+
+                _disqualified.TryRemove(DqKey(gameId, playerId, cyclistId), out _);
+
+                if (selection != null)
+                {
+                    selection.IsActive = true;
+                    await _context.SaveChangesAsync();
+                }
 
                 return Ok();
             }

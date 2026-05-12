@@ -11,7 +11,7 @@
      6. Roster table (active section, bench section, empty slots, pills)
      7. Empty state (no teams found)
      8. Swap interaction (selection highlight, target/dimmed states, error banner)
-     9. Responsive breakpoints
+      10. Responsive breakpoints
 ============================================================================= */
 
 /* ── 1. Page wrapper & base card ───────────────────────────────────────────── */
@@ -492,6 +492,12 @@ main:has(> .team-page) {
         background: #d1d5db;
     }
 
+    /* Disqualified pill uses red. */
+    .status-pill.disqualified {
+        color: #ffffff;
+        background: #ef4444;
+    }
+
 /* ── 7. Empty state ─────────────────────────────────────────────────────────── */
 
 .team-empty-state h2 {
@@ -531,7 +537,75 @@ main:has(> .team-page) {
     }
 
 
-/* ── 8. Swap interaction ────────────────────────────────────────────────────── */
+/* ── 8. Disqualified section ─────────────────────────────────────────────────── */
+
+/* Disqualified section header uses a red tone. */
+.roster-section-row.disqualified-section th {
+    color: #ffffff;
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+/* Disqualified rider rows get a subtle red-tinted background. */
+.roster-row.disqualified-rider {
+    background: #fef2f2;
+    border-left: 4px solid #fca5a5;
+}
+
+    .roster-row.disqualified-rider .rider-name {
+        color: #991b1b;
+    }
+
+/* Small destructive button used for DQ in the table action column. */
+.dq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    color: #ffffff;
+    background: #ef4444;
+    transition: 0.15s ease;
+}
+
+    .dq-btn:hover {
+        background: #dc2626;
+    }
+
+/* Small restore button used for UNDQ in the disqualified table action column. */
+.undq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 24px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    color: #ffffff;
+    background: #22c55e;
+    transition: 0.15s ease;
+}
+
+    .undq-btn:hover {
+        background: #16a34a;
+    }
+
+.disqualified-rider td:last-child {
+    text-align: right;
+}
+
+/* ── 9. Swap interaction ────────────────────────────────────────────────────── */
 
 /* All data rows are clickable; show a pointer cursor. */
 tr[data-cyclist-id] {
@@ -579,7 +653,7 @@ tr[data-cyclist-id] {
     opacity: 0.55;
 }
 
-/* ── 9. Responsive breakpoints ──────────────────────────────────────────────── */
+/* ── 10. Responsive breakpoints ─────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
     /* Stack the banner content vertically on medium screens. */
