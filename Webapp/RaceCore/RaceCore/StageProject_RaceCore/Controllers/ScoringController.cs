@@ -156,9 +156,9 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(viewModel);
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database fout.";
+                TempData["Error"] = "Database fout: " + GetFullErrorMessage(ex);
                 return View(viewModel);
             }
         }
@@ -167,10 +167,10 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveScores(ScoringViewModel model, int raceId)
         {
-            await using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
+                model.Results ??= new List<StageResultViewModel>();
+
                 if (model.GameSessionId <= 0 || model.StageId <= 0)
                 {
                     TempData["Error"] = "Game of rit ontbreekt.";
@@ -294,8 +294,6 @@ namespace StageProject_RaceCore.Controllers
 
                 await RebuildPlayerPointsForStage(model.GameSessionId, model.StageId);
 
-                await transaction.CommitAsync();
-
                 TempData["Success"] = "Scores gepubliceerd.";
 
                 return RedirectToAction("StageResults", "Result", new
@@ -303,11 +301,9 @@ namespace StageProject_RaceCore.Controllers
                     raceId = game.RaceId
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-
-                TempData["Error"] = "Opslaan mislukt.";
+                TempData["Error"] = "Opslaan mislukt: " + GetFullErrorMessage(ex);
 
                 return RedirectToAction("Index", new
                 {
@@ -500,6 +496,16 @@ namespace StageProject_RaceCore.Controllers
                 "WitteTrui" => "WitteTrui",
                 _ => jerseyType
             };
+        }
+
+        private static string GetFullErrorMessage(Exception ex)
+        {
+            if (ex.InnerException == null)
+            {
+                return ex.Message;
+            }
+
+            return ex.Message + " | Inner: " + ex.InnerException.Message;
         }
     }
 }
