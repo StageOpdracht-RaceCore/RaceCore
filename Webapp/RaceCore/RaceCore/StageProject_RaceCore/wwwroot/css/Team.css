@@ -23,6 +23,10 @@
     padding: 0;
 }
 
+main:has(> .team-page) {
+    padding: 0 !important;
+}
+
 /* Hides the antiforgery token div from view — token is read by JS for POST requests. */
 .team-antiforgery {
     display: none;
@@ -38,7 +42,7 @@
 }
 
 .card {
-    padding: 20px;
+    padding: 14px;
 }
 
 /* ── 2. Page banner ─────────────────────────────────────────────────────────── */
@@ -95,9 +99,9 @@
     gap: 16px;
 }
 
-    .team-overview-card .info-grid {
-        margin-top: 20px;
-        padding-top: 18px;
+        .team-overview-card .info-grid {
+        margin-top: 12px;
+        padding-top: 12px;
         border-top: 1px solid #e2e8f0;
     }
 
@@ -160,29 +164,30 @@
 /* 2-column grid of info tiles (game ID, race name, filled slots, total slots). */
 .info-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
 }
 
 .info-box {
-    padding: 15px;
-    border-radius: 15px;
+    padding: 6px 10px;
+    border-radius: 10px;
     background: #f8fafc;
     border: 1px solid #e5e7eb;
 }
 
     .info-box span {
         display: block;
-        margin-bottom: 7px;
+        margin-bottom: 1px;
         color: #64748b;
-        font-weight: 700;
+        font-size: 10px;
+        font-weight: 800;
     }
 
     .info-box strong {
         display: block;
-        color: #1e1b4b;
-        font-size: 18px;
-        font-weight: 900;
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 950;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -598,14 +603,20 @@ tr[data-cyclist-id] {
     }
 }
 
-@media (max-width: 560px) {
-    /* Single-column layouts on small screens. */
+@media (max-width: 640px) {
     .info-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .stats-row {
+        gap: 10px;
     }
 
     .player-team-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     /* Stack the card header vertically so completion bar doesn't overflow. */
@@ -623,5 +634,93 @@ tr[data-cyclist-id] {
 
     .team-page-banner h1 {
         font-size: 26px;
+    }
+}
+
+@media (max-width: 420px) {
+    .card {
+        padding: 10px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        gap: 8px;
+    }
+
+    .player-team-grid {
+        gap: 10px;
+    }
+
+    .player-team-header {
+        padding: 10px 10px 8px;
+        gap: 8px;
+    }
+
+    .player-team-avatar {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        font-size: 12px;
+    }
+
+    .player-team-identity {
+        gap: 8px;
+    }
+
+    .player-team-identity h2 {
+        font-size: 16px;
+    }
+
+    .player-team-identity p {
+        font-size: 11px;
+    }
+
+    .team-completion span {
+        font-size: 11px;
+    }
+
+    .player-roster-table-wrap {
+        padding: 4px 6px 8px;
+    }
+
+    .player-roster-table th,
+    .player-roster-table td {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .player-roster-table thead th {
+        font-size: 10px;
+    }
+
+    .rider-name {
+        font-size: 12px;
+    }
+
+    .rider-team {
+        font-size: 11px;
+    }
+
+    .status-pill {
+        min-width: 44px;
+        height: 22px;
+        font-size: 10px;
+    }
+
+    .slot-number {
+        font-size: 11px;
+    }
+
+    .roster-section-row th {
+        font-size: 10px;
+        padding: 5px 4px;
+    }
+
+    .team-swap-hint {
+        font-size: 12px;
+        padding: 8px 10px;
     }
 }
