@@ -167,6 +167,8 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveScores(ScoringViewModel model, int raceId)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
                 if (model.GameSessionId <= 0 || model.StageId <= 0)
@@ -210,6 +212,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     var rider = await _context.Cyclists.FindAsync(duplicate.Key);
                     TempData["Error"] = $"Renner '{rider?.FullName}' staat dubbel.";
+
                     return RedirectToAction("Index", new
                     {
                         raceId = game.RaceId,
@@ -255,16 +258,24 @@ namespace StageProject_RaceCore.Controllers
                     });
 
                     if (result.HasYellowJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Red", usedJerseys);
+                    }
 
                     if (result.HasGreenJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Green", usedJerseys);
+                    }
 
                     if (result.HasPolkaJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "Blue", usedJerseys);
+                    }
 
                     if (result.HasWhiteJersey)
+                    {
                         AddJerseyOnce(model.GameSessionId, model.StageId, result.CyclistId.Value, "White", usedJerseys);
+                    }
                 }
 
                 AddOutsideJerseyIfNotAlreadyUsed(model.GameSessionId, model.StageId, model.YellowOutsideTop25CyclistId, "Red", usedJerseys);
@@ -283,18 +294,27 @@ namespace StageProject_RaceCore.Controllers
 
                 await RebuildPlayerPointsForStage(model.GameSessionId, model.StageId);
 
-                TempData["Success"] = "Scores opgeslagen.";
-                return RedirectToAction("Index", new
+                await transaction.CommitAsync();
+
+                TempData["Success"] = "Scores gepubliceerd.";
+
+                return RedirectToAction("StageResults", "Result", new
                 {
-                    raceId = game.RaceId,
-                    stageId = model.StageId,
-                    gameId = model.GameSessionId
+                    raceId = game.RaceId
                 });
             }
             catch
             {
+                await transaction.RollbackAsync();
+
                 TempData["Error"] = "Opslaan mislukt.";
-                return RedirectToAction("Index", new { raceId, stageId = model.StageId, gameId = model.GameSessionId });
+
+                return RedirectToAction("Index", new
+                {
+                    raceId,
+                    stageId = model.StageId,
+                    gameId = model.GameSessionId
+                });
             }
         }
 
