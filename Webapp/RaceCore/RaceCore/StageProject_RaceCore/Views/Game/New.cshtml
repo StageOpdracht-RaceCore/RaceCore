@@ -160,13 +160,9 @@
 
                 <div class="game-warning-box">
                     ℹ Race structuur<br />
-                    <span>
-                        Deze game wordt gekoppeld aan de volledige race.
-                    </span>
+                    <span>Deze game wordt gekoppeld aan de volledige race.</span>
                     <br />
-                    <span>
-                        Scoring gebeurt later per rit binnen deze race.
-                    </span>
+                    <span>Scoring gebeurt later per rit binnen deze race.</span>
                 </div>
 
                 <div class="game-form-group">
@@ -242,9 +238,7 @@
                 <div class="game-info-list">
                     <div class="game-info-item">
                         <div class="game-info-icon">
-                            <a asp-controller="Dashboard" asp-action="Index">
-                                🔄
-                            </a>
+                            <a asp-controller="Dashboard" asp-action="Index">🔄</a>
                         </div>
                         <div>
                             <strong>Snake Draft</strong>
@@ -317,9 +311,7 @@
                     <div class="game-draft-summary-icon">🏆</div>
                     <div>
                         <strong>Fair Snake Draft</strong>
-                        <span id="draftSummaryText">
-                            @totalDraftRounds rondes per speler
-                        </span>
+                        <span id="draftSummaryText">@totalDraftRounds rondes per speler</span>
                     </div>
                 </div>
             </div>
@@ -348,7 +340,9 @@
                         Annuleren
                     </button>
 
-                    <button type="submit" class="game-btn game-btn-start">
+                    <button type="submit"
+                            form="newGameForm"
+                            class="game-btn game-btn-start">
                         Ja, start game
                     </button>
                 </div>
@@ -467,10 +461,6 @@
                 }
             }
 
-            function clearSettingsAfterStart() {
-                localStorage.removeItem(storageKey);
-            }
-
             function updateSelectedPlayersCount() {
                 const count = getSelectedPlayersCount();
 
@@ -577,7 +567,7 @@
 
             if (form) {
                 form.addEventListener("submit", function () {
-                    clearSettingsAfterStart();
+                    saveSettings();
                 });
             }
 
