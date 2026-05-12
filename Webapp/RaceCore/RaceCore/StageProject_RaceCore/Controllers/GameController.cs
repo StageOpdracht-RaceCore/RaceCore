@@ -307,11 +307,15 @@ namespace StageProject_RaceCore.Controllers
         {
             selectedPlayerIds ??= new List<int>();
 
-            var races = await _context.Races
+            var racesFromDatabase = await _context.Races
                 .Include(r => r.Stages)
-                .OrderByDescending(r => r.Year)
-                .ThenBy(r => r.Name)
                 .ToListAsync();
+
+            var races = racesFromDatabase
+                .OrderBy(r => GetRaceCategoryOrder(r))
+                .ThenByDescending(r => r.Year)
+                .ThenBy(r => r.Name)
+                .ToList();
 
             var players = await _context.Players
                 .OrderBy(p => p.PositionInDraft)
@@ -341,6 +345,16 @@ namespace StageProject_RaceCore.Controllers
                     .CountAsync()
                 : 0;
 
+            var groups = new Dictionary<string, SelectListGroup>();
+
+            foreach (var category in GetRaceCategoryOrderList())
+            {
+                groups[category] = new SelectListGroup
+                {
+                    Name = category
+                };
+            }
+
             return new NewGameViewModel
             {
                 RaceId = raceId,
@@ -351,11 +365,25 @@ namespace StageProject_RaceCore.Controllers
                 TotalCyclists = totalCyclists,
                 AvailableRaceCyclists = availableRaceCyclists,
 
-                AvailableRaces = races.Select(r => new SelectListItem
+                AvailableRaces = races.Select(r =>
                 {
-                    Value = r.Id.ToString(),
-                    Text = $"{r.Name} {r.Year} ({r.Stages.Count} ritten)",
-                    Selected = r.Id == raceId
+                    string category = GetRaceCategory(r);
+
+                    if (!groups.ContainsKey(category))
+                    {
+                        groups[category] = new SelectListGroup
+                        {
+                            Name = category
+                        };
+                    }
+
+                    return new SelectListItem
+                    {
+                        Value = r.Id.ToString(),
+                        Text = $"{r.Name} {r.Year} ({r.Stages.Count} ritten)",
+                        Selected = r.Id == raceId,
+                        Group = groups[category]
+                    };
                 }).ToList(),
 
                 AvailablePlayers = players.Select(p => new PlayerSelectItemViewModel
@@ -398,6 +426,97 @@ namespace StageProject_RaceCore.Controllers
             }
 
             return draftTurns;
+        }
+
+        private static string GetRaceCategory(Race race)
+        {
+            if (!string.IsNullOrWhiteSpace(race.Category) && race.Category != "Andere")
+            {
+                return race.Category;
+            }
+
+            string name = race.Name.ToLower();
+
+            if (name.Contains("tour de france") ||
+                name.Contains("giro") ||
+                name.Contains("vuelta"))
+            {
+                return "Grand Tours";
+            }
+
+            if (name.Contains("milano") ||
+                name.Contains("sanremo") ||
+                name.Contains("ronde van vlaanderen") ||
+                name.Contains("paris-roubaix") ||
+                name.Contains("roubaix") ||
+                name.Contains("liège") ||
+                name.Contains("liege") ||
+                name.Contains("bastogne") ||
+                name.Contains("lombardia"))
+            {
+                return "Monumenten";
+            }
+
+            if (name.Contains("omloop") ||
+                name.Contains("strade") ||
+                name.Contains("e3") ||
+                name.Contains("gent-wevelgem") ||
+                name.Contains("dwars door vlaanderen") ||
+                name.Contains("amstel") ||
+                name.Contains("flèche") ||
+                name.Contains("fleche") ||
+                name.Contains("kuurne") ||
+                name.Contains("nokere") ||
+                name.Contains("bredene") ||
+                name.Contains("koksijde"))
+            {
+                return "Voorjaarsklassiekers";
+            }
+
+            if (name.Contains("paris-nice") ||
+                name.Contains("tirreno") ||
+                name.Contains("dauphiné") ||
+                name.Contains("dauphine") ||
+                name.Contains("romandie") ||
+                name.Contains("basque") ||
+                name.Contains("catalunya") ||
+                name.Contains("benelux"))
+            {
+                return "Kleine rondes";
+            }
+
+            if (race.Stages != null && race.Stages.Count > 1)
+            {
+                return "Kleine rondes";
+            }
+
+            return "Eendagskoersen";
+        }
+
+        private static int GetRaceCategoryOrder(Race race)
+        {
+            return GetRaceCategory(race) switch
+            {
+                "Grand Tours" => 1,
+                "Kleine rondes" => 2,
+                "Monumenten" => 3,
+                "Voorjaarsklassiekers" => 4,
+                "Eendagskoersen" => 5,
+                _ => 99
+            };
+        }
+
+        private static List<string> GetRaceCategoryOrderList()
+        {
+            return new List<string>
+            {
+                "Grand Tours",
+                "Kleine rondes",
+                "Monumenten",
+                "Voorjaarsklassiekers",
+                "Eendagskoersen",
+                "Andere"
+            };
         }
     }
 }
