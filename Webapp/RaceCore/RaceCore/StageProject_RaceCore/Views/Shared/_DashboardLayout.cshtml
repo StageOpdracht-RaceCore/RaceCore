@@ -9,7 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RaceCore</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script>
+        (function () {
+            var stored = localStorage.getItem('dark-mode');
+            if (stored === 'true') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
     
     @* Deze regel zorgt ervoor dat CSS uit individuele views (zoals History.cshtml) geladen wordt *@
     @await RenderSectionAsync("Styles", required: false)
@@ -40,6 +48,8 @@
                 <a asp-controller="Stage" asp-action="Index">Stages</a>
                 <a asp-controller="History" asp-action="History">History</a>
 
+                <button class="dark-toggle-btn" onclick="toggleDarkMode(this)" id="darkModeBtnSidebar">🌙 Dark</button>
+
             </nav>
         </aside>
 
@@ -55,6 +65,7 @@
                 </div>
 
                 <div class="topbar-right">
+                    <button class="dark-toggle-header" onclick="toggleDarkMode(this)" id="darkModeBtnHeader" title="Toggle dark mode">🌙</button>
                     Welcome to RaceCore
                 </div>
             </header>
@@ -71,6 +82,28 @@
     </div>
 
     <script>
+            (function () {
+                if (localStorage.getItem('dark-mode') === 'true') {
+                    var btns = document.querySelectorAll('.dark-toggle-btn, .dark-toggle-header');
+                    for (var i = 0; i < btns.length; i++) {
+                        btns[i].textContent = btns[i].classList.contains('dark-toggle-header') ? '☀️' : '☀️ Light';
+                    }
+                }
+            })();
+
+            function toggleDarkMode(btn) {
+                var html = document.documentElement;
+                var isDark = html.classList.toggle('dark-mode');
+                localStorage.setItem('dark-mode', isDark);
+                var allBtns = document.querySelectorAll('.dark-toggle-btn, .dark-toggle-header');
+                for (var i = 0; i < allBtns.length; i++) {
+                    allBtns[i].textContent = isDark ? '☀️ Light' : '🌙 Dark';
+                    if (allBtns[i].classList.contains('dark-toggle-header')) {
+                        allBtns[i].textContent = isDark ? '☀️' : '🌙';
+                    }
+                }
+            }
+
             function toggleSidebar() {
                 document.getElementById("mobileSidebar").classList.toggle("open");
                 document.getElementById("sidebarOverlay").classList.toggle("show");

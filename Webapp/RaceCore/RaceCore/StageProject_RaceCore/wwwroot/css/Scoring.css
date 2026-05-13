@@ -73,7 +73,7 @@
     font-weight: 900;
     transition: 0.2s ease;
     background: white;
-    color: #1d4ed8;
+    color: black;
     padding: 14px 24px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
@@ -82,7 +82,12 @@
     .scoring-publish-btn:hover {
         transform: translateY(-2px);
         background: #eff6ff;
+        color: black;
     }
+
+.scoring-jersey-header {
+    margin-top: 26px;
+}
 
 /* ============================================================
    KAARTEN EN FILTER
