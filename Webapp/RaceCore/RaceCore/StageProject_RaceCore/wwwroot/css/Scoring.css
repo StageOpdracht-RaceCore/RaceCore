@@ -73,7 +73,7 @@
     font-weight: 900;
     transition: 0.2s ease;
     background: white;
-    color: black;
+    color: #1d4ed8;
     padding: 14px 24px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
@@ -82,12 +82,7 @@
     .scoring-publish-btn:hover {
         transform: translateY(-2px);
         background: #eff6ff;
-        color: black;
     }
-
-.scoring-jersey-header {
-    margin-top: 26px;
-}
 
 /* ============================================================
    KAARTEN EN FILTER
@@ -101,11 +96,18 @@
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
 }
 
-.scoring-filter-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 190px;
-    align-items: end;
+/* AANGEPAST: Gecombineerd met jouw nieuwe CSS voor horizontale uitlijning */
+.scoring-filter-form div {
+    display: flex;
+    flex-direction: row; /* Forceer horizontaal */
     gap: 22px;
+    align-items: flex-end;
+}
+
+.scoring-filter-form .scoring-field {
+    width: auto !important; /* Voorkom dat CSS de velden 100% breed maakt */
+    margin-bottom: 0;
+    min-width: 250px; /* Garandeert leesbaarheid op desktop */
 }
 
 .scoring-field label {
@@ -203,7 +205,7 @@
         box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
     }
 
-/* GIRO THEME */
+/* THEMES (Giro, Tour, Vuelta, Default) - GEBLOTEN VOOR KORTHEID */
 .giro-theme .jersey-red span, .giro-theme .outside-red {
     background: #ff69b4 !important;
 }
@@ -221,7 +223,6 @@
     border: 2px solid #cbd5e1 !important;
 }
 
-/* TOUR THEME */
 .tour-theme .jersey-red span, .tour-theme .outside-red {
     background: #ffd700 !important;
 }
@@ -242,7 +243,6 @@
     border: 1px solid #ccc !important;
 }
 
-/* VUELTA THEME */
 .vuelta-theme .jersey-red span, .vuelta-theme .outside-red {
     background: #ef4444 !important;
 }
@@ -263,7 +263,6 @@
     border: 1px solid #cbd5e1 !important;
 }
 
-/* DEFAULT THEME */
 .default-theme .jersey-red span, .default-theme .outside-red {
     background: #ef4444;
 }
@@ -280,7 +279,6 @@
     background: #ffffff;
     border: 2px solid #cbd5e1;
 }
-
 
 /* ============================================================
    BUITEN TOP 25
