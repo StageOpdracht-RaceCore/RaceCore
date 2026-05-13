@@ -1,7 +1,6 @@
 ﻿/* ============================================================
    SCORING PAGINA - BASIS
    ============================================================ */
-
 .scoring-page {
     padding: 24px;
     min-height: 100vh;
@@ -12,7 +11,6 @@
 /* ============================================================
    MELDINGEN
    ============================================================ */
-
 .scoring-alert {
     border-radius: 18px;
     padding: 18px 24px;
@@ -43,23 +41,10 @@
         color: white;
     }
 
-.scoring-alert-success {
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #bbf7d0;
-}
-
-    .scoring-alert-success strong {
-        background: #10b981;
-        color: white;
-    }
-
 /* ============================================================
-   HERO
+   HERO & HEADERS
    ============================================================ */
-
-.scoring-hero,
-.scoring-section-header {
+.scoring-hero, .scoring-section-header {
     background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
     color: white;
     border-radius: 22px;
@@ -80,26 +65,13 @@
         letter-spacing: -0.04em;
     }
 
-    .scoring-hero p {
-        margin: 8px 0 0;
-        color: #dbeafe;
-        font-weight: 500;
-    }
-
-.scoring-dashboard-btn,
-.scoring-publish-btn,
-.scoring-load-btn {
+.scoring-dashboard-btn, .scoring-publish-btn {
     border: none;
     text-decoration: none;
     cursor: pointer;
     border-radius: 12px;
     font-weight: 900;
     transition: 0.2s ease;
-    white-space: nowrap;
-}
-
-.scoring-dashboard-btn,
-.scoring-publish-btn {
     background: white;
     color: #1d4ed8;
     padding: 14px 24px;
@@ -110,17 +82,11 @@
     .scoring-publish-btn:hover {
         transform: translateY(-2px);
         background: #eff6ff;
-        color: #1d4ed8;
     }
-
-.scoring-jersey-header {
-    margin-top: 26px;
-}
 
 /* ============================================================
    KAARTEN EN FILTER
    ============================================================ */
-
 .scoring-card {
     background: white;
     border: 1px solid #e5e7eb;
@@ -137,82 +103,45 @@
     gap: 22px;
 }
 
-.scoring-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.scoring-field label {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e293b;
+    display: block;
+    margin-bottom: 8px;
 }
 
-    .scoring-field label {
-        font-size: 18px;
-        font-weight: 900;
-        color: #1e293b;
-    }
-
-    .scoring-field select {
-        height: 48px;
-        border: 1px solid #cbd5e1;
-        border-radius: 12px;
-        padding: 0 18px;
-        background: #f8fafc;
-        font-size: 15px;
-        font-weight: 800;
-        color: #020617;
-    }
-
-        .scoring-field select:focus {
-            outline: none;
-            border-color: #2563eb;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
-        }
-
-.scoring-load-btn {
-    height: 58px;
-    background: white;
-    color: #1d4ed8;
+.scoring-field select {
+    width: 100%;
+    height: 48px;
     border: 1px solid #cbd5e1;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    padding: 0 18px;
+    background: #f8fafc;
+    font-weight: 800;
 }
-
-    .scoring-load-btn:hover {
-        background: #eff6ff;
-        transform: translateY(-2px);
-    }
 
 /* ============================================================
-   RESULTATEN LIJST
+   RESULTATEN RIJ
    ============================================================ */
-
-.scoring-results-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
 .scoring-result-row {
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
     padding: 22px 24px;
     display: grid;
-    grid-template-columns: 86px minmax(260px, 1fr) 230px;
+    grid-template-columns: 86px minmax(260px, 1fr) 250px;
     align-items: center;
     gap: 26px;
+    margin-bottom: 14px;
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
 }
-
-    .scoring-result-row:hover {
-        border-color: #2563eb;
-        background: #fbfdff;
-    }
 
 .scoring-position {
     width: 54px;
     height: 54px;
     background: #f1f5f9;
     color: #0f172a;
-    border: 1px solid #e2e8f0;
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -228,29 +157,12 @@
     border: 1px solid #cbd5e1;
     padding: 0 18px;
     background: #f8fafc;
-    color: #0f172a;
-    font-size: 15px;
     font-weight: 800;
-    box-sizing: border-box;
 }
 
-    .scoring-rider-input:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
-    }
-
-    .scoring-rider-input.is-invalid {
-        border-color: #ef4444;
-        background: #fff1f2;
-        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
-    }
-
 /* ============================================================
-   TRUIEN BOLLETJES BIJ TOP 25
+   KLEUREN (TRUIEN)
    ============================================================ */
-
 .scoring-jersey-options {
     display: flex;
     justify-content: flex-end;
@@ -262,7 +174,6 @@
     height: 46px;
     display: inline-flex;
     cursor: pointer;
-    position: relative;
 }
 
     .jersey-dot input {
@@ -280,44 +191,99 @@
         box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.10);
     }
 
-.jersey-red span {
+    .jersey-dot input:checked + span {
+        opacity: 1;
+        filter: grayscale(0);
+        transform: scale(1.12);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    }
+
+/* GIRO THEME */
+.giro-theme .jersey-red span, .giro-theme .outside-red {
+    background: #ff69b4 !important;
+}
+
+.giro-theme .jersey-green span, .giro-theme .outside-green {
+    background: #800080 !important;
+}
+
+.giro-theme .jersey-blue span, .giro-theme .outside-blue {
+    background: #2563eb !important;
+}
+
+.giro-theme .jersey-white span, .giro-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+/* TOUR THEME */
+.tour-theme .jersey-red span, .tour-theme .outside-red {
+    background: #ffd700 !important;
+}
+
+.tour-theme .jersey-green span, .tour-theme .outside-green {
+    background: #008000 !important;
+}
+
+.tour-theme .jersey-white span, .tour-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.tour-theme .jersey-blue span, .tour-theme .outside-blue {
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#ff0000 20%, transparent 20%) !important;
+    background-size: 8px 8px !important;
+    border: 1px solid #ccc !important;
+}
+
+/* VUELTA THEME */
+.vuelta-theme .jersey-red span, .vuelta-theme .outside-red {
+    background: #ef4444 !important;
+}
+
+.vuelta-theme .jersey-green span, .vuelta-theme .outside-green {
+    background: #22c55e !important;
+}
+
+.vuelta-theme .jersey-white span, .vuelta-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.vuelta-theme .jersey-blue span, .vuelta-theme .outside-blue {
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#2563eb 20%, transparent 20%) !important;
+    background-size: 8px 8px !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* DEFAULT THEME */
+.default-theme .jersey-red span, .default-theme .outside-red {
     background: #ef4444;
 }
 
-.jersey-green span {
+.default-theme .jersey-green span, .default-theme .outside-green {
     background: #22c55e;
 }
 
-.jersey-blue span {
+.default-theme .jersey-blue span, .default-theme .outside-blue {
     background: #2563eb;
 }
 
-.jersey-white span {
+.default-theme .jersey-white span, .default-theme .outside-white {
     background: #ffffff;
     border: 2px solid #cbd5e1;
 }
 
-.jersey-dot input:checked + span {
-    opacity: 1;
-    filter: grayscale(0);
-    transform: scale(1.12);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
-}
 
 /* ============================================================
-   TRUIEN BUITEN TOP 25
+   BUITEN TOP 25
    ============================================================ */
-
 .scoring-outside-jerseys {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px 28px;
-}
-
-.outside-jersey-row {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .outside-jersey-label {
@@ -325,33 +291,15 @@
     align-items: center;
     gap: 12px;
     font-weight: 900;
-    color: #1e293b;
+    margin-bottom: 8px;
 }
 
 .outside-jersey-dot {
     width: 22px;
     height: 22px;
-    border-radius: 999px;
+    border-radius: 50%;
     display: inline-block;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
-}
-
-.outside-red {
-    background: #ef4444;
-}
-
-.outside-green {
-    background: #22c55e;
-}
-
-.outside-blue {
-    background: #2563eb;
-}
-
-.outside-white {
-    background: #ffffff;
-    border: 2px solid #cbd5e1;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* ============================================================

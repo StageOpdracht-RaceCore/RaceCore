@@ -11,8 +11,21 @@
     var selectedRaceId = ViewBag.SelectedRaceId ?? 0;
     var selectedGameId = ViewBag.SelectedGameId ?? Model.GameSessionId;
     var stages = ViewBag.AvailableStages as List<SelectListItem> ?? new List<SelectListItem>();
+    var selectedRaceId = ViewBag.SelectedRaceId ?? 0;
+    var selectedGameId = ViewBag.SelectedGameId ?? Model.GameSessionId;
+    int stageNumber = ViewBag.StageNumber ?? 1;
 
     string redOutsideName = ViewData["RedOutsideTop25CyclistName"]?.ToString() ?? "";
+    string greenOutsideName = ViewData["GreenOutsideTop25CyclistName"]?.ToString() ?? "";
+    string blueOutsideName = ViewData["BlueOutsideTop25CyclistName"]?.ToString() ?? "";
+    string whiteOutsideName = ViewData["WhiteOutsideTop25CyclistName"]?.ToString() ?? "";
+    // Dynamische variabelen vanuit de Controller
+    var yellowName = ViewBag.YellowJerseyName ?? "Gele trui";
+    var greenName = ViewBag.GreenJerseyName ?? "Groene trui";
+    var polkaName = ViewBag.PolkaJerseyName ?? "Bolletjestrui";
+    var themeClass = ViewBag.JerseyTheme ?? "default-theme";
+
+    string yellowOutsideName = ViewData["RedOutsideTop25CyclistName"]?.ToString() ?? "";
     string greenOutsideName = ViewData["GreenOutsideTop25CyclistName"]?.ToString() ?? "";
     string blueOutsideName = ViewData["BlueOutsideTop25CyclistName"]?.ToString() ?? "";
     string whiteOutsideName = ViewData["WhiteOutsideTop25CyclistName"]?.ToString() ?? "";
@@ -23,10 +36,14 @@
 <div class="scoring-page">
 
     @if (TempData["Error"] != null)
+<div class="scoring-page @themeClass">
+    @if (TempData["Error"] != null)
     {
         <div class="scoring-alert scoring-alert-error">
             <strong>FOUT:</strong>
             <span>@TempData["Error"]</span>
+        <div class="scoring-alert scoring-alert-error">
+            <strong>FOUT:</strong> <span>@TempData["Error"]</span>
         </div>
     }
 
@@ -35,6 +52,10 @@
         <div class="scoring-alert scoring-alert-success">
             <strong>OK:</strong>
             <span>@TempData["Success"]</span>
+    <section class="scoring-hero">
+        <div>
+            <h1>@races.FirstOrDefault(r => r.Id == selectedRaceId)?.Name Scoring</h1>
+            <p>Huidige etappe: <strong>Rit @stageNumber</strong></p>
         </div>
     }
 
@@ -43,6 +64,8 @@
             <h1>Scoring Beheer</h1>
             <p>Selecteer de gewenste wedstrijd en etappe.</p>
         </div>
+        <a asp-controller="Dashboard" asp-action="Index" class="scoring-dashboard-btn">Dashboard</a>
+    </section>
 
         <a asp-controller="Dashboard"
                asp-action="Index"
@@ -88,6 +111,20 @@
             <button type="submit" class="scoring-load-btn">
                 Rit laden
             </button>
+    <section class="scoring-card">
+        <form asp-controller="Scoring" asp-action="Index" method="get" class="scoring-filter-form">
+            <div class="scoring-field">
+                <label>Geselecteerde Wedstrijd</label>
+                <select name="raceId" onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name (@race.Year)
+                        </option>
+                    }
+                </select>
+            </div>
+            <input type="hidden" name="gameId" value="@selectedGameId" />
         </form>
     </section>
 
@@ -101,14 +138,24 @@
         <input type="hidden" asp-for="GameSessionId" />
         <input type="hidden" asp-for="StageId" />
         <input type="hidden" name="raceId" value="@selectedRaceId" />
+    <form asp-controller="Scoring" asp-action="SaveScores" method="post" id="scoringForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="GameSessionId" />
+        <input type="hidden" asp-for="StageId" />
+        <input type="hidden" name="raceId" value="@selectedRaceId" />
 
         <section class="scoring-section-header">
             <h2>Rit @Model.StageId Resultaten</h2>
+        <section class="scoring-section-header">
+            <h2>Rit @stageNumber Resultaten</h2>
+            <button type="submit" class="scoring-publish-btn">Scores Publiceren</button>
+        </section>
 
             <button type="submit" class="scoring-publish-btn">
                 Scores Publiceren
             </button>
         </section>
+        <datalist id="cyclistList"></datalist>
 
         <datalist id="cyclistList"></datalist>
 
@@ -219,6 +266,62 @@
                        data-jersey="Green"
                        onfocus="updateCyclistList(this)"
                        oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('Green')" />
+        <section class="scoring-results-list">
+            @for (int i = 0; i < Model.Results.Count; i++)
+            {
+                <div class="scoring-result-row">
+                    <div class="scoring-position">@Model.Results[i].Position</div>
+                    <input type="hidden" asp-for="Results[i].Position" />
+                    <input type="hidden" asp-for="Results[i].CyclistId" class="js-cyclist-id" />
+                    <input type="text" class="scoring-rider-input js-cyclist-name"
+                           list="cyclistList"
+                           value="@Model.Results[i].CyclistName"
+                           placeholder="Zoek renner..."
+                           autocomplete="off"
+                           onfocus="updateCyclistList(this)"
+                           oninput="syncCyclistId(this); updateCyclistList(this)" />
+
+                    <div class="scoring-jersey-options">
+                        <label class="jersey-dot jersey-red" title="@yellowName">
+                            <input type="radio" name="JerseyYellow" value="@i" @(Model.Results[i].HasYellowJersey ? "checked" : "") onchange="updateJerseyHiddenInputs(this, 'Yellow', @i)" />
+                            <span></span>
+                        </label>
+                        <label class="jersey-dot jersey-green" title="@greenName">
+                            <input type="radio" name="JerseyGreen" value="@i" @(Model.Results[i].HasGreenJersey ? "checked" : "") onchange="updateJerseyHiddenInputs(this, 'Green', @i)" />
+                            <span></span>
+                        </label>
+                        <label class="jersey-dot jersey-blue" title="@polkaName">
+                            <input type="radio" name="JerseyPolka" value="@i" @(Model.Results[i].HasPolkaJersey ? "checked" : "") onchange="updateJerseyHiddenInputs(this, 'Polka', @i)" />
+                            <span></span>
+                        </label>
+                        <label class="jersey-dot jersey-white" title="Witte trui">
+                            <input type="radio" name="JerseyWhite" value="@i" @(Model.Results[i].HasWhiteJersey ? "checked" : "") onchange="updateJerseyHiddenInputs(this, 'White', @i)" />
+                            <span></span>
+                        </label>
+
+                        <input type="hidden" name="Results[@i].HasYellowJersey" id="HasYellow_@i" value="@(Model.Results[i].HasYellowJersey ? "true" : "false")" />
+                        <input type="hidden" name="Results[@i].HasGreenJersey" id="HasGreen_@i" value="@(Model.Results[i].HasGreenJersey ? "true" : "false")" />
+                        <input type="hidden" name="Results[@i].HasPolkaJersey" id="HasPolka_@i" value="@(Model.Results[i].HasPolkaJersey ? "true" : "false")" />
+                        <input type="hidden" name="Results[@i].HasWhiteJersey" id="HasWhite_@i" value="@(Model.Results[i].HasWhiteJersey ? "true" : "false")" />
+                    </div>
+                </div>
+            }
+        </section>
+
+        <section class="scoring-section-header scoring-jersey-header">
+            <h2>Truien buiten Top 25</h2>
+        </section>
+
+        <section class="scoring-card scoring-outside-jerseys">
+            <div class="outside-jersey-row">
+                <label class="outside-jersey-label"><span class="outside-jersey-dot outside-red"></span> @yellowName buiten Top 25</label>
+                <input type="hidden" asp-for="YellowOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Yellow" />
+                <input type="text" class="scoring-rider-input js-outside-jersey-name" list="cyclistList" value="@yellowOutsideName" placeholder="Zoek renner..." autocomplete="off" data-jersey="Yellow" onfocus="updateCyclistList(this)" oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('Yellow')" />
+            </div>
+            <div class="outside-jersey-row">
+                <label class="outside-jersey-label"><span class="outside-jersey-dot outside-green"></span> @greenName buiten Top 25</label>
+                <input type="hidden" asp-for="GreenOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Green" />
+                <input type="text" class="scoring-rider-input js-outside-jersey-name" list="cyclistList" value="@greenOutsideName" placeholder="Zoek renner..." autocomplete="off" data-jersey="Green" onfocus="updateCyclistList(this)" oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('Green')" />
             </div>
 
             <div class="outside-jersey-row">
@@ -263,8 +366,19 @@
                        data-jersey="White"
                        onfocus="updateCyclistList(this)"
                        oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('White')" />
+            <div class="outside-jersey-row">
+                <label class="outside-jersey-label"><span class="outside-jersey-dot outside-blue"></span> @polkaName buiten Top 25</label>
+                <input type="hidden" asp-for="PolkaOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Polka" />
+                <input type="text" class="scoring-rider-input js-outside-jersey-name" list="cyclistList" value="@blueOutsideName" placeholder="Zoek renner..." autocomplete="off" data-jersey="Polka" onfocus="updateCyclistList(this)" oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('Polka')" />
+            </div>
+            <div class="outside-jersey-row">
+                <label class="outside-jersey-label"><span class="outside-jersey-dot outside-white"></span> Witte trui buiten Top 25</label>
+                <input type="hidden" asp-for="WhiteOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="White" />
+                <input type="text" class="scoring-rider-input js-outside-jersey-name" list="cyclistList" value="@whiteOutsideName" placeholder="Zoek renner..." autocomplete="off" data-jersey="White" onfocus="updateCyclistList(this)" oninput="syncCyclistId(this); updateCyclistList(this); clearTop25Jersey('White')" />
             </div>
 
+        </section>
+    </form>
         </section>
     </form>
 </div>
@@ -337,6 +451,69 @@
             input.classList.remove("is-invalid");
             return;
         }
+@section Scripts {
+    <script>
+        const allCyclists = [
+            @foreach (var rider in Model.AvailableCyclists)
+            {
+                        <text>{ id: "@rider.Value", name: @Html.Raw(JsonSerializer.Serialize(rider.Text)) },</text>
+            }
+        ];
+
+        // 1. TOGGLE LOGICA VOOR BOLLEN
+        // We houden bij welke radiobutton laatst is aangeklikt
+        document.querySelectorAll('.jersey-dot input[type="radio"]').forEach(radio => {
+            radio.addEventListener('click', function(e) {
+                if (this.dataset.waschecked === 'true') {
+                    // Als hij al aan stond: uitzetten
+                    this.checked = false;
+                    this.dataset.waschecked = 'false';
+                    
+                    // Hidden input ook op false zetten
+                    const color = this.name.replace('Jersey', '');
+                    const index = this.value;
+                    document.getElementById(`Has${color}_${index}`).value = "false";
+                } else {
+                    // Eerst alle andere van dezelfde groep op 'false' zetten in dataset
+                    document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => r.dataset.waschecked = 'false');
+                    // Deze op 'true' zetten
+                    this.dataset.waschecked = 'true';
+                }
+            });
+        });
+
+        function updateJerseyHiddenInputs(radioElement, color, currentIndex) {
+            // Zet alle hidden inputs van deze kleur op false
+            document.querySelectorAll(`input[id^='Has${color}_']`).forEach(hidden => hidden.value = "false");
+            
+            // Zet de huidige op true (als de radio nog steeds checked is na de click event)
+            const currentHidden = document.getElementById(`Has${color}_${currentIndex}`);
+            if (currentHidden && radioElement.checked) {
+                currentHidden.value = "true";
+                clearOutsideJersey(color);
+            }
+        }
+
+        // 2. DUBBELE RENNER VALIDATIE
+        function checkForDuplicates() {
+            const inputs = document.querySelectorAll('.js-cyclist-name, .js-outside-jersey-name');
+            const names = [];
+            const duplicates = [];
+
+            // Reset foutmeldingen
+            inputs.forEach(input => input.style.borderColor = "");
+            const existingAlert = document.getElementById('duplicate-alert');
+            if (existingAlert) existingAlert.remove();
+
+            inputs.forEach(input => {
+                const val = input.value.trim().toLowerCase();
+                if (val !== "") {
+                    if (names.includes(val)) {
+                        duplicates.push(val);
+                    }
+                    names.push(val);
+                }
+            });
 
         const cyclist = allCyclists.find(c =>
             c.name.trim().toLowerCase() === typedName
@@ -347,6 +524,16 @@
             input.classList.remove("is-invalid");
             return;
         }
+            if (duplicates.length > 0) {
+                // Markeer velden
+                inputs.forEach(input => {
+                    if (duplicates.includes(input.value.trim().toLowerCase())) {
+                        input.style.borderColor = "#ef4444";
+                        input.style.backgroundColor = "#fff1f2";
+                    } else {
+                        input.style.backgroundColor = "";
+                    }
+                });
 
         const selectedIds = getSelectedCyclistIds(input);
 
@@ -362,6 +549,15 @@
         hidden.value = cyclist.id;
         input.classList.remove("is-invalid");
     }
+                // Toon melding
+                const alertDiv = document.createElement('div');
+                alertDiv.id = 'duplicate-alert';
+                alertDiv.className = 'scoring-alert scoring-alert-error';
+                alertDiv.innerHTML = `<strong>LET OP:</strong> Renner staat dubbel ingevuld!`;
+                document.querySelector('.scoring-page').prepend(alertDiv);
+                alertDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
 
     function clearOutsideJersey(type) {
         const outsideInput = document.querySelector(`.js-outside-jersey-name[data-jersey='${type}']`);
@@ -370,9 +566,23 @@
         if (outsideInput) outsideInput.value = "";
         if (outsideHidden) outsideHidden.value = "";
     }
+        // Bestaande helper functies
+        function getHiddenInput(textInput) {
+            const row = textInput.closest(".scoring-result-row, .outside-jersey-row");
+            return textInput.classList.contains("js-cyclist-name") ? row.querySelector(".js-cyclist-id") : row.querySelector(".js-outside-jersey-id");
+        }
 
     function clearTop25Jersey(type) {
         const outsideHidden = document.querySelector(`.js-outside-jersey-id[data-jersey='${type}']`);
+        function updateCyclistList(activeInput) {
+            const datalist = document.getElementById("cyclistList");
+            datalist.innerHTML = "";
+            allCyclists.forEach(cyclist => {
+                const option = document.createElement("option");
+                option.value = cyclist.name;
+                datalist.appendChild(option);
+            });
+        }
 
         if (!outsideHidden || !outsideHidden.value) return;
 
@@ -382,6 +592,16 @@
             Blue: "HasPolkaJersey",
             White: "HasWhiteJersey"
         };
+        function syncCyclistId(input) {
+            const hidden = getHiddenInput(input);
+            if (!hidden) return;
+            const typedName = input.value.trim().toLowerCase();
+            const cyclist = allCyclists.find(c => c.name.toLowerCase() === typedName);
+            hidden.value = cyclist ? cyclist.id : "";
+            
+            // Trigger check na elke wijziging
+            checkForDuplicates();
+        }
 
         document.querySelectorAll("input[type='checkbox']").forEach(cb => {
             if (cb.name.includes(checkboxMap[type])) {
@@ -403,6 +623,13 @@
                 input.classList.remove("is-invalid");
                 return;
             }
+        function clearOutsideJersey(type) {
+            const outsideInput = document.querySelector(`.js-outside-jersey-name[data-jersey='${type}']`);
+            const outsideHidden = document.querySelector(`.js-outside-jersey-id[data-jersey='${type}']`);
+            if (outsideInput) outsideInput.value = "";
+            if (outsideHidden) outsideHidden.value = "";
+            checkForDuplicates();
+        }
 
             if (usedIds.has(hidden.value)) {
                 duplicateFound = true;
@@ -412,6 +639,13 @@
                 input.classList.remove("is-invalid");
             }
         });
+        function clearTop25Jersey(color) {
+            document.querySelectorAll(`input[name='Jersey${color}']`).forEach(rb => {
+                rb.checked = false;
+                rb.dataset.waschecked = 'false';
+            });
+            document.querySelectorAll(`input[id^='Has${color}_']`).forEach(hidden => hidden.value = "false");
+        }
 
         if (duplicateFound) {
             e.preventDefault();
@@ -427,3 +661,16 @@
         }
     });
 </script>
+        // Form submit blokkeren bij duplicaten
+        document.getElementById('scoringForm').addEventListener('submit', function(e) {
+            const inputs = document.querySelectorAll('.js-cyclist-name, .js-outside-jersey-name');
+            const names = Array.from(inputs).map(i => i.value.trim().toLowerCase()).filter(n => n !== "");
+            const hasDuplicates = names.some((name, index) => names.indexOf(name) !== index);
+            
+            if (hasDuplicates) {
+                e.preventDefault();
+                alert("Er staat een renner dubbel. Corrigeer voordat u de scores publiceert.");
+            }
+        });
+    </script>
+}

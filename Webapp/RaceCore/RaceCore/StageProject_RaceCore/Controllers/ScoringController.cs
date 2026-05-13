@@ -25,6 +25,7 @@ namespace StageProject_RaceCore.Controllers
                     .OrderByDescending(r => r.Year)
                     .ThenBy(r => r.Name)
                     .ToListAsync();
+                ViewBag.Races = races;
 
                 if (!races.Any())
                 {
@@ -92,7 +93,6 @@ namespace StageProject_RaceCore.Controllers
 
                 viewModel.AvailableCyclists = await cyclistsQuery
                     .OrderBy(c => c.LastName)
-                    .ThenBy(c => c.FirstName)
                     .Select(c => new SelectListItem
                     {
                         Value = c.Id.ToString(),
