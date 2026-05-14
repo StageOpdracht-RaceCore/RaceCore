@@ -51,7 +51,6 @@
     font-weight: 700;
 }
 
-/* 🔥 NIEUW: wrapper voor knoppen (fix layout) */
 .result-hero-actions {
     display: flex;
     align-items: center;
@@ -59,7 +58,7 @@
 }
 
 /* ===============================
-   BUTTONS (IDENTIEK AAN TEAM HERO)
+   BUTTONS
 ================================= */
 
 .result-history-btn,
@@ -100,7 +99,7 @@
 }
 
 /* ===============================
-   TITELS
+   TITLES
 ================================= */
 
 .result-stage-title {
@@ -109,68 +108,6 @@
     font-weight: 900;
     color: #0f172a;
 }
-
-/* ===============================
-   FORM
-================================= */
-
-.race-select-form {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 16px;
-    align-items: end;
-}
-
-.race-select-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-    .race-select-group label {
-        font-size: 13px;
-        font-weight: 800;
-        color: #334155;
-    }
-
-.app-select {
-    height: 44px;
-    border-radius: 12px;
-    border: 1px solid #d1d5db;
-    padding: 0 12px;
-    background: #ffffff;
-    font-size: 14px;
-}
-
-    .app-select:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
-        outline: none;
-    }
-
-/* ===============================
-   BUTTON (FORM)
-================================= */
-
-.app-btn {
-    height: 44px;
-    padding: 0 18px;
-    border-radius: 12px;
-    border: none;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.app-btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-}
-
-    .app-btn-primary:hover {
-        background: #1d4ed8;
-    }
 
 /* ===============================
    TABLE
@@ -199,6 +136,7 @@
     .result-table td {
         padding: 14px 12px;
         border-top: 1px solid #e5e7eb;
+        vertical-align: middle;
     }
 
     .result-table tbody tr:hover {
@@ -225,6 +163,68 @@
 .result-total {
     font-weight: 900;
     color: #2563eb;
+}
+
+/* ===============================
+   TRUI ICONEN
+================================= */
+
+.result-jersey-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-jersey-dot {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
+}
+
+/* Tour / algemeen */
+.result-jersey-yellow {
+    background: #ffd700;
+}
+
+.result-jersey-green {
+    background: #22c55e;
+}
+
+.result-jersey-polka {
+    background-color: #ffffff;
+    background-image: radial-gradient(#ff0000 24%, transparent 26%);
+    background-size: 7px 7px;
+    border: 1px solid #cbd5e1;
+}
+
+.result-jersey-white {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+}
+
+/* Giro */
+.result-jersey-pink {
+    background: #ff69b4;
+}
+
+.result-jersey-purple {
+    background: #9333ea;
+}
+
+.result-jersey-blue {
+    background: #2563eb;
+}
+
+/* Vuelta / default */
+.result-jersey-red {
+    background: #ef4444;
+}
+
+.result-jersey-default {
+    background: #94a3b8;
 }
 
 /* ===============================
@@ -279,14 +279,6 @@
 
     .result-history-btn,
     .result-dashboard-white-btn {
-        width: 100%;
-    }
-
-    .race-select-form {
-        grid-template-columns: 1fr;
-    }
-
-    .app-btn {
         width: 100%;
     }
 }

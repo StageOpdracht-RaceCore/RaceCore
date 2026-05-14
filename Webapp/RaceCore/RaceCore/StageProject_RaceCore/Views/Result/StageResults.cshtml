@@ -4,14 +4,16 @@
     ViewData["Title"] = "Stage Results";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
-    var races = ViewBag.Races as List<Race> ?? new List<Race>();
     var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
-    int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
+
+    int selectedGameId = ViewBag.SelectedGameId ?? 0;
 }
 
-<link rel="stylesheet" href="~/css/StageResult.css" />
+<link rel="stylesheet" href="~/css/StageResult.css" asp-append-version="true" />
 
 <div class="result-page">
+
+    @* HEADER VAN DE RESULTATENPAGINA *@
     <section class="result-header-card">
         <div class="result-header-copy">
             <p class="result-page-kicker">RaceCore</p>
@@ -22,15 +24,16 @@
         </div>
 
         <div class="result-hero-actions">
-
-            
-            <a asp-controller="Dashboard" asp-action="Index" class="result-dashboard-white-btn">
+            <a asp-controller="Dashboard"
+               asp-action="Index"
+               asp-route-gameId="@selectedGameId"
+               class="result-dashboard-white-btn">
                 Dashboard
             </a>
         </div>
     </section>
 
-
+    @* ALS ER GEEN RESULTATEN ZIJN *@
     @if (stageTables == null || !stageTables.Any())
     {
         <section class="result-stage-card">
@@ -42,6 +45,7 @@
     }
     else
     {
+        @* ALLE RITTEN TONEN *@
         foreach (var stage in stageTables)
         {
             <section class="result-stage-card">
@@ -67,7 +71,21 @@
                                     <td class="result-position">@row.Position</td>
                                     <td class="result-name">@row.CyclistName</td>
                                     <td class="result-points">@row.Points</td>
-                                    <td>@(!string.IsNullOrWhiteSpace(row.JerseyTypes) ? row.JerseyTypes : "-")</td>
+
+                                    @* BELANGRIJK: hier tonen we de trui-cirkel, niet de tekst *@
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(row.JerseyIcons))
+                                        {
+                                            <span class="result-jersey-icons">
+                                                @Html.Raw(row.JerseyIcons)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+
                                     <td>@row.JerseyPoints</td>
                                     <td class="result-total">@row.Total</td>
                                 </tr>
@@ -76,6 +94,7 @@
                     </table>
                 </div>
 
+                @* TRUIDRAGERS BUITEN TOP 25 *@
                 @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
                 {
                     <div style="margin-top:22px;">
@@ -101,7 +120,21 @@
                                             <td class="result-position">@row.Position</td>
                                             <td class="result-name">@row.CyclistName</td>
                                             <td class="result-points">@row.Points</td>
-                                            <td>@row.JerseyTypes</td>
+
+                                            @* Ook hier de trui-cirkel tonen *@
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(row.JerseyIcons))
+                                                {
+                                                    <span class="result-jersey-icons">
+                                                        @Html.Raw(row.JerseyIcons)
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
+
                                             <td>@row.JerseyPoints</td>
                                             <td class="result-total">@row.Total</td>
                                         </tr>
