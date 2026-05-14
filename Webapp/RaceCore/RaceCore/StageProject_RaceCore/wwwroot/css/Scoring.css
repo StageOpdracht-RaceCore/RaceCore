@@ -181,6 +181,7 @@
     height: 46px;
     display: inline-flex;
     cursor: pointer;
+    border-radius: 50%;
 }
 
     .jersey-dot input {
