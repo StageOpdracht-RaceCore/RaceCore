@@ -19,7 +19,7 @@
 
 @if (ViewBag.DatabaseOnline == false)
 {
-    <div class="alert-box alert-warning">⚠️ Database not reachable. Start OpenVPN to view live data.</div>
+    <div class="alert-box alert-warning">⚠️ Database niet bereikbaar. Start OpenVPN om live data te bekijken.</div>
 }
 
 @if (TempData["Error"] != null)
@@ -93,7 +93,7 @@
 
                 <div class="hero-meta">
                     <span class="@GetStatusClass(gameStatus)">@gameStatus</span>
-                    <span>🏁 Stage @currentStage</span>
+                    <span>🏁 Rit @currentStage</span>
                     <span>🎯 @Model.TotalDraftPicks picks</span>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">👥</span>
                     <div>
-                        <small>Players</small>
+                        <small>Spelers</small>
                         <strong>@Model.PlayersCount</strong>
                     </div>
                 </div>
@@ -110,7 +110,7 @@
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">🚴</span>
                     <div>
-                        <small>Cyclists</small>
+                        <small>Renners</small>
                         <strong>@Model.CyclistsCount</strong>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">🎯</span>
                     <div>
-                        <small>Draft Picks</small>
+                        <small>Draftkeuzes</small>
                         <strong>@Model.TotalDraftPicks</strong>
                     </div>
                 </div>
@@ -136,8 +136,8 @@
         <div class="hero-action-panel">
             @if (gameStatus == "Draft")
             {
-                <span class="next-label">Next mission</span>
-                <h2>Finish the draft</h2>
+                <span class="next-label">Volgende missie</span>
+                <h2>Maak de draft af</h2>
 
                 <a asp-controller="Draft"
                        asp-action="Index"
@@ -148,26 +148,26 @@
             }
             else if (gameStatus == "Active")
             {
-                <span class="next-label">Next mission</span>
-                <h2>Enter stage results</h2>
+                <span class="next-label">Volgende missie</span>
+                <h2>Ga naar Ritresultaten</h2>
 
                 <a asp-controller="Scoring"
                        asp-action="Index"
                        asp-route-raceId="@raceId"
                        class="main-play-btn">
-                    ⚡ Go to Scoring
+                    ⚡ Ga naar Scoring
                 </a>
             }
             else
             {
-                <span class="next-label">Game completed</span>
-                <h2>View final ranking</h2>
+                <span class="next-label">Game klaar</span>
+                <h2>Zie eindresultaten</h2>
 
                 <a asp-controller="Leaderboard"
                        asp-action="Index"
                        asp-route-gameId="@gameId"
                        class="main-play-btn">
-                    🏆 Leaderboard
+                    🏆 Ranglijst
                 </a>
             }
         </div>
@@ -177,7 +177,7 @@
         <a asp-controller="Game" asp-action="New" class="game-menu-card">
             <span>➕</span>
             <div>
-                <strong>New Game</strong>
+                <strong>Nieuwe Game</strong>
                 <small>Start nieuwe race</small>
             </div>
         </a>
@@ -192,7 +192,7 @@
         <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="game-menu-card">
             <span>🏆</span>
             <div>
-                <strong>Leaderboard</strong>
+                <strong>Ranglijst</strong>
                 <small>Ranking bekijken</small>
             </div>
         </a>
@@ -200,7 +200,7 @@
         <a asp-controller="History" asp-action="History" class="game-menu-card">
             <span>📜</span>
             <div>
-                <strong>History</strong>
+                <strong>Geschiedenis</strong>
                 <small>Vorige games</small>
             </div>
         </a>
@@ -210,7 +210,7 @@
         <a asp-controller="Cyclist" asp-action="Index" class="game-menu-card">
             <span>🚴</span>
             <div>
-                <strong>Cyclists</strong>
+                <strong>Renners</strong>
                 <small>Renners beheren</small>
             </div>
         </a>
@@ -226,8 +226,8 @@
         <a asp-controller="Result" asp-action="StageResults" asp-route-raceId="@raceId" class="game-menu-card">
             <span>🗺️</span>
             <div>
-                <strong>Stageresult</strong>
-                <small>Stageresult beheren</small>
+                <strong>Ritresultaten</strong>
+                <small>Ritresultaten beheren</small>
             </div>
         </a>
 
@@ -241,8 +241,8 @@
 
         <div class="game-panel ranking-panel">
             <div class="panel-title">
-                <span>Competition</span>
-                <h2>Player Ranking</h2>
+                <span>Wedstrijd</span>
+                <h2>Speler Ranking</h2>
             </div>
 
             @if (Model.PlayerRanking.Any())
@@ -283,14 +283,14 @@
             }
             else
             {
-                <div class="empty-box">No ranking available yet.</div>
+                <div class="empty-box">Geen ranglijst beschikbaar.</div>
             }
         </div>
 
         <div class="game-panel progress-panel">
             <div class="panel-title">
-                <span>Game Progress</span>
-                <h2>Current Mission</h2>
+                <span>Game Vooruitgang</span>
+                <h2>Huidige missie</h2>
             </div>
 
             <div class="mission-box">
@@ -310,14 +310,14 @@
                 </div>
 
                 <div>
-                    <span>Total picks</span>
+                    <span>Totaal picks</span>
                     <strong>@Model.TotalDraftPicks</strong>
                 </div>
             </div>
 
             <div class="draft-progress-box">
                 <div class="draft-progress-top">
-                    <span>Draft progress</span>
+                    <span>Draft Vooruitgang</span>
                     <strong>@Model.TotalDraftPicks picks</strong>
                 </div>
 
@@ -334,7 +334,7 @@
         <div class="game-panel">
             <div class="panel-title">
                 <span>Performance</span>
-                <h2>Top Cyclists</h2>
+                <h2>Top Renners</h2>
             </div>
 
             @if (Model.TopCyclists.Any())
@@ -351,14 +351,14 @@
             }
             else
             {
-                <div class="empty-box">No cyclist points available yet.</div>
+                <div class="empty-box">Geen renner punten beschikbaar.</div>
             }
         </div>
 
         <div class="game-panel">
             <div class="panel-title">
-                <span>Classifications</span>
-                <h2>Jerseys</h2>
+                <span>Classificaties</span>
+                <h2>Truien</h2>
             </div>
 
             @if (Model.Jerseys.Any())
@@ -375,7 +375,7 @@
             }
             else
             {
-                <div class="empty-box">No jersey holders available yet.</div>
+                <div class="empty-box">Geen truien beschikbaar.</div>
             }
         </div>
 

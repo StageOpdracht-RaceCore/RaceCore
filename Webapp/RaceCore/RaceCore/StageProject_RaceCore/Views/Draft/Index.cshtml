@@ -109,7 +109,7 @@
             <div class="draft-stat-content">
                 <span class="draft-stat-label">Status</span>
                 <strong class="draft-stat-value">
-                    @(draftIsLive ? "LIVE" : draftIsDone ? "DONE" : "EMPTY")
+                    @(draftIsLive ? "LIVE" : draftIsDone ? "KLAAR" : "LEEG")
                 </strong>
             </div>
         </div>
@@ -295,8 +295,8 @@
                 <div class="draft-side-card-header">
                     <h3>Live Draft Info</h3>
 
-                    <span class="draft-mini-status @(draftIsLive ? "live" : "done")">
-                        @(draftIsLive ? "Live" : draftIsDone ? "Done" : "Empty")
+                    <span class="draft-mini-status @(draftIsLive ? "live" : "klaar")">
+                        @(draftIsLive ? "Live" : draftIsDone ? "Klaar" : "Leeg")
                     </span>
                 </div>
 
@@ -361,7 +361,7 @@
 
             <div class="draft-side-card">
                 <div class="draft-side-card-header">
-                    <h3>Draft Progress</h3>
+                    <h3>Draft Vooruitgang</h3>
                 </div>
 
                 <div class="draft-progress-wrap">
