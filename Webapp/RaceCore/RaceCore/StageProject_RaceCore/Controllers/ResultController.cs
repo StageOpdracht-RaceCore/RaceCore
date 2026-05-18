@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StageProject_RaceCore.Models;
-using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
-    // ViewModel voor de Index (Algemeen klassement van spelers)
     public class ResultVM
     {
         public string StageName { get; set; } = "";
@@ -15,13 +13,6 @@ namespace StageProject_RaceCore.Controllers
         public int totalPoints { get; set; }
     }
 
-    /* ResultController.cs
-       Purpose: Provide views for game results and aggregated rankings.
-       Includes helpers to map jersey types to rule types and display names.
-    */
-    /// <summary>
-    /// Controller responsible for rendering various result views (overall leaderboard, stage results).
-    /// </summary>
     public class ResultController : Controller
     {
         private readonly AppDbContext _context;
@@ -31,7 +22,9 @@ namespace StageProject_RaceCore.Controllers
             _context = appDbContext;
         }
 
-        // Algemeen Klassement (Spelers ranking)
+        // ============================================================
+        // ALGEMEEN KLASSEMENT VAN SPELERS
+        // ============================================================
         public async Task<IActionResult> Index()
         {
             var rankData = await _context.PlayerPoints
@@ -51,14 +44,18 @@ namespace StageProject_RaceCore.Controllers
             return View(rankData);
         }
 
-        // Resultaten per Rit (Met automatische race-selectie)
-        public async Task<IActionResult> StageResults(int? raceId)
+        // ============================================================
+        // RESULTATEN PER RIT TONEN
+        // ============================================================
+        public async Task<IActionResult> StageResults(int? raceId, int? gameId)
         {
-            // 1. Haal alle races op voor de logica (gesorteerd op recentheid)
+            // Alle races ophalen
             var races = await _context.Races
                 .OrderByDescending(r => r.Year)
                 .ThenByDescending(r => r.StartDate)
                 .ToListAsync();
+
+            ViewBag.Races = races;
 
             if (!races.Any())
             {
@@ -66,105 +63,162 @@ namespace StageProject_RaceCore.Controllers
                 return View();
             }
 
-            Race selectedRace = null;
+            GameSession? selectedGame = null;
+            Race? selectedRace = null;
 
-            // --- AUTOMATISCHE SELECTIE LOGICA ---
-            if (raceId.HasValue)
+            // Eerst gameId gebruiken, want dat is het meest correct
+            if (gameId.HasValue)
             {
-                // Gebruiker heeft expliciet een ID meegegeven
-                selectedRace = races.FirstOrDefault(r => r.Id == raceId.Value);
+                selectedGame = await _context.GameSessions
+                    .Include(g => g.Race)
+                    .FirstOrDefaultAsync(g => g.Id == gameId.Value);
+
+                selectedRace = selectedGame?.Race;
             }
-            else
+
+            // Daarna zoeken via raceId
+            if (selectedRace == null && raceId.HasValue)
             {
-                // Optie A: Zoek de race van de meest recente actieve GameSession
-                var activeGame = await _context.GameSessions
+                selectedRace = races.FirstOrDefault(r => r.Id == raceId.Value);
+
+                if (selectedRace != null)
+                {
+                    selectedGame = await _context.GameSessions
+                        .Include(g => g.Race)
+                        .Where(g => g.RaceId == selectedRace.Id)
+                        .OrderByDescending(g => g.CreatedAt)
+                        .FirstOrDefaultAsync();
+                }
+            }
+
+            // Fallback naar laatste actieve game
+            if (selectedRace == null)
+            {
+                selectedGame = await _context.GameSessions
                     .Include(g => g.Race)
                     .OrderByDescending(g => g.CreatedAt)
-                    .FirstOrDefaultAsync(g => g.Status == "Active" || g.Status == "Started");
+                    .FirstOrDefaultAsync(g =>
+                        g.Status == "Active" ||
+                        g.Status == "Started" ||
+                        g.Status == "Draft");
 
-                if (activeGame != null)
-                {
-                    selectedRace = activeGame.Race;
-                }
-
-                // Optie B (Fallback): Als er geen actieve game is, pak de race die vandaag bezig is
-                if (selectedRace == null)
-                {
-                    selectedRace = races.FirstOrDefault(r => r.StartDate <= DateTime.Now && r.EndDate >= DateTime.Now);
-                }
-
-                // Optie C (Laatste redmiddel): Pak de allernieuwste race uit de lijst
-                if (selectedRace == null)
-                {
-                    selectedRace = races.First();
-                }
+                selectedRace = selectedGame?.Race;
             }
 
-            // Geef de info door naar de view voor de header en eventuele links
+            // Laatste fallback
+            if (selectedRace == null)
+            {
+                selectedRace = races.First();
+            }
+
             ViewBag.SelectedRaceName = selectedRace.Name + " " + selectedRace.Year;
             ViewBag.SelectedRaceId = selectedRace.Id;
+            ViewBag.SelectedGameId = selectedGame?.Id ?? 0;
 
-            // 2. Haal alle ritten van de geselecteerde wedstrijd op
+            // Ritten ophalen van deze race
             var stages = await _context.Stages
                 .Where(s => s.RaceId == selectedRace.Id)
                 .OrderBy(s => s.StageNumber)
                 .ToListAsync();
 
-            // 3. Haal de puntenregels eenmalig op voor de berekeningen
+            // Puntenregels ophalen
             var rules = await _context.PointsRules.ToListAsync();
 
             var stageTables = new List<object>();
 
             foreach (var stage in stages)
             {
-                // Haal de top 25 uitslag op
-                var results = await _context.StageResults
+                // Resultaten ophalen
+                var resultsQuery = _context.StageResults
                     .Include(sr => sr.Cyclist)
-                    .Where(sr => sr.StageId == stage.Id)
+                    .Where(sr => sr.StageId == stage.Id);
+
+                // Belangrijk: filteren op game zodat je geen oude game data ziet
+                if (selectedGame != null)
+                {
+                    resultsQuery = resultsQuery.Where(sr => sr.GameSessionId == selectedGame.Id);
+                }
+
+                var results = await resultsQuery
                     .OrderBy(sr => sr.Position)
                     .ToListAsync();
 
-                // Haal de truien op
-                var jerseys = await _context.Jerseys
+                // Truien ophalen
+                var jerseysQuery = _context.Jerseys
                     .Include(j => j.Cyclist)
-                    .Where(j => j.StageId == stage.Id)
-                    .ToListAsync();
+                    .Where(j => j.StageId == stage.Id);
 
-                var top25CyclistIds = results.Select(r => r.CyclistId).ToHashSet();
+                // Belangrijk: ook truien filteren op game
+                if (selectedGame != null)
+                {
+                    jerseysQuery = jerseysQuery.Where(j => j.GameSessionId == selectedGame.Id);
+                }
 
-                // --- VERWERK TOP 25 ---
-                var rows = results.Select(sr => {
-                    // Punten op basis van positie
+                var jerseys = await jerseysQuery.ToListAsync();
+
+                var top25CyclistIds = results
+                    .Select(r => r.CyclistId)
+                    .ToHashSet();
+
+                // ====================================================
+                // TOP 25 RESULTATEN
+                // ====================================================
+                var rows = results.Select(sr =>
+                {
+                    int position = sr.Position ?? 0;
+
                     int positionPoints = rules
-                        .Where(pr => pr.Type == "Rit" && pr.FromPosition <= sr.Position && pr.ToPosition >= sr.Position)
+                        .Where(pr =>
+                            pr.Type == "Rit" &&
+                            pr.FromPosition <= position &&
+                            pr.ToPosition >= position)
                         .Sum(pr => pr.Points);
 
-                    // Truien die deze renner in deze rit heeft
-                    var cyclistJerseys = jerseys.Where(j => j.CyclistId == sr.CyclistId).ToList();
+                    var cyclistJerseys = jerseys
+                        .Where(j => j.CyclistId == sr.CyclistId)
+                        .ToList();
 
                     int jerseyPoints = cyclistJerseys.Sum(j =>
-                        rules.Where(pr => pr.Type == GetRuleTypeForJersey(j.Type)).Sum(pr => pr.Points)
+                        rules
+                            .Where(pr => pr.Type == GetRuleTypeForJersey(j.Type))
+                            .Sum(pr => pr.Points)
                     );
 
                     return new
                     {
-                        Position = sr.Position.ToString(),
+                        Position = position.ToString(),
                         CyclistName = sr.Cyclist?.FullName ?? "Onbekend",
                         Points = positionPoints,
-                        JerseyTypes = string.Join(", ", cyclistJerseys.Select(j => GetJerseyDisplayName(j.Type))),
+
+                        // Dit is de tekstnaam, handig voor title/controle
+                        JerseyTypes = string.Join(", ", cyclistJerseys.Select(j =>
+                            GetJerseyDisplayName(j.Type, selectedRace.Name)
+                        )),
+
+                        // Dit is de echte visuele cirkel die je wil tonen
+                        JerseyIcons = string.Join(" ", cyclistJerseys.Select(j =>
+                            GetJerseyIconHtml(j.Type, selectedRace.Name)
+                        )),
+
                         JerseyPoints = jerseyPoints,
                         Total = positionPoints + jerseyPoints
                     };
                 }).ToList();
 
-                // --- VERWERK TRUIDRAGERS BUITEN TOP 25 ---
+                // ====================================================
+                // TRUIEN BUITEN TOP 25
+                // ====================================================
                 var outsideJerseyRows = jerseys
                     .Where(j => !top25CyclistIds.Contains(j.CyclistId))
                     .GroupBy(j => j.CyclistId)
-                    .Select(group => {
+                    .Select(group =>
+                    {
                         var cyclist = group.First().Cyclist;
+
                         int jerseyPoints = group.Sum(j =>
-                            rules.Where(pr => pr.Type == GetRuleTypeForJersey(j.Type)).Sum(pr => pr.Points)
+                            rules
+                                .Where(pr => pr.Type == GetRuleTypeForJersey(j.Type))
+                                .Sum(pr => pr.Points)
                         );
 
                         return new
@@ -172,11 +226,20 @@ namespace StageProject_RaceCore.Controllers
                             Position = ">25",
                             CyclistName = cyclist?.FullName ?? "Onbekend",
                             Points = 0,
-                            JerseyTypes = string.Join(", ", group.Select(j => GetJerseyDisplayName(j.Type))),
+
+                            JerseyTypes = string.Join(", ", group.Select(j =>
+                                GetJerseyDisplayName(j.Type, selectedRace.Name)
+                            )),
+
+                            JerseyIcons = string.Join(" ", group.Select(j =>
+                                GetJerseyIconHtml(j.Type, selectedRace.Name)
+                            )),
+
                             JerseyPoints = jerseyPoints,
                             Total = jerseyPoints
                         };
-                    }).ToList();
+                    })
+                    .ToList();
 
                 stageTables.Add(new
                 {
@@ -187,27 +250,76 @@ namespace StageProject_RaceCore.Controllers
             }
 
             ViewBag.StageTables = stageTables;
+
             return View();
         }
 
-        // Helper: Matcht de database string van Stage Input met de PointsRules Type kolom
+        // ============================================================
+        // TRUI TYPE OMZETTEN NAAR POINTSRULE TYPE
+        // ============================================================
         private static string GetRuleTypeForJersey(string jerseyType)
         {
             return jerseyType switch
             {
                 "Red" => "RodeTrui",
-                "Green" => "GroeneTrui",
-                "Blue" => "BlauweTrui",
-                "White" => "WitteTrui",
                 "Yellow" => "RodeTrui",
+
+                "Green" => "GroeneTrui",
+
+                "Blue" => "BlauweTrui",
                 "Polka" => "BlauweTrui",
+
+                "White" => "WitteTrui",
+
                 _ => jerseyType
             };
         }
 
-        // Helper: Voor een nette weergave in de tabel
-        private static string GetJerseyDisplayName(string type)
+        // ============================================================
+        // TRUI NAAM CORRECT TONEN PER RACE
+        // ============================================================
+        private static string GetJerseyDisplayName(string type, string raceName)
         {
+            bool isGiro = raceName.Contains("Giro", StringComparison.OrdinalIgnoreCase);
+            bool isTour = raceName.Contains("Tour", StringComparison.OrdinalIgnoreCase);
+            bool isVuelta = raceName.Contains("Vuelta", StringComparison.OrdinalIgnoreCase);
+
+            if (isGiro)
+            {
+                return type switch
+                {
+                    "Red" or "Yellow" or "RodeTrui" => "Roze trui",
+                    "Green" or "GroeneTrui" => "Paarse trui",
+                    "Blue" or "Polka" or "BlauweTrui" => "Blauwe trui",
+                    "White" or "WitteTrui" => "Witte trui",
+                    _ => type
+                };
+            }
+
+            if (isTour)
+            {
+                return type switch
+                {
+                    "Red" or "Yellow" or "RodeTrui" => "Gele trui",
+                    "Green" or "GroeneTrui" => "Groene trui",
+                    "Blue" or "Polka" or "BlauweTrui" => "Bolletjestrui",
+                    "White" or "WitteTrui" => "Witte trui",
+                    _ => type
+                };
+            }
+
+            if (isVuelta)
+            {
+                return type switch
+                {
+                    "Red" or "Yellow" or "RodeTrui" => "Rode trui",
+                    "Green" or "GroeneTrui" => "Groene trui",
+                    "Blue" or "Polka" or "BlauweTrui" => "Bolletjestrui",
+                    "White" or "WitteTrui" => "Witte trui",
+                    _ => type
+                };
+            }
+
             return type switch
             {
                 "Red" or "Yellow" or "RodeTrui" => "Rode trui",
@@ -215,6 +327,27 @@ namespace StageProject_RaceCore.Controllers
                 "Blue" or "Polka" or "BlauweTrui" => "Blauwe trui",
                 "White" or "WitteTrui" => "Witte trui",
                 _ => type
+            };
+        }
+
+        // ============================================================
+        // HTML VOOR DE JUISTE TRUI-CIRKEL
+        // ============================================================
+        private static string GetJerseyIconHtml(string type, string raceName)
+        {
+            string displayName = GetJerseyDisplayName(type, raceName);
+
+            return displayName switch
+            {
+                "Gele trui" => "<span class=\"result-jersey-dot result-jersey-yellow\" title=\"Gele trui\"></span>",
+                "Groene trui" => "<span class=\"result-jersey-dot result-jersey-green\" title=\"Groene trui\"></span>",
+                "Bolletjestrui" => "<span class=\"result-jersey-dot result-jersey-polka\" title=\"Bolletjestrui\"></span>",
+                "Witte trui" => "<span class=\"result-jersey-dot result-jersey-white\" title=\"Witte trui\"></span>",
+                "Roze trui" => "<span class=\"result-jersey-dot result-jersey-pink\" title=\"Roze trui\"></span>",
+                "Paarse trui" => "<span class=\"result-jersey-dot result-jersey-purple\" title=\"Paarse trui\"></span>",
+                "Blauwe trui" => "<span class=\"result-jersey-dot result-jersey-blue\" title=\"Blauwe trui\"></span>",
+                "Rode trui" => "<span class=\"result-jersey-dot result-jersey-red\" title=\"Rode trui\"></span>",
+                _ => "<span class=\"result-jersey-dot result-jersey-default\" title=\"Trui\"></span>"
             };
         }
     }
