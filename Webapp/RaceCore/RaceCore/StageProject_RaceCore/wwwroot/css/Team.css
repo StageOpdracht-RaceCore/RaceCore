@@ -10,9 +10,10 @@
      5. Player team cards (header, avatar, completion bar)
      6. Roster table (active section, bench section, empty slots, pills)
      7. Empty state (no teams found)
-     8. Swap interaction (selection highlight, target/dimmed states, error banner)
-      10. Responsive breakpoints
-============================================================================= */
+     8. Disqualified section (DQ row, UNDQ button, red theming)
+     9. Swap interaction (selection highlight, target/dimmed states, error banner)
+    10. Responsive breakpoints
+   ============================================================================= */
 
 /* ── 1. Page wrapper & base card ───────────────────────────────────────────── */
 
@@ -23,11 +24,12 @@
     padding: 0;
 }
 
+/* Override the default <main> padding that would otherwise add unwanted spacing around the full-width layout. */
 main:has(> .team-page) {
     padding: 0 !important;
 }
 
-/* Hides the antiforgery token div from view — token is read by JS for POST requests. */
+/* Hidden container holding the anti-forgery token so inline JavaScript can read it for POST requests. */
 .team-antiforgery {
     display: none;
 }
@@ -47,7 +49,7 @@ main:has(> .team-page) {
 
 /* ── 2. Page banner ─────────────────────────────────────────────────────────── */
 
-/* Full-width dark-blue gradient banner at the top of the page (race name, status, nav link). */
+/* Full-width dark-blue gradient banner at the top of the page showing the race name, game status, and navigation links. */
 .team-page-banner,
 .page-banner {
     display: flex;
@@ -62,7 +64,7 @@ main:has(> .team-page) {
     box-shadow: 0 15px 35px rgba(15, 23, 42, 0.18);
 }
 
-/* Small all-caps label above the page title. */
+/* Small all-caps label displayed above the page title (e.g. "RACECORE GAME HUB"). */
 .small-title {
     font-size: 11px;
     text-transform: uppercase;
@@ -83,16 +85,16 @@ main:has(> .team-page) {
     font-weight: 600;
 }
 
+/* Container for action links/buttons that sit on the right side of the banner. */
 .team-banner-actions {
     display: flex;
     align-items: center;
     gap: 18px;
 }
 
-
 /* ── 3. Stats row ───────────────────────────────────────────────────────────── */
 
-/* Three equal-width coloured boxes showing player count, active slots, bench slots. */
+/* Three equal-width coloured boxes showing player count, active slots, and bench slots. */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -105,6 +107,7 @@ main:has(> .team-page) {
         border-top: 1px solid #e2e8f0;
     }
 
+/* Individual stat box: a small card containing an icon, label, and numeric value. */
 .stat-box {
     display: flex;
     align-items: center;
@@ -139,7 +142,7 @@ main:has(> .team-page) {
     font-size: 16px;
 }
 
-/* Colour modifier classes applied to .stat-box elements. */
+/* Colour modifier classes applied to .stat-box elements — each uses a distinct accent hue. */
 .blue .stat-icon {
     background: #eff6ff;
     color: #2563eb;
@@ -161,7 +164,7 @@ main:has(> .team-page) {
     margin-bottom: 16px;
 }
 
-/* 2-column grid of info tiles (game ID, race name, filled slots, total slots). */
+/* 2-column grid of info tiles displaying game ID, race name, filled slots, and total slots. */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -193,7 +196,6 @@ main:has(> .team-page) {
         white-space: nowrap;
     }
 
-
 /* White pill button used inside the banner (e.g. "Dashboard" link). */
 .team-dashboard-white-btn {
     display: inline-flex;
@@ -220,7 +222,7 @@ main:has(> .team-page) {
 
 /* ── 5. Player team cards ───────────────────────────────────────────────────── */
 
-/* Responsive grid: cards wrap at ~360px minimum width. */
+/* Responsive grid: cards wrap at ~360px minimum width so on narrow screens they stack. */
 .player-team-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -228,7 +230,7 @@ main:has(> .team-page) {
     align-items: stretch;
 }
 
-/* Each card is a column flex container so the table fills remaining height. */
+/* Each card is a column flex container so the table section fills the remaining vertical space. */
 .player-team-card {
     overflow: hidden;
     display: flex;
@@ -236,8 +238,8 @@ main:has(> .team-page) {
     background: #ffffff;
 }
 
-/* Card header: player avatar, name, rider counts, and completion bar.
-   Uses CSS custom properties (--player-color etc.) injected per-card by the server. */
+/* Card header: player avatar, name, rider counts, and a progress completion bar.
+   CSS custom properties (--player-color etc.) are injected per-card as inline styles by the Razor view. */
 .player-team-header {
     display: flex;
     align-items: center;
@@ -250,7 +252,7 @@ main:has(> .team-page) {
     position: relative;
 }
 
-    /* Thin coloured bar on the left edge of the card header. */
+    /* Thin coloured bar on the left edge of the card header — uses the player's accent colour. */
     .player-team-header::before {
         content: "";
         position: absolute;
@@ -261,6 +263,7 @@ main:has(> .team-page) {
         background: linear-gradient(180deg, var(--player-color), var(--player-color-dark));
     }
 
+    /* Ensure content within the header stacks above the ::before pseudo-element. */
     .player-team-header > * {
         position: relative;
         z-index: 1;
@@ -273,7 +276,7 @@ main:has(> .team-page) {
     min-width: 0;
 }
 
-/* Circular avatar showing the player's initials in their accent colour. */
+/* Circular avatar showing the player's initials on the player's accent colour background. */
 .player-team-avatar {
     width: 44px;
     height: 44px;
@@ -304,7 +307,8 @@ main:has(> .team-page) {
     font-weight: 700;
 }
 
-/* Completion indicator: shows active rider count vs slot maximum + a progress bar. */
+/* Completion indicator: shows the active rider count vs the slot maximum, along with a progress bar.
+   The bar fill width is set as an inline percentage by the Razor view. */
 .team-completion {
     min-width: 128px;
     color: #0f172a;
@@ -327,7 +331,7 @@ main:has(> .team-page) {
     background: #e5e7eb;
 }
 
-    /* Inner fill: width is set inline as a percentage by the server. */
+    /* Inner fill bar width is set as an inline style by the Razor template. */
     .team-completion-bar div {
         height: 100%;
         border-radius: inherit;
@@ -336,6 +340,7 @@ main:has(> .team-page) {
 
 /* ── 6. Roster table ────────────────────────────────────────────────────────── */
 
+/* Wrapper that prevents the table from overflowing horizontally and lets it fill the card height. */
 .player-roster-table-wrap {
     overflow-x: hidden;
     flex: 1;
@@ -371,7 +376,7 @@ main:has(> .team-page) {
         text-transform: uppercase;
     }
 
-    /* Fixed widths for slot number and pro-team columns. */
+    /* Fixed column widths: first column (slot number) and third column (pro-team) have explicit sizes. */
     .player-roster-table th:first-child,
     .player-roster-table td:first-child {
         width: 44px;
@@ -382,14 +387,14 @@ main:has(> .team-page) {
         width: 24%;
     }
 
-    /* Status pill column is right-aligned. */
+    /* The last column (status pill / action button) is right-aligned. */
     .player-roster-table th:last-child,
     .player-roster-table td:last-child {
         width: 76px;
         text-align: right;
     }
 
-/* Section header rows that divide active from bench in the table body. */
+/* Section header rows that visually divide the "Active riders" and "Bench riders" groups in the table body. */
 .roster-section-row th {
     padding: 9px 8px;
     border-bottom: none;
@@ -399,37 +404,37 @@ main:has(> .team-page) {
     text-transform: uppercase;
 }
 
-/* Active section header uses the player's accent colour. */
+/* Active section header uses the player's accent colour for a full-width gradient bar. */
 .roster-section-row.active-section th {
     color: var(--player-text-color);
     background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
     padding-left: calc(8px + 0.5ch);
 }
 
-/* Bench section header uses a neutral grey. */
+/* Bench section header uses a neutral grey tone. */
 .roster-section-row.bench-section th {
     color: #374151;
     background: #e5e7eb;
 }
 
-/* Active rider rows get a soft tint + left border in the player's accent colour. */
+/* Active rider rows get a soft tint and a left coloured border matching the player's accent colour. */
 .roster-row.active-rider {
     background: var(--player-color-soft);
     border-left: 4px solid var(--player-color);
 }
 
-/* Removes the bottom border on the last active row directly above the bench header. */
+/* Removes the bottom border on the last active row directly above the bench section header to avoid double-line visual. */
 .roster-row.roster-before-bench td {
     border-bottom: 0;
 }
 
-/* Bench rider rows get a neutral grey background and border. */
+/* Bench rider rows use a neutral grey background and border to visually distinguish them from active riders. */
 .roster-row.bench-rider {
     background: #f3f4f6;
     border-left: 4px solid #9ca3af;
 }
 
-/* Empty slot rows have no background tint; text is italic and muted. */
+/* Empty slot rows have no background tint; text is italic and muted to indicate availability. */
 .roster-row.empty-slot {
     background: #ffffff;
 }
@@ -446,7 +451,7 @@ main:has(> .team-page) {
     font-weight: 900;
 }
 
-/* Rider name and pro team are block elements so they stack inside the cell. */
+/* Rider name and pro-team are displayed as block elements so they stack vertically within the cell. */
 .rider-name,
 .rider-team {
     display: block;
@@ -467,7 +472,7 @@ main:has(> .team-page) {
     font-weight: 700;
 }
 
-/* Small coloured pill shown in the last column indicating active or bench status. */
+/* Small coloured pill shown in the Role column indicating whether the rider is active, bench, or disqualified. */
 .status-pill {
     display: inline-flex;
     align-items: center;
@@ -480,19 +485,19 @@ main:has(> .team-page) {
     font-weight: 900;
 }
 
-    /* Active pill uses the player's accent colour. */
+    /* Active pill uses the player's accent colour for a filled pill. */
     .status-pill.active {
         color: var(--player-text-color);
         background: var(--player-color);
     }
 
-    /* Bench pill uses neutral grey. */
+    /* Bench pill uses neutral grey tones. */
     .status-pill.bench {
         color: #374151;
         background: #d1d5db;
     }
 
-    /* Disqualified pill uses red. */
+    /* Disqualified pill uses a red scheme to clearly distinguish disqualified riders. */
     .status-pill.disqualified {
         color: #ffffff;
         background: #ef4444;
@@ -500,6 +505,7 @@ main:has(> .team-page) {
 
 /* ── 7. Empty state ─────────────────────────────────────────────────────────── */
 
+/* Shown when no player teams exist yet (e.g. first visit with no active game). */
 .team-empty-state h2 {
     margin: 0 0 8px;
     color: #111827;
@@ -512,7 +518,7 @@ main:has(> .team-page) {
     font-weight: 700;
 }
 
-/* Generic button base — extend with .team-btn-primary. */
+/* Generic button base — extend with .team-btn-primary for a filled primary appearance. */
 .team-btn {
     display: inline-flex;
     align-items: center;
@@ -536,16 +542,15 @@ main:has(> .team-page) {
         background: #1d4ed8;
     }
 
-
 /* ── 8. Disqualified section ─────────────────────────────────────────────────── */
 
-/* Disqualified section header uses a red tone. */
+/* Disqualified section header uses a red gradient to clearly mark the section as separate. */
 .roster-section-row.disqualified-section th {
     color: #ffffff;
     background: linear-gradient(90deg, #dc2626, #b91c1c);
 }
 
-/* Disqualified rider rows get a subtle red-tinted background. */
+/* Disqualified rider rows get a subtle red-tinted background and a pinkish left border. */
 .roster-row.disqualified-rider {
     background: #fef2f2;
     border-left: 4px solid #fca5a5;
@@ -555,7 +560,7 @@ main:has(> .team-page) {
         color: #991b1b;
     }
 
-/* Small destructive button used for DQ in the table action column. */
+/* Small destructive button used in the action column to disqualify a rider. */
 .dq-btn {
     display: inline-flex;
     align-items: center;
@@ -578,7 +583,7 @@ main:has(> .team-page) {
         background: #dc2626;
     }
 
-/* Small restore button used for UNDQ in the disqualified table action column. */
+/* Small restore button used in the action column to undisqualify (restore) a rider. */
 .undq-btn {
     display: inline-flex;
     align-items: center;
@@ -601,13 +606,14 @@ main:has(> .team-page) {
         background: #16a34a;
     }
 
+/* The action column in DQ rows should right-align the UNDQ button. */
 .disqualified-rider td:last-child {
     text-align: right;
 }
 
 /* ── 9. Swap interaction ────────────────────────────────────────────────────── */
 
-/* All data rows are clickable; show a pointer cursor. */
+/* All table rows with a cyclist ID are clickable; show a pointer cursor to indicate interactivity. */
 tr[data-cyclist-id] {
     cursor: pointer;
 }
@@ -616,14 +622,14 @@ tr[data-cyclist-id] {
         filter: brightness(0.95);
     }
 
-/* Blue outline on the first-selected row while swap-mode is active. */
+/* Blue outline applied to the first-selected row while swap-mode is active. */
 .roster-row--selected {
     outline: 2px solid var(--player-color) !important;
     outline-offset: -2px;
     filter: brightness(0.92) !important;
 }
 
-/* Informational hint bar above the player grid. */
+/* Informational hint bar displayed above the player card grid, guiding the user through the swap flow. */
 .team-swap-hint {
     padding: 10px 12px;
     border-radius: 12px;
@@ -638,7 +644,7 @@ tr[data-cyclist-id] {
     margin: 0 0 14px;
 }
 
-/* Dashed outline on valid swap targets in the opposite section. */
+/* Dashed outline applied to rows in the opposite section indicating they are valid swap targets. */
 .player-team-card.swap-mode .roster-row.swap-target {
     outline: 2px dashed rgba(191, 219, 254, 0.85);
     outline-offset: -2px;
@@ -648,7 +654,7 @@ tr[data-cyclist-id] {
         filter: brightness(0.93);
     }
 
-/* Dim rows in the same section that are not valid swap targets. */
+/* Dim rows in the same section that are not valid swap targets to reduce visual noise. */
 .player-team-card.swap-mode .roster-row.swap-dimmed {
     opacity: 0.55;
 }
@@ -668,6 +674,7 @@ tr[data-cyclist-id] {
         align-items: stretch;
     }
 
+    /* Stack stat boxes vertically for easier reading on narrower viewports. */
     .stats-row {
         grid-template-columns: 1fr;
     }
@@ -678,6 +685,7 @@ tr[data-cyclist-id] {
 }
 
 @media (max-width: 640px) {
+    /* Switch to a 2-column layout for the info grid. */
     .info-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -688,12 +696,13 @@ tr[data-cyclist-id] {
         gap: 10px;
     }
 
+    /* Force single-column layout for player cards on small screens. */
     .player-team-grid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
 
-    /* Stack the card header vertically so completion bar doesn't overflow. */
+    /* Stack the card header vertically so the completion bar doesn't overflow horizontally. */
     .player-team-header {
         align-items: flex-start;
         flex-direction: column;

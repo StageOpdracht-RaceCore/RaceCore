@@ -10,22 +10,30 @@ using StageProject_RaceCore.Models;
 
 namespace StageProject_RaceCore.Controllers
 {
+    /// <summary>
+    /// Controller for the Teams overview page (/Team/Index).
+    /// Handles rendering player rosters, swapping riders between active and bench,
+    /// and disqualifying / undisqualifying cyclists using an in-memory dictionary.
+    /// </summary>
     public class TeamController : Controller
     {
+        /// <summary>
+        /// In-memory store of disqualified cyclists, keyed by "gameId:playerId:cyclistId".
+        /// Using a ConcurrentDictionary avoids a DB schema migration and survives only for the app lifetime.
+        /// </summary>
         private static readonly ConcurrentDictionary<string, byte> _disqualified = new();
 
+        /// <summary>Builds the dictionary key for a given game/player/cyclist combination.</summary>
         private static string DqKey(int g, int p, int c) => $"{g}:{p}:{c}";
 
+        /// <summary>
+        /// Pool of 8 colours assigned to players in a round-robin fashion.
+        /// Each player card gets a unique accent colour for its headers, rows, and pill badges.
+        /// </summary>
         private static readonly string[] PlayerColors =
         {
-            "#2563eb",
-            "#16a34a",
-            "#f59e0b",
-            "#dc2626",
-            "#7c3aed",
-            "#0891b2",
-            "#db2777",
-            "#65a30d"
+            "#2563eb", "#16a34a", "#f59e0b", "#dc2626",
+            "#7c3aed", "#0891b2", "#db2777", "#65a30d"
         };
 
         private readonly AppDbContext _context;
@@ -35,6 +43,12 @@ namespace StageProject_RaceCore.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Main entry point for the Teams page.
+        /// Resolves the game session (by explicit ID or the latest active one), loads all player selections and
+        /// draft turn data, then builds a <see cref="PlayerTeamsPageViewModel"/> with active/bench/DQ rider groupings.
+        /// </summary>
+        /// <param name="gameId">Optional explicit game session ID. If 0, the latest active (non-finished) game is used.</param>
         public async Task<IActionResult> Index(int gameId = 0)
         {
             var model = new PlayerTeamsPageViewModel
@@ -67,12 +81,14 @@ namespace StageProject_RaceCore.Controllers
                 model.ActiveRiderSlots = activeSlots;
                 model.BenchRiderSlots = benchSlots;
 
+                // Load draft turns to determine the order in which cyclists were picked.
                 var draftTurns = await _context.DraftTurns
                     .Include(d => d.Player)
                     .Where(d => d.GameSessionId == game.Id)
                     .OrderBy(d => d.TurnNumber)
                     .ToListAsync();
 
+                // Load all player<->cyclist selections (the actual roster assignments) for this game.
                 var selections = await _context.PlayerSelections
                     .Include(s => s.Player)
                     .Include(s => s.Cyclist)
@@ -80,6 +96,7 @@ namespace StageProject_RaceCore.Controllers
                     .Where(s => s.GameSessionId == game.Id)
                     .ToListAsync();
 
+                // Build a lookup: cyclistId -> earliest draft turn number (used for sorting riders within a team).
                 var turnNumberByCyclistId = draftTurns
                     .Where(d => d.CyclistId.HasValue)
                     .GroupBy(d => d.CyclistId!.Value)
@@ -87,6 +104,7 @@ namespace StageProject_RaceCore.Controllers
                         g => g.Key,
                         g => g.Min(d => d.TurnNumber));
 
+                // Deduplicate the list of players that appear in draft turns or selections.
                 var players = draftTurns
                     .Where(d => d.Player != null)
                     .Select(d => d.Player)
@@ -99,6 +117,7 @@ namespace StageProject_RaceCore.Controllers
                     .ThenBy(p => p.Name)
                     .ToList();
 
+                // Build a view-model entry for each player.
                 for (var index = 0; index < players.Count; index++)
                 {
                     var player = players[index];
@@ -110,16 +129,19 @@ namespace StageProject_RaceCore.Controllers
 
                     var orderedRiders = BuildRiders(playerSelections, turnNumberByCyclistId);
 
+                    // Active riders: IsActive = true, not in the disqualified set.
                     var activeRiders = orderedRiders
                         .Where(r => r.IsActive && !_disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
                         .Take(activeSlots)
                         .ToList();
 
+                    // Bench riders: IsActive = false, not in the disqualified set.
                     var benchRiders = orderedRiders
                         .Where(r => !r.IsActive && !_disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
                         .Take(benchSlots)
                         .ToList();
 
+                    // Disqualified riders: present in the in-memory dictionary. These also have IsActive = false in the DB.
                     var dqRiders = orderedRiders
                         .Where(r => _disqualified.ContainsKey(DqKey(model.GameId, player.Id, r.CyclistId)))
                         .Select(r => new PlayerTeamRiderViewModel
@@ -148,6 +170,7 @@ namespace StageProject_RaceCore.Controllers
                     });
                 }
 
+                // Determine the max DQ count across all players for consistent section layout.
                 model.DisqualifiedRiderSlots = model.PlayerTeams.Max(t => t.DisqualifiedRiders.Count);
             }
             catch (Exception ex)
@@ -158,6 +181,15 @@ namespace StageProject_RaceCore.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// POST endpoint that swaps a rider between the active lineup and the bench.
+        /// Supports four scenarios:
+        ///   1. Both activeCyclistId and benchCyclistId provided → swap them (toggle IsActive on each).
+        ///   2. Only activeCyclistId → move that rider to the bench (provided there is room).
+        ///   3. Only benchCyclistId → move that rider to the active lineup (provided there is room).
+        ///   4. Neither provided → 400 Bad Request.
+        /// The bench capacity check excludes currently disqualified riders from the count.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SwapActiveBench(
@@ -220,6 +252,8 @@ namespace StageProject_RaceCore.Controllers
                     }
                 }
 
+                // Fetch all selections for this player/game to accurately count active and bench riders,
+                // excluding DQ'd riders from the bench count.
                 var allPlayerSelections = await _context.PlayerSelections
                     .Where(s => s.GameSessionId == gameId && s.PlayerId == playerId)
                     .ToListAsync();
@@ -230,11 +264,13 @@ namespace StageProject_RaceCore.Controllers
 
                 if (hasActive && hasBench)
                 {
+                    // Full swap: toggle both selections.
                     activeSelection!.IsActive = false;
                     benchSelection!.IsActive = true;
                 }
                 else if (hasActive)
                 {
+                    // Move active rider to bench.
                     if (currentBenchCount >= benchSlots)
                     {
                         return BadRequest("Bench is full.");
@@ -244,6 +280,7 @@ namespace StageProject_RaceCore.Controllers
                 }
                 else
                 {
+                    // Move bench rider to active.
                     if (currentActiveCount >= activeSlots)
                     {
                         return BadRequest("Active team is full.");
@@ -263,6 +300,10 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
+        /// <summary>
+        /// POST endpoint that disqualifies a cyclist for a given player/game.
+        /// Adds the cyclist to the in-memory disqualified dictionary and sets IsActive = false in the DB.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DisqualifyCyclist(int gameId, int playerId, int cyclistId)
@@ -290,6 +331,11 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
+        /// <summary>
+        /// POST endpoint that undisqualifies (restores) a previously disqualified cyclist.
+        /// Removes the cyclist from the in-memory disqualified dictionary and sets IsActive = true in the DB.
+        /// If the selection row no longer exists, the dictionary entry is still removed to keep state consistent.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UndisqualifyCyclist(int gameId, int playerId, int cyclistId)
@@ -319,6 +365,11 @@ namespace StageProject_RaceCore.Controllers
             }
         }
 
+        /// <summary>
+        /// Resolves the game session to use for the Teams page.
+        /// If an explicit gameId is provided (and > 0), loads that specific game.
+        /// Otherwise, finds the latest non-finished/non-cancelled game, falling back to the most recent game.
+        /// </summary>
         private async Task<GameSession?> ResolveGame(int gameId)
         {
             var games = _context.GameSessions
@@ -345,6 +396,10 @@ namespace StageProject_RaceCore.Controllers
                 .FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Converts a list of PlayerSelections into view-model rider objects,
+        /// sorted by draft turn number (earliest pick first), then by last name/first name.
+        /// </summary>
         private static List<PlayerTeamRiderViewModel> BuildRiders(
             IEnumerable<PlayerSelection> selections,
             IReadOnlyDictionary<int, int> turnNumberByCyclistId)
@@ -369,6 +424,10 @@ namespace StageProject_RaceCore.Controllers
                 .ToList();
         }
 
+        /// <summary>
+        /// Extracts initials from a player's name (up to two characters).
+        /// Returns "?" if the name is empty or has no alphabetic characters.
+        /// </summary>
         private static string BuildInitials(string name)
         {
             var initials = name
@@ -382,6 +441,10 @@ namespace StageProject_RaceCore.Controllers
                 : new string(initials).ToUpperInvariant();
         }
 
+        /// <summary>
+        /// Converts a hex colour string (e.g. "#2563eb") to an rgba() string with the given alpha channel.
+        /// Falls back to a blue-tinted default if the input cannot be parsed.
+        /// </summary>
         private static string ToRgba(string color, double alpha)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -394,6 +457,10 @@ namespace StageProject_RaceCore.Controllers
                 $"rgba({red}, {green}, {blue}, {alpha:0.##})");
         }
 
+        /// <summary>
+        /// Darkens a hex colour by the given factor (0 = no change, 1 = fully black).
+        /// Falls back to a dark blue default if the input cannot be parsed.
+        /// </summary>
         private static string Darken(string color, double amount)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -405,6 +472,10 @@ namespace StageProject_RaceCore.Controllers
             return $"#{(int)Math.Round(red * factor):X2}{(int)Math.Round(green * factor):X2}{(int)Math.Round(blue * factor):X2}";
         }
 
+        /// <summary>
+        /// Returns either "#111827" (dark text) or "#ffffff" (light text) depending on the perceived luminance
+        /// of the given hex colour. Uses the W3C relative luminance formula.
+        /// </summary>
         private static string GetReadableTextColor(string color)
         {
             if (!TryParseHexColor(color, out var red, out var green, out var blue))
@@ -416,6 +487,10 @@ namespace StageProject_RaceCore.Controllers
             return luminance > 150 ? "#111827" : "#ffffff";
         }
 
+        /// <summary>
+        /// Attempts to parse a 6-character hex colour string (with or without leading '#') into its RGB components.
+        /// Returns false if the input is null, empty, or not a valid hex colour.
+        /// </summary>
         private static bool TryParseHexColor(
             string? color,
             out int red,

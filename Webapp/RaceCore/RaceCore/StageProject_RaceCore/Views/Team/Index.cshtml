@@ -1,3 +1,8 @@
+@* ─────────────────────────────────────────────────────────────────────────────
+   Team/Index.cshtml
+   Renders the full Teams overview page: game banner, stats, player cards,
+   roster tables with active/bench/DQ sections, and the swap/disqualify UI.
+   ───────────────────────────────────────────────────────────────────────────── *@
 @model StageProject_RaceCore.Models.PlayerTeamsPageViewModel
 
 @{
@@ -5,6 +10,7 @@
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
+@* Razor helper functions that safely render rider name and pro-team, returning "Free slot" / "-" for nulls. *@
 @functions {
     public string RiderName(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
     {
@@ -21,11 +27,15 @@
 
 <link rel="stylesheet" href="~/css/Team.css" asp-append-version="true" />
 
+@* ─── Page wrapper ─────────────────────────────────────────────────────────── *@
 <div class="team-page dashboard-container" data-game-id="@Model.GameId">
+
+    @* Hidden container storing the anti-forgery token so inline JS can read it for fetch POST requests. *@
     <div class="team-antiforgery">
         @Html.AntiForgeryToken()
     </div>
 
+    @* ── Banner section ─────────────────────────────────────────────────────── *@
     <section class="team-page-banner page-banner">
         <div>
             <div class="small-title">RaceCore Game Hub</div>
@@ -49,6 +59,7 @@
         </div>
     </section>
 
+    @* ── Empty state (no players) ────────────────────────────────────────────── *@
     @if (!Model.PlayerTeams.Any())
     {
         <section class="card team-empty-state">
@@ -59,6 +70,7 @@
     }
     else
     {
+        @* ── Game overview card (stats row + info grid) ───────────────────────── *@
         <section class="card team-overview-card" aria-label="Game overview">
             <section class="stats-row team-stats-row" aria-label="Team overview">
                 <div class="stat-box blue">
@@ -109,10 +121,12 @@
             </div>
         </section>
 
+        @* ── Swap hint bar ───────────────────────────────────────────────────── *@
         <div class="team-swap-hint team-swap-hint-global" aria-live="polite">
             Click a rider to swap. Then select another rider from the bench riders list.
         </div>
 
+        @* ── Player team cards grid ──────────────────────────────────────────── *@
         <section class="player-team-grid" aria-label="Player teams">
             @foreach (var playerTeam in Model.PlayerTeams)
             {
@@ -120,6 +134,8 @@
                     ? 0
                     : Math.Min(100, playerTeam.ActiveRiders.Count * 100 / Model.ActiveRiderSlots);
 
+                @* Each card receives CSS custom properties (--player-color, --player-color-soft, etc.)
+                   injected as inline styles so the CSS can theme each card independently. *@
                 <article class="player-team-card"
                          data-player-id="@playerTeam.PlayerId"
                          style="--player-color:@playerTeam.Color; --player-color-soft:@playerTeam.ColorSoft; --player-color-dark:@playerTeam.ColorDark; --player-text-color:@playerTeam.TextColor;">
@@ -133,6 +149,7 @@
                             </div>
                         </div>
 
+                        @* Completion bar showing active rider count vs. maximum slots. *@
                         <div class="team-completion">
                             <span>@playerTeam.ActiveRiders.Count / @Model.ActiveRiderSlots active</span>
                             <div class="team-completion-bar" aria-hidden="true">
@@ -141,6 +158,7 @@
                         </div>
                     </header>
 
+                    @* ── Roster table ─────────────────────────────────────────── *@
                     <div class="player-roster-table-wrap">
                         <table class="player-roster-table">
                             <thead>
@@ -154,6 +172,7 @@
                             </thead>
 
                             <tbody>
+                                @* ── Active riders section ────────────────────────── *@
                                 <tr class="roster-section-row active-section">
                                     <th colspan="5">Active riders</th>
                                 </tr>
@@ -191,6 +210,7 @@
                                     </tr>
                                 }
 
+                                @* ── Bench riders section ─────────────────────────── *@
                                 <tr class="roster-section-row bench-section">
                                     <th colspan="5">Bench riders</th>
                                 </tr>
@@ -228,6 +248,7 @@
                                     </tr>
                                 }
 
+                                @* ── Disqualified riders section (rendered only if there are any) ── *@
                                 @if (playerTeam.DisqualifiedRiders.Any())
                                 {
                                     <tr class="roster-section-row disqualified-section">
@@ -264,17 +285,30 @@
     }
 </div>
 
+@* ─── Client-side JavaScript ─────────────────────────────────────────────────
+   Handles the rider swap flow (select, highlight, swap rows optimistically, persist via fetch),
+   as well as disqualify / undisqualify with optimistic DOM updates.
+   ───────────────────────────────────────────────────────────────────────────── *@
 <script>
     (function () {
         var selectedRow = null;
 
+        /**
+         * Called when a roster row is clicked (or activated via keyboard).
+         * Orchestrates the two-click swap flow:
+         *   1. First click on a rider → selects it, enters swap mode.
+         *   2. Second click on a row in the opposite section → performs the swap.
+         * If the same section is clicked again, the selection moves to the new row.
+         */
         window.selectRider = function (row) {
+            // If clicking an empty slot and nothing is selected, do nothing.
             if (!hasCyclist(row)) {
                 if (!selectedRow) {
                     clearSelection();
                     return;
                 }
             } else {
+                // Clicking the already selected row → deselect.
                 if (selectedRow === row) {
                     clearSelection();
                     return;
@@ -283,6 +317,7 @@
 
             var card = row.closest('.player-team-card');
 
+            // First selection → enter swap mode.
             if (!selectedRow) {
                 selectedRow = row;
                 row.classList.add('roster-row--selected');
@@ -292,6 +327,7 @@
 
             var firstCard = selectedRow.closest('.player-team-card');
 
+            // Cross-card swap is not supported; re-select on the new card instead.
             if (firstCard !== card) {
                 clearSelection();
                 if (hasCyclist(row)) {
@@ -305,6 +341,7 @@
             var firstSection = selectedRow.dataset.section;
             var secondSection = row.dataset.section;
 
+            // Same section → move the selection to the new row.
             if (firstSection === secondSection) {
                 clearSelection();
                 if (hasCyclist(row)) {
@@ -315,6 +352,7 @@
                 return;
             }
 
+            // Opposite section → perform the swap.
             try {
                 swapRows(selectedRow, row);
             } finally {
@@ -322,6 +360,11 @@
             }
         };
 
+        /**
+         * Highlights all rows in the opposite section as valid swap targets,
+         * and dims rows in the same section (except the selected one).
+         * Updates the hint text accordingly.
+         */
         function enableSwapMode(card, selected) {
             if (!card) {
                 return;
@@ -332,7 +375,7 @@
             var selectedSection = selected.dataset.section;
             var targetSection = selectedSection === 'active' ? 'bench' : 'active';
 
-            // Highlight valid targets in the opposite section (including empty slots)
+            // Highlight valid targets in the opposite section, including empty slots.
             card.querySelectorAll('.roster-row[data-section]').forEach(function (row) {
                 row.classList.toggle('swap-target', row.dataset.section === targetSection);
                 row.classList.toggle('swap-dimmed', row.dataset.section === selectedSection && row !== selected);
@@ -346,6 +389,11 @@
             }
         }
 
+        /**
+         * Optimistically swaps the content (name, team, cyclistId) between two rows,
+         * then persists the change to the server via fetch.
+         * On failure, the page is reloaded to revert to the server state.
+         */
         function swapRows(rowA, rowB) {
             var cellsA = rowA.querySelectorAll('td');
             var cellsB = rowB.querySelectorAll('td');
@@ -355,24 +403,33 @@
             var originalActiveCyclistId = activeRow.dataset.cyclistId;
             var originalBenchCyclistId = benchRow.dataset.cyclistId;
 
+            // Swap the name cell HTML.
             var tmpName = cellsA[1].innerHTML;
             cellsA[1].innerHTML = cellsB[1].innerHTML;
             cellsB[1].innerHTML = tmpName;
 
+            // Swap the team cell HTML.
             var tmpTeam = cellsA[2].innerHTML;
             cellsA[2].innerHTML = cellsB[2].innerHTML;
             cellsB[2].innerHTML = tmpTeam;
 
+            // Swap the data-cyclist-id attributes.
             var tmpId = rowA.dataset.cyclistId;
             rowA.dataset.cyclistId = rowB.dataset.cyclistId;
             rowB.dataset.cyclistId = tmpId;
 
+            // Refresh the status pill and DQ button in each row.
             updateRowState(rowA);
             updateRowState(rowB);
 
+            // POST to the server.
             persistSwap(activeRow, originalActiveCyclistId, originalBenchCyclistId);
         }
 
+        /**
+         * Refreshes the status pill and action button in a row based on whether it
+         * currently holds a cyclist (data-cyclist-id !== "0") or is empty.
+         */
         function updateRowState(row) {
             if (!row) {
                 return;
@@ -389,9 +446,11 @@
             }
 
             if (!hasRider) {
+                // Empty slot: clear the status pill and action cell.
                 cells[3].innerHTML = '';
                 cells[4].innerHTML = '';
             } else {
+                // Occupied: render the correct pill (active/bench) and a DQ button.
                 var isActiveRow = row.classList.contains('active-rider');
                 var pillClass = isActiveRow ? 'active' : 'bench';
                 var pillLabel = isActiveRow ? 'Cyclist' : 'Bench';
@@ -402,6 +461,9 @@
             }
         }
 
+        /**
+         * Returns true if the row has a non-zero data-cyclist-id (i.e. is occupied by a rider).
+         */
         function hasCyclist(row) {
             if (!row) {
                 return false;
@@ -411,6 +473,11 @@
             return id !== undefined && id !== '' && String(id) !== '0';
         }
 
+        /**
+         * Sends the swap to the server via a POST request.
+         * Uses URL-encoded form data with the anti-forgery token.
+         * If the server returns an error, reloads the page to revert the optimistic DOM update.
+         */
         function persistSwap(activeRow, activeCyclistId, benchCyclistId) {
             var card = activeRow.closest('.player-team-card');
 
@@ -451,6 +518,10 @@
             });
         }
 
+        /**
+         * Disqualifies a rider: clears the source row in the DOM, creates/updates the
+         * disqualified section with a new row, and posts to the server.
+         */
         window.disqualifyRider = function (event, button) {
             event.stopPropagation();
 
@@ -468,7 +539,7 @@
             var riderName = cells[1] ? cells[1].textContent.trim() : '';
             var riderTeam = cells[2] ? cells[2].textContent.trim() : '';
 
-            // Clear the source row (make it an empty but clickable swap target)
+            // Clear the source row (make it an empty but clickable swap target).
             row.dataset.cyclistId = '0';
             row.classList.add('empty-slot');
             cells[1].innerHTML = '<span class="rider-name">Free slot</span>';
@@ -477,7 +548,7 @@
             cells[4].innerHTML = '';
             row.setAttribute('title', 'Free slot');
 
-            // Find or create the disqualified section header
+            // Find or create the "Disqualified" section header row.
             var dqHeader = tbody.querySelector('.disqualified-section');
             if (!dqHeader) {
                 dqHeader = document.createElement('tr');
@@ -489,7 +560,7 @@
                 tbody.appendChild(dqHeader);
             }
 
-            // Create the disqualified rider row
+            // Build the disqualified rider row.
             var dqRow = document.createElement('tr');
             dqRow.className = 'roster-row disqualified-rider';
             dqRow.dataset.section = 'disqualified';
@@ -515,7 +586,7 @@
             td4.innerHTML = '<button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualify">UNDQ</button>';
             dqRow.appendChild(td4);
 
-            // Append after the last disqualified row, or after the header
+            // Insert the new DQ row after the last existing DQ row, or after the DQ header.
             var lastDq = tbody.querySelector('.disqualified-rider:last-of-type');
             if (lastDq) {
                 lastDq.parentNode.insertBefore(dqRow, lastDq.nextSibling);
@@ -523,7 +594,7 @@
                 dqHeader.parentNode.insertBefore(dqRow, dqHeader.nextSibling);
             }
 
-            // Persist to server
+            // Persist to server.
             var gameId = document.querySelector('.team-page')?.dataset?.gameId;
             var playerId = card.dataset.playerId;
             var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
@@ -543,6 +614,11 @@
             }
         };
 
+        /**
+         * Undisqualifies (restores) a previously disqualified rider: removes the DQ row,
+         * finds the first empty slot (active first, then bench), fills it with the rider's data,
+         * and posts to the server.
+         */
         window.undisqualifyRider = function (event, button) {
             event.stopPropagation();
 
@@ -560,21 +636,22 @@
             var riderName = cells[1] ? cells[1].textContent.trim() : '';
             var riderTeam = cells[2] ? cells[2].textContent.trim() : '';
 
+            // Capture game/player/token BEFORE removing the row from the DOM.
             var gameId = document.querySelector('.team-page')?.dataset?.gameId;
             var playerId = card.dataset.playerId;
             var token = document.querySelector('.team-antiforgery input[name="__RequestVerificationToken"]')?.value;
 
-            // Remove the disqualified row
+            // Remove the disqualified row from the DOM.
             row.parentNode.removeChild(row);
 
-            // If no more disqualified rows remain, remove the section header
+            // If no more disqualified rows remain, remove the section header too.
             var remaining = tbody.querySelectorAll('.disqualified-rider');
             if (remaining.length === 0) {
                 var dqHeader = tbody.querySelector('.disqualified-section');
                 if (dqHeader) dqHeader.parentNode.removeChild(dqHeader);
             }
 
-            // Find the first empty slot (active first, then bench) and fill it
+            // Find the first empty slot (check active rows first, then bench rows).
             var emptyRow = null;
             var sections = ['.active-rider', '.bench-rider'];
             for (var s = 0; s < sections.length && !emptyRow; s++) {
@@ -588,7 +665,9 @@
                     }
                 }
             }
+
             if (emptyRow) {
+                // Fill the empty slot with the restored rider's data.
                 emptyRow.dataset.cyclistId = cyclistId;
                 emptyRow.classList.remove('empty-slot');
                 emptyRow.querySelectorAll('td')[1].innerHTML = '<span class="rider-name">' + escapeHtml(riderName) + '</span>';
@@ -596,7 +675,7 @@
                 updateRowState(emptyRow);
             }
 
-            // Persist to server
+            // Persist to server.
             if (gameId && playerId && token) {
                 var body =
                     '__RequestVerificationToken=' + encodeURIComponent(token) +
@@ -612,14 +691,23 @@
             }
         };
 
+        /**
+         * Escapes HTML entities in a string to prevent XSS when inserting user-controlled text
+         * via innerHTML. Uses the browser's built-in text node serialisation.
+         */
         function escapeHtml(str) {
             var div = document.createElement('div');
             div.appendChild(document.createTextNode(str));
             return div.innerHTML;
         }
 
+        /**
+         * Toggles the empty-slot class on a target row and manages its interactivity
+         * attributes based on whether the source row had a cyclist.
+         * (This function is preserved but is no longer called in the current swap flow;
+         *  swapRows + updateRowState handle row state directly.)
+         */
         function toggleEmptyState(targetRow, sourceRow) {
-            // If the source had no cyclist id, the target is now an empty slot
             var isEmpty = !sourceRow.dataset.cyclistId || sourceRow.classList.contains('empty-slot');
             targetRow.classList.toggle('empty-slot', isEmpty);
 
@@ -629,15 +717,12 @@
                 targetRow.removeAttribute('role');
                 targetRow.removeAttribute('tabindex');
                 targetRow.removeAttribute('title');
-                // Clear the status pill cell
                 targetRow.querySelectorAll('td')[3].innerHTML = '';
             } else {
-                // Restore interactivity if it was previously empty
                 targetRow.setAttribute('onclick', 'selectRider(this)');
                 targetRow.setAttribute('role', 'button');
                 targetRow.setAttribute('tabindex', '0');
                 targetRow.setAttribute('title', 'Select to swap');
-                // Restore correct pill
                 var isActive = targetRow.classList.contains('active-rider');
                 var pillClass = isActive ? 'active' : 'bench';
                 var pillLabel = isActive ? 'Cyclist' : 'Bench';
@@ -646,6 +731,9 @@
             }
         }
 
+        /**
+         * Clears the current selection, removes visual highlights, and resets the swap hint.
+         */
         function clearSelection() {
             if (selectedRow) {
                 var card = selectedRow.closest('.player-team-card');
@@ -655,6 +743,9 @@
             }
         }
 
+        /**
+         * Removes all swap-mode visual cues (target highlights, dimmed rows, hint text).
+         */
         function disableSwapMode(card) {
             if (!card) {
                 return;
@@ -676,6 +767,9 @@
             }
         }
 
+        /**
+         * Keyboard support: pressing Enter or Space on a focusable table row triggers selectRider.
+         */
         document.addEventListener('keydown', function (e) {
             if ((e.key === 'Enter' || e.key === ' ') && document.activeElement) {
                 var row = document.activeElement.closest
