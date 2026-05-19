@@ -40,12 +40,6 @@ namespace StageProject_RaceCore.Controllers
 
             try
             {
-                // Alle races ophalen voor dropdown/filter
-                var races = await _context.Races
-                    .OrderByDescending(r => r.Year)
-                    .ThenBy(r => r.Name)
-                    .ToListAsync();
-
                 // Alle teams ophalen voor dropdown bij toevoegen
                 var teams = await _context.Teams
                     .OrderBy(t => t.Name)
@@ -68,7 +62,7 @@ namespace StageProject_RaceCore.Controllers
                         (c.Team != null && c.Team.Name.Contains(search)));
                 }
 
-                // Filteren op status of race
+                // Filteren op status
                 if (!string.IsNullOrWhiteSpace(status))
                 {
                     if (status == "active")
@@ -78,12 +72,6 @@ namespace StageProject_RaceCore.Controllers
                     else if (status == "inactive")
                     {
                         query = query.Where(c => !c.IsActive);
-                    }
-                    else if (status.StartsWith("race-") &&
-                             int.TryParse(status.Replace("race-", ""), out int raceId))
-                    {
-                        query = query.Where(c =>
-                            c.RaceEntries.Any(re => re.RaceId == raceId));
                     }
                 }
 
@@ -101,7 +89,6 @@ namespace StageProject_RaceCore.Controllers
                 // ViewBag waarden voor de View
                 ViewBag.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalItems / pageSize));
                 ViewBag.CyclistCount = totalItems;
-                ViewBag.Races = races;
                 ViewBag.Teams = teams;
                 ViewBag.DatabaseOnline = true;
 
@@ -126,11 +113,6 @@ namespace StageProject_RaceCore.Controllers
                 .OrderBy(t => t.Name)
                 .ToListAsync();
 
-            ViewBag.Races = await _context.Races
-                .OrderByDescending(r => r.Year)
-                .ThenBy(r => r.Name)
-                .ToListAsync();
-
             return View();
         }
 
@@ -140,8 +122,7 @@ namespace StageProject_RaceCore.Controllers
             string firstName,
             string lastName,
             int? teamId,
-            bool isActive = true,
-            int? raceId = null)
+            bool isActive = true)
         {
             // Controle of voornaam en achternaam ingevuld zijn
             if (string.IsNullOrWhiteSpace(firstName) ||
@@ -151,19 +132,6 @@ namespace StageProject_RaceCore.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            Race? selectedRace = null;
-
-            // Controle of geselecteerde race bestaat
-            if (raceId.HasValue && raceId.Value > 0)
-            {
-                selectedRace = await _context.Races.FindAsync(raceId.Value);
-
-                if (selectedRace == null)
-                {
-                    TempData["CreateError"] = "Selected race does not exist.";
-                    return RedirectToAction(nameof(Index));
-                }
-            }
 
             // Nieuwe wielrenner aanmaken
             var cyclist = new Cyclist
@@ -177,18 +145,6 @@ namespace StageProject_RaceCore.Controllers
             _context.Cyclists.Add(cyclist);
             await _context.SaveChangesAsync();
 
-            // Als er een race gekozen is, koppel de renner direct aan die race
-            if (selectedRace != null)
-            {
-                _context.RaceEntries.Add(new RaceEntry
-                {
-                    RaceId = selectedRace.Id,
-                    CyclistId = cyclist.Id,
-                    TeamId = cyclist.TeamId
-                });
-
-                await _context.SaveChangesAsync();
-            }
 
             TempData["Success"] = $"{cyclist.FullName} was added successfully.";
 
