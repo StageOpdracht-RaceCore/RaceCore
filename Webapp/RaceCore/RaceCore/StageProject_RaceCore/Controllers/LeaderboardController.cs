@@ -55,8 +55,8 @@ namespace StageProject_RaceCore.Controllers
             // Als er geen afgewerkte games zijn
             if (!games.Any())
             {
-                model.RaceName = "Geen afgewerkte game";
-                model.GameStatus = "Geen";
+                model.RaceName = "No finished game";
+                model.GameStatus = "None";
                 model.PlayerCount = 0;
                 model.TotalPoints = 0;
 
@@ -78,7 +78,7 @@ namespace StageProject_RaceCore.Controllers
 
             // Basisinformatie voor de pagina
             model.SelectedGameId = selectedGame.Id;
-            model.RaceName = selectedGame.Race?.Name ?? "Onbekende race";
+            model.RaceName = selectedGame.Race?.Name ?? "Unknown race";
             model.GameStatus = selectedGame.Status;
             model.CreatedAt = selectedGame.CreatedAt;
 
@@ -147,7 +147,7 @@ namespace StageProject_RaceCore.Controllers
                     StageId = stage.Id,
                     StageNumber = stage.StageNumber,
                     StageName = string.IsNullOrWhiteSpace(stage.Name)
-                        ? $"Rit {stage.StageNumber}"
+                        ? $"Stage {stage.StageNumber}"
                         : stage.Name
                 };
 
@@ -169,7 +169,7 @@ namespace StageProject_RaceCore.Controllers
                             {
                                 stagePointsForPlayer += rules
                                     .Where(r =>
-                                        r.Type == "Rit" &&
+                                        r.Type == "Stage" &&
                                         r.FromPosition <= result.Position &&
                                         r.ToPosition >= result.Position)
                                     .Sum(r => r.Points);

@@ -14,8 +14,8 @@
         .ThenBy(re => re.Cyclist.FirstName)
         .ToList();
 
-    var startDate = Model.StartDate?.ToString("dd/MM/yyyy") ?? "Niet ingesteld";
-    var endDate = Model.EndDate?.ToString("dd/MM/yyyy") ?? "Niet ingesteld";
+    var startDate = Model.StartDate?.ToString("dd/MM/yyyy") ?? "Not set";
+    var endDate = Model.EndDate?.ToString("dd/MM/yyyy") ?? "Not set";
 }
 
 <link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
@@ -26,17 +26,17 @@
     <div class="race-details-modern-hero">
 
         <div class="race-details-modern-left">
-            <p class="race-label">RaceCore beheer</p>
+            <p class="race-label">RaceCore Management</p>
 
             <h1>@Model.Name</h1>
 
             <p class="race-subtitle">
-                Bekijk alle informatie van deze race.
+                View all information about this race.
             </p>
 
             <div class="race-details-modern-badges">
                 <div class="race-modern-badge">
-                    <span>Jaar</span>
+                    <span>Year</span>
                     <strong>@Model.Year</strong>
                 </div>
 
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="race-modern-badge">
-                    <span>Renners</span>
+                    <span>Cyclists</span>
                     <strong>@raceEntries.Count</strong>
                 </div>
             </div>
@@ -56,13 +56,13 @@
 
 
             <a asp-action="Index"
-                   class="race-btn race-btn-done">
+               class="race-btn race-btn-done">
                 ✓ Done
             </a>
             <a asp-action="Edit"
-                   asp-route-id="@Model.Id"
-                   class="race-primary-btn">
-                Race bewerken
+               asp-route-id="@Model.Id"
+               class="race-primary-btn">
+                Edit Race
             </a>
 
             <form asp-action="Delete"
@@ -74,7 +74,7 @@
                 @Html.AntiForgeryToken()
 
                 <button type="submit" class="race-danger-btn">
-                    Race verwijderen
+                    Delete Race
                 </button>
             </form>
 
@@ -94,29 +94,29 @@
             <section class="race-card">
 
                 <div class="race-card-header">
-                    <h2>Race informatie</h2>
-                    <p>Algemene gegevens van deze race.</p>
+                    <h2>Race Information</h2>
+                    <p>General information about this race.</p>
                 </div>
 
                 <div class="race-modern-info-grid">
 
                     <div class="race-modern-info-item">
-                        <span>Naam</span>
+                        <span>Name</span>
                         <strong>@Model.Name</strong>
                     </div>
 
                     <div class="race-modern-info-item">
-                        <span>Jaar</span>
+                        <span>Year</span>
                         <strong>@Model.Year</strong>
                     </div>
 
                     <div class="race-modern-info-item">
-                        <span>Begindatum</span>
+                        <span>Start Date</span>
                         <strong>@startDate</strong>
                     </div>
 
                     <div class="race-modern-info-item">
-                        <span>Einddatum</span>
+                        <span>End Date</span>
                         <strong>@endDate</strong>
                     </div>
 
@@ -129,7 +129,7 @@
 
                 <div class="race-card-header">
                     <h2>Stages</h2>
-                    <p>Alle ritten van deze race.</p>
+                    <p>All stages of this race.</p>
                 </div>
 
                 @if (stages.Any())
@@ -148,7 +148,7 @@
                                     <strong>@stage.Name</strong>
 
                                     <span>
-                                        @(stage.Date?.ToString("dd/MM/yyyy") ?? "Geen datum")
+                                        @(stage.Date?.ToString("dd/MM/yyyy") ?? "No date")
                                     </span>
                                 </div>
 
@@ -160,7 +160,7 @@
                 else
                 {
                     <div class="race-pro-empty">
-                        Geen stages gevonden.
+                        No stages found.
                     </div>
                 }
 
@@ -176,12 +176,12 @@
                 <div class="race-card-header race-modern-cyclist-header">
 
                     <div>
-                        <h2>Wielrenners</h2>
-                        <p>Alle gekoppelde renners.</p>
+                        <h2>Cyclists</h2>
+                        <p>All linked cyclists.</p>
                     </div>
 
                     <div class="race-pro-count-badge">
-                        @raceEntries.Count renners
+                        @raceEntries.Count cyclists
                     </div>
 
                 </div>
@@ -191,7 +191,7 @@
                     <input type="text"
                            id="cyclistSearch"
                            class="form-control"
-                           placeholder="Zoek wielrenner..." />
+                           placeholder="Search cyclist..." />
                 </div>
 
                 <!-- SCROLL AREA -->
@@ -204,7 +204,7 @@
                             var cyclist = entry.Cyclist;
 
                             var fullName = $"{cyclist.FirstName} {cyclist.LastName}";
-                            var teamName = cyclist.Team?.Name ?? "Geen team";
+                            var teamName = cyclist.Team?.Name ?? "No team";
 
                             var firstInitial = !string.IsNullOrWhiteSpace(cyclist.FirstName)
                                 ? cyclist.FirstName[0].ToString()
@@ -267,12 +267,12 @@
 
         function confirmRaceDelete(raceName, stageCount, riderCount) {
             const message =
-                "Ben je zeker dat je deze race volledig wilt verwijderen?\n\n" +
+                "Are you sure you want to completely delete this race?\n\n" +
                 "Race: " + raceName + "\n" +
                 "Stages: " + stageCount + "\n" +
-                "Wielrenners gekoppeld: " + riderCount + "\n\n" +
-                "Dit verwijdert ook alle gekoppelde gegevens van deze race uit de database.\n" +
-                "Deze actie kan niet ongedaan gemaakt worden.";
+                "Linked cyclists: " + riderCount + "\n\n" +
+                "This will also remove all linked data of this race from the database.\n" +
+                "This action cannot be undone.";
 
             return confirm(message);
         }

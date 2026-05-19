@@ -72,7 +72,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (race == null)
             {
-                return NotFound("Geen race gevonden in de database.");
+                return NotFound("No race found in the database.");
             }
 
             // 4. Haal de etappes en puntenregels op
@@ -99,7 +99,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     // A. Bereken rit-punten
                     int posPoints = rules
-                        .Where(r => r.Type == "Rit" && r.FromPosition <= 1 && r.ToPosition >= 1)
+                        .Where(r => r.Type == "Stage" && r.FromPosition <= 1 && r.ToPosition >= 1)
                         .Sum(r => r.Points);
 
                     // B. Bereken trui-punten
@@ -131,10 +131,10 @@ namespace StageProject_RaceCore.Controllers
                     StageNumber = s.StageNumber,
                     StageName = s.Name,
                     Date = s.Date,
-                    WinnerName = winner?.Cyclist?.FullName ?? "Nog onbekend",
+                    WinnerName = winner?.Cyclist?.FullName ?? "Unknown",
                     WinnerTeam = winner?.Cyclist?.Team?.Name ?? "-",
                     TopPlayerPoints = totalPoints,
-                    TopPlayerName = "Punten"
+                    TopPlayerName = "Points"
                 });
             }
 

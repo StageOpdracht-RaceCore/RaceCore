@@ -1,7 +1,7 @@
 ﻿@model StageProject_RaceCore.ViewModels.RaceCreateViewModel
 
 @{
-    ViewData["Title"] = "Nieuwe Race";
+    ViewData["Title"] = "New Race";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
@@ -12,15 +12,15 @@
     <!-- PAGINA HEADER -->
     <div class="race-create-header">
         <div>
-            <p class="race-label">RaceCore beheer</p>
-            <h1>Nieuwe Race Toevoegen</h1>
+            <p class="race-label">RaceCore Management</p>
+            <h1>New Race Add</h1>
             <p class="race-subtitle">
-                Maak een nieuwe race aan, selecteer de deelnemende wielrenners en voeg dynamisch stages toe.
+                Create a new race, select the participating cyclists and dynamically add stages.
             </p>
         </div>
 
         <a asp-action="Index" class="race-back-btn">
-            ← Terug
+            ← Back
         </a>
     </div>
 
@@ -33,31 +33,31 @@
         <!-- RACE GEGEVENS -->
         <section class="race-card">
             <div class="race-card-header">
-                <h2>Race gegevens</h2>
-                <p>Vul de basisinformatie van de race in.</p>
+                <h2>Race Information</h2>
+                <p>Fill in the basic information of the race.</p>
             </div>
 
             <div class="race-grid">
                 <div class="form-group">
-                    <label asp-for="Name">Race naam</label>
-                    <input asp-for="Name" class="form-control" placeholder="Bijvoorbeeld: Tour de France" />
+                    <label asp-for="Name">Race Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Example: Tour de France" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Year">Jaar</label>
+                    <label asp-for="Year">Year</label>
                     <input asp-for="Year" class="form-control" type="number" min="1900" max="2100" />
                     <span asp-validation-for="Year" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="StartDate">Begindatum</label>
+                    <label asp-for="StartDate">Start Date</label>
                     <input asp-for="StartDate" class="form-control" type="date" />
                     <span asp-validation-for="StartDate" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="EndDate">Einddatum</label>
+                    <label asp-for="EndDate">End Date</label>
                     <input asp-for="EndDate" class="form-control" type="date" />
                     <span asp-validation-for="EndDate" class="text-danger"></span>
                 </div>
@@ -67,22 +67,22 @@
         <!-- CYCLISTS SELECTEREN -->
         <section class="race-card">
             <div class="race-card-header">
-                <h2>Deelnemende wielrenners</h2>
-                <p>Selecteer alleen de renners die echt meedoen aan deze race.</p>
+                <h2>Participating Cyclists</h2>
+                <p>Select only the cyclists that are really participating in this race.</p>
             </div>
 
             <div class="cyclist-tools">
                 <input type="text"
                        id="cyclistSearch"
                        class="form-control"
-                       placeholder="Zoek wielrenner op naam of team..." />
+                       placeholder="Search cyclist by name or team..." />
 
                 <button type="button" class="small-action-btn" onclick="selectVisibleCyclists()">
-                    Zichtbare selecteren
+                    Select Visible
                 </button>
 
                 <button type="button" class="small-action-btn danger" onclick="clearCyclists()">
-                    Alles wissen
+                    Clear All
                 </button>
             </div>
 
@@ -92,7 +92,7 @@
                 @foreach (var cyclist in Model.AvailableCyclists)
                 {
                     var fullName = $"{cyclist.FirstName} {cyclist.LastName}";
-                    var teamName = cyclist.Team?.Name ?? "Geen team";
+                    var teamName = cyclist.Team?.Name ?? "No team";
 
                     <label class="cyclist-item"
                            data-search="@($"{fullName} {teamName}".ToLower())">
@@ -112,12 +112,12 @@
         <section class="race-card">
             <div class="race-card-header stage-header">
                 <div>
-                    <h2>Ritten</h2>
-                    <p>Voeg alle ritten toe met naam en datum.</p>
+                    <h2>Stages</h2>
+                    <p>Add all stages with name and date.</p>
                 </div>
 
                 <button type="button" class="add-stage-btn" onclick="addStage()">
-                    + Rit toevoegen
+                    + Add Stage
                 </button>
             </div>
 
@@ -132,15 +132,15 @@
                             <div class="stage-number">@(i + 1)</div>
 
                             <div class="form-group">
-                                <label>Rit naam</label>
+                                <label>Stage Name</label>
                                 <input name="Stages[@i].Name"
                                        value="@Model.Stages[i].Name"
                                        class="form-control"
-                                       placeholder="Bijvoorbeeld: Rit 1 - Brussel naar Namen" />
+                                       placeholder="Example: Stage 1 - Brussels to Namur" />
                             </div>
 
                             <div class="form-group">
-                                <label>Datum</label>
+                                <label>Date</label>
                                 <input name="Stages[@i].Date"
                                        value="@(Model.Stages[i].Date?.ToString("yyyy-MM-dd"))"
                                        class="form-control"
@@ -159,14 +159,14 @@
                         <div class="stage-number">1</div>
 
                         <div class="form-group">
-                            <label>Rit naam</label>
+                            <label>Stage Name</label>
                             <input name="Stages[0].Name"
                                    class="form-control"
-                                   placeholder="Bijvoorbeeld: Rit 1 - Brussel naar Namen" />
+                                   placeholder="Example: Stage 1 - Brussels to Namur" />
                         </div>
 
                         <div class="form-group">
-                            <label>Datum</label>
+                            <label>Date</label>
                             <input name="Stages[0].Date"
                                    class="form-control"
                                    type="date" />
@@ -182,10 +182,10 @@
 
         <!-- OPSLAAN -->
         <div class="form-actions">
-            <a asp-action="Index" class="cancel-btn">Annuleren</a>
+            <a asp-action="Index" class="cancel-btn">Cancel</a>
 
             <button type="submit" class="save-race-btn">
-                Race opslaan
+                Save Race
             </button>
         </div>
     </form>
@@ -238,14 +238,14 @@
                 <div class="stage-number">${index + 1}</div>
 
                 <div class="form-group">
-                    <label>Rit naam</label>
+                    <label>Stage Name</label>
                     <input name="Stages[${index}].Name"
                            class="form-control"
-                           placeholder="Bijvoorbeeld: Rit ${index + 1}" />
+                           placeholder="Example: Stage ${index + 1}" />
                 </div>
 
                 <div class="form-group">
-                    <label>Datum</label>
+                    <label>Date</label>
                     <input name="Stages[${index}].Date"
                            class="form-control"
                            type="date" />
@@ -265,7 +265,7 @@
             const rows = container.querySelectorAll(".stage-row");
 
             if (rows.length <= 1) {
-                alert("Er moet minstens 1 stage blijven staan.");
+                alert("At least 1 stage must remain.");
                 return;
             }
 

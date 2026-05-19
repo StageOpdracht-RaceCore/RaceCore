@@ -63,7 +63,7 @@ namespace StageProject_RaceCore.Controllers
             catch
             {
                 ViewBag.DatabaseOnline = false;
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live spelers te zien.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
 
                 return View(new PlayerPageViewModel
                 {
@@ -93,7 +93,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (player == null)
                 {
-                    TempData["Error"] = "Speler niet gevonden.";
+                    TempData["Error"] = "Player not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -101,7 +101,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om details te zien.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -125,12 +125,12 @@ namespace StageProject_RaceCore.Controllers
                 _context.Players.Add(player);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Speler succesvol toegevoegd.";
+                TempData["Success"] = "Player added successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Database unavailable. Start OpenVPN to view live players.";
                 return View(player);
             }
         }
@@ -143,7 +143,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (player == null)
                 {
-                    TempData["Error"] = "Speler niet gevonden.";
+                    TempData["Error"] = "Player not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -151,7 +151,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om te bewerken.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -162,7 +162,7 @@ namespace StageProject_RaceCore.Controllers
         {
             if (id != updatedPlayer.Id)
             {
-                TempData["Error"] = "Ongeldige speler.";
+                TempData["Error"] = "Invalid player.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -177,7 +177,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (existingPlayer == null)
                 {
-                    TempData["Error"] = "Speler niet gevonden.";
+                    TempData["Error"] = "Player not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -187,12 +187,12 @@ namespace StageProject_RaceCore.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Speler succesvol bijgewerkt.";
+                TempData["Success"] = "Player updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                TempData["Error"] = "Database niet bereikbaar. Start OpenVPN en probeer opnieuw.";
+                TempData["Error"] = "Database unavailable. Start OpenVPN to view live players.";
                 return View(updatedPlayer);
             }
         }
@@ -209,7 +209,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (player == null)
                 {
-                    TempData["Error"] = "Speler niet gevonden.";
+                    TempData["Error"] = "Player not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -217,7 +217,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om te verwijderen.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -233,18 +233,18 @@ namespace StageProject_RaceCore.Controllers
 
                 if (player == null)
                 {
-                    TempData["Error"] = "Speler niet gevonden.";
+                    TempData["Error"] = "Player not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
                 _context.Players.Remove(player);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Speler en alle gekoppelde gegevens zijn succesvol verwijderd.";
+                TempData["Success"] = "Player and all linked data were successfully removed.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Speler kon niet verwijderd worden: " + ex.Message;
+                TempData["Error"] = "Player could not be removed: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));

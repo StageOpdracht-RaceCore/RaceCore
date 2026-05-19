@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script>
-        (function () {
-            var stored = localStorage.getItem('dark-mode');
-            if (stored === 'true') {
-                document.documentElement.classList.add('dark-mode');
-            }
-        })();
+            (function () {
+                var stored = localStorage.getItem('dark-mode');
+                if (stored === 'true') {
+                    document.documentElement.classList.add('dark-mode');
+                }
+            })();
     </script>
-    
-    @* Deze regel zorgt ervoor dat CSS uit individuele views (zoals History.cshtml) geladen wordt *@
+
+    @* This line ensures that CSS from individual views (such as History.cshtml) is loaded *@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="dashboard-body">

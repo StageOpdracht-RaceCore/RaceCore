@@ -110,7 +110,7 @@ namespace StageProject_RaceCore.Controllers
             catch
             {
                 // Foutmelding als database niet bereikbaar is
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om live gegevens te zien.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live data.";
 
                 return View(new List<Cyclist>());
             }
@@ -147,7 +147,7 @@ namespace StageProject_RaceCore.Controllers
             if (string.IsNullOrWhiteSpace(firstName) ||
                 string.IsNullOrWhiteSpace(lastName))
             {
-                TempData["CreateError"] = "Voornaam en achternaam zijn verplicht.";
+                TempData["CreateError"] = "First name and last name are required.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -160,7 +160,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (selectedRace == null)
                 {
-                    TempData["CreateError"] = "Geselecteerde race bestaat niet.";
+                    TempData["CreateError"] = "Selected race does not exist.";
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -190,7 +190,7 @@ namespace StageProject_RaceCore.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            TempData["Success"] = $"{cyclist.FullName} is succesvol toegevoegd.";
+            TempData["Success"] = $"{cyclist.FullName} was added successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -220,7 +220,7 @@ namespace StageProject_RaceCore.Controllers
             // Controle of renner bestaat
             if (cyclist == null)
             {
-                TempData["DatabaseError"] = "Renner niet gevonden.";
+                TempData["DatabaseError"] = "Cyclist not found.";
 
                 return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
             }
@@ -228,7 +228,7 @@ namespace StageProject_RaceCore.Controllers
             // Controle of race bestaat
             if (race == null)
             {
-                TempData["DatabaseError"] = "Race niet gevonden.";
+                TempData["DatabaseError"] = "Race not found.";
 
                 return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
             }
@@ -238,7 +238,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (alreadyAdded)
             {
-                TempData["Success"] = $"{cyclist.FullName} staat al in {race.Name}.";
+                TempData["Success"] = $"{cyclist.FullName} is already in {race.Name}.";
 
                 return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
             }
@@ -253,7 +253,7 @@ namespace StageProject_RaceCore.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"{cyclist.FullName} is toegevoegd aan {race.Name}.";
+            TempData["Success"] = $"{cyclist.FullName} was added to {race.Name}.";
 
             return RedirectToAction(nameof(Index), new { search, status, page, pageSize });
         }
@@ -271,7 +271,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (cyclist == null)
             {
-                TempData["DatabaseError"] = "Cyclist niet gevonden.";
+                TempData["DatabaseError"] = "Cyclist not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -282,8 +282,8 @@ namespace StageProject_RaceCore.Controllers
 
             // Melding tonen
             TempData["Success"] = cyclist.IsActive
-                ? $"{cyclist.FullName} is actief gezet."
-                : $"{cyclist.FullName} is inactief gezet.";
+                ? $"{cyclist.FullName} was set to active."
+                : $"{cyclist.FullName} was set to inactive.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -304,7 +304,7 @@ namespace StageProject_RaceCore.Controllers
                 _context.Cyclists.Remove(cyclist);
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = $"{cyclist.FullName} is verwijderd.";
+                TempData["Success"] = $"{cyclist.FullName} was deleted.";
             }
 
             return RedirectToAction(nameof(Index));

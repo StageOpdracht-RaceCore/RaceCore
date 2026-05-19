@@ -13,10 +13,10 @@ namespace StageProject_RaceCore
 
             builder.Services.AddControllersWithViews();
 
-            // Nodig voor live multiplayer updates
+            // Required for live multiplayer updates
             builder.Services.AddSignalR();
 
-            // Nodig om later te onthouden wie de host/speler is
+            // Required to remember who the host/player is later
             builder.Services.AddSession();
 
             var onlineConnection = builder.Configuration.GetConnectionString("OnlineConnection");
@@ -35,14 +35,14 @@ namespace StageProject_RaceCore
             {
                 if (useLocalDatabase)
                 {
-                    Console.WriteLine("Online database niet bereikbaar. Lokale SQLite database wordt gebruikt.");
+                    Console.WriteLine("Online database unreachable. Local SQLite database is being used.");
                     Console.WriteLine($"SQLite path: {localDbPath}");
 
                     options.UseSqlite(localSqliteConnection);
                 }
                 else
                 {
-                    Console.WriteLine("Online database verbonden. Synology MariaDB wordt gebruikt.");
+                    Console.WriteLine("Online database connected. Synology MariaDB is being used.");
 
                     options.UseMySql(
                         onlineConnection,
@@ -72,7 +72,7 @@ namespace StageProject_RaceCore
 
             app.UseRouting();
 
-            // Session moet na UseRouting en voor UseAuthorization
+            // Session must be after UseRouting and before UseAuthorization
             app.UseSession();
 
             app.UseAuthorization();

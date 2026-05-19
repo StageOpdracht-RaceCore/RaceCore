@@ -16,7 +16,7 @@ namespace StageProject_RaceCore.Controllers
         }
 
         // ============================================================
-        // SCORING PAGINA LADEN
+        // LOAD SCORING PAGE
         // ============================================================
         public async Task<IActionResult> Index(int? raceId = null, int? gameId = null, int? stageId = null)
         {
@@ -34,7 +34,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (!races.Any())
                 {
-                    TempData["Error"] = "Geen wedstrijden gevonden.";
+                    TempData["Error"] = "No races found.";
                     return View(viewModel);
                 }
 
@@ -67,7 +67,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (selectedGame == null)
                 {
-                    TempData["Error"] = "Er is geen actieve game sessie gevonden. Start eerst een nieuwe game.";
+                    TempData["Error"] = "No active game session was found. Start a new game first.";
                     return View(viewModel);
                 }
 
@@ -102,7 +102,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (stage == null)
                 {
-                    TempData["Error"] = "Geen ritten gevonden voor deze wedstrijd.";
+                    TempData["Error"] = "No stages found for this race.";
                     return View(viewModel);
                 }
 
@@ -170,13 +170,13 @@ namespace StageProject_RaceCore.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Fout bij laden: " + ex.Message;
+                TempData["Error"] = "Error while loading: " + ex.Message;
                 return View(viewModel);
             }
         }
 
         // ============================================================
-        // SCORES OPSLAAN
+        // SAVE SCORES
         // ============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -191,7 +191,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (game == null)
                 {
-                    TempData["Error"] = "Game sessie niet gevonden.";
+                    TempData["Error"] = "Game session not found.";
                     return RedirectToAction("Index", new { raceId });
                 }
 
@@ -201,7 +201,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (stage == null)
                 {
-                    TempData["Error"] = "Rit niet gevonden.";
+                    TempData["Error"] = "Stage not found.";
                     return RedirectToAction("Index", new { raceId, gameId = model.GameSessionId });
                 }
 
@@ -217,7 +217,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (hasDuplicateCyclists)
                 {
-                    TempData["Error"] = "Er staat een renner dubbel in de Top 25.";
+                    TempData["Error"] = "A cyclist appears twice in the Top 25.";
 
                     return RedirectToAction("Index", new
                     {
@@ -267,7 +267,7 @@ namespace StageProject_RaceCore.Controllers
                     // Punten voor positie berekenen
                     int positionPoints = rules
                         .Where(r =>
-                            r.Type == "Rit" &&
+                            r.Type == "Stage" &&
                             r.FromPosition <= resultVm.Position &&
                             r.ToPosition >= resultVm.Position)
                         .Sum(r => r.Points);
@@ -353,7 +353,7 @@ namespace StageProject_RaceCore.Controllers
 
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Scores zijn opgeslagen in de database.";
+                TempData["Success"] = "Scores have been saved to the database.";
 
                 return RedirectToAction("StageResults", "Result", new
                 {
@@ -363,7 +363,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Fout bij opslaan: " + ex.Message;
+                TempData["Error"] = "Error while saving: " + ex.Message;
 
                 return RedirectToAction("Index", new
                 {
@@ -375,42 +375,42 @@ namespace StageProject_RaceCore.Controllers
         }
 
         // ============================================================
-        // JERSEY NAMEN INSTELLEN PER RACE
+        // SET JERSEY NAMES PER RACE
         // ============================================================
         private void SetJerseyNames(string raceName)
         {
             if (raceName.Contains("Giro", StringComparison.OrdinalIgnoreCase))
             {
-                ViewBag.YellowJerseyName = "Roze trui";
-                ViewBag.GreenJerseyName = "Paarse trui";
-                ViewBag.PolkaJerseyName = "Blauwe trui";
+                ViewBag.YellowJerseyName = "Pink Jersey";
+                ViewBag.GreenJerseyName = "Purple Jersey";
+                ViewBag.PolkaJerseyName = "Blue Jersey";
                 ViewBag.JerseyTheme = "giro-theme";
             }
             else if (raceName.Contains("Tour", StringComparison.OrdinalIgnoreCase))
             {
-                ViewBag.YellowJerseyName = "Gele trui";
-                ViewBag.GreenJerseyName = "Groene trui";
-                ViewBag.PolkaJerseyName = "Bolletjestrui";
+                ViewBag.YellowJerseyName = "Yellow Jersey";
+                ViewBag.GreenJerseyName = "Green Jersey";
+                ViewBag.PolkaJerseyName = "Polka Dot Jersey";
                 ViewBag.JerseyTheme = "tour-theme";
             }
             else if (raceName.Contains("Vuelta", StringComparison.OrdinalIgnoreCase))
             {
-                ViewBag.YellowJerseyName = "Rode trui";
-                ViewBag.GreenJerseyName = "Groene trui";
-                ViewBag.PolkaJerseyName = "Bolletjestrui";
+                ViewBag.YellowJerseyName = "Red Jersey";
+                ViewBag.GreenJerseyName = "Green Jersey";
+                ViewBag.PolkaJerseyName = "Polka Dot Jersey";
                 ViewBag.JerseyTheme = "vuelta-theme";
             }
             else
             {
-                ViewBag.YellowJerseyName = "Gele trui";
-                ViewBag.GreenJerseyName = "Groene trui";
-                ViewBag.PolkaJerseyName = "Bolletjestrui";
+                ViewBag.YellowJerseyName = "Yellow Jersey";
+                ViewBag.GreenJerseyName = "Green Jersey";
+                ViewBag.PolkaJerseyName = "Polka Dot Jersey";
                 ViewBag.JerseyTheme = "default-theme";
             }
         }
 
         // ============================================================
-        // TRUIEN BUITEN TOP 25 TERUG IN VIEWMODEL LADEN
+        // LOAD JERSEYS OUTSIDE TOP 25 INTO VIEWMODEL
         // ============================================================
         private void SetOutsideJerseys(ScoringViewModel vm, List<Jersey> jerseys, HashSet<int> top25Ids)
         {
@@ -448,7 +448,7 @@ namespace StageProject_RaceCore.Controllers
         }
 
         // ============================================================
-        // TRUI OPSLAAN EN PUNTEN TOEVOEGEN
+        // SAVE JERSEY AND ADD POINTS
         // ============================================================
         private void AddJerseyAndPoints(
             int gameSessionId,
@@ -474,7 +474,7 @@ namespace StageProject_RaceCore.Controllers
         }
 
         // ============================================================
-        // PUNTEN VEILIG OPTELLEN PER RENNER
+        // SAFELY ADD POINTS PER CYCLIST
         // ============================================================
         private void AddCyclistPoints(Dictionary<int, int> cyclistPoints, int cyclistId, int points)
         {
@@ -487,7 +487,7 @@ namespace StageProject_RaceCore.Controllers
         }
 
         // ============================================================
-        // DATABASE TRUI TYPE OMZETTEN NAAR POINTSRULE TYPE
+        // CONVERT DATABASE JERSEY TYPE TO POINTSRULE TYPE
         // ============================================================
         private string ConvertJerseyTypeToRuleType(string type)
         {

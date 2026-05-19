@@ -5,7 +5,7 @@ namespace StageProject_RaceCore.ViewModels
 {
     public class RaceCreateViewModel
     {
-        [Required(ErrorMessage = "Race naam is verplicht.")]
+        [Required(ErrorMessage = "Race name is required.")]
         [MaxLength(150)]
         public string Name { get; set; } = string.Empty;
 

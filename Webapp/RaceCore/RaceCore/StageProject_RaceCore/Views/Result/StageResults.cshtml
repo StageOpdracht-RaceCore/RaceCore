@@ -17,9 +17,9 @@
     <section class="result-header-card">
         <div class="result-header-copy">
             <p class="result-page-kicker">RaceCore</p>
-            <h1 class="result-page-title">Ritresultaten</h1>
+            <h1 class="result-page-title">Stage Results</h1>
             <p class="result-page-subtitle">
-                Bekijk per wedstrijd alle ritten met punten, truipunten en de truidragers buiten de top 25.
+                View all stages per race with points, jersey points and jersey holders outside the top 25.
             </p>
         </div>
 
@@ -38,8 +38,8 @@
     {
         <section class="result-stage-card">
             <div class="result-empty-state">
-                <h3>Geen ritten gevonden</h3>
-                <p>Er zijn nog geen ritresultaten beschikbaar voor deze wedstrijd.</p>
+                <h3>No stages found</h3>
+                <p>There are no stage results available yet for this race.</p>
             </div>
         </section>
     }
@@ -55,12 +55,12 @@
                     <table class="result-table">
                         <thead>
                             <tr>
-                                <th>Positie</th>
-                                <th>Naam</th>
-                                <th>Punten</th>
-                                <th>Trui</th>
-                                <th>Trui punten</th>
-                                <th>Totaal</th>
+                                <th>Position</th>
+                                <th>Name</th>
+                                <th>Points</th>
+                                <th>Jersey</th>
+                                <th>Jersey Points</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
 
@@ -98,18 +98,18 @@
                 @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
                 {
                     <div style="margin-top:22px;">
-                        <h3 style="margin-bottom:12px;">Truidragers buiten Top 25</h3>
+                        <h3 style="margin-bottom:12px;">Jersey Holders Outside Top 25</h3>
 
                         <div class="result-table-responsive">
                             <table class="result-table">
                                 <thead>
                                     <tr>
-                                        <th>Positie</th>
-                                        <th>Naam</th>
-                                        <th>Punten</th>
-                                        <th>Trui</th>
-                                        <th>Trui punten</th>
-                                        <th>Totaal</th>
+                                        <th>Position</th>
+                                        <th>Name</th>
+                                        <th>Points</th>
+                                        <th>Jersey</th>
+                                        <th>Jersey Points</th>
+                                        <th>Total</th>
                                     </tr>
                                 </thead>
 

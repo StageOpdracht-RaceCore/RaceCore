@@ -45,7 +45,7 @@ namespace StageProject_RaceCore.Models
 
         // Display name shown in the banner section, e.g. "Tour de France 2024".
         // Defaults to a fallback message when no game is active.
-        public string RaceName { get; set; } = "Geen actieve game";
+        public string RaceName { get; set; } = "No active game";
 
         // Current lifecycle status of the game, e.g. "Draft", "Active", "Finished".
         public string GameStatus { get; set; } = string.Empty;

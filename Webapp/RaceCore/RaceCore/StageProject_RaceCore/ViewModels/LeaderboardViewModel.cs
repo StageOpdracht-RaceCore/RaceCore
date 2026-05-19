@@ -6,7 +6,7 @@ namespace StageProject_RaceCore.ViewModels
     {
         public int SelectedGameId { get; set; }
 
-        public string RaceName { get; set; } = "Geen actieve game";
+        public string RaceName { get; set; } = "No active game";
 
         public string GameStatus { get; set; } = "";
 

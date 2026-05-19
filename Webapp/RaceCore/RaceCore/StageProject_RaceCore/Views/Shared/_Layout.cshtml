@@ -12,10 +12,10 @@
     <script type="importmap"></script>
     <script>
         (function () {
-            var stored = localStorage.getItem('dark-mode');
-            if (stored === 'true') {
-                document.documentElement.classList.add('dark-mode');
-            }
+        var stored = localStorage.getItem('dark-mode');
+        if (stored === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        }
         })();
     </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -61,22 +61,22 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         (function () {
-            if (localStorage.getItem('dark-mode') === 'true') {
-                var btns = document.querySelectorAll('.dark-toggle-header');
-                for (var i = 0; i < btns.length; i++) {
-                    btns[i].textContent = '☀️';
-                }
-            }
+        if (localStorage.getItem('dark-mode') === 'true') {
+        var btns = document.querySelectorAll('.dark-toggle-header');
+        for (var i = 0; i < btns.length; i++) {
+        btns[i].textContent = '☀️';
+        }
+        }
         })();
 
         function toggleDarkMode(btn) {
-            var html = document.documentElement;
-            var isDark = html.classList.toggle('dark-mode');
-            localStorage.setItem('dark-mode', isDark);
-            var allBtns = document.querySelectorAll('.dark-toggle-header');
-            for (var i = 0; i < allBtns.length; i++) {
-                allBtns[i].textContent = isDark ? '☀️' : '🌙';
-            }
+        var html = document.documentElement;
+        var isDark = html.classList.toggle('dark-mode');
+        localStorage.setItem('dark-mode', isDark);
+        var allBtns = document.querySelectorAll('.dark-toggle-header');
+        for (var i = 0; i < allBtns.length; i++) {
+        allBtns[i].textContent = isDark ? '☀️' : '🌙';
+        }
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)

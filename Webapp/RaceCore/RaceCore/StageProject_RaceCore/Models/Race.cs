@@ -14,7 +14,7 @@ namespace StageProject_RaceCore.Models
 
         [Required]
         [MaxLength(50)]
-        public string Category { get; set; } = "Andere";
+        public string Category { get; set; } = "Other";
 
         public DateTime? StartDate { get; set; }
 

@@ -13,7 +13,7 @@
     int benchPerPlayer = ViewBag.BenchPerPlayer ?? 6;
     int totalPicksPerPlayer = ridersPerPlayer + benchPerPlayer;
 
-    string raceName = ViewBag.RaceName ?? "Onbekende race";
+    string raceName = ViewBag.RaceName ?? "Unknown race";
 
     var currentTurn = Model
         .Where(t => t.CyclistId == null)
@@ -70,22 +70,22 @@
 
             <p>
                 Race: <strong>@raceName</strong><br />
-                Eerst kies je <strong>@ridersPerPlayer actieve renners</strong>.
-                Daarna kies je <strong>@benchPerPlayer bankrenners</strong>.
+                First you choose <strong>@ridersPerPlayer active riders</strong>.
+                Then you choose <strong>@benchPerPlayer bench riders</strong>.
             </p>
         </div>
 
         <div class="draft-page-header-right">
             <div class="draft-status-pill @(draftIsLive ? "live" : "done")">
                 <span class="draft-status-dot"></span>
-                @(draftIsLive ? "Draft Live" : draftIsDone ? "Draft Afgerond" : "Nog Geen Draft")
+                @(draftIsLive ? "Draft Live" : draftIsDone ? "Draft Finished" : "No Draft Yet")
             </div>
 
             <div class="draft-header-actions">
                 <a asp-controller="Game"
-                       asp-action="New"
-                       class="draft-header-btn draft-header-btn-white">
-                    Nieuwe Game
+                   asp-action="New"
+                   class="draft-header-btn draft-header-btn-white">
+                    New Game
                 </a>
             </div>
         </div>
@@ -95,8 +95,6 @@
     {
         <div class="draft-alert draft-alert-error">@TempData["Error"]</div>
     }
-
-    
 
     @if (TempData["DatabaseError"] != null)
     {
@@ -109,7 +107,7 @@
             <div class="draft-stat-content">
                 <span class="draft-stat-label">Status</span>
                 <strong class="draft-stat-value">
-                    @(draftIsLive ? "LIVE" : draftIsDone ? "KLAAR" : "LEEG")
+                    @(draftIsLive ? "LIVE" : draftIsDone ? "DONE" : "EMPTY")
                 </strong>
             </div>
         </div>
@@ -117,7 +115,7 @@
         <div class="draft-stat-card">
             <div class="draft-stat-icon">👥</div>
             <div class="draft-stat-content">
-                <span class="draft-stat-label">Spelers</span>
+                <span class="draft-stat-label">Players</span>
                 <strong class="draft-stat-value">@totalPlayers</strong>
             </div>
         </div>
@@ -125,7 +123,7 @@
         <div class="draft-stat-card">
             <div class="draft-stat-icon">🚴</div>
             <div class="draft-stat-content">
-                <span class="draft-stat-label">Gekozen renners</span>
+                <span class="draft-stat-label">Selected Riders</span>
                 <strong class="draft-stat-value">@pickedCount</strong>
             </div>
         </div>
@@ -133,7 +131,7 @@
         <div class="draft-stat-card">
             <div class="draft-stat-icon">📋</div>
             <div class="draft-stat-content">
-                <span class="draft-stat-label">Resterende beurten</span>
+                <span class="draft-stat-label">Remaining Turns</span>
                 <strong class="draft-stat-value">@remainingTurns</strong>
             </div>
         </div>
@@ -144,27 +142,27 @@
         <div class="draft-players-area">
             <div class="draft-page-section-title">
                 <div>
-                    <h2>Spelers in deze draft</h2>
+                    <h2>Players in this draft</h2>
                     <p>
-                        Elke speler kiest @ridersPerPlayer actieve renners en daarna @benchPerPlayer bankrenners.
+                        Each player chooses @ridersPerPlayer active riders and then @benchPerPlayer bench riders.
                     </p>
                 </div>
 
-                <span>@totalPlayers spelers</span>
+                <span>@totalPlayers players</span>
             </div>
 
             <div class="draft-table">
                 <div class="draft-table-head">
-                    <div>Speler</div>
+                    <div>Player</div>
                     <div>Picks</div>
-                    <div>Actie</div>
+                    <div>Action</div>
                 </div>
 
                 <div class="draft-table-body">
                     @if (!playerRows.Any())
                     {
                         <div class="draft-empty-state" style="padding:24px;">
-                            Nog geen draft aangemaakt. Start eerst een New Game.
+                            No draft has been created yet. Start a New Game first.
                         </div>
                     }
                     else
@@ -185,7 +183,7 @@
                             var nextIsBench = player.PickedCount >= ridersPerPlayer;
 
                             <div class="draft-row @(isActive ? "active" : "")">
-                                <div class="draft-cell draft-player-cell" data-label="Speler">
+                                <div class="draft-cell draft-player-cell" data-label="Player">
                                     <div class="draft-player-avatar">@initial</div>
 
                                     <div class="draft-player-meta">
@@ -197,29 +195,29 @@
                                                 if (nextIsBench)
                                                 {
                                                     <span class="draft-inline-badge active" style="background:#fff7ed;color:#c2410c;">
-                                                        Bank kiezen
+                                                        Choose Bench Rider
                                                     </span>
                                                 }
                                                 else
                                                 {
                                                     <span class="draft-inline-badge active">
-                                                        Actieve renner kiezen
+                                                        Choose Active Rider
                                                     </span>
                                                 }
                                             }
                                             else if (player.PickedCount >= player.TotalTurns)
                                             {
-                                                <span class="draft-inline-badge picked">Klaar</span>
+                                                <span class="draft-inline-badge picked">Done</span>
                                             }
                                             else
                                             {
-                                                <span class="draft-inline-badge waiting">Wacht</span>
+                                                <span class="draft-inline-badge waiting">Waiting</span>
                                             }
                                         </div>
 
                                         <span class="draft-player-subtitle">
-                                            Actief: @player.ActivePicked / @ridersPerPlayer |
-                                            Bank: @player.BenchPicked / @benchPerPlayer
+                                            Active: @player.ActivePicked / @ridersPerPlayer |
+                                            Bench: @player.BenchPicked / @benchPerPlayer
                                         </span>
                                     </div>
                                 </div>
@@ -230,7 +228,7 @@
                                     </span>
                                 </div>
 
-                                <div class="draft-cell draft-selection-cell" data-label="Actie">
+                                <div class="draft-cell draft-selection-cell" data-label="Action">
                                     @if (isActive && currentTurn != null)
                                     {
                                         <form asp-action="PickCyclist" method="post" class="draft-pick-form">
@@ -244,7 +242,7 @@
                                                 <input type="text"
                                                        class="draft-combobox-input"
                                                        autocomplete="off"
-                                                       placeholder="Typ volledige naam of scroll in de lijst..."
+                                                       placeholder="Type full name or scroll through the list..."
                                                        required />
 
                                                 <div class="draft-combobox-list">
@@ -259,7 +257,7 @@
                                                     }
 
                                                     <div class="draft-combobox-empty">
-                                                        Geen renner gevonden.
+                                                        No cyclist found.
                                                     </div>
                                                 </div>
                                             </div>
@@ -273,7 +271,7 @@
                                     {
                                         <div class="draft-picked-name">
                                             <span class="draft-picked-icon">✔</span>
-                                            <span>Team compleet</span>
+                                            <span>Team Complete</span>
                                         </div>
                                     }
                                     else
@@ -295,16 +293,16 @@
                 <div class="draft-side-card-header">
                     <h3>Live Draft Info</h3>
 
-                    <span class="draft-mini-status @(draftIsLive ? "live" : "klaar")">
-                        @(draftIsLive ? "Live" : draftIsDone ? "Klaar" : "Leeg")
+                    <span class="draft-mini-status @(draftIsLive ? "live" : "done")">
+                        @(draftIsLive ? "Live" : draftIsDone ? "Done" : "Empty")
                     </span>
                 </div>
 
                 <div class="draft-current-turn-box">
-                    <span class="draft-current-turn-label">Nu aan de beurt</span>
+                    <span class="draft-current-turn-label">Current Turn</span>
 
                     <strong class="draft-current-turn-name">
-                        @(currentTurn?.PlayerName ?? (draftIsDone ? "Einde Draft" : "Nog geen draft"))
+                        @(currentTurn?.PlayerName ?? (draftIsDone ? "Draft Finished" : "No Draft Yet"))
                     </strong>
 
                     @if (currentTurn != null)
@@ -313,13 +311,13 @@
                             @if (currentPickIsBench)
                             {
                                 <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-weight:900;">
-                                    Bankrenner @(currentPickNumberForPlayer - ridersPerPlayer) / @benchPerPlayer
+                                    Bench Rider @(currentPickNumberForPlayer - ridersPerPlayer) / @benchPerPlayer
                                 </span>
                             }
                             else
                             {
                                 <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#ecfdf5;color:#047857;font-weight:900;">
-                                    Actieve renner @currentPickNumberForPlayer / @ridersPerPlayer
+                                    Active Rider @currentPickNumberForPlayer / @ridersPerPlayer
                                 </span>
                             }
                         </div>
@@ -328,32 +326,32 @@
 
                 <div class="draft-info-list">
                     <div class="draft-info-item">
-                        <span>Actieve renners per speler</span>
+                        <span>Active riders per player</span>
                         <strong>@ridersPerPlayer</strong>
                     </div>
 
                     <div class="draft-info-item">
-                        <span>Bankrenners per speler</span>
+                        <span>Bench riders per player</span>
                         <strong>@benchPerPlayer</strong>
                     </div>
 
                     <div class="draft-info-item">
-                        <span>Totaal per speler</span>
+                        <span>Total per player</span>
                         <strong>@totalPicksPerPlayer</strong>
                     </div>
 
                     <div class="draft-info-item">
-                        <span>Beschikbare renners</span>
+                        <span>Available cyclists</span>
                         <strong>@cyclists.Count</strong>
                     </div>
 
                     <div class="draft-info-item">
-                        <span>Gekozen renners</span>
+                        <span>Selected cyclists</span>
                         <strong>@pickedCount</strong>
                     </div>
 
                     <div class="draft-info-item">
-                        <span>Totale draft beurten</span>
+                        <span>Total draft turns</span>
                         <strong>@totalTurns</strong>
                     </div>
                 </div>
@@ -361,7 +359,7 @@
 
             <div class="draft-side-card">
                 <div class="draft-side-card-header">
-                    <h3>Draft Vooruitgang</h3>
+                    <h3>Draft Progress</h3>
                 </div>
 
                 <div class="draft-progress-wrap">
@@ -481,7 +479,7 @@
 
     if (!hiddenId.value) {
     event.preventDefault();
-    alert("Kies een renner uit de lijst. Typ de volledige naam exact of klik op een renner.");
+    alert("Choose a cyclist from the list. Type the full exact name or click a cyclist.");
     input.focus();
     openList();
     }
@@ -523,7 +521,7 @@
     .build();
 
     connection.on("DraftUpdated", function (data) {
-    console.log("DraftUpdated ontvangen:", data);
+    console.log("DraftUpdated received:", data);
 
     if (Number(data.gameId) !== gameId) {
     return;
@@ -539,7 +537,7 @@
 
     connection.start()
     .then(function () {
-    console.log("SignalR verbonden voor game:", gameId);
+    console.log("SignalR connected for game:", gameId);
     return connection.invoke("JoinGameGroup", gameId);
     })
     .then(function () {

@@ -46,12 +46,12 @@ namespace StageProject_RaceCore.Controllers
         {
             if (model.EndDate != null && model.StartDate != null && model.EndDate < model.StartDate)
             {
-                ModelState.AddModelError(nameof(model.EndDate), "Einddatum mag niet vroeger zijn dan begindatum.");
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be earlier than start date.");
             }
 
             if (!model.SelectedCyclistIds.Any())
             {
-                ModelState.AddModelError(nameof(model.SelectedCyclistIds), "Selecteer minstens 1 wielrenner.");
+                ModelState.AddModelError(nameof(model.SelectedCyclistIds), "Select at least 1 cyclist.");
             }
 
             var validStages = model.Stages
@@ -60,7 +60,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!validStages.Any())
             {
-                ModelState.AddModelError(nameof(model.Stages), "Voeg minstens 1 stage toe.");
+                ModelState.AddModelError(nameof(model.Stages), "Add at least 1 stage.");
             }
 
             if (!ModelState.IsValid)
@@ -105,7 +105,7 @@ namespace StageProject_RaceCore.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Race succesvol aangemaakt.";
+            TempData["Success"] = "Race created successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -154,12 +154,12 @@ namespace StageProject_RaceCore.Controllers
         {
             if (model.EndDate != null && model.StartDate != null && model.EndDate < model.StartDate)
             {
-                ModelState.AddModelError(nameof(model.EndDate), "Einddatum mag niet vroeger zijn dan begindatum.");
+                ModelState.AddModelError(nameof(model.EndDate), "End date cannot be earlier than start date.");
             }
 
             if (!model.SelectedCyclistIds.Any())
             {
-                ModelState.AddModelError(nameof(model.SelectedCyclistIds), "Selecteer minstens 1 wielrenner.");
+                ModelState.AddModelError(nameof(model.SelectedCyclistIds), "Select at least 1 cyclist.");
             }
 
             var validStages = model.Stages
@@ -168,7 +168,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (!validStages.Any())
             {
-                ModelState.AddModelError(nameof(model.Stages), "Voeg minstens 1 stage toe.");
+                ModelState.AddModelError(nameof(model.Stages), "Add at least 1 stage.");
             }
 
             if (!ModelState.IsValid)
@@ -236,7 +236,7 @@ namespace StageProject_RaceCore.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Race succesvol aangepast.";
+            TempData["Success"] = "Race updated successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -285,7 +285,7 @@ namespace StageProject_RaceCore.Controllers
 
             if (race == null)
             {
-                TempData["Error"] = "Race niet gevonden.";
+                TempData["Error"] = "Race not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -322,7 +322,7 @@ namespace StageProject_RaceCore.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Race en alle gekoppelde gegevens zijn succesvol verwijderd.";
+            TempData["Success"] = "Race and all linked data were deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
 

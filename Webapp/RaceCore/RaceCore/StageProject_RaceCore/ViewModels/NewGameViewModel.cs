@@ -5,16 +5,16 @@ namespace StageProject_RaceCore.ViewModels
 {
     public class NewGameViewModel
     {
-        [Required(ErrorMessage = "Kies een race.")]
+        [Required(ErrorMessage = "Choose a race.")]
         public int RaceId { get; set; }
 
-        [Required(ErrorMessage = "Kies minstens 2 spelers.")]
+        [Required(ErrorMessage = "Choose at least 2 players.")]
         public List<int> SelectedPlayerIds { get; set; } = new();
 
-        [Range(1, 30, ErrorMessage = "Actieve renners moet tussen 1 en 30 zijn.")]
+        [Range(1, 30, ErrorMessage = "Active riders must be between 1 and 30.")]
         public int RidersPerPlayer { get; set; } = 12;
 
-        [Range(0, 30, ErrorMessage = "Bankrenners moet tussen 0 en 30 zijn.")]
+        [Range(0, 30, ErrorMessage = "Bench riders must be between 0 and 30.")]
         public int BenchPerPlayer { get; set; } = 6;
 
         public int TotalPicksPerPlayer => RidersPerPlayer + BenchPerPlayer;

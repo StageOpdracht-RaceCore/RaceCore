@@ -1,7 +1,7 @@
 @model StageProject_RaceCore.ViewModels.RaceEditViewModel
 
 @{
-    ViewData["Title"] = "Race Bewerken";
+    ViewData["Title"] = "Race Edit";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
 
@@ -12,12 +12,12 @@
     <!-- HEADER -->
     <div class="race-create-header">
         <div>
-            <p class="race-label">RaceCore beheer</p>
+            <p class="race-label">RaceCore Management</p>
 
-            <h1>Race Bewerken</h1>
+            <h1>Race Edit</h1>
 
             <p class="race-subtitle">
-                Pas de racegegevens aan, voeg wielrenners toe of verwijder ze uit deze race.
+                Edit the race information, add cyclists or remove them from this race.
             </p>
         </div>
 
@@ -39,17 +39,17 @@
         <section class="race-card">
 
             <div class="race-card-header">
-                <h2>Race gegevens</h2>
+                <h2>Race Information</h2>
 
                 <p>
-                    Wijzig de basisinformatie van deze race.
+                    Edit the basic information of this race.
                 </p>
             </div>
 
             <div class="race-grid">
 
                 <div class="form-group">
-                    <label asp-for="Name">Race naam</label>
+                    <label asp-for="Name">Race Name</label>
 
                     <input asp-for="Name"
                            class="form-control" />
@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Year">Jaar</label>
+                    <label asp-for="Year">Year</label>
 
                     <input asp-for="Year"
                            class="form-control"
@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="StartDate">Begindatum</label>
+                    <label asp-for="StartDate">Start Date</label>
 
                     <input asp-for="StartDate"
                            class="form-control"
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="EndDate">Einddatum</label>
+                    <label asp-for="EndDate">End Date</label>
 
                     <input asp-for="EndDate"
                            class="form-control"
@@ -101,11 +101,11 @@
         <section class="race-card">
 
             <div class="race-card-header">
-                <h2>Wielrenners in deze race</h2>
+                <h2>Cyclists in this race</h2>
 
                 <p>
-                    Vink renners aan of uit.
-                    Aangevinkte renners worden gekoppeld aan deze race.
+                    Check or uncheck cyclists.
+                    Checked cyclists will be linked to this race.
                 </p>
             </div>
 
@@ -115,21 +115,21 @@
                 <input type="text"
                        id="cyclistSearch"
                        class="form-control"
-                       placeholder="Zoek wielrenner op naam of team..." />
+                       placeholder="Search cyclist by name or team..." />
 
                 <select id="cyclistFilter"
                         class="form-control">
 
                     <option value="all">
-                        Alle wielrenners
+                        All cyclists
                     </option>
 
                     <option value="selected">
-                        Alleen in deze race
+                        Only in this race
                     </option>
 
                     <option value="not-selected">
-                        Alleen niet geselecteerd
+                        Only not selected
                     </option>
 
                 </select>
@@ -138,14 +138,14 @@
                         class="small-action-btn"
                         onclick="selectVisibleCyclists()">
 
-                    Zichtbare selecteren
+                    Select visible
                 </button>
 
                 <button type="button"
                         class="small-action-btn danger"
                         onclick="clearCyclists()">
 
-                    Alles wissen
+                    Clear all
                 </button>
 
             </div>
@@ -159,7 +159,7 @@
                 @foreach (var cyclist in Model.AvailableCyclists)
                 {
                     var fullName = $"{cyclist.FirstName} {cyclist.LastName}";
-                    var teamName = cyclist.Team?.Name ?? "Geen team";
+                    var teamName = cyclist.Team?.Name ?? "No team";
 
                     <label class="cyclist-item"
                            data-search="@($"{fullName} {teamName}".ToLower())">
@@ -193,7 +193,7 @@
                     <h2>Stages</h2>
 
                     <p>
-                        Pas de stages van deze race aan.
+                        Edit the stages of this race.
                     </p>
                 </div>
 
@@ -201,7 +201,7 @@
                         class="add-stage-btn"
                         onclick="addStage()">
 
-                    + Stage toevoegen
+                    + Add Stage
                 </button>
 
             </div>
@@ -224,7 +224,7 @@
 
                             <div class="form-group">
 
-                                <label>Stage naam</label>
+                                <label>Stage Name</label>
 
                                 <input name="Stages[@i].Name"
                                        value="@Model.Stages[i].Name"
@@ -234,7 +234,7 @@
 
                             <div class="form-group">
 
-                                <label>Datum</label>
+                                <label>Date</label>
 
                                 <input name="Stages[@i].Date"
                                        value="@(Model.Stages[i].Date?.ToString("yyyy-MM-dd"))"
@@ -263,17 +263,17 @@
 
                         <div class="form-group">
 
-                            <label>Stage naam</label>
+                            <label>Stage Name</label>
 
                             <input name="Stages[0].Name"
                                    class="form-control"
-                                   placeholder="Bijvoorbeeld: Rit 1" />
+                                   placeholder="Example: Stage 1" />
 
                         </div>
 
                         <div class="form-group">
 
-                            <label>Datum</label>
+                            <label>Date</label>
 
                             <input name="Stages[0].Date"
                                    class="form-control"
@@ -299,15 +299,15 @@
         <div class="form-actions">
 
             <a asp-action="Index"
-                   class="cancel-btn">
+               class="cancel-btn">
 
-                Annuleren
+                Cancel
             </a>
 
             <button type="submit"
                     class="save-race-btn">
 
-                Wijzigingen opslaan
+                Save Changes
             </button>
 
         </div>
@@ -399,14 +399,14 @@
             if (visibleItems.length === 0) {
 
                 alert(
-                    "Er zijn geen zichtbare wielrenners om te selecteren."
+                    "There are no visible cyclists to select."
                 );
 
                 return;
             }
 
             const confirmed = confirm(
-                `Ben je zeker dat je alle ${visibleItems.length} zichtbare wielrenners wilt selecteren?`
+                `Are you sure you want to select all ${visibleItems.length} visible cyclists?`
             );
 
             if (!confirmed)
@@ -429,14 +429,14 @@
             if (selectedCount === 0) {
 
                 alert(
-                    "Er zijn momenteel geen wielrenners geselecteerd."
+                    "There are currently no cyclists selected."
                 );
 
                 return;
             }
 
             const confirmed = confirm(
-                `Ben je zeker dat je alle ${selectedCount} geselecteerde wielrenners uit deze race wilt verwijderen?`
+                `Are you sure you want to remove all ${selectedCount} selected cyclists from this race?`
             );
 
             if (!confirmed)
@@ -472,16 +472,16 @@
 
                 <div class="form-group">
 
-                    <label>Stage naam</label>
+                    <label>Stage Name</label>
 
                     <input name="Stages[${index}].Name"
                            class="form-control"
-                           placeholder="Bijvoorbeeld: Rit ${index + 1}" />
+                           placeholder="Example: Stage ${index + 1}" />
                 </div>
 
                 <div class="form-group">
 
-                    <label>Datum</label>
+                    <label>Date</label>
 
                     <input name="Stages[${index}].Date"
                            class="form-control"
@@ -512,14 +512,14 @@
             if (rows.length <= 1) {
 
                 alert(
-                    "Er moet minstens 1 stage blijven staan."
+                    "At least 1 stage must remain."
                 );
 
                 return;
             }
 
             const confirmed = confirm(
-                "Ben je zeker dat je deze stage wilt verwijderen?"
+                "Are you sure you want to remove this stage?"
             );
 
             if (!confirmed)

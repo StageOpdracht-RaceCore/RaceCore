@@ -2,9 +2,9 @@
 @using StageProject_RaceCore.Models
 
 @{
-    ViewData["Title"] = "Historiek";
+    ViewData["Title"] = "History";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
-    
+
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
     int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
 }
@@ -16,9 +16,9 @@
     <div class="player-header-card">
         <div>
             <p class="player-page-kicker">RACECORE MANAGEMENT</p>
-            <h1 class="player-page-title">Historiek: @Model.RaceName</h1>
+            <h1 class="player-page-title">History: @Model.RaceName</h1>
             <p class="player-page-subtitle">
-                Overzicht van alle verreden etappes en winnaars.
+                Overview of all completed stages and winners.
             </p>
         </div>
 
@@ -27,15 +27,15 @@
             <a asp-controller="Dashboard" asp-action="Index" class="player-btn-white" style="margin-right: 8px; text-decoration: none;">
                 Dashboard
             </a>
-            
+
         </div>
     </div>
 
-    @* Wedstrijd selectie Kaart *@
+    @* Race selectie Kaart *@
     <div class="player-table-card scoring-selector-card">
         <form asp-action="History" method="get" class="scoring-selector-form">
             <div class="scoring-stage-group">
-                <label for="raceId" class="scoring-label">Wedstrijd kiezen</label>
+                <label for="raceId" class="scoring-label">Choose Race</label>
                 <select id="raceId" name="raceId" class="scoring-stage-select" onchange="this.form.submit()">
                     @foreach (var race in races)
                     {
@@ -53,12 +53,12 @@
         <table class="history-table">
             <thead>
                 <tr>
-                    <th>Rit</th>
-                    <th>Etappe Details</th>
-                    <th>Datum</th>
-                    <th>Ritwinnaar</th>
-                    <th>Beste Speler</th>
-                    <th style="text-align: right; padding-right: 24px;">Acties</th>
+                    <th>Stage</th>
+                    <th>Stage Details</th>
+                    <th>Date</th>
+                    <th>Stage Winner</th>
+                    <th>Best Player</th>
+                    <th style="text-align: right; padding-right: 24px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,7 +95,7 @@
                 {
                     <tr>
                         <td colspan="6" class="empty-state">
-                            <p>Geen etappes gevonden voor deze wedstrijd.</p>
+                            <p>No stages found for this race.</p>
                         </td>
                     </tr>
                 }

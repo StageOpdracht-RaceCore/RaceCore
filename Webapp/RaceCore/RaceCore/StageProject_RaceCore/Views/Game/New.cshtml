@@ -42,10 +42,10 @@
             <div class="game-modal">
                 <div class="game-modal-icon">🎮</div>
 
-                <h2>Game in progress</h2>
+                <h2>Game in Progress</h2>
 
                 <p>
-                    Er is al een actieve game bezig:
+                    There is already an active game running:
                     <br />
                     <strong>@activeGameRaceName</strong>
                     <br />
@@ -56,15 +56,15 @@
 
                 <div class="game-modal-actions">
                     <button type="button" class="game-btn game-btn-light" id="closeActiveGameModal">
-                        Nee, nieuwe game maken
+                        No, create new game
                     </button>
 
                     <a asp-controller="@joinController"
-                           asp-action="Index"
-                           asp-route-gameId="@activeGameId"
-                           class="game-btn game-btn-start"
-                           style="text-decoration:none;">
-                        Ja, join game
+                       asp-action="Index"
+                       asp-route-gameId="@activeGameId"
+                       class="game-btn game-btn-start"
+                       style="text-decoration:none;">
+                        Yes, join game
                     </a>
                 </div>
             </div>
@@ -83,8 +83,8 @@
                     <h1 class="game-title">New Game</h1>
 
                     <p class="game-subtitle">
-                        Kies één volledige race. De game geldt automatisch voor alle ritten binnen die race.
-                        Daarna kies je de spelers en bepaal je hoeveel actieve renners en bankrenners elke speler krijgt.
+                        Choose one complete race. The game automatically applies to all stages within that race.
+                        Then choose the players and decide how many active riders and bench riders each player gets.
                     </p>
                 </div>
             </div>
@@ -108,7 +108,7 @@
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-purple">👥</div>
                 <div>
-                    <span class="game-stat-label">Spelers</span>
+                    <span class="game-stat-label">Players</span>
                     <strong class="game-stat-value">@Model.AvailablePlayers.Count</strong>
                 </div>
             </div>
@@ -116,7 +116,7 @@
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-green">✓</div>
                 <div>
-                    <span class="game-stat-label">Geselecteerd</span>
+                    <span class="game-stat-label">Selected</span>
                     <strong id="selectedPlayersCount" class="game-stat-value">@selectedPlayersCount</strong>
                 </div>
             </div>
@@ -124,7 +124,7 @@
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-orange">🚴</div>
                 <div>
-                    <span class="game-stat-label">Renners</span>
+                    <span class="game-stat-label">Cyclists</span>
                     <strong class="game-stat-value">@Model.TotalCyclists</strong>
                 </div>
             </div>
@@ -132,7 +132,7 @@
             <div class="game-stat-card">
                 <div class="game-stat-icon game-icon-blue">⛰</div>
                 <div>
-                    <span class="game-stat-label">Ritten in race</span>
+                    <span class="game-stat-label">Stages in Race</span>
                     <strong class="game-stat-value">@Model.TotalStages</strong>
                 </div>
             </div>
@@ -146,25 +146,23 @@
                     <h2 class="game-panel-title">Game Setup</h2>
                 </div>
 
-                
-
                 <div class="game-form-group">
                     <label asp-for="RaceId">Race</label>
                     <select asp-for="RaceId" asp-items="Model.AvailableRaces" class="game-input" id="raceSelect">
-                        <option value="">-- Kies een race --</option>
+                        <option value="">-- Choose a race --</option>
                     </select>
                     <span asp-validation-for="RaceId" class="text-danger"></span>
                 </div>
 
                 <div class="game-warning-box">
-                    ℹ Race structuur<br />
-                    <span>Deze game wordt gekoppeld aan de volledige race.</span>
+                    ℹ Race Structure<br />
+                    <span>This game will be linked to the complete race.</span>
                     <br />
-                    <span>Scoring gebeurt later per rit binnen deze race.</span>
+                    <span>Scoring will happen later per stage within this race.</span>
                 </div>
 
                 <div class="game-form-group">
-                    <label asp-for="RidersPerPlayer">Actieve renners per speler</label>
+                    <label asp-for="RidersPerPlayer">Active riders per player</label>
                     <input asp-for="RidersPerPlayer"
                            type="number"
                            min="1"
@@ -175,7 +173,7 @@
                 </div>
 
                 <div class="game-form-group">
-                    <label asp-for="BenchPerPlayer">Bankrenners per speler</label>
+                    <label asp-for="BenchPerPlayer">Bench riders per player</label>
                     <input asp-for="BenchPerPlayer"
                            type="number"
                            min="0"
@@ -186,50 +184,50 @@
                 </div>
 
                 <div class="game-warning-box">
-                    ℹ Draft instellingen<br />
+                    ℹ Draft Settings<br />
                     <span>
-                        Per speler:
-                        <strong id="summaryActive">@Model.RidersPerPlayer</strong> actief +
-                        <strong id="summaryBench">@Model.BenchPerPlayer</strong> bank =
-                        <strong id="summaryTotal">@totalDraftRounds</strong> rondes.
+                        Per player:
+                        <strong id="summaryActive">@Model.RidersPerPlayer</strong> active +
+                        <strong id="summaryBench">@Model.BenchPerPlayer</strong> bench =
+                        <strong id="summaryTotal">@totalDraftRounds</strong> rounds.
                     </span>
                     <br />
                     <span>
-                        Totaal nodig:
-                        <strong id="summaryNeeded">@totalDraftPicks</strong> renners.
+                        Total needed:
+                        <strong id="summaryNeeded">@totalDraftPicks</strong> cyclists.
                     </span>
                     <br />
                     <span>
-                        Beschikbaar in deze race:
-                        <strong>@Model.AvailableRaceCyclists</strong> renners.
+                        Available in this race:
+                        <strong>@Model.AvailableRaceCyclists</strong> cyclists.
                     </span>
                 </div>
 
                 @if (!Model.AvailableRaces.Any())
                 {
                     <div class="game-alert game-alert-danger">
-                        Er zijn nog geen races. Maak eerst een race aan.
+                        No races available yet. Create a race first.
                     </div>
                 }
 
                 @if (!Model.AvailablePlayers.Any())
                 {
                     <div class="game-alert game-alert-danger">
-                        Er zijn nog geen players. Maak eerst spelers aan.
+                        No players available yet. Create players first.
                     </div>
                 }
 
                 <div class="game-manage-actions">
                     <a asp-controller="Race" asp-action="Index" class="game-btn game-btn-light">
-                        ⚑ Races beheren
+                        ⚑ Manage Races
                     </a>
 
                     <a asp-controller="Player" asp-action="Index" class="game-btn game-btn-light">
-                        👥 Players beheren
+                        👥 Manage Players
                     </a>
 
                     <a asp-controller="Cyclist" asp-action="Index" class="game-btn game-btn-light">
-                        🚴 Cyclists beheren
+                        🚴 Manage Cyclists
                     </a>
                 </div>
 
@@ -240,14 +238,14 @@
                         </div>
                         <div>
                             <strong>Snake Draft</strong>
-                            <span>De draftvolgorde wordt automatisch eerlijk verdeeld.</span>
+                            <span>The draft order is automatically balanced fairly.</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="game-warning-box">
-                    ℹ Let op<br />
-                    Elke Start Game maakt een nieuwe aparte game aan.
+                    ℹ Important<br />
+                    Every Start Game creates a new separate game.
                 </div>
             </div>
 
@@ -258,7 +256,7 @@
                 </div>
 
                 <p class="game-panel-text">
-                    Kies minstens 2 spelers.
+                    Choose at least 2 players.
                 </p>
 
                 <div class="players-grid">
@@ -294,10 +292,10 @@
                     else
                     {
                         <div class="game-empty-state">
-                            <h3>Geen spelers gevonden</h3>
+                            <h3>No players found</h3>
 
                             <a asp-controller="Player" asp-action="Create" class="game-btn game-btn-start">
-                                Nieuwe speler
+                                New Player
                             </a>
                         </div>
                     }
@@ -309,7 +307,7 @@
                     <div class="game-draft-summary-icon">🏆</div>
                     <div>
                         <strong>Fair Snake Draft</strong>
-                        <span id="draftSummaryText">@totalDraftRounds rondes per speler</span>
+                        <span id="draftSummaryText">@totalDraftRounds rounds per player</span>
                     </div>
                 </div>
             </div>
@@ -319,29 +317,29 @@
             <div class="game-modal">
                 <div class="game-modal-icon">🏁</div>
 
-                <h2>Nieuwe game starten?</h2>
+                <h2>Start New Game?</h2>
 
                 <p>
-                    Game <strong id="modalRaceName">de gekozen race</strong> wordt gestart.
+                    Game <strong id="modalRaceName">the selected race</strong> will be started.
                     <br />
-                    Deze game geldt voor <strong>alle ritten van deze race</strong>.
+                    This game applies to <strong>all stages of this race</strong>.
                     <br />
-                    Actief: <strong id="modalActive">@Model.RidersPerPlayer</strong> renners per speler
+                    Active: <strong id="modalActive">@Model.RidersPerPlayer</strong> riders per player
                     <br />
-                    Bank: <strong id="modalBench">@Model.BenchPerPlayer</strong> renners per speler
+                    Bench: <strong id="modalBench">@Model.BenchPerPlayer</strong> riders per player
                     <br />
-                    Totaal nodig: <strong id="modalNeeded">@totalDraftPicks</strong> renners
+                    Total needed: <strong id="modalNeeded">@totalDraftPicks</strong> cyclists
                 </p>
 
                 <div class="game-modal-actions">
                     <button type="button" class="game-btn game-btn-light" id="cancelStartGame">
-                        Annuleren
+                        Cancel
                     </button>
 
                     <button type="submit"
                             form="newGameForm"
                             class="game-btn game-btn-start">
-                        Ja, start game
+                        Yes, start game
                     </button>
                 </div>
             </div>
@@ -482,7 +480,7 @@
                 if (summaryNeeded) summaryNeeded.textContent = needed;
 
                 if (draftSummaryText) {
-                    draftSummaryText.textContent = totalRounds + " rondes per speler";
+                    draftSummaryText.textContent = totalRounds + " rounds per player";
                 }
 
                 if (modalActive) modalActive.textContent = active;
@@ -498,7 +496,7 @@
                 modalRaceName.textContent =
                     selectedOption && selectedOption.value !== ""
                         ? selectedOption.text
-                        : "de gekozen race";
+                        : "the selected race";
             }
 
             loadSettings();

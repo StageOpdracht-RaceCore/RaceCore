@@ -38,29 +38,29 @@ namespace StageProject_RaceCore.Controllers
 
             if (model.RaceId <= 0)
             {
-                ModelState.AddModelError(nameof(model.RaceId), "Kies een race.");
+                ModelState.AddModelError(nameof(model.RaceId), "Choose a race.");
             }
 
             if (model.SelectedPlayerIds.Count < 2)
             {
-                ModelState.AddModelError(nameof(model.SelectedPlayerIds), "Kies minstens 2 spelers.");
+                ModelState.AddModelError(nameof(model.SelectedPlayerIds), "Choose at least 2 players.");
             }
 
             if (model.RidersPerPlayer < 1)
             {
-                ModelState.AddModelError(nameof(model.RidersPerPlayer), "Actieve renners moet minstens 1 zijn.");
+                ModelState.AddModelError(nameof(model.RidersPerPlayer), "Active riders must be at least 1.");
             }
 
             if (model.BenchPerPlayer < 0)
             {
-                ModelState.AddModelError(nameof(model.BenchPerPlayer), "Bankrenners mag niet negatief zijn.");
+                ModelState.AddModelError(nameof(model.BenchPerPlayer), "Bench riders cannot be negative.");
             }
 
             int totalPicksPerPlayer = model.RidersPerPlayer + model.BenchPerPlayer;
 
             if (totalPicksPerPlayer <= 0)
             {
-                ModelState.AddModelError("", "Totaal aantal picks moet groter zijn dan 0.");
+                ModelState.AddModelError("", "Total amount of picks must be greater than 0.");
             }
 
             if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (race == null)
                 {
-                    TempData["Error"] = "Race niet gevonden.";
+                    TempData["Error"] = "Race not found.";
                     await SetActiveGameViewBag();
 
                     return View(await BuildNewGameViewModelSafe(
@@ -100,7 +100,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (players.Count < 2)
                 {
-                    TempData["Error"] = "Kies minstens 2 geldige spelers.";
+                    TempData["Error"] = "Choose at least 2 valid players.";
                     await SetActiveGameViewBag();
 
                     return View(await BuildNewGameViewModelSafe(
@@ -121,7 +121,7 @@ namespace StageProject_RaceCore.Controllers
                 if (availableCyclistsCount < neededCyclistsCount)
                 {
                     TempData["Error"] =
-                        $"Niet genoeg renners voor deze draft. Nodig: {neededCyclistsCount}, beschikbaar in deze race: {availableCyclistsCount}.";
+                        $"Not enough cyclists for this draft. Needed: {neededCyclistsCount}, available in this race: {availableCyclistsCount}.";
 
                     await SetActiveGameViewBag();
 
@@ -159,14 +159,14 @@ namespace StageProject_RaceCore.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] =
-                    $"Game {race.Name} {race.Year} is gestart. " +
-                    $"Draft: {model.RidersPerPlayer} actief + {model.BenchPerPlayer} bank.";
+                    $"Game {race.Name} {race.Year} has started. " +
+                    $"Draft: {model.RidersPerPlayer} active + {model.BenchPerPlayer} bench.";
 
                 return RedirectToAction("Index", "Draft", new { gameId = game.Id });
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Start Game fout: " + ex.Message;
+                TempData["Error"] = "Start Game error: " + ex.Message;
                 await SetActiveGameViewBag();
 
                 return View(await BuildNewGameViewModelSafe(
@@ -224,7 +224,7 @@ namespace StageProject_RaceCore.Controllers
                 : "";
 
             ViewBag.ActiveGameStageName = activeGame?.Race != null
-                ? "Alle ritten van deze race"
+                ? "All stages of this race"
                 : "";
 
             ViewBag.ActiveGameStatus = activeGame?.Status ?? "";
@@ -282,7 +282,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch
             {
-                TempData["DatabaseError"] = "Database niet bereikbaar. Start OpenVPN om races en spelers te laden.";
+                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to load races and players.";
 
                 return new NewGameViewModel
                 {
@@ -380,7 +380,7 @@ namespace StageProject_RaceCore.Controllers
                     return new SelectListItem
                     {
                         Value = r.Id.ToString(),
-                        Text = $"{r.Name} {r.Year} ({r.Stages.Count} ritten)",
+                        Text = $"{r.Name} {r.Year} ({r.Stages.Count} stages)",
                         Selected = r.Id == raceId,
                         Group = groups[category]
                     };
@@ -454,7 +454,7 @@ namespace StageProject_RaceCore.Controllers
                 name.Contains("bastogne") ||
                 name.Contains("lombardia"))
             {
-                return "Monumenten";
+                return "Monuments";
             }
 
             if (name.Contains("omloop") ||
@@ -470,7 +470,7 @@ namespace StageProject_RaceCore.Controllers
                 name.Contains("bredene") ||
                 name.Contains("koksijde"))
             {
-                return "Voorjaarsklassiekers";
+                return "Spring Classics";
             }
 
             if (name.Contains("paris-nice") ||
@@ -482,15 +482,15 @@ namespace StageProject_RaceCore.Controllers
                 name.Contains("catalunya") ||
                 name.Contains("benelux"))
             {
-                return "Kleine rondes";
+                return "Small Tours";
             }
 
             if (race.Stages != null && race.Stages.Count > 1)
             {
-                return "Kleine rondes";
+                return "Small Tours";
             }
 
-            return "Eendagskoersen";
+            return "One Day Races";
         }
 
         private static int GetRaceCategoryOrder(Race race)
@@ -498,10 +498,10 @@ namespace StageProject_RaceCore.Controllers
             return GetRaceCategory(race) switch
             {
                 "Grand Tours" => 1,
-                "Kleine rondes" => 2,
-                "Monumenten" => 3,
-                "Voorjaarsklassiekers" => 4,
-                "Eendagskoersen" => 5,
+                "Small Tours" => 2,
+                "Monuments" => 3,
+                "Spring Classics" => 4,
+                "One Day Races" => 5,
                 _ => 99
             };
         }
@@ -511,11 +511,11 @@ namespace StageProject_RaceCore.Controllers
             return new List<string>
             {
                 "Grand Tours",
-                "Kleine rondes",
-                "Monumenten",
-                "Voorjaarsklassiekers",
-                "Eendagskoersen",
-                "Andere"
+                "Small Tours",
+                "Monuments",
+                "Spring Classics",
+                "One Day Races",
+                "Other"
             };
         }
     }

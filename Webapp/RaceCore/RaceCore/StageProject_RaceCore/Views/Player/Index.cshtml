@@ -31,15 +31,15 @@
     <div class="player-header-card">
         <div>
             <p class="player-page-kicker">RaceCore Management</p>
-            <h1 class="player-page-title">Spelers</h1>
+            <h1 class="player-page-title">Players</h1>
             <p class="player-page-subtitle">
-                Beheer alle spelers, hun draftvolgorde en hun prestaties in het systeem.
+                Manage all players, their draft order and their performances in the system.
             </p>
         </div>
 
         <div class="player-header-actions">
             @* Link to create a new player *@
-            <a asp-action="Create" class="player-btn player-btn-primary">+ Nieuwe speler</a>
+            <a asp-action="Create" class="player-btn player-btn-primary">+ New Player</a>
             @* Quick link to start a new game *@
             <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
                 ✓ Done
@@ -51,12 +51,12 @@
     @* Quick stats about players shown in small cards *@
     <div class="player-stats-grid">
         <div class="player-stat-card">
-            <span class="player-stat-label">Totaal spelers</span>
+            <span class="player-stat-label">Total players</span>
             <strong class="player-stat-value">@Model.TotalPlayers</strong>
         </div>
 
         <div class="player-stat-card">
-            <span class="player-stat-label">Totale punten</span>
+            <span class="player-stat-label">Total points</span>
             <strong class="player-stat-value">@Model.TotalPoints</strong>
         </div>
 
@@ -71,7 +71,7 @@
         </div>
 
         <div class="player-stat-card">
-            <span class="player-stat-label">Punten records</span>
+            <span class="player-stat-label">Points records</span>
             <strong class="player-stat-value">@Model.TotalPointRecords</strong>
         </div>
     </div>
@@ -80,16 +80,16 @@
     <div class="player-toolbar-card">
         <form method="get" asp-action="Index" class="player-search-form">
             <div class="player-search-group">
-                <label for="searchTerm">Zoek speler</label>
+                <label for="searchTerm">Search player</label>
                 <input id="searchTerm"
                        name="searchTerm"
                        value="@Model.SearchTerm"
                        class="player-search-input"
-                       placeholder="Zoek op naam..." />
+                       placeholder="Search by name..." />
             </div>
 
             <div class="player-toolbar-actions">
-                <button type="submit" class="player-btn player-btn-primary">Zoeken</button>
+                <button type="submit" class="player-btn player-btn-primary">Search</button>
                 <a asp-action="Index" class="player-btn player-btn-light">Reset</a>
             </div>
         </form>
@@ -101,13 +101,13 @@
             <table class="player-table">
                 <thead>
                     <tr>
-                        <th>Speler</th>
-                        <th>Draft positie</th>
-                        <th>Totale punten</th>
+                        <th>Player</th>
+                        <th>Draft position</th>
+                        <th>Total points</th>
                         <th>Selections</th>
                         <th>Draft turns</th>
-                        <th>Punten records</th>
-                        <th class="text-end">Acties</th>
+                        <th>Points records</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,9 +155,9 @@
                         <tr>
                             <td colspan="7">
                                 <div class="player-empty-state">
-                                    <h3>Geen spelers gevonden.</h3>
-                                    <p>Er zijn geen spelers die overeenkomen met je zoekopdracht.</p>
-                                    <a asp-action="Create" class="player-btn player-btn-primary">Nieuwe speler toevoegen</a>
+                                    <h3>No players found.</h3>
+                                    <p>No players match your search query.</p>
+                                    <a asp-action="Create" class="player-btn player-btn-primary">Add New Player</a>
                                 </div>
                             </td>
                         </tr>

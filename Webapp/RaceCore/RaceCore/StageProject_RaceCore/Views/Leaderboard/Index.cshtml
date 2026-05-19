@@ -17,8 +17,8 @@
         <!-- Linkerkant: titel -->
         <div class="leaderbord-title">
             <h6>RaceCore Ranking</h6>
-            <h1>Ranglijst</h1>
-            <p>Bekijk per rit hoeveel punten elke speler heeft behaald.</p>
+            <h1>Leaderboard</h1>
+            <p>View how many points each player earned per stage.</p>
         </div>
 
         <!-- Rechterkant: game selectie + Done knop -->
@@ -30,7 +30,7 @@
                   method="get"
                   class="leaderboard-game-form">
 
-                <label for="gameId">Afgewerkte game</label>
+                <label for="gameId">Finished Game</label>
 
                 <select id="gameId"
                         name="gameId"
@@ -57,8 +57,8 @@
 
             <!-- Done knop -->
             <a asp-controller="Dashboard"
-                   asp-action="Index"
-                   class="leaderboard-done-btn">
+               asp-action="Index"
+               class="leaderboard-done-btn">
                 ✔ Done
             </a>
         </div>
@@ -71,8 +71,8 @@
     {
         <section class="leaderboard-card">
             <div class="leaderboard-empty">
-                <h2>Geen afgewerkte games gevonden</h2>
-                <p>Alleen games die volledig klaar zijn worden hier getoond.</p>
+                <h2>No finished games found</h2>
+                <p>Only fully completed games are shown here.</p>
             </div>
         </section>
     }
@@ -97,13 +97,13 @@
 
             <!-- Aantal spelers -->
             <div class="leaderboard-stat-card">
-                <span>Spelers</span>
+                <span>Players</span>
                 <strong>@Model.PlayerCount</strong>
             </div>
 
             <!-- Totaal punten -->
             <div class="leaderboard-stat-card">
-                <span>Totaal punten</span>
+                <span>Total Points</span>
                 <strong>@Model.TotalPoints</strong>
             </div>
         </section>
@@ -116,8 +116,8 @@
             <!-- Header van de kaart -->
             <div class="leaderboard-card-header">
                 <div>
-                    <h2>Score per rit</h2>
-                    <p>Elke rij is een rit. Elke kolom is een speler.</p>
+                    <h2>Score Per Stage</h2>
+                    <p>Each row is a stage. Each column is a player.</p>
                 </div>
             </div>
 
@@ -125,8 +125,8 @@
             @if (!Model.Players.Any())
             {
                 <div class="leaderboard-empty">
-                    <h2>Nog geen spelers</h2>
-                    <p>Er zijn geen spelers gekoppeld aan deze afgewerkte game.</p>
+                    <h2>No players yet</h2>
+                    <p>No players are linked to this finished game.</p>
                 </div>
             }
             else
@@ -138,7 +138,7 @@
                         <!-- Tabel hoofding -->
                         <thead>
                             <tr>
-                                <th class="stage-column">Rit</th>
+                                <th class="stage-column">Stage</th>
 
                                 @foreach (var player in Model.Players)
                                 {
@@ -157,7 +157,7 @@
                             {
                                 <tr>
                                     <td class="stage-name">
-                                        Rit @stageRow.StageNumber
+                                        Stage @stageRow.StageNumber
                                     </td>
 
                                     @foreach (var player in Model.Players)
@@ -176,7 +176,7 @@
                             <!-- Eindafrekening -->
                             <tr class="final-row">
                                 <td class="stage-name">
-                                    Eindafrekening
+                                    Final Settlement
                                 </td>
 
                                 @foreach (var player in Model.Players)
@@ -194,7 +194,7 @@
                             <!-- Totaal -->
                             <tr class="total-row">
                                 <td class="stage-name">
-                                    TOTAAL
+                                    TOTAL
                                 </td>
 
                                 @foreach (var player in Model.Players)

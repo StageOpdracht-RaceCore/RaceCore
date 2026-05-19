@@ -8,7 +8,7 @@
 @functions {
     public string RiderName(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
     {
-        return rider == null ? "Vrije plaats" : rider.FullName;
+        return rider == null ? "Free slot" : rider.FullName;
     }
 
     public string RiderTeam(StageProject_RaceCore.Models.PlayerTeamRiderViewModel? rider)
@@ -37,7 +37,7 @@
                 }
                 else
                 {
-                    <text>Start eerst een game om de teams van de spelers te zien.</text>
+                    <text>Start a game first to view the player teams.</text>
                 }
             </p>
         </div>
@@ -52,19 +52,19 @@
     @if (!Model.PlayerTeams.Any())
     {
         <section class="card team-empty-state">
-            <h2>Geen teams gevonden</h2>
-            <p>Er is nog geen actieve game met spelers of draftbeurten.</p>
-            <a asp-controller="Game" asp-action="New" class="team-btn team-btn-primary">Nieuwe game starten</a>
+            <h2>No teams found</h2>
+            <p>There is no active game with players or draft turns yet.</p>
+            <a asp-controller="Game" asp-action="New" class="team-btn team-btn-primary">Start new game</a>
         </section>
     }
     else
     {
-        <section class="card team-overview-card" aria-label="Game overzicht">
-            <section class="stats-row team-stats-row" aria-label="Team overzicht">
+        <section class="card team-overview-card" aria-label="Game overview">
+            <section class="stats-row team-stats-row" aria-label="Team overview">
                 <div class="stat-box blue">
                     <div class="stat-icon">👥</div>
                     <div>
-                        <span>Spelers</span>
+                        <span>Players</span>
                         <strong>@Model.PlayerCount</strong>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                 <div class="stat-box orange">
                     <div class="stat-icon">🚴</div>
                     <div>
-                        <span>Actief</span>
+                        <span>Active</span>
                         <strong>@Model.ActiveRiderSlots</strong>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                 <div class="stat-box purple">
                     <div class="stat-icon">🪑</div>
                     <div>
-                        <span>Bank</span>
+                        <span>Bench</span>
                         <strong>@Model.BenchRiderSlots</strong>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="info-box">
-                    <span>Gevuld</span>
+                    <span>Filled</span>
                     <strong>@Model.FilledSlots / @Model.TotalSlots</strong>
                 </div>
 
@@ -110,10 +110,10 @@
         </section>
 
         <div class="team-swap-hint team-swap-hint-global" aria-live="polite">
-            Klik op een renner om te wisselen. Daarna kies je een andere renner uit de bankrenners lijst.
+            Click a rider to swap. Then select another rider from the bench riders list.
         </div>
 
-        <section class="player-team-grid" aria-label="Teams van spelers">
+        <section class="player-team-grid" aria-label="Player teams">
             @foreach (var playerTeam in Model.PlayerTeams)
             {
                 var activePercent = Model.ActiveRiderSlots == 0
@@ -129,12 +129,12 @@
 
                             <div>
                                 <h2>@playerTeam.PlayerName</h2>
-                                <p>@playerTeam.ActiveRiders.Count actieve renners, @playerTeam.BenchRiders.Count bankrenners</p>
+                                <p>@playerTeam.ActiveRiders.Count active riders, @playerTeam.BenchRiders.Count bench riders</p>
                             </div>
                         </div>
 
                         <div class="team-completion">
-                            <span>@playerTeam.ActiveRiders.Count / @Model.ActiveRiderSlots actief</span>
+                            <span>@playerTeam.ActiveRiders.Count / @Model.ActiveRiderSlots active</span>
                             <div class="team-completion-bar" aria-hidden="true">
                                 <div style="width:@activePercent%;"></div>
                             </div>
@@ -145,17 +145,17 @@
                         <table class="player-roster-table">
                             <thead>
                                 <tr>
-                                    <th>nr.</th>
-                                    <th>Renner</th>
-                                    <th>Ploeg</th>
-                                    <th>Rol</th>
+                                    <th>No.</th>
+                                    <th>Cyclist</th>
+                                    <th>Team</th>
+                                    <th>Role</th>
                                     <th></th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr class="roster-section-row active-section">
-                                    <th colspan="5">Actieve renners</th>
+                                    <th colspan="5">Active riders</th>
                                 </tr>
 
                                 @for (var index = 0; index < Model.ActiveRiderSlots; index++)
@@ -167,7 +167,7 @@
                                         onclick="selectRider(this)"
                                         role="button"
                                         tabindex="0"
-                                        title="@(rider != null ? "Selecteer om te wisselen" : "Vrije plaats")"
+                                        title="@(rider != null ? "Select to swap" : "Free slot")"
                                         data-cyclist-id="@(rider?.CyclistId ?? 0)">
                                         <td class="slot-number">@(index + 1)</td>
                                         <td>
@@ -179,20 +179,20 @@
                                         <td>
                                             @if (rider != null)
                                             {
-                                                <span class="status-pill active">Renner</span>
+                                                <span class="status-pill active">Cyclist</span>
                                             }
                                         </td>
                                         <td>
                                             @if (rider != null)
                                             {
-                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>
+                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualify">DQ</button>
                                             }
                                         </td>
                                     </tr>
                                 }
 
                                 <tr class="roster-section-row bench-section">
-                                    <th colspan="5">Bankrenners</th>
+                                    <th colspan="5">Bench riders</th>
                                 </tr>
 
                                 @for (var index = 0; index < Model.BenchRiderSlots; index++)
@@ -204,7 +204,7 @@
                                         onclick="selectRider(this)"
                                         role="button"
                                         tabindex="0"
-                                        title="@(rider != null ? "Selecteer om te wisselen" : "Vrije plaats")"
+                                        title="@(rider != null ? "Select to swap" : "Free slot")"
                                         data-cyclist-id="@(rider?.CyclistId ?? 0)">
                                         <td class="slot-number">@(Model.ActiveRiderSlots + index + 1)</td>
                                         <td>
@@ -216,13 +216,13 @@
                                         <td>
                                             @if (rider != null)
                                             {
-                                                <span class="status-pill bench">Bank</span>
+                                                <span class="status-pill bench">Bench</span>
                                             }
                                         </td>
                                         <td>
                                             @if (rider != null)
                                             {
-                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>
+                                                <button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualify">DQ</button>
                                             }
                                         </td>
                                     </tr>
@@ -231,7 +231,7 @@
                                 @if (playerTeam.DisqualifiedRiders.Any())
                                 {
                                     <tr class="roster-section-row disqualified-section">
-                                        <th colspan="5">Gedisqualificeerd</th>
+                                        <th colspan="5">Disqualified</th>
                                     </tr>
 
                                     @foreach (var rider in playerTeam.DisqualifiedRiders)
@@ -250,7 +250,7 @@
                                                 <span class="status-pill disqualified">DQ</span>
                                             </td>
                                             <td>
-                                                <button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualificeer">UNDQ</button>
+                                                <button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualify">UNDQ</button>
                                             </td>
                                         </tr>
                                     }
@@ -341,8 +341,8 @@
             var hint = document.querySelector('.team-swap-hint-global');
             if (hint) {
                 hint.textContent = targetSection === 'bench'
-                    ? 'Geselecteerd. Klik nu een bankrenner om te wisselen.'
-                    : 'Geselecteerd. Klik nu een actieve renner om te wisselen.';
+                    ? 'Selected. Now click a bench rider to swap.'
+                    : 'Selected. Now click an active rider to swap.';
             }
         }
 
@@ -394,11 +394,11 @@
             } else {
                 var isActiveRow = row.classList.contains('active-rider');
                 var pillClass = isActiveRow ? 'active' : 'bench';
-                var pillLabel = isActiveRow ? 'Renner' : 'Bank';
+                var pillLabel = isActiveRow ? 'Cyclist' : 'Bench';
                 cells[3].innerHTML =
                     '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
                 cells[4].innerHTML =
-                    '<button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualificeer">DQ</button>';
+                    '<button type="button" class="dq-btn" onclick="disqualifyRider(event, this)" title="Disqualify">DQ</button>';
             }
         }
 
@@ -471,11 +471,11 @@
             // Clear the source row (make it an empty but clickable swap target)
             row.dataset.cyclistId = '0';
             row.classList.add('empty-slot');
-            cells[1].innerHTML = '<span class="rider-name">Vrije plaats</span>';
+            cells[1].innerHTML = '<span class="rider-name">Free slot</span>';
             cells[2].innerHTML = '<span class="rider-team">-</span>';
             cells[3].innerHTML = '';
             cells[4].innerHTML = '';
-            row.setAttribute('title', 'Vrije plaats');
+            row.setAttribute('title', 'Free slot');
 
             // Find or create the disqualified section header
             var dqHeader = tbody.querySelector('.disqualified-section');
@@ -484,7 +484,7 @@
                 dqHeader.className = 'roster-section-row disqualified-section';
                 var th = document.createElement('th');
                 th.colSpan = 5;
-                th.textContent = 'Gedisqualificeerd';
+                th.textContent = 'Disqualified';
                 dqHeader.appendChild(th);
                 tbody.appendChild(dqHeader);
             }
@@ -512,7 +512,7 @@
             dqRow.appendChild(td3);
 
             var td4 = document.createElement('td');
-            td4.innerHTML = '<button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualificeer">UNDQ</button>';
+            td4.innerHTML = '<button type="button" class="undq-btn" onclick="undisqualifyRider(event, this)" title="Undisqualify">UNDQ</button>';
             dqRow.appendChild(td4);
 
             // Append after the last disqualified row, or after the header
@@ -636,11 +636,11 @@
                 targetRow.setAttribute('onclick', 'selectRider(this)');
                 targetRow.setAttribute('role', 'button');
                 targetRow.setAttribute('tabindex', '0');
-                targetRow.setAttribute('title', 'Selecteer om te wisselen');
+                targetRow.setAttribute('title', 'Select to swap');
                 // Restore correct pill
                 var isActive = targetRow.classList.contains('active-rider');
                 var pillClass = isActive ? 'active' : 'bench';
-                var pillLabel = isActive ? 'Renner' : 'Bank';
+                var pillLabel = isActive ? 'Cyclist' : 'Bench';
                 targetRow.querySelectorAll('td')[3].innerHTML =
                     '<span class="status-pill ' + pillClass + '">' + pillLabel + '</span>';
             }
@@ -672,7 +672,7 @@
 
             var hint = document.querySelector('.team-swap-hint-global');
             if (hint) {
-                hint.textContent = 'Klik op een renner om te wisselen. Daarna kies je een andere renner uit de bankrenners lijst.';
+                hint.textContent = 'Click a rider to swap. Then select another rider from the bench riders list.';
             }
         }
 

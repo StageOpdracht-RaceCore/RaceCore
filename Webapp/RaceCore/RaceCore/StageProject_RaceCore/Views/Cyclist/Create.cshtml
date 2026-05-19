@@ -15,9 +15,9 @@
     <section class="cyclist-header-card">
         <div class="cyclist-header-copy">
             <p class="cyclist-page-kicker">RaceCore</p>
-            <h1 class="cyclist-page-title">Nieuwe renner</h1>
+            <h1 class="cyclist-page-title">New Cyclist</h1>
             <p class="cyclist-page-subtitle">
-                Voeg een nieuwe renner toe aan het systeem.
+                Add a new cyclist to the system.
             </p>
         </div>
     </section>
@@ -35,19 +35,19 @@
             @Html.AntiForgeryToken()
 
             <div class="cyclist-form-group">
-                <label>Voornaam</label>
+                <label>First Name</label>
                 <input type="text" name="firstName" class="cyclist-input" required />
             </div>
 
             <div class="cyclist-form-group">
-                <label>Achternaam</label>
+                <label>Last Name</label>
                 <input type="text" name="lastName" class="cyclist-input" required />
             </div>
 
             <div class="cyclist-form-group">
                 <label>Team</label>
                 <select name="teamId" class="cyclist-input">
-                    <option value="">Geen team</option>
+                    <option value="">No team</option>
                     @foreach (var team in teams)
                     {
                         <option value="@team.Id">@team.Name</option>
@@ -57,11 +57,11 @@
 
             <div class="cyclist-button-group">
                 <button type="submit" class="cyclist-primary-btn">
-                    Opslaan
+                    Save
                 </button>
 
                 <a asp-action="Index" class="cyclist-reset-btn">
-                    Annuleren
+                    Cancel
                 </a>
             </div>
 

@@ -2,7 +2,7 @@
 
 @{
     // Title shown in the page layout
-    ViewData["Title"] = "Nieuwe speler";
+    ViewData["Title"] = "New Player";
     // Use the clean layout for player pages
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 }
@@ -15,8 +15,8 @@
         @* Header describing the purpose of this view *@
         <div class="player-form-header">
             <p class="player-page-kicker">RaceCore Management</p>
-            <h1>Nieuwe speler</h1>
-            <p>Voeg een nieuwe speler toe aan het systeem.</p>
+            <h1>New Player</h1>
+            <p>Add a new player to the system.</p>
         </div>
 
         @* Create form posts back to PlayersController.Create (POST) *@
@@ -26,29 +26,29 @@
 
             @* Name field with validation *@
             <div class="player-form-group">
-                <label asp-for="Name">Naam</label>
+                <label asp-for="Name">Name</label>
                 <input asp-for="Name" class="player-form-input" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             @* Draft position input (numeric) *@
             <div class="player-form-group">
-                <label asp-for="PositionInDraft">Positie in draft</label>
+                <label asp-for="PositionInDraft">Position in draft</label>
                 <input asp-for="PositionInDraft" class="player-form-input" type="number" min="1" />
                 <span asp-validation-for="PositionInDraft" class="text-danger"></span>
             </div>
 
             @* Total points input (numeric) *@
             <div class="player-form-group">
-                <label asp-for="TotalPoints">Totale punten</label>
+                <label asp-for="TotalPoints">Total points</label>
                 <input asp-for="TotalPoints" class="player-form-input" type="number" min="0" />
                 <span asp-validation-for="TotalPoints" class="text-danger"></span>
             </div>
 
             @* Form actions: save or cancel back to index *@
             <div class="player-form-actions">
-                <button type="submit" class="player-btn player-btn-primary">Opslaan</button>
-                <a asp-action="Index" class="player-btn player-btn-light">Terug</a>
+                <button type="submit" class="player-btn player-btn-primary">Save</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Back</a>
             </div>
         </form>
     </div>

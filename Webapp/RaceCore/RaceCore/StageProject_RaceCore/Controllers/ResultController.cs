@@ -161,7 +161,7 @@ namespace StageProject_RaceCore.Controllers
                     .ToHashSet();
 
                 // ====================================================
-                // TOP 25 RESULTATEN
+                // TOP 25 RESULTS
                 // ====================================================
                 var rows = results.Select(sr =>
                 {
@@ -169,7 +169,7 @@ namespace StageProject_RaceCore.Controllers
 
                     int positionPoints = rules
                         .Where(pr =>
-                            pr.Type == "Rit" &&
+                            pr.Type == "Stage" &&
                             pr.FromPosition <= position &&
                             pr.ToPosition >= position)
                         .Sum(pr => pr.Points);
@@ -187,7 +187,7 @@ namespace StageProject_RaceCore.Controllers
                     return new
                     {
                         Position = position.ToString(),
-                        CyclistName = sr.Cyclist?.FullName ?? "Onbekend",
+                        CyclistName = sr.Cyclist?.FullName ?? "Unknown",
                         Points = positionPoints,
 
                         // Dit is de tekstnaam, handig voor title/controle
@@ -206,7 +206,7 @@ namespace StageProject_RaceCore.Controllers
                 }).ToList();
 
                 // ====================================================
-                // TRUIEN BUITEN TOP 25
+                // JERSEYS OUTSIDE TOP 25
                 // ====================================================
                 var outsideJerseyRows = jerseys
                     .Where(j => !top25CyclistIds.Contains(j.CyclistId))
@@ -224,7 +224,7 @@ namespace StageProject_RaceCore.Controllers
                         return new
                         {
                             Position = ">25",
-                            CyclistName = cyclist?.FullName ?? "Onbekend",
+                            CyclistName = cyclist?.FullName ?? "Unknown",
                             Points = 0,
 
                             JerseyTypes = string.Join(", ", group.Select(j =>
@@ -243,7 +243,7 @@ namespace StageProject_RaceCore.Controllers
 
                 stageTables.Add(new
                 {
-                    StageName = $"Rit {stage.StageNumber}: {stage.Name}",
+                    StageName = $"Stage {stage.StageNumber}: {stage.Name}",
                     Rows = rows,
                     OutsideJerseyRows = outsideJerseyRows
                 });
@@ -288,10 +288,10 @@ namespace StageProject_RaceCore.Controllers
             {
                 return type switch
                 {
-                    "Red" or "Yellow" or "RodeTrui" => "Roze trui",
-                    "Green" or "GroeneTrui" => "Paarse trui",
-                    "Blue" or "Polka" or "BlauweTrui" => "Blauwe trui",
-                    "White" or "WitteTrui" => "Witte trui",
+                    "Red" or "Yellow" or "RodeTrui" => "Pink Jersey",
+                    "Green" or "GroeneTrui" => "Purple Jersey",
+                    "Blue" or "Polka" or "BlauweTrui" => "Blue Jersey",
+                    "White" or "WitteTrui" => "White Jersey",
                     _ => type
                 };
             }
@@ -300,10 +300,10 @@ namespace StageProject_RaceCore.Controllers
             {
                 return type switch
                 {
-                    "Red" or "Yellow" or "RodeTrui" => "Gele trui",
-                    "Green" or "GroeneTrui" => "Groene trui",
-                    "Blue" or "Polka" or "BlauweTrui" => "Bolletjestrui",
-                    "White" or "WitteTrui" => "Witte trui",
+                    "Red" or "Yellow" or "RodeTrui" => "Yellow Jersey",
+                    "Green" or "GroeneTrui" => "Green Jersey",
+                    "Blue" or "Polka" or "BlauweTrui" => "Polka Dot Jersey",
+                    "White" or "WitteTrui" => "White Jersey",
                     _ => type
                 };
             }
@@ -312,20 +312,20 @@ namespace StageProject_RaceCore.Controllers
             {
                 return type switch
                 {
-                    "Red" or "Yellow" or "RodeTrui" => "Rode trui",
-                    "Green" or "GroeneTrui" => "Groene trui",
-                    "Blue" or "Polka" or "BlauweTrui" => "Bolletjestrui",
-                    "White" or "WitteTrui" => "Witte trui",
+                    "Red" or "Yellow" or "RodeTrui" => "Red Jersey",
+                    "Green" or "GroeneTrui" => "Green Jersey",
+                    "Blue" or "Polka" or "BlauweTrui" => "Polka Dot Jersey",
+                    "White" or "WitteTrui" => "White Jersey",
                     _ => type
                 };
             }
 
             return type switch
             {
-                "Red" or "Yellow" or "RodeTrui" => "Rode trui",
-                "Green" or "GroeneTrui" => "Groene trui",
-                "Blue" or "Polka" or "BlauweTrui" => "Blauwe trui",
-                "White" or "WitteTrui" => "Witte trui",
+                "Red" or "Yellow" or "RodeTrui" => "Red Jersey",
+                "Green" or "GroeneTrui" => "Green Jersey",
+                "Blue" or "Polka" or "BlauweTrui" => "Blue Jersey",
+                "White" or "WitteTrui" => "White Jersey",
                 _ => type
             };
         }
@@ -339,15 +339,15 @@ namespace StageProject_RaceCore.Controllers
 
             return displayName switch
             {
-                "Gele trui" => "<span class=\"result-jersey-dot result-jersey-yellow\" title=\"Gele trui\"></span>",
-                "Groene trui" => "<span class=\"result-jersey-dot result-jersey-green\" title=\"Groene trui\"></span>",
-                "Bolletjestrui" => "<span class=\"result-jersey-dot result-jersey-polka\" title=\"Bolletjestrui\"></span>",
-                "Witte trui" => "<span class=\"result-jersey-dot result-jersey-white\" title=\"Witte trui\"></span>",
-                "Roze trui" => "<span class=\"result-jersey-dot result-jersey-pink\" title=\"Roze trui\"></span>",
-                "Paarse trui" => "<span class=\"result-jersey-dot result-jersey-purple\" title=\"Paarse trui\"></span>",
-                "Blauwe trui" => "<span class=\"result-jersey-dot result-jersey-blue\" title=\"Blauwe trui\"></span>",
-                "Rode trui" => "<span class=\"result-jersey-dot result-jersey-red\" title=\"Rode trui\"></span>",
-                _ => "<span class=\"result-jersey-dot result-jersey-default\" title=\"Trui\"></span>"
+                "Yellow Jersey" => "<span class=\"result-jersey-dot result-jersey-yellow\" title=\"Yellow Jersey\"></span>",
+                "Green Jersey" => "<span class=\"result-jersey-dot result-jersey-green\" title=\"Green Jersey\"></span>",
+                "Polka Dot Jersey" => "<span class=\"result-jersey-dot result-jersey-polka\" title=\"Polka Dot Jersey\"></span>",
+                "White Jersey" => "<span class=\"result-jersey-dot result-jersey-white\" title=\"White Jersey\"></span>",
+                "Pink Jersey" => "<span class=\"result-jersey-dot result-jersey-pink\" title=\"Pink Jersey\"></span>",
+                "Purple Jersey" => "<span class=\"result-jersey-dot result-jersey-purple\" title=\"Purple Jersey\"></span>",
+                "Blue Jersey" => "<span class=\"result-jersey-dot result-jersey-blue\" title=\"Blue Jersey\"></span>",
+                "Red Jersey" => "<span class=\"result-jersey-dot result-jersey-red\" title=\"Red Jersey\"></span>",
+                _ => "<span class=\"result-jersey-dot result-jersey-default\" title=\"Jersey\"></span>"
             };
         }
     }

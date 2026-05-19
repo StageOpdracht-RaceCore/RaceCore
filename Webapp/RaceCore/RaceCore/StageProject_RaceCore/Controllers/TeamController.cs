@@ -237,7 +237,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     if (currentBenchCount >= benchSlots)
                     {
-                        return BadRequest("Bank is vol.");
+                        return BadRequest("Bench is full.");
                     }
 
                     activeSelection!.IsActive = false;
@@ -246,7 +246,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     if (currentActiveCount >= activeSlots)
                     {
-                        return BadRequest("Actieve ploeg is vol.");
+                        return BadRequest("Active team is full.");
                     }
 
                     benchSelection!.IsActive = true;
@@ -360,7 +360,7 @@ namespace StageProject_RaceCore.Controllers
                 {
                     CyclistId = s.CyclistId,
                     FullName = s.Cyclist!.FullName,
-                    ProTeamName = s.Cyclist.Team?.Name ?? "Geen ploeg",
+                    ProTeamName = s.Cyclist.Team?.Name ?? "No team",
                     PickNumber = turnNumberByCyclistId.TryGetValue(s.CyclistId, out var turnNumber)
                         ? turnNumber
                         : 0,

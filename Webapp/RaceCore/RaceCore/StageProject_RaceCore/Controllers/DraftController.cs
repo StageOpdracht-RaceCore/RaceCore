@@ -30,7 +30,7 @@ namespace StageProject_RaceCore.Controllers
 
                     if (lastGame == null)
                     {
-                        TempData["Error"] = "Start eerst een nieuwe game.";
+                        TempData["Error"] = "Start a new game first.";
                         return RedirectToAction("New", "Game");
                     }
 
@@ -43,7 +43,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (game == null)
                 {
-                    TempData["Error"] = "Game niet gevonden.";
+                    TempData["Error"] = "Game not found.";
                     return RedirectToAction("New", "Game");
                 }
 
@@ -105,7 +105,7 @@ namespace StageProject_RaceCore.Controllers
             catch
             {
                 ViewBag.DatabaseOnline = false;
-                TempData["DatabaseError"] = "Database niet bereikbaar.";
+                TempData["DatabaseError"] = "Database unavailable.";
                 return View(new List<DraftTurnViewModel>());
             }
         }
@@ -160,13 +160,13 @@ namespace StageProject_RaceCore.Controllers
 
                 if (game == null)
                 {
-                    TempData["Error"] = "Game niet gevonden.";
+                    TempData["Error"] = "Game not found.";
                     return RedirectToAction("New", "Game");
                 }
 
                 if (game.Status != "Draft")
                 {
-                    TempData["Error"] = "Deze draft is al klaar.";
+                    TempData["Error"] = "This draft is already finished.";
                     return RedirectToDraft(gameId);
                 }
 
@@ -186,7 +186,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (currentTurn.Id != draftTurnId)
                 {
-                    TempData["Error"] = "Dit is niet de huidige beurt.";
+                    TempData["Error"] = "This is not the current turn.";
                     return RedirectToDraft(gameId);
                 }
 
@@ -200,7 +200,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (cyclist == null)
                 {
-                    TempData["Error"] = "Deze renner hoort niet bij de gekozen race.";
+                    TempData["Error"] = "This cyclist does not belong to the selected race.";
                     return RedirectToDraft(gameId);
                 }
 
@@ -209,7 +209,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (cyclistAlreadyPicked)
                 {
-                    TempData["Error"] = "Deze renner is al gekozen.";
+                    TempData["Error"] = "This cyclist has already been picked.";
                     return RedirectToDraft(gameId);
                 }
 
@@ -244,8 +244,8 @@ namespace StageProject_RaceCore.Controllers
                 await SendDraftUpdate(gameId, draftIsFinished);
 
                 TempData["Success"] = isActiveCyclist
-                    ? currentTurn.Player.Name + " heeft actieve renner " + cyclist.FullName + " gekozen."
-                    : currentTurn.Player.Name + " heeft bankrenner " + cyclist.FullName + " gekozen.";
+                    ? currentTurn.Player.Name + " has picked active rider " + cyclist.FullName + "."
+                    : currentTurn.Player.Name + " has picked bench rider " + cyclist.FullName + ".";
 
                 if (draftIsFinished)
                 {
@@ -256,7 +256,7 @@ namespace StageProject_RaceCore.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Pick fout: " + ex.Message;
+                TempData["Error"] = "Pick error: " + ex.Message;
                 return RedirectToDraft(gameId);
             }
         }
@@ -265,7 +265,7 @@ namespace StageProject_RaceCore.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult GenerateDraft(int gameId)
         {
-            TempData["Error"] = "Draft wordt automatisch gemaakt via New Game.";
+            TempData["Error"] = "Draft is automatically generated via New Game.";
             return RedirectToDraft(gameId);
         }
 

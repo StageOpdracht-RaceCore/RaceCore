@@ -35,7 +35,7 @@ namespace StageProject_RaceCore.Controllers
 
                     if (latestGame == null)
                     {
-                        TempData["Error"] = "Start eerst een game.";
+                        TempData["Error"] = "Start a game first.";
                         return RedirectToAction("New", "Game");
                     }
 
@@ -48,7 +48,7 @@ namespace StageProject_RaceCore.Controllers
 
                 if (game == null)
                 {
-                    TempData["Error"] = "Game niet gevonden.";
+                    TempData["Error"] = "Game not found.";
                     return RedirectToAction("New", "Game");
                 }
 
@@ -102,7 +102,7 @@ namespace StageProject_RaceCore.Controllers
 
                     int points = rules
                         .Where(r =>
-                            r.Type == "Rit" &&
+                            r.Type == "Stage" &&
                             r.FromPosition <= result.Position &&
                             r.ToPosition >= result.Position)
                         .Sum(r => r.Points);
@@ -140,7 +140,7 @@ namespace StageProject_RaceCore.Controllers
 
                         return new TopCyclistItem
                         {
-                            Name = cyclist != null ? cyclist.FirstName + " " + cyclist.LastName : "Onbekende renner",
+                            Name = cyclist != null ? cyclist.FirstName + " " + cyclist.LastName : "Unknown cyclist",
                             Points = c.Value
                         };
                     })

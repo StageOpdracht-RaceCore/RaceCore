@@ -4,7 +4,7 @@
 @using System.Text.Json
 
 @{
-    ViewData["Title"] = "Etappe Resultaten";
+    ViewData["Title"] = "Stage Results";
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
     var races = ViewBag.Races as List<Race> ?? new List<Race>();
@@ -14,9 +14,9 @@
     int selectedGameId = ViewBag.SelectedGameId ?? Model.GameSessionId;
     int stageNumber = ViewBag.StageNumber ?? 1;
 
-    var yellowName = ViewBag.YellowJerseyName ?? "Gele trui";
-    var greenName = ViewBag.GreenJerseyName ?? "Groene trui";
-    var polkaName = ViewBag.PolkaJerseyName ?? "Bolletjestrui";
+    var yellowName = ViewBag.YellowJerseyName ?? "Yellow Jersey";
+    var greenName = ViewBag.GreenJerseyName ?? "Green Jersey";
+    var polkaName = ViewBag.PolkaJerseyName ?? "Polka Dot Jersey";
     var themeClass = ViewBag.JerseyTheme ?? "default-theme";
 
     string yellowOutsideName = ViewData["RedOutsideTop25CyclistName"]?.ToString() ?? "";
@@ -33,7 +33,7 @@
     @if (TempData["Error"] != null)
     {
         <div class="scoring-alert scoring-alert-error">
-            <strong>FOUT:</strong> <span>@TempData["Error"]</span>
+            <strong>ERROR:</strong> <span>@TempData["Error"]</span>
         </div>
     }
 
@@ -48,7 +48,7 @@
     <section class="scoring-hero">
         <div>
             <h1>@races.FirstOrDefault(r => r.Id == selectedRaceId)?.Name Scoring</h1>
-            <p>Huidige etappe: <strong>Rit @stageNumber</strong></p>
+            <p>Current stage: <strong>Stage @stageNumber</strong></p>
         </div>
 
         <a asp-controller="Dashboard"
@@ -64,9 +64,9 @@
         <form asp-controller="Scoring" asp-action="Index" method="get" class="scoring-filter-form">
             <div style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
 
-                @* Wedstrijd kiezen *@
+                @* Race kiezen *@
                 <div class="scoring-field">
-                    <label>Wedstrijd:</label>
+                    <label>Race:</label>
                     <select name="raceId"
                             onchange="window.location.href='@Url.Action("Index", "Scoring")?raceId=' + this.value">
                         @foreach (var race in races)
@@ -80,12 +80,12 @@
 
                 @* Rit kiezen, gameId blijft behouden zodat de juiste game wordt gebruikt *@
                 <div class="scoring-field">
-                    <label>Rit:</label>
+                    <label>Stage:</label>
                     <select name="stageId" onchange="this.form.submit()">
                         @foreach (var s in stages)
                         {
                             <option value="@s.Id" selected="@(s.Id == Model.StageId)">
-                                Rit @s.StageNumber @(!string.IsNullOrEmpty(s.Name) ? $"- {s.Name}" : "")
+                                Stage @s.StageNumber @(!string.IsNullOrEmpty(s.Name) ? $"- {s.Name}" : "")
                             </option>
                         }
                     </select>
@@ -106,8 +106,8 @@
         <input type="hidden" name="raceId" value="@selectedRaceId" />
 
         <section class="scoring-section-header">
-            <h2>Rit @stageNumber Resultaten</h2>
-            <button type="submit" class="scoring-publish-btn">Scores Publiceren</button>
+            <h2>Stage @stageNumber Results</h2>
+            <button type="submit" class="scoring-publish-btn">Publish Scores</button>
         </section>
 
         @* Datalist met alle beschikbare renners van deze race *@
@@ -127,7 +127,7 @@
                            class="scoring-rider-input js-cyclist-name"
                            list="cyclistList"
                            value="@Model.Results[i].CyclistName"
-                           placeholder="Zoek renner..."
+                           placeholder="Search cyclist..."
                            autocomplete="off"
                            onfocus="updateCyclistList(this)"
                            oninput="syncCyclistId(this); updateCyclistList(this)" />
@@ -162,7 +162,7 @@
                             <span></span>
                         </label>
 
-                        <label class="jersey-dot jersey-white" title="Witte trui">
+                        <label class="jersey-dot jersey-white" title="White Jersey">
                             <input type="radio"
                                    name="JerseyWhite"
                                    value="@i"
@@ -183,21 +183,21 @@
 
         @* Truien die niet in de Top 25 staan *@
         <section class="scoring-section-header scoring-jersey-header">
-            <h2>Truien buiten Top 25</h2>
+            <h2>Jerseys Outside Top 25</h2>
         </section>
 
         <section class="scoring-card scoring-outside-jerseys">
 
             <div class="outside-jersey-row">
                 <label class="outside-jersey-label">
-                    <span class="outside-jersey-dot outside-red"></span> @yellowName buiten Top 25
+                    <span class="outside-jersey-dot outside-red"></span> @yellowName outside Top 25
                 </label>
                 <input type="hidden" asp-for="YellowOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Yellow" />
                 <input type="text"
                        class="scoring-rider-input js-outside-jersey-name"
                        list="cyclistList"
                        value="@yellowOutsideName"
-                       placeholder="Zoek renner..."
+                       placeholder="Search cyclist..."
                        autocomplete="off"
                        data-jersey="Yellow"
                        onfocus="updateCyclistList(this)"
@@ -206,14 +206,14 @@
 
             <div class="outside-jersey-row">
                 <label class="outside-jersey-label">
-                    <span class="outside-jersey-dot outside-green"></span> @greenName buiten Top 25
+                    <span class="outside-jersey-dot outside-green"></span> @greenName outside Top 25
                 </label>
                 <input type="hidden" asp-for="GreenOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Green" />
                 <input type="text"
                        class="scoring-rider-input js-outside-jersey-name"
                        list="cyclistList"
                        value="@greenOutsideName"
-                       placeholder="Zoek renner..."
+                       placeholder="Search cyclist..."
                        autocomplete="off"
                        data-jersey="Green"
                        onfocus="updateCyclistList(this)"
@@ -222,14 +222,14 @@
 
             <div class="outside-jersey-row">
                 <label class="outside-jersey-label">
-                    <span class="outside-jersey-dot outside-blue"></span> @polkaName buiten Top 25
+                    <span class="outside-jersey-dot outside-blue"></span> @polkaName outside Top 25
                 </label>
                 <input type="hidden" asp-for="PolkaOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="Polka" />
                 <input type="text"
                        class="scoring-rider-input js-outside-jersey-name"
                        list="cyclistList"
                        value="@blueOutsideName"
-                       placeholder="Zoek renner..."
+                       placeholder="Search cyclist..."
                        autocomplete="off"
                        data-jersey="Polka"
                        onfocus="updateCyclistList(this)"
@@ -238,14 +238,14 @@
 
             <div class="outside-jersey-row">
                 <label class="outside-jersey-label">
-                    <span class="outside-jersey-dot outside-white"></span> Witte trui buiten Top 25
+                    <span class="outside-jersey-dot outside-white"></span> White Jersey outside Top 25
                 </label>
                 <input type="hidden" asp-for="WhiteOutsideTop25CyclistId" class="js-outside-jersey-id" data-jersey="White" />
                 <input type="text"
                        class="scoring-rider-input js-outside-jersey-name"
                        list="cyclistList"
                        value="@whiteOutsideName"
-                       placeholder="Zoek renner..."
+                       placeholder="Search cyclist..."
                        autocomplete="off"
                        data-jersey="White"
                        onfocus="updateCyclistList(this)"
@@ -261,7 +261,7 @@
         const allCyclists = [
             @foreach (var rider in Model.AvailableCyclists)
             {
-                    <text>{ id: "@rider.Value", name: @Html.Raw(JsonSerializer.Serialize(rider.Text)) },</text>
+                        <text>{ id: "@rider.Value", name: @Html.Raw(JsonSerializer.Serialize(rider.Text)) },</text>
             }
         ];
 
@@ -406,7 +406,7 @@
                 const alertDiv = document.createElement('div');
                 alertDiv.id = 'duplicate-alert';
                 alertDiv.className = 'scoring-alert scoring-alert-error';
-                alertDiv.innerHTML = `<strong>LET OP:</strong> Renner staat dubbel ingevuld!`;
+                alertDiv.innerHTML = `<strong>WARNING:</strong> Cyclist is entered multiple times!`;
 
                 document.querySelector('.scoring-page').prepend(alertDiv);
             }
@@ -423,7 +423,7 @@
 
             if (hasDuplicates) {
                 e.preventDefault();
-                alert("Er staat een renner dubbel. Corrigeer voordat je de scores publiceert.");
+                alert("A cyclist is entered multiple times. Correct it before publishing the scores.");
             }
         });
     </script>

@@ -17,16 +17,16 @@
     <!-- HEADER -->
     <div class="player-header-card">
         <div>
-            <p class="player-page-kicker">Competitie Overzicht</p>
-            <h1 class="player-page-title">Resultaat</h1>
-            <p class="player-page-subtitle">Hier staat de scoreboard</p>
+            <p class="player-page-kicker">Competition Overview</p>
+            <h1 class="player-page-title">Result</h1>
+            <p class="player-page-subtitle">Here is the scoreboard</p>
         </div>
     </div>
 
     <!-- CHART -->
     <div class="player-table-card">
         <div class="player-form-header">
-            <h3>Punten Klassement</h3>
+            <h3>Points Leaderboard</h3>
         </div>
 
         @if (list.Any())
@@ -52,7 +52,7 @@
         }
         else
         {
-            <div class="empty">Geen data beschikbaar.</div>
+            <div class="empty">No data available.</div>
         }
     </div>
 
@@ -62,11 +62,11 @@
             <table class="player-table">
                 <thead>
                     <tr>
-                        <th>Positie</th>
-                        <th>Renner</th>
-                        <th>Punten</th>
-                        <th>Trui</th>
-                        <th>Totaal</th>
+                        <th>Position</th>
+                        <th>Cyclist</th>
+                        <th>Points</th>
+                        <th>Jersey</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
 
@@ -119,7 +119,7 @@
                     {
                         <tr>
                             <td colspan="5">
-                                <div class="empty">Geen resultaten gevonden.</div>
+                                <div class="empty">No results found.</div>
                             </td>
                         </tr>
                     }
