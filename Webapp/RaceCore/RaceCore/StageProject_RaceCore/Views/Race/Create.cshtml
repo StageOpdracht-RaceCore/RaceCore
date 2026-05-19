@@ -112,12 +112,12 @@
         <section class="race-card">
             <div class="race-card-header stage-header">
                 <div>
-                    <h2>Stages</h2>
-                    <p>Voeg alle ritten/stages toe met naam en datum.</p>
+                    <h2>Ritten</h2>
+                    <p>Voeg alle ritten toe met naam en datum.</p>
                 </div>
 
                 <button type="button" class="add-stage-btn" onclick="addStage()">
-                    + Stage toevoegen
+                    + Rit toevoegen
                 </button>
             </div>
 
@@ -132,7 +132,7 @@
                             <div class="stage-number">@(i + 1)</div>
 
                             <div class="form-group">
-                                <label>Stage naam</label>
+                                <label>Rit naam</label>
                                 <input name="Stages[@i].Name"
                                        value="@Model.Stages[i].Name"
                                        class="form-control"
@@ -159,7 +159,7 @@
                         <div class="stage-number">1</div>
 
                         <div class="form-group">
-                            <label>Stage naam</label>
+                            <label>Rit naam</label>
                             <input name="Stages[0].Name"
                                    class="form-control"
                                    placeholder="Bijvoorbeeld: Rit 1 - Brussel naar Namen" />
@@ -225,7 +225,7 @@
         }
 
         // ==============================
-        // STAGES DYNAMISCH TOEVOEGEN
+        // RITTEN DYNAMISCH TOEVOEGEN
         // ==============================
         function addStage() {
             const container = document.getElementById("stagesContainer");
@@ -238,7 +238,7 @@
                 <div class="stage-number">${index + 1}</div>
 
                 <div class="form-group">
-                    <label>Stage naam</label>
+                    <label>Rit naam</label>
                     <input name="Stages[${index}].Name"
                            class="form-control"
                            placeholder="Bijvoorbeeld: Rit ${index + 1}" />
