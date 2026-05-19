@@ -44,7 +44,6 @@ namespace StageProject_RaceCore.Controllers
                 // Alle games ophalen voor de dropdown, behalve geannuleerde games
                 var games = await _context.GameSessions
                     .Include(g => g.Race)
-                    .Where(g => g.Status != "Cancelled")
                     .OrderByDescending(g => g.CreatedAt)
                     .ToListAsync();
 
