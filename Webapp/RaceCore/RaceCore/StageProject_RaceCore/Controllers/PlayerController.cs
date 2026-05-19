@@ -5,13 +5,6 @@ using StageProject_RaceCore.ViewModels;
 
 namespace StageProject_RaceCore.Controllers
 {
-    /* PlayerController.cs
-       Purpose: Handles CRUD operations and listing for Player entities.
-       Contains actions for Index, Details, Create, Edit and Delete with
-       basic error handling and TempData notifications. */
-    /// <summary>
-    /// Controller responsible for player management (list, create, edit, delete, details).
-    /// </summary>
     public class PlayerController : Controller
     {
         private readonly AppDbContext _context;
@@ -83,12 +76,10 @@ namespace StageProject_RaceCore.Controllers
             try
             {
                 var player = await _context.Players
-                    .Include(p => p.Selections).ThenInclude(s => s.Cyclist)
-                    .Include(p => p.Selections).ThenInclude(s => s.Race)
-                    .Include(p => p.DraftTurns).ThenInclude(d => d.Race)
-                    .Include(p => p.PlayerPoints).ThenInclude(pp => pp.Race)
-                    .Include(p => p.PlayerPoints).ThenInclude(pp => pp.Stage)
-                    .Include(p => p.PlayerPoints).ThenInclude(pp => pp.Cyclist)
+                    .Include(p => p.Selections)
+                    .Include(p => p.DraftTurns)
+                    .Include(p => p.PlayerPoints)
+                    .AsSplitQuery()
                     .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (player == null)
@@ -99,9 +90,9 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(player);
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
+                TempData["Error"] = "Could not open player details: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -128,9 +119,9 @@ namespace StageProject_RaceCore.Controllers
                 TempData["Success"] = "Player added successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database unavailable. Start OpenVPN to view live players.";
+                TempData["Error"] = "Player could not be added: " + ex.Message;
                 return View(player);
             }
         }
@@ -149,9 +140,9 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(player);
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
+                TempData["Error"] = "Could not open edit page: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -190,9 +181,9 @@ namespace StageProject_RaceCore.Controllers
                 TempData["Success"] = "Player updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["Error"] = "Database unavailable. Start OpenVPN to view live players.";
+                TempData["Error"] = "Player could not be updated: " + ex.Message;
                 return View(updatedPlayer);
             }
         }
@@ -205,6 +196,7 @@ namespace StageProject_RaceCore.Controllers
                     .Include(p => p.Selections)
                     .Include(p => p.DraftTurns)
                     .Include(p => p.PlayerPoints)
+                    .AsSplitQuery()
                     .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (player == null)
@@ -215,9 +207,9 @@ namespace StageProject_RaceCore.Controllers
 
                 return View(player);
             }
-            catch
+            catch (Exception ex)
             {
-                TempData["DatabaseError"] = "Database unavailable. Start OpenVPN to view live players.";
+                TempData["Error"] = "Could not open delete page: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }

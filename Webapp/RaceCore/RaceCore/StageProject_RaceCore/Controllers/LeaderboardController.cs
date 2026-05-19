@@ -14,8 +14,9 @@ namespace StageProject_RaceCore.Controllers
         Deze controller maakt de leaderboard pagina.
 
         Belangrijk:
-        - Alleen volledig afgewerkte games komen in de dropdown
-        - Draft / Active / Cancelled games worden niet getoond
+        - Alle games behalve Cancelled komen in de dropdown
+        - Draft / Active / Finished / Done games kunnen getoond worden
+        - Zo kan je ook vorige games zien die nog Active staan
         - Spelers worden kolommen
         - Ritten worden rijen
         - Per rit zie je hoeveel punten elke speler heeft
@@ -38,12 +39,10 @@ namespace StageProject_RaceCore.Controllers
 
         public async Task<IActionResult> Index(int gameId = 0)
         {
-            // Alleen afgewerkte games ophalen voor de dropdown
+            // Alle games ophalen voor de dropdown, behalve geannuleerde games
             var games = await _context.GameSessions
                 .Include(g => g.Race)
-                .Where(g =>
-                    g.Status == "Finished" ||
-                    g.Status == "Done")
+                .Where(g => g.Status != "Cancelled")
                 .OrderByDescending(g => g.CreatedAt)
                 .ToListAsync();
 
@@ -52,10 +51,10 @@ namespace StageProject_RaceCore.Controllers
                 Games = games
             };
 
-            // Als er geen afgewerkte games zijn
+            // Als er geen games zijn
             if (!games.Any())
             {
-                model.RaceName = "No finished game";
+                model.RaceName = "No game found";
                 model.GameStatus = "None";
                 model.PlayerCount = 0;
                 model.TotalPoints = 0;
@@ -65,12 +64,12 @@ namespace StageProject_RaceCore.Controllers
                 return View(model);
             }
 
-            // Geselecteerde afgewerkte game bepalen
+            // Geselecteerde game bepalen
             var selectedGame = gameId > 0
                 ? games.FirstOrDefault(g => g.Id == gameId)
                 : games.FirstOrDefault();
 
-            // Als iemand via URL een gameId meegeeft die niet afgewerkt is
+            // Als iemand via URL een gameId meegeeft die niet bestaat of Cancelled is
             if (selectedGame == null)
             {
                 selectedGame = games.First();
@@ -116,12 +115,12 @@ namespace StageProject_RaceCore.Controllers
 
             var stageIds = stages.Select(s => s.Id).ToList();
 
-            // Alle ritresultaten ophalen
+            // Alle ritresultaten ophalen van deze race
             var stageResults = await _context.StageResults
                 .Where(sr => stageIds.Contains(sr.StageId))
                 .ToListAsync();
 
-            // Alle truien ophalen
+            // Alle truien ophalen van deze race
             var jerseys = await _context.Jerseys
                 .Where(j => stageIds.Contains(j.StageId))
                 .ToListAsync();
