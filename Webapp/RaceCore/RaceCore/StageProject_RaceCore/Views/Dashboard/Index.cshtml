@@ -1,42 +1,89 @@
 ﻿@model StageProject_RaceCore.Models.DashboardViewModel
 
 @{
+    /* =========================================================
+       PAGINA INSTELLINGEN
+       ========================================================= */
+
+    // Titel van de pagina
     ViewData["Title"] = "Game Dashboard";
+
+    // Layout gebruiken
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
+
+    /* =========================================================
+       VIEWBAG GEGEVENS OPHALEN
+       ========================================================= */
 
     int gameId = ViewBag.GameId ?? 0;
     int raceId = ViewBag.RaceId ?? 0;
+
+    // Status van de game
     string gameStatus = ViewBag.GameStatus ?? "Unknown";
+
+    // Naam van de race
     string raceName = ViewBag.RaceName ?? "No active game";
+
+    // Huidige etappe
     int currentStage = ViewBag.CurrentStage ?? 0;
+
+    /* =========================================================
+       MAXIMALE SCORE BEREKENEN
+       Nodig voor progress bars van ranking
+       ========================================================= */
 
     int maxPlayerPoints = Model.PlayerRanking.Any()
         ? Math.Max(1, Model.PlayerRanking.Max(x => x.Points))
         : 1;
 }
 
+<!-- Dashboard CSS -->
 <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
 
+<!-- Database foutmelding -->
 @if (ViewBag.DatabaseOnline == false)
 {
-    <div class="alert-box alert-warning">⚠️ Database unavailable. Start OpenVPN to view live data.</div>
+    <div class="alert-box alert-warning">
+        ⚠️ Database unavailable. Start OpenVPN to view live data.
+    </div>
 }
 
+<!-- Error melding -->
 @if (TempData["Error"] != null)
 {
-    <div class="alert-box alert-error">@TempData["Error"]</div>
+    <div class="alert-box alert-error">
+        @TempData["Error"]
+    </div>
 }
 
+<!-- Success melding -->
 @if (TempData["Success"] != null)
 {
-    <div class="alert-box alert-success">@TempData["Success"]</div>
+    <div class="alert-box alert-success">
+        @TempData["Success"]
+    </div>
 }
 
 @functions {
+
+    /* =========================================================
+       SPELER KLEUR GENEREREN
+       Elke speler krijgt een vaste kleur
+       ========================================================= */
+
     public string GetPlayerColor(string playerName)
     {
-        var colors = new List<string> { "#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4" };
+        var colors = new List<string>
+        {
+            "#3b82f6",
+            "#22c55e",
+            "#f59e0b",
+            "#ef4444",
+            "#a855f7",
+            "#06b6d4"
+        };
 
+        // Indien naam leeg is
         if (string.IsNullOrWhiteSpace(playerName))
         {
             return colors[0];
@@ -44,186 +91,318 @@
 
         int total = 0;
 
+        // Letters optellen
         foreach (char letter in playerName.ToLower())
         {
             total += letter;
         }
 
+        // Altijd dezelfde kleur teruggeven
         return colors[Math.Abs(total) % colors.Count];
     }
 
+    /* =========================================================
+       EERSTE LETTER VAN SPELER NAAM
+       Voor avatar cirkel
+       ========================================================= */
+
     public string GetInitial(string name)
     {
-        return string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper();
+        return string.IsNullOrWhiteSpace(name)
+            ? "?"
+            : name.Substring(0, 1).ToUpper();
     }
+
+    /* =========================================================
+       JUISTE CSS CLASS VOOR TRUI
+       ========================================================= */
 
     public string GetJerseyClass(string type)
     {
         string value = (type ?? "").ToLower();
 
-        if (value.Contains("yellow") || value.Contains("gele")) return "jersey jersey-yellow";
-        if (value.Contains("green") || value.Contains("groene")) return "jersey jersey-green";
-        if (value.Contains("red") || value.Contains("rode")) return "jersey jersey-red";
-        if (value.Contains("blue") || value.Contains("blauwe")) return "jersey jersey-blue";
-        if (value.Contains("white") || value.Contains("witte")) return "jersey jersey-white";
-        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka")) return "jersey jersey-polka";
+        if (value.Contains("yellow") || value.Contains("gele"))
+            return "jersey jersey-yellow";
+
+        if (value.Contains("green") || value.Contains("groene"))
+            return "jersey jersey-green";
+
+        if (value.Contains("red") || value.Contains("rode"))
+            return "jersey jersey-red";
+
+        if (value.Contains("blue") || value.Contains("blauwe"))
+            return "jersey jersey-blue";
+
+        if (value.Contains("white") || value.Contains("witte"))
+            return "jersey jersey-white";
+
+        if (value.Contains("mountain") ||
+            value.Contains("bolletjes") ||
+            value.Contains("polka"))
+            return "jersey jersey-polka";
 
         return "jersey jersey-default";
     }
+
+    /* =========================================================
+       STATUS CLASS GENEREREN
+       ========================================================= */
 
     public string GetStatusClass(string status)
     {
         string value = (status ?? "").ToLower();
 
-        if (value.Contains("draft")) return "status-pill status-draft";
-        if (value.Contains("active")) return "status-pill status-active";
-        if (value.Contains("finished") || value.Contains("done")) return "status-pill status-finished";
+        if (value.Contains("draft"))
+            return "status-pill status-draft";
+
+        if (value.Contains("active"))
+            return "status-pill status-active";
+
+        if (value.Contains("finished") || value.Contains("done"))
+            return "status-pill status-finished";
 
         return "status-pill status-default";
     }
 }
 
+<!-- =========================================================
+     DASHBOARD CONTAINER
+     ========================================================= -->
+
 <div class="dashboard-container">
 
+    <!-- =========================================================
+         HERO SECTION
+         Grote banner bovenaan dashboard
+         ========================================================= -->
+
     <section class="game-hero">
+
         <div class="hero-main-area">
+
+            <!-- Linkerkant van hero -->
             <div class="hero-content">
-                <div class="hero-kicker">RaceCore Game Hub</div>
+
+                <div class="hero-kicker">
+                    RaceCore Game Hub
+                </div>
+
+                <!-- Naam van de race -->
                 <h1>@raceName</h1>
 
+                <!-- Status informatie -->
                 <div class="hero-meta">
-                    <span class="@GetStatusClass(gameStatus)">@gameStatus</span>
+
+                    <span class="@GetStatusClass(gameStatus)">
+                        @gameStatus
+                    </span>
+
                     <span>🏁 Stage @currentStage</span>
+
                     <span>🎯 @Model.TotalDraftPicks picks</span>
                 </div>
             </div>
 
+            <!-- Kleine statistieken -->
             <div class="hero-mini-stats">
+
+                <!-- Players -->
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">👥</span>
+
                     <div>
                         <small>Players</small>
                         <strong>@Model.PlayersCount</strong>
                     </div>
                 </div>
 
+                <!-- Cyclists -->
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">🚴</span>
+
                     <div>
                         <small>Cyclists</small>
                         <strong>@Model.CyclistsCount</strong>
                     </div>
                 </div>
 
+                <!-- Draft picks -->
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">🎯</span>
+
                     <div>
                         <small>Draft Picks</small>
                         <strong>@Model.TotalDraftPicks</strong>
                     </div>
                 </div>
 
+                <!-- Status -->
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">🏁</span>
+
                     <div>
                         <small>Status</small>
                         <strong>@gameStatus</strong>
                     </div>
                 </div>
+
             </div>
         </div>
 
+        <!-- =========================================================
+             ACTIE PANEL
+             ========================================================= -->
+
         <div class="hero-action-panel">
+
+            <!-- Draft status -->
             @if (gameStatus == "Draft")
             {
                 <span class="next-label">Next mission</span>
+
                 <h2>Finish the draft</h2>
 
+                <!-- Naar draft pagina -->
                 <a asp-controller="Draft"
                    asp-action="Index"
                    asp-route-gameId="@gameId"
                    class="main-play-btn">
+
                     ▶ Continue Draft
                 </a>
             }
+
+            <!-- Active status -->
             else if (gameStatus == "Active")
             {
-                <span class="next-label">Next mission</span>
-                <h2>Go to Stage Results</h2>
+            <span class="next-label">Next mission</span>
 
-                <a asp-controller="Scoring"
-                   asp-action="Index"
-                   asp-route-raceId="@raceId"
-                   class="main-play-btn">
-                    ⚡ Go to Scoring
-                </a>
+            <h2>Go to Stage Results</h2>
+
+            <!-- Naar scoring pagina -->
+            <a asp-controller="Scoring"
+               asp-action="Index"
+               asp-route-raceId="@raceId"
+               class="main-play-btn">
+
+                ⚡ Go to Scoring
+            </a>
             }
+
+            <!-- Finished status -->
             else
             {
-                <span class="next-label">Game finished</span>
-                <h2>View final results</h2>
+            <span class="next-label">Game finished</span>
 
-                <a asp-controller="Leaderboard"
-                   asp-action="Index"
-                   asp-route-gameId="@gameId"
-                   class="main-play-btn">
-                    🏆 Leaderboard
-                </a>
+            <h2>View final results</h2>
+
+            <!-- Naar leaderboard -->
+            <a asp-controller="Leaderboard"
+               asp-action="Index"
+               asp-route-gameId="@gameId"
+               class="main-play-btn">
+
+                🏆 Leaderboard
+            </a>
             }
         </div>
     </section>
 
+    <!-- =========================================================
+         MENU GRID
+         Navigatie kaarten
+         ========================================================= -->
+
     <section class="game-menu-grid">
-        <a asp-controller="Game" asp-action="New" class="game-menu-card">
+
+        <!-- Nieuwe game -->
+        <a asp-controller="Game"
+           asp-action="New"
+           class="game-menu-card">
+
             <span>➕</span>
+
             <div>
                 <strong>New Game</strong>
                 <small>Start a new race</small>
             </div>
         </a>
 
-        <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="game-menu-card">
+        <!-- Scoring -->
+        <a asp-controller="Scoring"
+           asp-action="Index"
+           asp-route-raceId="@raceId"
+           class="game-menu-card">
+
             <span>⚡</span>
+
             <div>
                 <strong>Scoring</strong>
                 <small>Enter points</small>
             </div>
         </a>
 
-        <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="game-menu-card">
+        <!-- Leaderboard -->
+        <a asp-controller="Leaderboard"
+           asp-action="Index"
+           asp-route-gameId="@gameId"
+           class="game-menu-card">
+
             <span>🏆</span>
+
             <div>
                 <strong>Leaderboard</strong>
                 <small>View rankings</small>
             </div>
         </a>
 
-        <a asp-controller="History" asp-action="History" class="game-menu-card">
+        <!-- History -->
+        <a asp-controller="History"
+           asp-action="History"
+           class="game-menu-card">
+
             <span>📜</span>
+
             <div>
                 <strong>History</strong>
                 <small>Previous games</small>
             </div>
         </a>
 
-        <a asp-controller="Cyclist" asp-action="Index" class="game-menu-card">
+        <!-- Cyclists -->
+        <a asp-controller="Cyclist"
+           asp-action="Index"
+           class="game-menu-card">
+
             <span>🚴</span>
+
             <div>
                 <strong>Cyclists</strong>
                 <small>Manage cyclists</small>
             </div>
         </a>
 
-        <a asp-controller="Team" asp-action="Index" class="game-menu-card">
+        <!-- Teams -->
+        <a asp-controller="Team"
+           asp-action="Index"
+           class="game-menu-card">
+
             <span>🛡️</span>
+
             <div>
                 <strong>Teams</strong>
                 <small>View teams</small>
             </div>
         </a>
 
-        <a asp-controller="Result" asp-action="StageResults" asp-route-raceId="@raceId" class="game-menu-card">
+        <!-- Stage resultaten -->
+        <a asp-controller="Result"
+           asp-action="StageResults"
+           asp-route-raceId="@raceId"
+           class="game-menu-card">
+
             <span>🗺️</span>
+
             <div>
                 <strong>Stage Results</strong>
                 <small>Manage stage results</small>
@@ -232,147 +411,89 @@
 
     </section>
 
+    <!-- =========================================================
+         HOOFD DASHBOARD GRID
+         ========================================================= -->
+
     <section class="main-dashboard-grid">
 
+        <!-- =========================================================
+             SPELERS RANKING
+             ========================================================= -->
+
         <div class="game-panel ranking-panel">
+
             <div class="panel-title">
                 <span>Race</span>
                 <h2>Player Ranking</h2>
             </div>
 
+            <!-- Indien ranking bestaat -->
             @if (Model.PlayerRanking.Any())
             {
                 <div class="ranking-list">
+
                     @foreach (var player in Model.PlayerRanking)
                     {
+                        // Breedte van progress bar berekenen
                         int width = player.Points > 0
-                            ? Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100))
+                            ? Math.Max(8,
+                                (int)Math.Round(
+                                    (double)player.Points /
+                                    maxPlayerPoints * 100))
                             : 8;
 
+                        // Kleur van speler ophalen
                         string color = GetPlayerColor(player.PlayerName);
 
                         <div class="ranking-row">
-                            <div class="ranking-left">
-                                <div class="ranking-number">#@player.Position</div>
 
-                                <div class="player-avatar" style="background:@color;">
+                            <div class="ranking-left">
+
+                                <!-- Positie -->
+                                <div class="ranking-number">
+                                    #@player.Position
+                                </div>
+
+                                <!-- Avatar -->
+                                <div class="player-avatar"
+                                     style="background:@color;">
+
                                     @GetInitial(player.PlayerName)
                                 </div>
 
+                                <!-- Naam + progress -->
                                 <div class="ranking-info">
+
                                     <div class="player-name">
+
                                         <span style="background:@color;"></span>
+
                                         <strong>@player.PlayerName</strong>
                                     </div>
 
+                                    <!-- Progress bar -->
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width:@width%; background:@color;"></div>
+
+                                        <div class="progress-fill"
+                                             style="width:@width%; background:@color;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <strong class="points">@player.Points pts</strong>
+                            <!-- Punten -->
+                            <strong class="points">
+                                @player.Points pts
+                            </strong>
                         </div>
                     }
                 </div>
             }
             else
             {
-                <div class="empty-box">No leaderboard available.</div>
+                <div class="empty-box">
+                    No leaderboard available.
+                </div>
             }
         </div>
-
-        <div class="game-panel progress-panel">
-            <div class="panel-title">
-                <span>Game Progress</span>
-                <h2>Current mission</h2>
-            </div>
-
-            <div class="mission-box">
-                <div>
-                    <span>Race</span>
-                    <strong>@raceName</strong>
-                </div>
-
-                <div>
-                    <span>Status</span>
-                    <strong>@gameStatus</strong>
-                </div>
-
-                <div>
-                    <span>Current stage</span>
-                    <strong>@currentStage</strong>
-                </div>
-
-                <div>
-                    <span>Total picks</span>
-                    <strong>@Model.TotalDraftPicks</strong>
-                </div>
-            </div>
-
-            <div class="draft-progress-box">
-                <div class="draft-progress-top">
-                    <span>Draft Progress</span>
-                    <strong>@Model.TotalDraftPicks picks</strong>
-                </div>
-
-                <div class="progress-bar">
-                    <div class="progress-fill green-fill" style="width:@(Model.TotalDraftPicks == 0 ? 5 : 100)%"></div>
-                </div>
-            </div>
-        </div>
-
-    </section>
-
-    <section class="bottom-dashboard-grid">
-
-        <div class="game-panel">
-            <div class="panel-title">
-                <span>Performance</span>
-                <h2>Top Cyclists</h2>
-            </div>
-
-            @if (Model.TopCyclists.Any())
-            {
-                <div class="simple-list">
-                    @foreach (var cyclist in Model.TopCyclists)
-                    {
-                        <div class="simple-row">
-                            <strong>@cyclist.Name</strong>
-                            <span>@cyclist.Points pts</span>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="empty-box">No cyclist points available.</div>
-            }
-        </div>
-
-        <div class="game-panel">
-            <div class="panel-title">
-                <span>Classifications</span>
-                <h2>Jerseys</h2>
-            </div>
-
-            @if (Model.Jerseys.Any())
-            {
-                <div class="simple-list">
-                    @foreach (var jersey in Model.Jerseys)
-                    {
-                        <div class="simple-row">
-                            <span class="@GetJerseyClass(jersey.Type)">@jersey.Type</span>
-                            <strong>@jersey.CyclistName</strong>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="empty-box">No jerseys available.</div>
-            }
-        </div>
-
-    </section>
-</div>
