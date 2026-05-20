@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+@* _DashboardLayout.cshtml
+   Purpose: Layout used for the admin/dashboard area. Includes a
+   sidebar navigation, topbar and content window. Views can optionally
+   provide "Styles" and "Scripts" sections for page-specific assets. *@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RaceCore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script>
+        (function () {
+            var stored = localStorage.getItem('dark-mode');
+            if (stored === 'true') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    
+    @* Deze regel zorgt ervoor dat CSS uit individuele views (zoals History.cshtml) geladen wordt *@
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-wrapper">
+
+        <aside class="sidebar" id="mobileSidebar">
+            <div class="sidebar-logo">
+                <h2>RaceCore</h2>
+                <p>Cycling Game</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a asp-controller="Game" asp-action="New">🎮 New Game</a>
+                <a asp-controller="Dashboard" asp-action="Index">🏠 Game Dashboard</a>
+                <a asp-controller="Draft" asp-action="Index">🐍 Draft</a>
+                <a asp-controller="Player" asp-action="Index">👥 Players</a>
+                <a asp-controller="Scoring" asp-action="Index">🚴 Stage Input</a>
+                <a asp-controller="Result" asp-action="StageResults">📊 Stage Results</a>
+                <a asp-controller="Leaderboard" asp-action="Index">🏆 Leaderboard</a>
+
+                <hr style="border-color:rgba(255,255,255,.12);width:100%;" />
+
+                <a asp-controller="Cyclist" asp-action="Index">Cyclists</a>
+                <a asp-controller="Team" asp-action="Index">Teams</a>
+                <a asp-controller="Race" asp-action="Index">Races</a>
+                <a asp-controller="Stage" asp-action="Index">Stages</a>
+                <a asp-controller="History" asp-action="History">History</a>
+
+                <button class="dark-toggle-btn" onclick="toggleDarkMode(this)" id="darkModeBtnSidebar">🌙 Dark</button>
+
+            </nav>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" type="button" onclick="toggleSidebar()">
+                        ☰
+                    </button>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="dark-toggle-header" onclick="toggleDarkMode(this)" id="darkModeBtnHeader" title="Toggle dark mode">🌙</button>
+                    Welcome to RaceCore
+                </div>
+            </header>
+
+            <div class="content-window">
+                @if (TempData["DatabaseError"] != null)
+                {
+                    <div style="padding:12px; background:#fff3cd; color:#856404; border-radius:8px; margin-bottom:16px;">@TempData["DatabaseError"]</div>
+                }
+
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script>
+            (function () {
+                if (localStorage.getItem('dark-mode') === 'true') {
+                    var btns = document.querySelectorAll('.dark-toggle-btn, .dark-toggle-header');
+                    for (var i = 0; i < btns.length; i++) {
+                        btns[i].textContent = btns[i].classList.contains('dark-toggle-header') ? '☀️' : '☀️ Light';
+                    }
+                }
+            })();
+
+            function toggleDarkMode(btn) {
+                var html = document.documentElement;
+                var isDark = html.classList.toggle('dark-mode');
+                localStorage.setItem('dark-mode', isDark);
+                var allBtns = document.querySelectorAll('.dark-toggle-btn, .dark-toggle-header');
+                for (var i = 0; i < allBtns.length; i++) {
+                    allBtns[i].textContent = isDark ? '☀️ Light' : '🌙 Dark';
+                    if (allBtns[i].classList.contains('dark-toggle-header')) {
+                        allBtns[i].textContent = isDark ? '☀️' : '🌙';
+                    }
+                }
+            }
+
+            function toggleSidebar() {
+                document.getElementById("mobileSidebar").classList.toggle("open");
+                document.getElementById("sidebarOverlay").classList.toggle("show");
+            }
+
+            function closeSidebarOnDesktopResize() {
+                if (window.innerWidth > 768) {
+                    document.getElementById("mobileSidebar").classList.remove("open");
+                    document.getElementById("sidebarOverlay").classList.remove("show");
+                }
+            }
+
+            window.addEventListener("resize", closeSidebarOnDesktopResize);
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,169 @@
+@model StageProject_RaceCore.ViewModels.PlayerPageViewModel
+
+@{
+    // Page title used by the layout
+    ViewData["Title"] = "Players";
+    // Use the clean layout for this view
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+}
+
+@* Link to page-specific stylesheet. asp-append-version helps with cache busting. *@
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+<div class="player-page">
+    @* Display success notification (set from controller via TempData) *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="player-alert player-alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @* Display error notification (set from controller via TempData) *@
+    @if (TempData["Error"] != null)
+    {
+        <div class="player-alert player-alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    @* Header card with title, description and primary actions *@
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1 class="player-page-title">Players</h1>
+            <p class="player-page-subtitle">
+                Manage all players, their draft order and their performances in the system.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            @* Link to create a new player *@
+            <a asp-action="Create" class="player-btn player-btn-primary">+ New Player</a>
+            @* Quick link to start a new game *@
+            <a asp-controller="Game" asp-action="New" class="player-btn player-btn-done">
+                ✓ Done
+            </a>
+        </div>
+
+    </div>
+
+    @* Quick stats about players shown in small cards *@
+    <div class="player-stats-grid">
+        <div class="player-stat-card">
+            <span class="player-stat-label">Total players</span>
+            <strong class="player-stat-value">@Model.TotalPlayers</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Total points</span>
+            <strong class="player-stat-value">@Model.TotalPoints</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Selections</span>
+            <strong class="player-stat-value">@Model.TotalSelections</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Draft turns</span>
+            <strong class="player-stat-value">@Model.TotalDraftTurns</strong>
+        </div>
+
+        <div class="player-stat-card">
+            <span class="player-stat-label">Points records</span>
+            <strong class="player-stat-value">@Model.TotalPointRecords</strong>
+        </div>
+    </div>
+
+    @* Toolbar with search form and reset action *@
+    <div class="player-toolbar-card">
+        <form method="get" asp-action="Index" class="player-search-form">
+            <div class="player-search-group">
+                <label for="searchTerm">Search player</label>
+                <input id="searchTerm"
+                       name="searchTerm"
+                       value="@Model.SearchTerm"
+                       class="player-search-input"
+                       placeholder="Search by name..." />
+            </div>
+
+            <div class="player-toolbar-actions">
+                <button type="submit" class="player-btn player-btn-primary">Search</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    @* Main table listing players and their aggregates *@
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Draft position</th>
+                        <th>Total points</th>
+                        <th>Selections</th>
+                        <th>Draft turns</th>
+                        <th>Points records</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* If there are players, render list rows *@
+                    @if (Model.Players.Any())
+                    {
+                        foreach (var player in Model.Players)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="player-name-cell">
+                                        <div class="player-avatar">
+                                            @* Show initial or fallback to '?' *@
+                                            @(string.IsNullOrWhiteSpace(player.Name) ? "?" : player.Name.Substring(0, 1).ToUpper())
+                                        </div>
+                                        <div>
+                                            <div class="player-name">@player.Name</div>
+                                            <div class="player-meta">Player ID: @player.Id</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="player-badge player-badge-draft">#@player.PositionInDraft</span>
+                                </td>
+                                <td>
+                                    <span class="player-points">@player.TotalPoints</span>
+                                </td>
+                                <td>@player.SelectionsCount</td>
+                                <td>@player.DraftTurnsCount</td>
+                                <td>@player.PointsRecordsCount</td>
+                                <td>
+                                    <div class="player-action-links">
+                                        @* CRUD links for each player *@
+                                        <a asp-action="Details" asp-route-id="@player.Id" class="player-link">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@player.Id" class="player-link">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@player.Id" class="player-link player-link-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        @* Empty state when no players match filter *@
+                        <tr>
+                            <td colspan="7">
+                                <div class="player-empty-state">
+                                    <h3>No players found.</h3>
+                                    <p>No players match your search query.</p>
+                                    <a asp-action="Create" class="player-btn player-btn-primary">Add New Player</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

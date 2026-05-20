@@ -1,15 +1,20 @@
 ﻿@model StageProject_RaceCore.Models.DashboardViewModel
 
 @{
+    // Titel van de pagina
     ViewData["Title"] = "Game Dashboard";
+
+    // We gebruiken de algemene layout van de applicatie
     Layout = "~/Views/Shared/_CleanLayout.cshtml";
 
+    // Waarden die vanuit de controller via ViewBag worden meegegeven
     int gameId = ViewBag.GameId ?? 0;
     int raceId = ViewBag.RaceId ?? 0;
     string gameStatus = ViewBag.GameStatus ?? "Unknown";
     string raceName = ViewBag.RaceName ?? "No active game";
     int currentStage = ViewBag.CurrentStage ?? 0;
 
+    // Hoogste score wordt gebruikt om de ranking progress bars procentueel te berekenen
     int maxPlayerPoints = Model.PlayerRanking.Any()
         ? Math.Max(1, Model.PlayerRanking.Max(x => x.Points))
         : 1;
@@ -17,22 +22,26 @@
 
 <link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
 
+@* Melding als de online database niet bereikbaar is *@
 @if (ViewBag.DatabaseOnline == false)
 {
     <div class="alert-box alert-warning">⚠️ Database unavailable. Start OpenVPN to view live data.</div>
 }
 
+@* Foutmelding tonen *@
 @if (TempData["Error"] != null)
 {
     <div class="alert-box alert-error">@TempData["Error"]</div>
 }
 
+@* Succesmelding tonen *@
 @if (TempData["Success"] != null)
 {
     <div class="alert-box alert-success">@TempData["Success"]</div>
 }
 
 @functions {
+    // Geeft elke speler automatisch een vaste kleur op basis van zijn naam
     public string GetPlayerColor(string playerName)
     {
         var colors = new List<string> { "#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4" };
@@ -52,11 +61,13 @@
         return colors[Math.Abs(total) % colors.Count];
     }
 
+    // Haalt de eerste letter van de spelernaam op voor de avatar
     public string GetInitial(string name)
     {
         return string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper();
     }
 
+    // Koppelt het type trui aan de juiste CSS class
     public string GetJerseyClass(string type)
     {
         string value = (type ?? "").ToLower();
@@ -71,6 +82,7 @@
         return "jersey jersey-default";
     }
 
+    // Geeft de juiste status badge afhankelijk van de game status
     public string GetStatusClass(string status)
     {
         string value = (status ?? "").ToLower();
@@ -85,12 +97,14 @@
 
 <div class="dashboard-container">
 
+    @* HERO SECTION - centrale informatie over de huidige game *@
     <section class="game-hero">
         <div class="hero-main-area">
             <div class="hero-content">
                 <div class="hero-kicker">RaceCore Game Hub</div>
                 <h1>@raceName</h1>
 
+                @* Kleine statusinformatie onder de race naam *@
                 <div class="hero-meta">
                     <span class="@GetStatusClass(gameStatus)">@gameStatus</span>
                     <span>🏁 Stage @currentStage</span>
@@ -98,6 +112,7 @@
                 </div>
             </div>
 
+            @* Mini statistieken van de huidige game *@
             <div class="hero-mini-stats">
                 <div class="hero-mini-stat">
                     <span class="hero-mini-icon">👥</span>
@@ -133,6 +148,7 @@
             </div>
         </div>
 
+        @* ACTIEPANEEL - knop verandert automatisch volgens de game status *@
         <div class="hero-action-panel">
             @if (gameStatus == "Draft")
             {
@@ -173,6 +189,7 @@
         </div>
     </section>
 
+    @* SNELLE NAVIGATIE - links naar de belangrijkste pagina's *@
     <section class="game-menu-grid">
         <a asp-controller="Game" asp-action="New" class="game-menu-card">
             <span>➕</span>
@@ -229,11 +246,12 @@
                 <small>Manage stage results</small>
             </div>
         </a>
-
     </section>
 
+    @* HOOFDGRID - ranking en game progress naast elkaar *@
     <section class="main-dashboard-grid">
 
+        @* PLAYER RANKING - toont spelers met punten en progress bar *@
         <div class="game-panel ranking-panel">
             <div class="panel-title">
                 <span>Race</span>
@@ -245,10 +263,12 @@
                 <div class="ranking-list">
                     @foreach (var player in Model.PlayerRanking)
                     {
+                        // Breedte van de progress bar wordt berekend op basis van hoogste score
                         int width = player.Points > 0
                             ? Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100))
                             : 8;
 
+                        // Elke speler krijgt een vaste kleur
                         string color = GetPlayerColor(player.PlayerName);
 
                         <div class="ranking-row">
@@ -282,6 +302,7 @@
             }
         </div>
 
+        @* GAME PROGRESS - korte samenvatting van huidige race/game *@
         <div class="game-panel progress-panel">
             <div class="panel-title">
                 <span>Game Progress</span>
@@ -310,6 +331,7 @@
                 </div>
             </div>
 
+            @* Draft progress visueel weergegeven met een progress bar *@
             <div class="draft-progress-box">
                 <div class="draft-progress-top">
                     <span>Draft Progress</span>
@@ -324,8 +346,10 @@
 
     </section>
 
+    @* ONDERSTE GRID - extra informatie: top cyclists en jerseys *@
     <section class="bottom-dashboard-grid">
 
+        @* TOP CYCLISTS - toont beste renners op basis van punten *@
         <div class="game-panel">
             <div class="panel-title">
                 <span>Performance</span>
@@ -350,6 +374,7 @@
             }
         </div>
 
+        @* JERSEYS - toont de huidige truien en winnaars *@
         <div class="game-panel">
             <div class="panel-title">
                 <span>Classifications</span>

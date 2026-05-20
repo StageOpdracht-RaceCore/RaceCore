@@ -1,0 +1,41 @@
+@model StageProject_RaceCore.Models.Player
+
+@{
+    // Title for delete confirmation
+    ViewData["Title"] = "Delete Player";
+    // Reuse the clean layout
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+}
+
+@* Page stylesheet for consistent styling with other player views *@
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+<div class="player-form-page">
+    <div class="player-form-card player-delete-card">
+        @* Warning header explaining deletion impact *@
+        <div class="player-form-header">
+            <p class="player-page-kicker">Warning</p>
+            <h1>Delete Player</h1>
+            <p>This action cannot easily be undone.</p>
+        </div>
+
+        @* Show the player being deleted *@
+        <div class="player-delete-alert">
+            Are you sure you want to delete player <strong>@Model.Name</strong>?
+        </div>
+
+        @* Summary of player details to confirm deletion *@
+        <div class="player-detail-list">
+            <div><span>Name</span><strong>@Model.Name</strong></div>
+            <div><span>Draft position</span><strong>#@Model.PositionInDraft</strong></div>
+            <div><span>Total points</span><strong>@Model.TotalPoints</strong></div>
+        </div>
+
+        @* POST back to Delete action to perform removal. Hidden Id ensures correct record. *@
+        <form asp-action="Delete" method="post" class="player-form-actions">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="player-btn player-btn-danger">Yes, delete</button>
+            <a asp-action="Index" class="player-btn player-btn-light">Cancel</a>
+        </form>
+    </div>
+</div>

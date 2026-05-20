@@ -1,0 +1,605 @@
+@model List<StageProject_RaceCore.ViewModels.DraftTurnViewModel>
+
+@{
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    ViewData["Title"] = "Draft";
+
+    var cyclists = ViewBag.Cyclists as List<StageProject_RaceCore.Models.Cyclist>
+                   ?? new List<StageProject_RaceCore.Models.Cyclist>();
+
+    int gameId = ViewBag.GameId ?? 0;
+
+    int ridersPerPlayer = ViewBag.RidersPerPlayer ?? 12;
+    int benchPerPlayer = ViewBag.BenchPerPlayer ?? 6;
+    int totalPicksPerPlayer = ridersPerPlayer + benchPerPlayer;
+
+    string raceName = ViewBag.RaceName ?? "Onbekende race";
+
+    var currentTurn = Model
+        .Where(t => t.CyclistId == null)
+        .OrderBy(t => t.TurnNumber)
+        .FirstOrDefault();
+
+    int currentPlayerPickedCount = 0;
+    int currentPickNumberForPlayer = 0;
+    bool currentPickIsBench = false;
+
+    if (currentTurn != null)
+    {
+        currentPlayerPickedCount = Model.Count(t =>
+            t.PlayerId == currentTurn.PlayerId &&
+            t.CyclistId != null);
+
+        currentPickNumberForPlayer = currentPlayerPickedCount + 1;
+        currentPickIsBench = currentPlayerPickedCount >= ridersPerPlayer;
+    }
+
+    var playerRows = Model
+        .GroupBy(t => new { t.PlayerId, t.PlayerName })
+        .Select(g => new
+        {
+            PlayerId = g.Key.PlayerId,
+            PlayerName = g.Key.PlayerName,
+            TotalTurns = g.Count(),
+            PickedCount = g.Count(x => x.CyclistId != null),
+            ActivePicked = Math.Min(g.Count(x => x.CyclistId != null), ridersPerPlayer),
+            BenchPicked = Math.Max(0, g.Count(x => x.CyclistId != null) - ridersPerPlayer),
+            NextTurn = g.Where(x => x.CyclistId == null).OrderBy(x => x.TurnNumber).FirstOrDefault()
+        })
+        .OrderBy(x => x.NextTurn == null ? 999999 : x.NextTurn.TurnNumber)
+        .ThenBy(x => x.PlayerName)
+        .ToList();
+
+    var totalPlayers = playerRows.Count;
+    var totalTurns = Model.Count;
+    var pickedCount = Model.Count(t => t.CyclistId != null);
+    var remainingTurns = Model.Count(t => t.CyclistId == null);
+    var draftIsLive = totalTurns > 0 && remainingTurns > 0;
+    var draftIsDone = totalTurns > 0 && remainingTurns == 0;
+}
+
+<link rel="stylesheet" href="~/css/Draft.css" asp-append-version="true" />
+
+<div class="draft-page">
+
+    <div class="draft-page-header">
+        <div class="draft-page-header-left">
+            <span class="draft-page-kicker">RaceCore Draft Center</span>
+
+            <h1>Live Draft</h1>
+
+            <p>
+                Race: <strong>@raceName</strong><br />
+                Eerst kies je <strong>@ridersPerPlayer actieve renners</strong>.
+                Daarna kies je <strong>@benchPerPlayer bankrenners</strong>.
+            </p>
+        </div>
+
+        <div class="draft-page-header-right">
+            <div class="draft-status-pill @(draftIsLive ? "live" : "done")">
+                <span class="draft-status-dot"></span>
+                @(draftIsLive ? "Draft Live" : draftIsDone ? "Draft Finished" : "Nog Geen Draft")
+            </div>
+
+            <div class="draft-header-actions">
+                <a asp-controller="Game"
+                       asp-action="New"
+                       class="draft-header-btn draft-header-btn-white">
+                    New Game
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="draft-alert draft-alert-error">@TempData["Error"]</div>
+    }
+
+    
+
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="draft-alert draft-alert-error">@TempData["DatabaseError"]</div>
+    }
+
+    <div class="draft-stats-grid">
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">🎯</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Status</span>
+                <strong class="draft-stat-value">
+                    @(draftIsLive ? "LIVE" : draftIsDone ? "KLAAR" : "LEEG")
+                </strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">👥</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Players</span>
+                <strong class="draft-stat-value">@totalPlayers</strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">🚴</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Gekozen renners</span>
+                <strong class="draft-stat-value">@pickedCount</strong>
+            </div>
+        </div>
+
+        <div class="draft-stat-card">
+            <div class="draft-stat-icon">📋</div>
+            <div class="draft-stat-content">
+                <span class="draft-stat-label">Resterende beurten</span>
+                <strong class="draft-stat-value">@remainingTurns</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="draft-website-layout" id="draft-players-section">
+
+        <div class="draft-players-area">
+            <div class="draft-page-section-title">
+                <div>
+                    <h2>Players in deze draft</h2>
+                    <p>
+                        Elke speler kiest @ridersPerPlayer actieve renners en daarna @benchPerPlayer bankrenners.
+                    </p>
+                </div>
+
+                <span>@totalPlayers spelers</span>
+            </div>
+
+            <div class="draft-table">
+                <div class="draft-table-head">
+                    <div>Player</div>
+                    <div>Picks</div>
+                    <div>Actie</div>
+                </div>
+
+                <div class="draft-table-body">
+                    @if (!playerRows.Any())
+                    {
+                        <div class="draft-empty-state" style="padding:24px;">
+                            Nog geen draft aangemaakt. Start eerst een New Game.
+                        </div>
+                    }
+                    else
+                    {
+                        foreach (var player in playerRows)
+                        {
+                            var isActive = currentTurn != null &&
+                                           player.NextTurn != null &&
+                                           player.NextTurn.Id == currentTurn.Id;
+
+                            var initial = "?";
+
+                            if (!string.IsNullOrWhiteSpace(player.PlayerName))
+                            {
+                                initial = player.PlayerName.Substring(0, 1).ToUpper();
+                            }
+
+                            var nextIsBench = player.PickedCount >= ridersPerPlayer;
+
+                            <div class="draft-row @(isActive ? "active" : "")">
+                                <div class="draft-cell draft-player-cell" data-label="Player">
+                                    <div class="draft-player-avatar">@initial</div>
+
+                                    <div class="draft-player-meta">
+                                        <div class="draft-player-name-row">
+                                            <span class="draft-player-name">@player.PlayerName</span>
+
+                                            @if (isActive)
+                                            {
+                                                if (nextIsBench)
+                                                {
+                                                    <span class="draft-inline-badge active" style="background:#fff7ed;color:#c2410c;">
+                                                        Bench kiezen
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="draft-inline-badge active">
+                                                        Actieve renner kiezen
+                                                    </span>
+                                                }
+                                            }
+                                            else if (player.PickedCount >= player.TotalTurns)
+                                            {
+                                                <span class="draft-inline-badge picked">Done</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="draft-inline-badge waiting">Wacht</span>
+                                            }
+                                        </div>
+
+                                        <span class="draft-player-subtitle">
+                                            Active: @player.ActivePicked / @ridersPerPlayer |
+                                            Bench: @player.BenchPicked / @benchPerPlayer
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="draft-cell draft-position-cell" data-label="Picks">
+                                    <span class="draft-position-badge">
+                                        @player.PickedCount / @totalPicksPerPlayer
+                                    </span>
+                                </div>
+
+                                <div class="draft-cell draft-selection-cell" data-label="Actie">
+                                    @if (isActive && currentTurn != null)
+                                    {
+                                        <form asp-action="PickCyclist" method="post" class="draft-pick-form">
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden" name="draftTurnId" value="@currentTurn.Id" />
+                                            <input type="hidden" name="gameId" value="@gameId" />
+                                            <input type="hidden" name="cyclistId" class="draft-selected-cyclist-id" />
+
+                                            <div class="draft-combobox">
+                                                <input type="text"
+                                                       class="draft-combobox-input"
+                                                       autocomplete="off"
+                                                       placeholder="Typ volledige naam of scroll in de lijst..."
+                                                       required />
+
+                                                <div class="draft-combobox-list">
+                                                    @foreach (var cyclist in cyclists.OrderBy(c => c.FullName))
+                                                    {
+                                                        <button type="button"
+                                                                class="draft-combobox-option"
+                                                                data-id="@cyclist.Id"
+                                                                data-name="@cyclist.FullName">
+                                                            @cyclist.FullName
+                                                        </button>
+                                                    }
+
+                                                    <div class="draft-combobox-empty">
+                                                        Geen renner gevonden.
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="draft-pick-button">
+                                                Pick
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (player.PickedCount >= player.TotalTurns)
+                                    {
+                                        <div class="draft-picked-name">
+                                            <span class="draft-picked-icon">✔</span>
+                                            <span>Team compleet</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="draft-empty-state">
+                                            Waiting...
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="draft-info-area">
+            <div class="draft-side-card draft-side-highlight">
+                <div class="draft-side-card-header">
+                    <h3>Live Draft Info</h3>
+
+                    <span class="draft-mini-status @(draftIsLive ? "live" : "klaar")">
+                        @(draftIsLive ? "Live" : draftIsDone ? "Done" : "Leeg")
+                    </span>
+                </div>
+
+                <div class="draft-current-turn-box">
+                    <span class="draft-current-turn-label">Nu aan de beurt</span>
+
+                    <strong class="draft-current-turn-name">
+                        @(currentTurn?.PlayerName ?? (draftIsDone ? "Einde Draft" : "Nog geen draft"))
+                    </strong>
+
+                    @if (currentTurn != null)
+                    {
+                        <div style="margin-top:12px;">
+                            @if (currentPickIsBench)
+                            {
+                                <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-weight:900;">
+                                    Benchrenner @(currentPickNumberForPlayer - ridersPerPlayer) / @benchPerPlayer
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="display:inline-flex;padding:7px 12px;border-radius:999px;background:#ecfdf5;color:#047857;font-weight:900;">
+                                    Actieve renner @currentPickNumberForPlayer / @ridersPerPlayer
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="draft-info-list">
+                    <div class="draft-info-item">
+                        <span>Active riders per speler</span>
+                        <strong>@ridersPerPlayer</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Bench riders per speler</span>
+                        <strong>@benchPerPlayer</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Totaal per speler</span>
+                        <strong>@totalPicksPerPlayer</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Beschikbare renners</span>
+                        <strong>@cyclists.Count</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Gekozen renners</span>
+                        <strong>@pickedCount</strong>
+                    </div>
+
+                    <div class="draft-info-item">
+                        <span>Totale draft beurten</span>
+                        <strong>@totalTurns</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="draft-side-card">
+                <div class="draft-side-card-header">
+                    <h3>Draft Vooruitgang</h3>
+                </div>
+
+                <div class="draft-progress-wrap">
+                    <div class="draft-progress-bar">
+                        <div class="draft-progress-fill" style="width:@(totalTurns == 0 ? 0 : (pickedCount * 100 / totalTurns))%;"></div>
+                    </div>
+
+                    <div class="draft-progress-text">
+                        @pickedCount / @totalTurns picks completed
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+<script>
+    const gameId = Number(@gameId);
+    let pageIsChanging = false;
+    let currentDraftVersion = "@pickedCount-@(currentTurn?.Id ?? 0)-@ViewBag.GameStatus-@ridersPerPlayer-@benchPerPlayer";
+
+    function normalizeText(value) {
+    return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+    }
+
+    document.querySelectorAll(".draft-combobox").forEach(function (box) {
+    const input = box.querySelector(".draft-combobox-input");
+    const options = Array.from(box.querySelectorAll(".draft-combobox-option"));
+    const empty = box.querySelector(".draft-combobox-empty");
+    const form = box.closest("form");
+    const hiddenId = form.querySelector(".draft-selected-cyclist-id");
+
+    function openList() {
+    box.classList.add("open");
+    }
+
+    function closeList() {
+    setTimeout(function () {
+    box.classList.remove("open");
+    }, 160);
+    }
+
+    function filterList() {
+    const search = normalizeText(input.value);
+    let visibleCount = 0;
+
+    hiddenId.value = "";
+
+    options.forEach(function (option) {
+    const name = normalizeText(option.dataset.name || "");
+    const visible = name.includes(search);
+
+    option.style.display = visible ? "block" : "none";
+
+    if (visible) {
+    visibleCount++;
+    }
+    });
+
+    empty.style.display = visibleCount === 0 ? "block" : "none";
+
+    const exactMatch = options.find(function (option) {
+    return normalizeText(option.dataset.name || "") === search;
+    });
+
+    if (exactMatch) {
+    hiddenId.value = exactMatch.dataset.id;
+    }
+    }
+
+    input.addEventListener("focus", function () {
+    openList();
+    filterList();
+    });
+
+    input.addEventListener("click", function () {
+    openList();
+    filterList();
+    });
+
+    input.addEventListener("input", function () {
+    openList();
+    filterList();
+    });
+
+    input.addEventListener("blur", closeList);
+
+    options.forEach(function (option) {
+    option.addEventListener("click", function () {
+    input.value = option.dataset.name;
+    hiddenId.value = option.dataset.id;
+    box.classList.remove("open");
+
+    options.forEach(x => x.classList.remove("active"));
+    option.classList.add("active");
+    });
+    });
+
+    form.addEventListener("submit", function (event) {
+    const typedName = normalizeText(input.value);
+
+    if (!hiddenId.value) {
+    const exactMatch = options.find(function (option) {
+    return normalizeText(option.dataset.name || "") === typedName;
+    });
+
+    if (exactMatch) {
+    hiddenId.value = exactMatch.dataset.id;
+    }
+    }
+
+    if (!hiddenId.value) {
+    event.preventDefault();
+    alert("Kies een renner uit de lijst. Typ de volledige naam exact of klik op een renner.");
+    input.focus();
+    openList();
+    }
+    });
+    });
+
+    function goToDraft() {
+    if (pageIsChanging) {
+    return;
+    }
+
+    pageIsChanging = true;
+
+    const url = "/Draft/Index?gameId=" + gameId + "&refresh=" + Date.now() + "#draft-players-section";
+    window.location.replace(url);
+    }
+
+    function goToDashboard() {
+    if (pageIsChanging) {
+    return;
+    }
+
+    pageIsChanging = true;
+
+    window.location.replace("/Dashboard/Index?gameId=" + gameId + "&refresh=" + Date.now());
+    }
+
+    window.addEventListener("load", function () {
+    const section = document.getElementById("draft-players-section");
+
+    if (section !== null && window.location.hash === "#draft-players-section") {
+    section.scrollIntoView();
+    }
+    });
+
+    const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/gameHub")
+    .withAutomaticReconnect([0, 500, 1000, 2000])
+    .build();
+
+    connection.on("DraftUpdated", function (data) {
+    console.log("DraftUpdated ontvangen:", data);
+
+    if (Number(data.gameId) !== gameId) {
+    return;
+    }
+
+    if (data.draftFinished === true || data.draftFinished === "true") {
+    goToDashboard();
+    return;
+    }
+
+    goToDraft();
+    });
+
+    connection.start()
+    .then(function () {
+    console.log("SignalR verbonden voor game:", gameId);
+    return connection.invoke("JoinGameGroup", gameId);
+    })
+    .then(function () {
+    console.log("Joined SignalR group: game-" + gameId);
+    })
+    .catch(function (err) {
+    console.error("SignalR connection error:", err);
+    });
+
+    function sendHostPing() {
+    if (gameId <= 0) {
+    return;
+    }
+
+    fetch("/Game/HostPing?gameId=" + gameId, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+    "X-Requested-With": "XMLHttpRequest"
+    }
+    }).catch(function () { });
+    }
+
+    async function checkDraftState() {
+    if (gameId <= 0 || pageIsChanging) {
+    return;
+    }
+
+    try {
+    const response = await fetch("/Draft/GetDraftState?gameId=" + gameId + "&t=" + Date.now(), {
+    method: "GET",
+    credentials: "same-origin",
+    cache: "no-store",
+    headers: {
+    "X-Requested-With": "XMLHttpRequest"
+    }
+    });
+
+    const data = await response.json();
+
+    if (!data.exists) {
+    return;
+    }
+
+    console.log("DraftState:", data);
+
+    if (data.status !== "Draft") {
+    goToDashboard();
+    return;
+    }
+
+    if (data.version !== currentDraftVersion) {
+    goToDraft();
+    }
+    } catch (error) {
+    console.error("DraftState error:", error);
+    }
+    }
+
+    sendHostPing();
+    setInterval(sendHostPing, 5000);
+    setInterval(checkDraftState, 1000);
+</script>

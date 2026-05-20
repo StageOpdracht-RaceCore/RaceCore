@@ -1,0 +1,375 @@
+﻿/* ============================================================
+   SCORING PAGINA - BASIS
+   ============================================================ */
+.scoring-page {
+    padding: 24px;
+    min-height: 100vh;
+    background: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ============================================================
+   MELDINGEN
+   ============================================================ */
+.scoring-alert {
+    border-radius: 18px;
+    padding: 18px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+    .scoring-alert strong {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+.scoring-alert-error {
+    background: #fff1f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+    .scoring-alert-error strong {
+        background: #ef4444;
+        color: white;
+    }
+
+/* ============================================================
+   HERO & HEADERS
+   ============================================================ */
+.scoring-hero, .scoring-section-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 22px;
+    padding: 28px 30px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 12px 28px rgba(30, 58, 138, 0.18);
+}
+
+    .scoring-hero h1,
+    .scoring-section-header h2 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+    }
+
+.scoring-dashboard-btn, .scoring-publish-btn {
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 12px;
+    font-weight: 900;
+    transition: 0.2s ease;
+    background: white;
+    color: #1d4ed8;
+    padding: 14px 24px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+    .scoring-dashboard-btn:hover,
+    .scoring-publish-btn:hover {
+        transform: translateY(-2px);
+        background: #eff6ff;
+    }
+
+/* ============================================================
+   KAARTEN EN FILTER
+   ============================================================ */
+.scoring-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+/* AANGEPAST: Gecombineerd met jouw nieuwe CSS voor horizontale uitlijning */
+.scoring-filter-form div {
+    display: flex;
+    flex-direction: row; /* Forceer horizontaal */
+    gap: 22px;
+    align-items: flex-end;
+}
+
+.scoring-filter-form .scoring-field {
+    width: auto !important; /* Voorkom dat CSS de velden 100% breed maakt */
+    margin-bottom: 0;
+    min-width: 250px; /* Garandeert leesbaarheid op desktop */
+}
+
+.scoring-field label {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e293b;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.scoring-field select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 0 18px;
+    background: #f8fafc;
+    font-weight: 800;
+}
+
+/* ============================================================
+   RESULTATEN RIJ
+   ============================================================ */
+.scoring-result-row {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 86px minmax(260px, 1fr) 250px;
+    align-items: center;
+    gap: 26px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+
+.scoring-position {
+    width: 54px;
+    height: 54px;
+    background: #f1f5f9;
+    color: #0f172a;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.scoring-rider-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    padding: 0 18px;
+    background: #f8fafc;
+    font-weight: 800;
+}
+
+/* ============================================================
+   KLEUREN (TRUIEN)
+   ============================================================ */
+.scoring-jersey-options {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.jersey-dot {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+    .jersey-dot input {
+        display: none;
+    }
+
+    .jersey-dot span {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: block;
+        opacity: 0.25;
+        filter: grayscale(1);
+        transition: 0.2s ease;
+        box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.10);
+    }
+
+    .jersey-dot input:checked + span {
+        opacity: 1;
+        filter: grayscale(0);
+        transform: scale(1.12);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    }
+
+/* THEMES (Giro, Tour, Vuelta, Default) - GEBLOTEN VOOR KORTHEID */
+.giro-theme .jersey-red span, .giro-theme .outside-red {
+    background: #ff69b4 !important;
+}
+
+.giro-theme .jersey-green span, .giro-theme .outside-green {
+    background: #800080 !important;
+}
+
+.giro-theme .jersey-blue span, .giro-theme .outside-blue {
+    background: #2563eb !important;
+}
+
+.giro-theme .jersey-white span, .giro-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.tour-theme .jersey-red span, .tour-theme .outside-red {
+    background: #ffd700 !important;
+}
+
+.tour-theme .jersey-green span, .tour-theme .outside-green {
+    background: #008000 !important;
+}
+
+.tour-theme .jersey-white span, .tour-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.tour-theme .jersey-blue span, .tour-theme .outside-blue {
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#ff0000 20%, transparent 20%) !important;
+    background-size: 8px 8px !important;
+    border: 1px solid #ccc !important;
+}
+
+.vuelta-theme .jersey-red span, .vuelta-theme .outside-red {
+    background: #ef4444 !important;
+}
+
+.vuelta-theme .jersey-green span, .vuelta-theme .outside-green {
+    background: #22c55e !important;
+}
+
+.vuelta-theme .jersey-white span, .vuelta-theme .outside-white {
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+.vuelta-theme .jersey-blue span, .vuelta-theme .outside-blue {
+    background-color: #ffffff !important;
+    background-image: radial-gradient(#2563eb 20%, transparent 20%) !important;
+    background-size: 8px 8px !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.default-theme .jersey-red span, .default-theme .outside-red {
+    background: #ef4444;
+}
+
+.default-theme .jersey-green span, .default-theme .outside-green {
+    background: #22c55e;
+}
+
+.default-theme .jersey-blue span, .default-theme .outside-blue {
+    background: #2563eb;
+}
+
+.default-theme .jersey-white span, .default-theme .outside-white {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+}
+
+/* ============================================================
+   BUITEN TOP 25
+   ============================================================ */
+.scoring-outside-jerseys {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+}
+
+.outside-jersey-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.outside-jersey-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+    .scoring-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .scoring-load-btn {
+        width: 100%;
+    }
+
+    .scoring-result-row {
+        grid-template-columns: 70px 1fr;
+    }
+
+    .scoring-jersey-options {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+
+    .scoring-outside-jerseys {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .scoring-page {
+        padding: 14px;
+    }
+
+    .scoring-hero,
+    .scoring-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 22px;
+    }
+
+        .scoring-hero h1,
+        .scoring-section-header h2 {
+            font-size: 25px;
+        }
+
+    .scoring-dashboard-btn,
+    .scoring-publish-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .scoring-result-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 18px;
+    }
+
+    .scoring-jersey-options {
+        grid-column: auto;
+        justify-content: flex-start;
+    }
+
+    .scoring-position {
+        width: 48px;
+        height: 48px;
+        font-size: 19px;
+    }
+}

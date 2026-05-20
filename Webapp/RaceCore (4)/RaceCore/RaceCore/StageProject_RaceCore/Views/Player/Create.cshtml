@@ -1,0 +1,62 @@
+@model StageProject_RaceCore.Models.Player
+
+@{
+    // Title shown in the page layout
+    ViewData["Title"] = "New Player";
+    // Use the clean layout for player pages
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+}
+
+@* Page-specific stylesheet for player views (cache-busted) *@
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+<div class="player-form-page">
+    <div class="player-form-card">
+        @* Header describing the purpose of this view *@
+        <div class="player-form-header">
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1>New Player</h1>
+            <p>Add a new player to the system.</p>
+        </div>
+
+        @* Create form posts back to PlayersController.Create (POST) *@
+        <form asp-action="Create" method="post" class="player-form-grid">
+            @* Show model validation summary for server-side errors *@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* Name field with validation *@
+            <div class="player-form-group">
+                <label asp-for="Name">Name</label>
+                <input asp-for="Name" class="player-form-input" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            @* Draft position input (numeric) *@
+            <div class="player-form-group">
+                <label asp-for="PositionInDraft">Position in draft</label>
+                <input asp-for="PositionInDraft" class="player-form-input" type="number" min="1" />
+                <span asp-validation-for="PositionInDraft" class="text-danger"></span>
+            </div>
+
+            @* Total points input (numeric) *@
+            <div class="player-form-group">
+                <label asp-for="TotalPoints">Total points</label>
+                <input asp-for="TotalPoints" class="player-form-input" type="number" min="0" />
+                <span asp-validation-for="TotalPoints" class="text-danger"></span>
+            </div>
+
+            @* Form actions: save or cancel back to index *@
+            <div class="player-form-actions">
+                <button type="submit" class="player-btn player-btn-primary">Save</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        @* Include unobtrusive validation scripts for client-side validation *@
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

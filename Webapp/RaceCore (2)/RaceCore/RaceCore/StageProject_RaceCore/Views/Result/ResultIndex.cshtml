@@ -1,0 +1,132 @@
+@model IEnumerable<dynamic>
+
+@{
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    ViewData["Title"] = "Leaderboard";
+
+    var list = Model?.ToList() ?? new List<dynamic>();
+    double maxPoints = list.Any() ? (double)list.Max(x => x.TotalPoints) : 1;
+}
+
+<link rel="stylesheet" href="~/css/Results.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css">
+
+<div class="player-page">
+
+    <!-- HEADER -->
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">Competitie Overzicht</p>
+            <h1 class="player-page-title">Resultaat</h1>
+            <p class="player-page-subtitle">Hier staat de scoreboard</p>
+        </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="player-table-card">
+        <div class="player-form-header">
+            <h3>Points Leaderboard</h3>
+        </div>
+
+        @if (list.Any())
+        {
+            <table class="charts-css column show-labels data-spacing-10" id="results-chart">
+                <caption>Race Leaderboard</caption>
+                <tbody>
+                    @foreach (var item in list.Take(5))
+                    {
+                        double size = maxPoints > 0 ? (double)item.TotalPoints / maxPoints : 0;
+
+                        <tr>
+                            <th scope="row">
+                                @(string.IsNullOrWhiteSpace(item.CyclistName) ? "-" : item.CyclistName)
+                            </th>
+                            <td style="--size:@size;">
+                                <span class="data">@item.TotalPoints</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty">Geen data beschikbaar.</div>
+        }
+    </div>
+
+    <!-- TABLE -->
+    <div class="player-table-card">
+        <div class="player-table-responsive">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Cyclist</th>
+                        <th>Points</th>
+                        <th>Trui</th>
+                        <th>Totaal</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (list.Any())
+                    {
+                        int pos = 1;
+
+                        foreach (var item in list)
+                        {
+                            var name = string.IsNullOrWhiteSpace(item.CyclistName) ? "-" : item.CyclistName;
+                            var firstLetter = name != "-" ? name.Substring(0, 1).ToUpper() : "?";
+
+                            <tr>
+                                <td>
+                                    <span class="player-badge @(pos <= 3 ? "player-badge-draft" : "")">
+                                        #@pos
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="player-name-cell">
+                                        <div class="player-avatar">@firstLetter</div>
+                                        <div class="player-name">@name</div>
+                                    </div>
+                                </td>
+
+                                <td>@item.Points</td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.JerseyType))
+                                    {
+                                        <span class="player-meta">@item.JerseyType</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <span class="player-points">@item.TotalPoints</span>
+                                </td>
+                            </tr>
+
+                            pos++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty">No results found.</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>

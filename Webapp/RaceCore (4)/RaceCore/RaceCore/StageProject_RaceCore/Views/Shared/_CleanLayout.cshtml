@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+@* _CleanLayout.cshtml
+   Purpose: Minimal layout used by pages that require a lightweight container.
+   Renders the view body and optional scripts section. Keep styling minimal here.
+*@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - RaceCore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+            (function () {
+                var stored = localStorage.getItem('dark-mode');
+                if (stored === 'true') {
+                    document.documentElement.classList.add('dark-mode');
+                }
+            })();
+    </script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <button class="dark-toggle-header" onclick="toggleDarkMode(this)" id="darkModeBtnClean"
+            style="position:fixed;top:12px;right:12px;z-index:9999;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer;color:var(--text-primary);line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.1);">
+        🌙
+    </button>
+
+    <main style="padding: 20px;">
+        @RenderBody()
+    </main>
+
+    <script>
+            (function () {
+                if (localStorage.getItem('dark-mode') === 'true') {
+                    var btns = document.querySelectorAll('.dark-toggle-header');
+                    for (var i = 0; i < btns.length; i++) {
+                        btns[i].textContent = '☀️';
+                    }
+                }
+            })();
+
+            function toggleDarkMode(btn) {
+                var html = document.documentElement;
+                var isDark = html.classList.toggle('dark-mode');
+                localStorage.setItem('dark-mode', isDark);
+                var allBtns = document.querySelectorAll('.dark-toggle-header');
+                for (var i = 0; i < allBtns.length; i++) {
+                    allBtns[i].textContent = isDark ? '☀️' : '🌙';
+                }
+            }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

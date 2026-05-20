@@ -49,7 +49,6 @@ namespace StageProject_RaceCore.Controllers
         // ============================================================
         public async Task<IActionResult> StageResults(int? raceId, int? gameId)
         {
-            // Alle races ophalen
             var races = await _context.Races
                 .OrderByDescending(r => r.Year)
                 .ThenByDescending(r => r.StartDate)
@@ -66,7 +65,6 @@ namespace StageProject_RaceCore.Controllers
             GameSession? selectedGame = null;
             Race? selectedRace = null;
 
-            // Eerst gameId gebruiken, want dat is het meest correct
             if (gameId.HasValue)
             {
                 selectedGame = await _context.GameSessions
@@ -76,7 +74,6 @@ namespace StageProject_RaceCore.Controllers
                 selectedRace = selectedGame?.Race;
             }
 
-            // Daarna zoeken via raceId
             if (selectedRace == null && raceId.HasValue)
             {
                 selectedRace = races.FirstOrDefault(r => r.Id == raceId.Value);
@@ -91,7 +88,6 @@ namespace StageProject_RaceCore.Controllers
                 }
             }
 
-            // Fallback naar laatste actieve game
             if (selectedRace == null)
             {
                 selectedGame = await _context.GameSessions
@@ -100,55 +96,49 @@ namespace StageProject_RaceCore.Controllers
                     .FirstOrDefaultAsync(g =>
                         g.Status == "Active" ||
                         g.Status == "Started" ||
-                        g.Status == "Draft");
+                        g.Status == "Draft" ||
+                        g.Status == "Finished");
 
                 selectedRace = selectedGame?.Race;
             }
 
-            // Laatste fallback
-            if (selectedRace == null)
-            {
-                selectedRace = races.First();
-            }
+            selectedRace ??= races.First();
 
             ViewBag.SelectedRaceName = selectedRace.Name + " " + selectedRace.Year;
             ViewBag.SelectedRaceId = selectedRace.Id;
             ViewBag.SelectedGameId = selectedGame?.Id ?? 0;
 
-            // Ritten ophalen van deze race
             var stages = await _context.Stages
                 .Where(s => s.RaceId == selectedRace.Id)
                 .OrderBy(s => s.StageNumber)
                 .ToListAsync();
 
-            // Puntenregels ophalen
             var rules = await _context.PointsRules.ToListAsync();
 
             var stageTables = new List<object>();
 
             foreach (var stage in stages)
             {
-                // Resultaten ophalen
                 var resultsQuery = _context.StageResults
                     .Include(sr => sr.Cyclist)
                     .Where(sr => sr.StageId == stage.Id);
 
-                // Belangrijk: filteren op game zodat je geen oude game data ziet
                 if (selectedGame != null)
                 {
                     resultsQuery = resultsQuery.Where(sr => sr.GameSessionId == selectedGame.Id);
                 }
 
                 var results = await resultsQuery
+                    .Where(sr => sr.Position.HasValue &&
+                                 sr.Position.Value > 0 &&
+                                 sr.Position.Value <= 25)
                     .OrderBy(sr => sr.Position)
                     .ToListAsync();
 
-                // Truien ophalen
                 var jerseysQuery = _context.Jerseys
                     .Include(j => j.Cyclist)
                     .Where(j => j.StageId == stage.Id);
 
-                // Belangrijk: ook truien filteren op game
                 if (selectedGame != null)
                 {
                     jerseysQuery = jerseysQuery.Where(j => j.GameSessionId == selectedGame.Id);
@@ -167,21 +157,14 @@ namespace StageProject_RaceCore.Controllers
                 {
                     int position = sr.Position ?? 0;
 
-                    int positionPoints = rules
-                        .Where(pr =>
-                            pr.Type == "Stage" &&
-                            pr.FromPosition <= position &&
-                            pr.ToPosition >= position)
-                        .Sum(pr => pr.Points);
+                    int positionPoints = GetPositionPoints(rules, position);
 
                     var cyclistJerseys = jerseys
                         .Where(j => j.CyclistId == sr.CyclistId)
                         .ToList();
 
                     int jerseyPoints = cyclistJerseys.Sum(j =>
-                        rules
-                            .Where(pr => pr.Type == GetRuleTypeForJersey(j.Type))
-                            .Sum(pr => pr.Points)
+                        GetJerseyPoints(rules, j.Type)
                     );
 
                     return new
@@ -190,12 +173,10 @@ namespace StageProject_RaceCore.Controllers
                         CyclistName = sr.Cyclist?.FullName ?? "Unknown",
                         Points = positionPoints,
 
-                        // Dit is de tekstnaam, handig voor title/controle
                         JerseyTypes = string.Join(", ", cyclistJerseys.Select(j =>
                             GetJerseyDisplayName(j.Type, selectedRace.Name)
                         )),
 
-                        // Dit is de echte visuele cirkel die je wil tonen
                         JerseyIcons = string.Join(" ", cyclistJerseys.Select(j =>
                             GetJerseyIconHtml(j.Type, selectedRace.Name)
                         )),
@@ -216,9 +197,7 @@ namespace StageProject_RaceCore.Controllers
                         var cyclist = group.First().Cyclist;
 
                         int jerseyPoints = group.Sum(j =>
-                            rules
-                                .Where(pr => pr.Type == GetRuleTypeForJersey(j.Type))
-                                .Sum(pr => pr.Points)
+                            GetJerseyPoints(rules, j.Type)
                         );
 
                         return new
@@ -252,6 +231,70 @@ namespace StageProject_RaceCore.Controllers
             ViewBag.StageTables = stageTables;
 
             return View();
+        }
+
+        // ============================================================
+        // PUNTEN VOOR POSITIE BEREKENEN
+        // ============================================================
+        private static int GetPositionPoints(List<PointsRule> rules, int position)
+        {
+            int pointsFromRules = rules
+                .Where(pr =>
+                    (pr.Type == "Rit" || pr.Type == "Stage" || pr.Type == "Etappe") &&
+                    pr.FromPosition.HasValue &&
+                    pr.ToPosition.HasValue &&
+                    pr.FromPosition.Value <= position &&
+                    pr.ToPosition.Value >= position)
+                .Sum(pr => pr.Points);
+
+            if (pointsFromRules > 0)
+            {
+                return pointsFromRules;
+            }
+
+            return position switch
+            {
+                1 => 100,
+                2 => 80,
+                3 => 65,
+                4 => 55,
+                5 => 45,
+                6 => 35,
+                7 => 30,
+                8 => 25,
+                9 => 20,
+                10 => 17,
+                11 => 15,
+                12 => 13,
+                13 => 11,
+                14 => 10,
+                15 => 9,
+                16 => 8,
+                17 => 7,
+                18 => 6,
+                19 => 5,
+                20 => 4,
+                21 => 3,
+                22 => 2,
+                23 => 1,
+                24 => 1,
+                25 => 1,
+                _ => 0
+            };
+        }
+
+        // ============================================================
+        // TRUIPUNTEN BEREKENEN
+        // ============================================================
+        private static int GetJerseyPoints(List<PointsRule> rules, string jerseyType)
+        {
+            string ruleType = GetRuleTypeForJersey(jerseyType);
+
+            int pointsFromRules = rules
+                .Where(pr => pr.Type == ruleType)
+                .Sum(pr => pr.Points);
+
+            return pointsFromRules > 0 ? pointsFromRules : 10;
         }
 
         // ============================================================

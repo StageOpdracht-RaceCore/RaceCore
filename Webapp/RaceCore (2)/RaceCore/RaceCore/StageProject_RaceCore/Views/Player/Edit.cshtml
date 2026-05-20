@@ -1,0 +1,63 @@
+@model StageProject_RaceCore.Models.Player
+
+@{
+    // Page title used by the layout
+    ViewData["Title"] = "Player bewerken";
+    // Use the shared clean layout
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+}
+
+@* Player-specific stylesheet for consistent UI *@
+<link rel="stylesheet" href="~/css/Player.css" asp-append-version="true" />
+
+<div class="player-form-page">
+    <div class="player-form-card">
+        @* Header explaining the edit context *@
+        <div class="player-form-header">
+            <p class="player-page-kicker">RaceCore Management</p>
+            <h1>Player bewerken</h1>
+            <p>Pas de gegevens van deze speler aan.</p>
+        </div>
+
+        @* Edit form posts back to PlayersController.Edit (POST) with hidden Id *@
+        <form asp-action="Edit" method="post" class="player-form-grid">
+            <input type="hidden" asp-for="Id" />
+            @* Server-side validation summary *@
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* Name field with validation *@
+            <div class="player-form-group">
+                <label asp-for="Name">Naam</label>
+                <input asp-for="Name" class="player-form-input" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            @* Draft position input *@
+            <div class="player-form-group">
+                <label asp-for="PositionInDraft">Position in draft</label>
+                <input asp-for="PositionInDraft" class="player-form-input" type="number" min="1" />
+                <span asp-validation-for="PositionInDraft" class="text-danger"></span>
+            </div>
+
+            @* Total points input *@
+            <div class="player-form-group">
+                <label asp-for="TotalPoints">Totale punten</label>
+                <input asp-for="TotalPoints" class="player-form-input" type="number" min="0" />
+                <span asp-validation-for="TotalPoints" class="text-danger"></span>
+            </div>
+
+            @* Form actions: save or return to index *@
+            <div class="player-form-actions">
+                <button type="submit" class="player-btn player-btn-primary">Save</button>
+                <a asp-action="Index" class="player-btn player-btn-light">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        @* Include validation scripts for client-side validation *@
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

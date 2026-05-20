@@ -1,0 +1,131 @@
+@model IEnumerable<StageProject_RaceCore.Models.Race>
+
+@{
+    ViewData["Title"] = "Races";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
+
+<section class="race-page">
+
+    <section class="race-header-card">
+        <div class="race-header-copy">
+            <p class="race-page-kicker">RaceCore</p>
+            <h1 class="race-page-title">Races</h1>
+            <p class="race-page-subtitle">
+                Overview of all races, years and participations.
+            </p>
+        </div>
+
+        <a asp-controller="Game"
+           asp-action="New"
+           class="race-btn-done race-btn">
+            ✓ Done
+        </a>
+    </section>
+
+    <section class="race-table-card">
+        <div class="race-table-header">
+            <div>
+                <p class="race-card-kicker">Overview</p>
+                <h2>Races List</h2>
+            </div>
+
+            <a class="race-primary-btn" asp-action="Create">
+                New Race
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="race-table-wrapper">
+                <table class="race-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Year</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Stages</th>
+                            <th>Participations</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var race in Model)
+                        {
+                            <tr>
+                                <td class="race-name">@race.Name</td>
+
+                                <td>
+                                    <span class="race-badge race-year">
+                                        @race.Year
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(race.StartDate?.ToString("yyyy-MM-dd") ?? "-")
+                                </td>
+
+                                <td>
+                                    @(race.EndDate?.ToString("yyyy-MM-dd") ?? "-")
+                                </td>
+
+                                <td>
+                                    <span class="race-badge race-muted">
+                                        @(race.Stages?.Count ?? 0)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="race-badge race-muted">
+                                        @(race.RaceEntries?.Count ?? 0)
+                                    </span>
+                                </td>
+
+                                <td class="text-end">
+                                    <div class="race-actions">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@race.Id"
+                                           class="race-btn race-light-btn btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@race.Id"
+                                           class="race-btn race-light-btn btn-sm">
+                                            Details
+                                        </a>
+
+                                        <form asp-action="Delete"
+                                              asp-route-id="@race.Id"
+                                              method="post"
+                                              class="race-delete-form"
+                                              onsubmit="return confirm('Delete race?');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="race-btn race-danger-btn btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="race-empty">
+                No races found.
+            </div>
+        }
+    </section>
+
+</section>

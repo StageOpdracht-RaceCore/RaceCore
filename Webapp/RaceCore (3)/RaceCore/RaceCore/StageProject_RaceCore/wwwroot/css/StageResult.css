@@ -1,0 +1,284 @@
+/* ===============================
+   PAGE LAYOUT
+================================= */
+
+.result-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 24px;
+}
+
+/* ===============================
+   HEADER
+================================= */
+
+.result-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+    color: #ffffff;
+}
+
+.result-header-copy {
+    min-width: 0;
+}
+
+.result-page-kicker {
+    margin: 0 0 6px;
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.result-page-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.result-page-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: #dbeafe;
+    font-weight: 700;
+}
+
+.result-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ===============================
+   BUTTONS
+================================= */
+
+.result-history-btn,
+.result-dashboard-white-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 14px;
+    color: #070b3f;
+    background: #ffffff;
+    font-size: 17px;
+    font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+    transition: 0.2s ease;
+}
+
+    .result-history-btn:hover,
+    .result-dashboard-white-btn:hover {
+        color: #070b3f;
+        background: #f8fafc;
+        transform: translateY(-2px);
+    }
+
+/* ===============================
+   CARDS
+================================= */
+
+.result-race-card,
+.result-stage-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+/* ===============================
+   TITLES
+================================= */
+
+.result-stage-title {
+    margin: 0 0 18px;
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+/* ===============================
+   TABLE
+================================= */
+
+.result-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.result-table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+}
+
+    .result-table th {
+        text-align: left;
+        padding: 12px;
+        font-size: 13px;
+        font-weight: 900;
+        color: #475569;
+        background: #f1f5f9;
+    }
+
+    .result-table td {
+        padding: 14px 12px;
+        border-top: 1px solid #e5e7eb;
+        vertical-align: middle;
+    }
+
+    .result-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+/* ===============================
+   TABLE CONTENT
+================================= */
+
+.result-position {
+    font-weight: 800;
+}
+
+.result-name {
+    font-weight: 800;
+}
+
+.result-points {
+    font-weight: 800;
+    color: #059669;
+}
+
+.result-total {
+    font-weight: 900;
+    color: #2563eb;
+}
+
+/* ===============================
+   TRUI ICONEN
+================================= */
+
+.result-jersey-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-jersey-dot {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
+}
+
+/* Tour / algemeen */
+.result-jersey-yellow {
+    background: #ffd700;
+}
+
+.result-jersey-green {
+    background: #22c55e;
+}
+
+.result-jersey-polka {
+    background-color: #ffffff;
+    background-image: radial-gradient(#ff0000 24%, transparent 26%);
+    background-size: 7px 7px;
+    border: 1px solid #cbd5e1;
+}
+
+.result-jersey-white {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+}
+
+/* Giro */
+.result-jersey-pink {
+    background: #ff69b4;
+}
+
+.result-jersey-purple {
+    background: #9333ea;
+}
+
+.result-jersey-blue {
+    background: #2563eb;
+}
+
+/* Vuelta / default */
+.result-jersey-red {
+    background: #ef4444;
+}
+
+.result-jersey-default {
+    background: #94a3b8;
+}
+
+/* ===============================
+   EMPTY STATE
+================================= */
+
+.result-empty-state {
+    padding: 28px;
+    border-radius: 16px;
+    background: #f8fafc;
+    text-align: center;
+    font-weight: 800;
+    color: #64748b;
+}
+
+/* ===============================
+   SCROLLBAR
+================================= */
+
+.result-table-responsive::-webkit-scrollbar {
+    height: 10px;
+}
+
+.result-table-responsive::-webkit-scrollbar-track {
+    background: #e5e7eb;
+    border-radius: 999px;
+}
+
+.result-table-responsive::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 999px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 768px) {
+    .result-page {
+        padding: 14px;
+    }
+
+    .result-header-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .result-hero-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .result-history-btn,
+    .result-dashboard-white-btn {
+        width: 100%;
+    }
+}

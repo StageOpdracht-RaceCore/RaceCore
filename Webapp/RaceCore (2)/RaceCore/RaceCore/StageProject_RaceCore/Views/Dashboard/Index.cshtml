@@ -1,0 +1,383 @@
+﻿@model StageProject_RaceCore.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Game Dashboard";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+
+    int gameId = ViewBag.GameId ?? 0;
+    int raceId = ViewBag.RaceId ?? 0;
+    string gameStatus = ViewBag.GameStatus ?? "Unknown";
+    string raceName = ViewBag.RaceName ?? "No active game";
+    int currentStage = ViewBag.CurrentStage ?? 0;
+
+    int maxPlayerPoints = Model.PlayerRanking.Any()
+        ? Math.Max(1, Model.PlayerRanking.Max(x => x.Points))
+        : 1;
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" asp-append-version="true" />
+
+@if (ViewBag.DatabaseOnline == false)
+{
+    <div class="alert-box alert-warning">⚠️ Database niet bereikbaar. Start OpenVPN om live data te bekijken.</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert-box alert-error">@TempData["Error"]</div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-box alert-success">@TempData["Success"]</div>
+}
+
+@functions {
+    public string GetPlayerColor(string playerName)
+    {
+        var colors = new List<string> { "#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4" };
+
+        if (string.IsNullOrWhiteSpace(playerName))
+        {
+            return colors[0];
+        }
+
+        int total = 0;
+
+        foreach (char letter in playerName.ToLower())
+        {
+            total += letter;
+        }
+
+        return colors[Math.Abs(total) % colors.Count];
+    }
+
+    public string GetInitial(string name)
+    {
+        return string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper();
+    }
+
+    public string GetJerseyClass(string type)
+    {
+        string value = (type ?? "").ToLower();
+
+        if (value.Contains("yellow") || value.Contains("gele")) return "jersey jersey-yellow";
+        if (value.Contains("green") || value.Contains("groene")) return "jersey jersey-green";
+        if (value.Contains("red") || value.Contains("rode")) return "jersey jersey-red";
+        if (value.Contains("blue") || value.Contains("blauwe")) return "jersey jersey-blue";
+        if (value.Contains("white") || value.Contains("witte")) return "jersey jersey-white";
+        if (value.Contains("mountain") || value.Contains("bolletjes") || value.Contains("polka")) return "jersey jersey-polka";
+
+        return "jersey jersey-default";
+    }
+
+    public string GetStatusClass(string status)
+    {
+        string value = (status ?? "").ToLower();
+
+        if (value.Contains("draft")) return "status-pill status-draft";
+        if (value.Contains("active")) return "status-pill status-active";
+        if (value.Contains("finished") || value.Contains("done")) return "status-pill status-finished";
+
+        return "status-pill status-default";
+    }
+}
+
+<div class="dashboard-container">
+
+    <section class="game-hero">
+        <div class="hero-main-area">
+            <div class="hero-content">
+                <div class="hero-kicker">RaceCore Game Hub</div>
+                <h1>@raceName</h1>
+
+                <div class="hero-meta">
+                    <span class="@GetStatusClass(gameStatus)">@gameStatus</span>
+                    <span>🏁 Rit @currentStage</span>
+                    <span>🎯 @Model.TotalDraftPicks picks</span>
+                </div>
+            </div>
+
+            <div class="hero-mini-stats">
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">👥</span>
+                    <div>
+                        <small>Players</small>
+                        <strong>@Model.PlayersCount</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🚴</span>
+                    <div>
+                        <small>Cyclists</small>
+                        <strong>@Model.CyclistsCount</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🎯</span>
+                    <div>
+                        <small>Draftkeuzes</small>
+                        <strong>@Model.TotalDraftPicks</strong>
+                    </div>
+                </div>
+
+                <div class="hero-mini-stat">
+                    <span class="hero-mini-icon">🏁</span>
+                    <div>
+                        <small>Status</small>
+                        <strong>@gameStatus</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-action-panel">
+            @if (gameStatus == "Draft")
+            {
+                <span class="next-label">Volgende missie</span>
+                <h2>Maak de draft af</h2>
+
+                <a asp-controller="Draft"
+                       asp-action="Index"
+                       asp-route-gameId="@gameId"
+                       class="main-play-btn">
+                    ▶ Continue Draft
+                </a>
+            }
+            else if (gameStatus == "Active")
+            {
+                <span class="next-label">Volgende missie</span>
+                <h2>Ga naar Ritresultaten</h2>
+
+                <a asp-controller="Scoring"
+                       asp-action="Index"
+                       asp-route-raceId="@raceId"
+                       class="main-play-btn">
+                    ⚡ Ga naar Scoring
+                </a>
+            }
+            else
+            {
+                <span class="next-label">Game klaar</span>
+                <h2>Zie eindresultaten</h2>
+
+                <a asp-controller="Leaderboard"
+                       asp-action="Index"
+                       asp-route-gameId="@gameId"
+                       class="main-play-btn">
+                    🏆 Ranglijst
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="game-menu-grid">
+        <a asp-controller="Game" asp-action="New" class="game-menu-card">
+            <span>➕</span>
+            <div>
+                <strong>New Game</strong>
+                <small>Start nieuwe race</small>
+            </div>
+        </a>
+        <a asp-controller="Scoring" asp-action="Index" asp-route-raceId="@raceId" class="game-menu-card">
+            <span>⚡</span>
+            <div>
+                <strong>Scoring</strong>
+                <small>Points invullen</small>
+            </div>
+        </a>
+
+        <a asp-controller="Leaderboard" asp-action="Index" asp-route-gameId="@gameId" class="game-menu-card">
+            <span>🏆</span>
+            <div>
+                <strong>Ranglijst</strong>
+                <small>Ranking bekijken</small>
+            </div>
+        </a>
+
+        <a asp-controller="History" asp-action="History" class="game-menu-card">
+            <span>📜</span>
+            <div>
+                <strong>History</strong>
+                <small>Vorige games</small>
+            </div>
+        </a>
+
+        
+
+        <a asp-controller="Cyclist" asp-action="Index" class="game-menu-card">
+            <span>🚴</span>
+            <div>
+                <strong>Cyclists</strong>
+                <small>Cyclists beheren</small>
+            </div>
+        </a>
+
+        <a asp-controller="Team" asp-action="Index" class="game-menu-card">
+            <span>🛡️</span>
+            <div>
+                <strong>Teams</strong>
+                <small>Teamen bekijken</small>
+            </div>
+        </a>
+
+        <a asp-controller="Result" asp-action="StageResults" asp-route-raceId="@raceId" class="game-menu-card">
+            <span>🗺️</span>
+            <div>
+                <strong>Ritresultaten</strong>
+                <small>Ritresultaten beheren</small>
+            </div>
+        </a>
+
+        
+        
+
+        
+    </section>
+
+    <section class="main-dashboard-grid">
+
+        <div class="game-panel ranking-panel">
+            <div class="panel-title">
+                <span>Race</span>
+                <h2>Player Ranking</h2>
+            </div>
+
+            @if (Model.PlayerRanking.Any())
+            {
+                <div class="ranking-list">
+                    @foreach (var player in Model.PlayerRanking)
+                    {
+                        int width = player.Points > 0
+                            ? Math.Max(8, (int)Math.Round((double)player.Points / maxPlayerPoints * 100))
+                            : 8;
+
+                        string color = GetPlayerColor(player.PlayerName);
+
+                        <div class="ranking-row">
+                            <div class="ranking-left">
+                                <div class="ranking-number">#@player.Position</div>
+
+                                <div class="player-avatar" style="background:@color;">
+                                    @GetInitial(player.PlayerName)
+                                </div>
+
+                                <div class="ranking-info">
+                                    <div class="player-name">
+                                        <span style="background:@color;"></span>
+                                        <strong>@player.PlayerName</strong>
+                                    </div>
+
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width:@width%; background:@color;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <strong class="points">@player.Points pts</strong>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-box">Geen ranglijst beschikbaar.</div>
+            }
+        </div>
+
+        <div class="game-panel progress-panel">
+            <div class="panel-title">
+                <span>Game Vooruitgang</span>
+                <h2>Huidige missie</h2>
+            </div>
+
+            <div class="mission-box">
+                <div>
+                    <span>Race</span>
+                    <strong>@raceName</strong>
+                </div>
+
+                <div>
+                    <span>Status</span>
+                    <strong>@gameStatus</strong>
+                </div>
+
+                <div>
+                    <span>Current stage</span>
+                    <strong>@currentStage</strong>
+                </div>
+
+                <div>
+                    <span>Totaal picks</span>
+                    <strong>@Model.TotalDraftPicks</strong>
+                </div>
+            </div>
+
+            <div class="draft-progress-box">
+                <div class="draft-progress-top">
+                    <span>Draft Vooruitgang</span>
+                    <strong>@Model.TotalDraftPicks picks</strong>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill green-fill" style="width:@(Model.TotalDraftPicks == 0 ? 5 : 100)%"></div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="bottom-dashboard-grid">
+
+        <div class="game-panel">
+            <div class="panel-title">
+                <span>Performance</span>
+                <h2>Top Cyclists</h2>
+            </div>
+
+            @if (Model.TopCyclists.Any())
+            {
+                <div class="simple-list">
+                    @foreach (var cyclist in Model.TopCyclists)
+                    {
+                        <div class="simple-row">
+                            <strong>@cyclist.Name</strong>
+                            <span>@cyclist.Points pts</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-box">Geen renner punten beschikbaar.</div>
+            }
+        </div>
+
+        <div class="game-panel">
+            <div class="panel-title">
+                <span>Classificaties</span>
+                <h2>Truien</h2>
+            </div>
+
+            @if (Model.Jerseys.Any())
+            {
+                <div class="simple-list">
+                    @foreach (var jersey in Model.Jerseys)
+                    {
+                        <div class="simple-row">
+                            <span class="@GetJerseyClass(jersey.Type)">@jersey.Type</span>
+                            <strong>@jersey.CyclistName</strong>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-box">Geen truien beschikbaar.</div>
+            }
+        </div>
+
+    </section>
+</div>

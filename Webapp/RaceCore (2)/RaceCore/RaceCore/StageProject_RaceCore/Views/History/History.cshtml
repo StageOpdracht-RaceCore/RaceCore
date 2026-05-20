@@ -1,0 +1,105 @@
+﻿@model StageProject_RaceCore.ViewModels.HistoryViewModel
+@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Historiek";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    
+    var races = ViewBag.Races as List<Race> ?? new List<Race>();
+    int selectedRaceId = ViewBag.SelectedRaceId ?? 0;
+}
+
+<link rel="stylesheet" href="~/css/history.css" asp-append-version="true" />
+
+<div class="player-page scoring-page">
+    @* Blauwe Header *@
+    <div class="player-header-card">
+        <div>
+            <p class="player-page-kicker">RACECORE MANAGEMENT</p>
+            <h1 class="player-page-title">Historiek: @Model.RaceName</h1>
+            <p class="player-page-subtitle">
+                Overzicht van alle verreden etappes en winnaars.
+            </p>
+        </div>
+
+        <div class="player-header-actions">
+            @* Knop naar Dashboard *@
+            <a asp-controller="Dashboard" asp-action="Index" class="player-btn-white" style="margin-right: 8px; text-decoration: none;">
+                Dashboard
+            </a>
+            
+        </div>
+    </div>
+
+    @* Race selectie Kaart *@
+    <div class="player-table-card scoring-selector-card">
+        <form asp-action="History" method="get" class="scoring-selector-form">
+            <div class="scoring-stage-group">
+                <label for="raceId" class="scoring-label">Race kiezen</label>
+                <select id="raceId" name="raceId" class="scoring-stage-select" onchange="this.form.submit()">
+                    @foreach (var race in races)
+                    {
+                        <option value="@race.Id" selected="@(race.Id == selectedRaceId)">
+                            @race.Name @race.Year
+                        </option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+
+    @* Ritten Tabel *@
+    <div class="player-table-card history-card">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Rit</th>
+                    <th>Stage Details</th>
+                    <th>Datum</th>
+                    <th>Ritwinnaar</th>
+                    <th>Beste Player</th>
+                    <th style="text-align: right; padding-right: 24px;">Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Stages != null && Model.Stages.Any())
+                {
+                    foreach (var stage in Model.Stages)
+                    {
+                        <tr>
+                            <td><span class="stage-number-circle">#@stage.StageNumber</span></td>
+                            <td>
+                                <div class="stage-name">@stage.StageName</div>
+                                <small class="stage-id-label">Stage ID: @stage.StageId</small>
+                            </td>
+                            <td><span class="stage-date">@stage.Date?.ToString("dd/MM")</span></td>
+                            <td>
+                                <div class="winner-info">
+                                    <span class="winner-name">@stage.WinnerName</span>
+                                    <span class="winner-team">@stage.WinnerTeam</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="top-player-badge">
+                                    <span>@stage.TopPlayerName</span>
+                                    <span class="player-points">@stage.TopPlayerPoints pts</span>
+                                </div>
+                            </td>
+                            <td style="text-align: right; padding-right: 24px;">
+                                <a asp-controller="Result" asp-action="StageResults" asp-route-raceId="@Model.RaceId" class="btn-details">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <p>Geen etappes gevonden voor deze wedstrijd.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

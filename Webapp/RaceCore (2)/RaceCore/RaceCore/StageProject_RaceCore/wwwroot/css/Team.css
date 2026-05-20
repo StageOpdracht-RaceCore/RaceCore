@@ -1,0 +1,800 @@
+/* =============================================================================
+   Team.css
+   Styles for the Teams overview page (/Team/Index).
+
+   Structure:
+     1. Page wrapper & base card style
+     2. Page banner (race name, game status, dashboard link)
+     3. Stats row (player count, active slots, bench slots)
+     4. Game overview card (game ID, race, filled slots)
+     5. Player team cards (header, avatar, completion bar)
+     6. Roster table (active section, bench section, empty slots, pills)
+     7. Empty state (no teams found)
+     8. Swap interaction (selection highlight, target/dimmed states, error banner)
+      10. Responsive breakpoints
+============================================================================= */
+
+/* ── 1. Page wrapper & base card ───────────────────────────────────────────── */
+
+.team-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+main:has(> .team-page) {
+    padding: 0 !important;
+}
+
+/* Hides the antiforgery token div from view — token is read by JS for POST requests. */
+.team-antiforgery {
+    display: none;
+}
+
+/* Shared surface style applied to all major panels on the page. */
+.card,
+.player-team-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+}
+
+.card {
+    padding: 14px;
+}
+
+/* ── 2. Page banner ─────────────────────────────────────────────────────────── */
+
+/* Full-width dark-blue gradient banner at the top of the page (race name, status, nav link). */
+.team-page-banner,
+.page-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 30px;
+    margin-bottom: 16px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.18);
+}
+
+/* Small all-caps label above the page title. */
+.small-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #93c5fd;
+    font-weight: 900;
+}
+
+.team-page-banner h1 {
+    margin: 8px 0;
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.team-page-banner p {
+    margin: 0;
+    color: #dbeafe;
+    font-weight: 600;
+}
+
+.team-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+
+/* ── 3. Stats row ───────────────────────────────────────────────────────────── */
+
+/* Three equal-width coloured boxes showing player count, active slots, bench slots. */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+        .team-overview-card .info-grid {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+.stat-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+}
+
+    .stat-box span {
+        display: block;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .stat-box strong {
+        color: #0f172a;
+        font-size: 22px;
+        font-weight: 950;
+    }
+
+/* Icon container inside each stat box. */
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+/* Colour modifier classes applied to .stat-box elements. */
+.blue .stat-icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.orange .stat-icon {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.purple .stat-icon {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+/* ── 4. Game overview card ──────────────────────────────────────────────────── */
+
+.team-overview-card {
+    margin-bottom: 16px;
+}
+
+/* 2-column grid of info tiles (game ID, race name, filled slots, total slots). */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.info-box {
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+}
+
+    .info-box span {
+        display: block;
+        margin-bottom: 1px;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .info-box strong {
+        display: block;
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 950;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+/* White pill button used inside the banner (e.g. "Dashboard" link). */
+.team-dashboard-white-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 14px;
+    color: #070b3f;
+    background: #ffffff;
+    font-size: 17px;
+    font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+    transition: 0.2s ease;
+}
+
+    .team-dashboard-white-btn:hover {
+        color: #070b3f;
+        background: #f8fafc;
+        transform: translateY(-2px);
+    }
+
+/* ── 5. Player team cards ───────────────────────────────────────────────────── */
+
+/* Responsive grid: cards wrap at ~360px minimum width. */
+.player-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+/* Each card is a column flex container so the table fills remaining height. */
+.player-team-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+/* Card header: player avatar, name, rider counts, and completion bar.
+   Uses CSS custom properties (--player-color etc.) injected per-card by the server. */
+.player-team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
+    flex-wrap: wrap;
+    position: relative;
+}
+
+    /* Thin coloured bar on the left edge of the card header. */
+    .player-team-header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: linear-gradient(180deg, var(--player-color), var(--player-color-dark));
+    }
+
+    .player-team-header > * {
+        position: relative;
+        z-index: 1;
+    }
+
+.player-team-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+/* Circular avatar showing the player's initials in their accent colour. */
+.player-team-avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    color: var(--player-text-color);
+    background: var(--player-color);
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.player-team-identity h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.player-team-identity p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Completion indicator: shows active rider count vs slot maximum + a progress bar. */
+.team-completion {
+    min-width: 128px;
+    color: #0f172a;
+    font-weight: 900;
+    text-align: right;
+    margin-left: auto;
+}
+
+    .team-completion span {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+    }
+
+.team-completion-bar {
+    width: 128px;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5e7eb;
+}
+
+    /* Inner fill: width is set inline as a percentage by the server. */
+    .team-completion-bar div {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
+    }
+
+/* ── 6. Roster table ────────────────────────────────────────────────────────── */
+
+.player-roster-table-wrap {
+    overflow-x: hidden;
+    flex: 1;
+    padding: 6px 12px 12px;
+}
+
+.player-roster-table {
+    width: 100%;
+    min-width: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+    .player-roster-table th,
+    .player-roster-table td {
+        padding: 10px 10px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: middle;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .player-roster-table thead th {
+        color: #475569;
+        background: #f8fafc;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
+
+    /* Fixed widths for slot number and pro-team columns. */
+    .player-roster-table th:first-child,
+    .player-roster-table td:first-child {
+        width: 44px;
+    }
+
+    .player-roster-table th:nth-child(3),
+    .player-roster-table td:nth-child(3) {
+        width: 24%;
+    }
+
+    /* Status pill column is right-aligned. */
+    .player-roster-table th:last-child,
+    .player-roster-table td:last-child {
+        width: 76px;
+        text-align: right;
+    }
+
+/* Section header rows that divide active from bench in the table body. */
+.roster-section-row th {
+    padding: 9px 8px;
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+/* Active section header uses the player's accent colour. */
+.roster-section-row.active-section th {
+    color: var(--player-text-color);
+    background: linear-gradient(90deg, var(--player-color), var(--player-color-dark));
+    padding-left: calc(8px + 0.5ch);
+}
+
+/* Bench section header uses a neutral grey. */
+.roster-section-row.bench-section th {
+    color: #374151;
+    background: #e5e7eb;
+}
+
+/* Active rider rows get a soft tint + left border in the player's accent colour. */
+.roster-row.active-rider {
+    background: var(--player-color-soft);
+    border-left: 4px solid var(--player-color);
+}
+
+/* Removes the bottom border on the last active row directly above the bench header. */
+.roster-row.roster-before-bench td {
+    border-bottom: 0;
+}
+
+/* Bench rider rows get a neutral grey background and border. */
+.roster-row.bench-rider {
+    background: #f3f4f6;
+    border-left: 4px solid #9ca3af;
+}
+
+/* Empty slot rows have no background tint; text is italic and muted. */
+.roster-row.empty-slot {
+    background: #ffffff;
+}
+
+    .roster-row.empty-slot .rider-name,
+    .roster-row.empty-slot .rider-team {
+        color: #94a3b8;
+        font-style: italic;
+        font-weight: 700;
+    }
+
+.slot-number {
+    color: #64748b;
+    font-weight: 900;
+}
+
+/* Rider name and pro team are block elements so they stack inside the cell. */
+.rider-name,
+.rider-team {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rider-name {
+    color: #111827;
+    font-weight: 900;
+}
+
+.rider-team {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Small coloured pill shown in the last column indicating active or bench status. */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+    /* Active pill uses the player's accent colour. */
+    .status-pill.active {
+        color: var(--player-text-color);
+        background: var(--player-color);
+    }
+
+    /* Bench pill uses neutral grey. */
+    .status-pill.bench {
+        color: #374151;
+        background: #d1d5db;
+    }
+
+    /* Disqualified pill uses red. */
+    .status-pill.disqualified {
+        color: #ffffff;
+        background: #ef4444;
+    }
+
+/* ── 7. Empty state ─────────────────────────────────────────────────────────── */
+
+.team-empty-state h2 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 22px;
+}
+
+.team-empty-state p {
+    margin: 0 0 16px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+/* Generic button base — extend with .team-btn-primary. */
+.team-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 900;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.team-btn-primary {
+    color: #ffffff;
+    background: #2563eb;
+}
+
+    .team-btn-primary:hover {
+        color: #ffffff;
+        background: #1d4ed8;
+    }
+
+
+/* ── 8. Disqualified section ─────────────────────────────────────────────────── */
+
+/* Disqualified section header uses a red tone. */
+.roster-section-row.disqualified-section th {
+    color: #ffffff;
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
+}
+
+/* Disqualified rider rows get a subtle red-tinted background. */
+.roster-row.disqualified-rider {
+    background: #fef2f2;
+    border-left: 4px solid #fca5a5;
+}
+
+    .roster-row.disqualified-rider .rider-name {
+        color: #991b1b;
+    }
+
+/* Small destructive button used for DQ in the table action column. */
+.dq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    color: #ffffff;
+    background: #ef4444;
+    transition: 0.15s ease;
+}
+
+    .dq-btn:hover {
+        background: #dc2626;
+    }
+
+/* Small restore button used for UNDQ in the disqualified table action column. */
+.undq-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 24px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    color: #ffffff;
+    background: #22c55e;
+    transition: 0.15s ease;
+}
+
+    .undq-btn:hover {
+        background: #16a34a;
+    }
+
+.disqualified-rider td:last-child {
+    text-align: right;
+}
+
+/* ── 9. Swap interaction ────────────────────────────────────────────────────── */
+
+/* All data rows are clickable; show a pointer cursor. */
+tr[data-cyclist-id] {
+    cursor: pointer;
+}
+
+    tr[data-cyclist-id]:hover {
+        filter: brightness(0.95);
+    }
+
+/* Blue outline on the first-selected row while swap-mode is active. */
+.roster-row--selected {
+    outline: 2px solid var(--player-color) !important;
+    outline-offset: -2px;
+    filter: brightness(0.92) !important;
+}
+
+/* Informational hint bar above the player grid. */
+.team-swap-hint {
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+}
+
+.team-swap-hint-global {
+    margin: 0 0 14px;
+}
+
+/* Dashed outline on valid swap targets in the opposite section. */
+.player-team-card.swap-mode .roster-row.swap-target {
+    outline: 2px dashed rgba(191, 219, 254, 0.85);
+    outline-offset: -2px;
+}
+
+    .player-team-card.swap-mode .roster-row.swap-target:hover {
+        filter: brightness(0.93);
+    }
+
+/* Dim rows in the same section that are not valid swap targets. */
+.player-team-card.swap-mode .roster-row.swap-dimmed {
+    opacity: 0.55;
+}
+
+/* ── 10. Responsive breakpoints ─────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    /* Stack the banner content vertically on medium screens. */
+    .team-page-banner {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .team-banner-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .team-dashboard-white-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .stats-row {
+        gap: 10px;
+    }
+
+    .player-team-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Stack the card header vertically so completion bar doesn't overflow. */
+    .player-team-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .team-completion,
+    .team-completion-bar {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .team-page-banner h1 {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 420px) {
+    .card {
+        padding: 10px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        gap: 8px;
+    }
+
+    .player-team-grid {
+        gap: 10px;
+    }
+
+    .player-team-header {
+        padding: 10px 10px 8px;
+        gap: 8px;
+    }
+
+    .player-team-avatar {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        font-size: 12px;
+    }
+
+    .player-team-identity {
+        gap: 8px;
+    }
+
+    .player-team-identity h2 {
+        font-size: 16px;
+    }
+
+    .player-team-identity p {
+        font-size: 11px;
+    }
+
+    .team-completion span {
+        font-size: 11px;
+    }
+
+    .player-roster-table-wrap {
+        padding: 4px 6px 8px;
+    }
+
+    .player-roster-table th,
+    .player-roster-table td {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .player-roster-table thead th {
+        font-size: 10px;
+    }
+
+    .rider-name {
+        font-size: 12px;
+    }
+
+    .rider-team {
+        font-size: 11px;
+    }
+
+    .status-pill {
+        min-width: 44px;
+        height: 22px;
+        font-size: 10px;
+    }
+
+    .slot-number {
+        font-size: 11px;
+    }
+
+    .roster-section-row th {
+        font-size: 10px;
+        padding: 5px 4px;
+    }
+
+    .team-swap-hint {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+}

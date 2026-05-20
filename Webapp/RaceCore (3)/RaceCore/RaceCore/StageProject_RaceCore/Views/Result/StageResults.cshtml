@@ -1,0 +1,150 @@
+@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Stage Results";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+
+    var stageTables = ViewBag.StageTables as IEnumerable<dynamic>;
+
+    int selectedGameId = ViewBag.SelectedGameId ?? 0;
+}
+
+<link rel="stylesheet" href="~/css/StageResult.css" asp-append-version="true" />
+
+<div class="result-page">
+
+    @* HEADER VAN DE RESULTATENPAGINA *@
+    <section class="result-header-card">
+        <div class="result-header-copy">
+            <p class="result-page-kicker">RaceCore</p>
+            <h1 class="result-page-title">Stage Results</h1>
+            <p class="result-page-subtitle">
+                View all stages per race with points, jersey points and jersey holders outside the top 25.
+            </p>
+        </div>
+
+        <div class="result-hero-actions">
+            <a asp-controller="Dashboard"
+               asp-action="Index"
+               asp-route-gameId="@selectedGameId"
+               class="result-dashboard-white-btn">
+                Dashboard
+            </a>
+        </div>
+    </section>
+
+    @* ALS ER GEEN RESULTATEN ZIJN *@
+    @if (stageTables == null || !stageTables.Any())
+    {
+        <section class="result-stage-card">
+            <div class="result-empty-state">
+                <h3>No stages found</h3>
+                <p>There are no stage results available yet for this race.</p>
+            </div>
+        </section>
+    }
+    else
+    {
+        @* ALLE RITTEN TONEN *@
+        foreach (var stage in stageTables)
+        {
+            <section class="result-stage-card">
+                <h2 class="result-stage-title">@stage.StageName</h2>
+
+                <div class="result-table-responsive">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Name</th>
+                                <th>Points</th>
+                                <th>Jersey</th>
+                                <th>Jersey Points</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var row in stage.Rows)
+                            {
+                                <tr>
+                                    <td class="result-position">@row.Position</td>
+                                    <td class="result-name">@row.CyclistName</td>
+                                    <td class="result-points">@row.Points</td>
+
+                                    @* BELANGRIJK: hier tonen we de trui-cirkel, niet de tekst *@
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(row.JerseyIcons))
+                                        {
+                                            <span class="result-jersey-icons">
+                                                @Html.Raw(row.JerseyIcons)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+
+                                    <td>@row.JerseyPoints</td>
+                                    <td class="result-total">@row.Total</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* TRUIDRAGERS BUITEN TOP 25 *@
+                @if (stage.OutsideJerseyRows != null && stage.OutsideJerseyRows.Count > 0)
+                {
+                    <div style="margin-top:22px;">
+                        <h3 style="margin-bottom:12px;">Jersey Holders Outside Top 25</h3>
+
+                        <div class="result-table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Name</th>
+                                        <th>Points</th>
+                                        <th>Jersey</th>
+                                        <th>Jersey Points</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var row in stage.OutsideJerseyRows)
+                                    {
+                                        <tr>
+                                            <td class="result-position">@row.Position</td>
+                                            <td class="result-name">@row.CyclistName</td>
+                                            <td class="result-points">@row.Points</td>
+
+                                            @* Ook hier de trui-cirkel tonen *@
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(row.JerseyIcons))
+                                                {
+                                                    <span class="result-jersey-icons">
+                                                        @Html.Raw(row.JerseyIcons)
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </td>
+
+                                            <td>@row.JerseyPoints</td>
+                                            <td class="result-total">@row.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </section>
+        }
+    }
+</div>

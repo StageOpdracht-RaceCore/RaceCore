@@ -1,0 +1,72 @@
+﻿@model StageProject_RaceCore.Models.Cyclist
+@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Create Cyclist";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+    var teams = ViewBag.Teams as List<Team> ?? new List<Team>();
+}
+
+<link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Cyclist.css" asp-append-version="true" />
+
+<section class="cyclist-page">
+
+    <section class="cyclist-header-card">
+        <div class="cyclist-header-copy">
+            <p class="cyclist-page-kicker">RaceCore</p>
+            <h1 class="cyclist-page-title">Nieuwe renner</h1>
+            <p class="cyclist-page-subtitle">
+                Voeg een nieuwe renner toe aan het systeem.
+            </p>
+        </div>
+    </section>
+
+    @if (TempData["CreateError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["CreateError"]
+        </div>
+    }
+
+    <section class="cyclist-table-card">
+
+        <form asp-action="Create" method="post" class="cyclist-form">
+            @Html.AntiForgeryToken()
+
+            <div class="cyclist-form-group">
+                <label>Voornaam</label>
+                <input type="text" name="firstName" class="cyclist-input" required />
+            </div>
+
+            <div class="cyclist-form-group">
+                <label>Achternaam</label>
+                <input type="text" name="lastName" class="cyclist-input" required />
+            </div>
+
+            <div class="cyclist-form-group">
+                <label>Team</label>
+                <select name="teamId" class="cyclist-input">
+                    <option value="">Geen team</option>
+                    @foreach (var team in teams)
+                    {
+                        <option value="@team.Id">@team.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="cyclist-button-group">
+                <button type="submit" class="cyclist-primary-btn">
+                    Save
+                </button>
+
+                <a asp-action="Index" class="cyclist-reset-btn">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </section>
+
+</section>

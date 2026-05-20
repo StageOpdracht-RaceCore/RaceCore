@@ -1,0 +1,280 @@
+@model StageProject_RaceCore.Models.Race
+
+@{
+    ViewData["Title"] = "Race Details";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+
+    var stages = Model.Stages
+        .OrderBy(s => s.StageNumber)
+        .ToList();
+
+    var raceEntries = Model.RaceEntries
+        .Where(re => re.Cyclist != null)
+        .OrderBy(re => re.Cyclist.LastName)
+        .ThenBy(re => re.Cyclist.FirstName)
+        .ToList();
+
+    var startDate = Model.StartDate?.ToString("dd/MM/yyyy") ?? "Not set";
+    var endDate = Model.EndDate?.ToString("dd/MM/yyyy") ?? "Not set";
+}
+
+<link rel="stylesheet" href="~/css/Race.css" asp-append-version="true" />
+
+<div class="race-create-container">
+
+    <!-- HERO -->
+    <div class="race-details-modern-hero">
+
+        <div class="race-details-modern-left">
+            <p class="race-label">RaceCore Management</p>
+
+            <h1>@Model.Name</h1>
+
+            <p class="race-subtitle">
+                View all information about this race.
+            </p>
+
+            <div class="race-details-modern-badges">
+                <div class="race-modern-badge">
+                    <span>Year</span>
+                    <strong>@Model.Year</strong>
+                </div>
+
+                <div class="race-modern-badge">
+                    <span>Stages</span>
+                    <strong>@stages.Count</strong>
+                </div>
+
+                <div class="race-modern-badge">
+                    <span>Cyclists</span>
+                    <strong>@raceEntries.Count</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="race-details-modern-actions">
+
+
+            <a asp-action="Index"
+               class="race-btn race-btn-done">
+                ✓ Done
+            </a>
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="race-primary-btn">
+                Edit Race
+            </a>
+
+            <form asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  class="race-delete-inline-form"
+                  onsubmit="return confirmRaceDelete('@Model.Name', @stages.Count, @raceEntries.Count);">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="race-danger-btn">
+                    Delete Race
+                </button>
+            </form>
+
+            
+
+        </div>
+
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="race-modern-main-grid">
+
+        <!-- LEFT -->
+        <div class="race-modern-left-column">
+
+            <!-- RACE INFO -->
+            <section class="race-card">
+
+                <div class="race-card-header">
+                    <h2>Race Information</h2>
+                    <p>General information about this race.</p>
+                </div>
+
+                <div class="race-modern-info-grid">
+
+                    <div class="race-modern-info-item">
+                        <span>Name</span>
+                        <strong>@Model.Name</strong>
+                    </div>
+
+                    <div class="race-modern-info-item">
+                        <span>Year</span>
+                        <strong>@Model.Year</strong>
+                    </div>
+
+                    <div class="race-modern-info-item">
+                        <span>Start Date</span>
+                        <strong>@startDate</strong>
+                    </div>
+
+                    <div class="race-modern-info-item">
+                        <span>End Date</span>
+                        <strong>@endDate</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- STAGES -->
+            <section class="race-card">
+
+                <div class="race-card-header">
+                    <h2>Stages</h2>
+                    <p>All stages of this race.</p>
+                </div>
+
+                @if (stages.Any())
+                {
+                    <div class="race-modern-stage-timeline">
+
+                        @foreach (var stage in stages)
+                        {
+                            <div class="race-modern-stage-card">
+
+                                <div class="race-modern-stage-number">
+                                    @stage.StageNumber
+                                </div>
+
+                                <div class="race-modern-stage-content">
+                                    <strong>@stage.Name</strong>
+
+                                    <span>
+                                        @(stage.Date?.ToString("dd/MM/yyyy") ?? "No date")
+                                    </span>
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="race-pro-empty">
+                        No stages found.
+                    </div>
+                }
+
+            </section>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="race-modern-right-column">
+
+            <section class="race-card race-modern-cyclist-section">
+
+                <div class="race-card-header race-modern-cyclist-header">
+
+                    <div>
+                        <h2>Cyclists</h2>
+                        <p>All linked cyclists.</p>
+                    </div>
+
+                    <div class="race-pro-count-badge">
+                        @raceEntries.Count cyclists
+                    </div>
+
+                </div>
+
+                <!-- SEARCH -->
+                <div class="race-modern-search-box">
+                    <input type="text"
+                           id="cyclistSearch"
+                           class="form-control"
+                           placeholder="Search cyclist..." />
+                </div>
+
+                <!-- SCROLL AREA -->
+                <div class="race-modern-cyclist-scroll">
+
+                    <div class="race-modern-cyclist-list">
+
+                        @foreach (var entry in raceEntries)
+                        {
+                            var cyclist = entry.Cyclist;
+
+                            var fullName = $"{cyclist.FirstName} {cyclist.LastName}";
+                            var teamName = cyclist.Team?.Name ?? "No team";
+
+                            var firstInitial = !string.IsNullOrWhiteSpace(cyclist.FirstName)
+                                ? cyclist.FirstName[0].ToString()
+                                : "";
+
+                            var lastInitial = !string.IsNullOrWhiteSpace(cyclist.LastName)
+                                ? cyclist.LastName[0].ToString()
+                                : "";
+
+                            <div class="race-modern-cyclist-item"
+                                 data-search="@($"{fullName} {teamName}".ToLower())">
+
+                                <div class="race-modern-cyclist-avatar">
+                                    @firstInitial@lastInitial
+                                </div>
+
+                                <div class="race-modern-cyclist-content">
+                                    <strong>@fullName</strong>
+                                    <span>@teamName</span>
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+        const cyclistSearch = document.getElementById("cyclistSearch");
+
+        if (cyclistSearch) {
+            cyclistSearch.addEventListener("input", function () {
+
+                const value = this.value.toLowerCase();
+
+                document
+                    .querySelectorAll(".race-modern-cyclist-item")
+                    .forEach(item => {
+
+                        const text = item.dataset.search;
+
+                        item.style.display =
+                            text.includes(value)
+                                ? "flex"
+                                : "none";
+                    });
+            });
+        }
+
+        function confirmRaceDelete(raceName, stageCount, riderCount) {
+            const message =
+                "Are you sure you want to completely delete this race?\n\n" +
+                "Race: " + raceName + "\n" +
+                "Stages: " + stageCount + "\n" +
+                "Linked cyclists: " + riderCount + "\n\n" +
+                "This will also remove all linked data of this race from the database.\n" +
+                "This action cannot be undone.";
+
+            return confirm(message);
+        }
+    </script>
+}

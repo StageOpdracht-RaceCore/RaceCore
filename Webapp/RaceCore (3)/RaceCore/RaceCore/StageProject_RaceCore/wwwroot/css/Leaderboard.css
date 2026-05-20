@@ -1,0 +1,422 @@
+/* ========================================
+   LEADERBOARD PAGE
+======================================== */
+.leaderboard-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ========================================
+   HERO / HEADER
+======================================== */
+.leaderboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    padding: 28px;
+    margin-bottom: 18px;
+    border-radius: 22px;
+    color: white;
+    background: linear-gradient(135deg, #0f172a, #1d4ed8);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+/* ========================================
+   HERO TITLE
+======================================== */
+.leaderbord-title h6 {
+    margin-bottom: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #bfdbfe;
+}
+
+.leaderbord-title h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.leaderbord-title p {
+    margin-top: 8px;
+    max-width: 600px;
+    color: #dbeafe;
+}
+
+/* ========================================
+   HERO ACTIONS
+======================================== */
+.leaderboard-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* ========================================
+   GAME SELECT FORM
+======================================== */
+.leaderboard-game-form {
+    min-width: 280px;
+}
+
+    .leaderboard-game-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #dbeafe;
+    }
+
+    .leaderboard-game-form select {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: white;
+        background: rgba(255, 255, 255, 0.14);
+        outline: none;
+    }
+
+    .leaderboard-game-form option {
+        color: #111827;
+    }
+
+/* ========================================
+   DONE BUTTON
+======================================== */
+.leaderboard-done-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 14px;
+    background: limegreen;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 6px 14px rgba(50, 205, 50, 0.4);
+}
+
+    .leaderboard-done-btn:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+/* ========================================
+   STATS CARDS
+======================================== */
+.leaderboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.leaderboard-stat-card,
+.leaderboard-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+}
+
+.leaderboard-stat-card {
+    padding: 18px;
+}
+
+    .leaderboard-stat-card span {
+        display: block;
+        margin-bottom: 6px;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .leaderboard-stat-card strong {
+        display: block;
+        color: #0f172a;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+/* ========================================
+   MAIN CARD
+======================================== */
+.leaderboard-card {
+    padding: 22px;
+}
+
+.leaderboard-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+    .leaderboard-card-header h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 24px;
+        font-weight: 900;
+    }
+
+    .leaderboard-card-header p {
+        margin: 6px 0 0;
+        color: #64748b;
+    }
+
+/* ========================================
+   TABLE WRAPPER
+======================================== */
+.leaderboard-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 16px;
+}
+
+/* ========================================
+   SCORE TABLE
+======================================== */
+.leaderboard-score-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+}
+
+    /* ========================================
+   TABLE CELLS
+======================================== */
+    .leaderboard-score-table th,
+    .leaderboard-score-table td {
+        padding: 10px 12px;
+        border-right: 1px solid #d1d5db;
+        border-bottom: 1px solid #d1d5db;
+        font-size: 14px;
+    }
+
+        .leaderboard-score-table th:last-child,
+        .leaderboard-score-table td:last-child {
+            border-right: none;
+        }
+
+    .leaderboard-score-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ========================================
+   TABLE HEADER
+======================================== */
+    .leaderboard-score-table th {
+        color: #020617;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    /* ========================================
+   FIRST COLUMN
+======================================== */
+    .leaderboard-score-table .stage-column {
+        width: 160px;
+        text-align: left;
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   PLAYER HEADER COLORS
+   Donker - licht - donker - licht
+======================================== */
+
+    .leaderboard-score-table thead th:nth-child(2) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(3) {
+        background: #f3f4f6;
+    }
+
+    .leaderboard-score-table thead th:nth-child(4) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(5) {
+        background: #f3f4f6;
+    }
+
+    .leaderboard-score-table thead th:nth-child(6) {
+        background: #d1d5db;
+    }
+
+    .leaderboard-score-table thead th:nth-child(7) {
+        background: #f3f4f6;
+    }
+
+    /* ========================================
+   STAGE NAMES
+======================================== */
+    .leaderboard-score-table .stage-name {
+        color: #020617;
+        font-weight: 800;
+        text-align: left;
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   PLAYER COLUMN COLORS
+   Donker - licht - donker - licht
+======================================== */
+
+    .leaderboard-score-table tbody td:nth-child(2) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(3) {
+        background: #f8fafc;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(4) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(5) {
+        background: #f8fafc;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(6) {
+        background: #e5e7eb;
+    }
+
+    .leaderboard-score-table tbody td:nth-child(7) {
+        background: #f8fafc;
+    }
+
+    /* ========================================
+   POINT NUMBERS
+======================================== */
+    .leaderboard-score-table .points-number {
+        color: #020617;
+        text-align: right;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ========================================
+   ROW HOVER
+======================================== */
+    .leaderboard-score-table tbody tr:hover td:not(.stage-name) {
+        filter: brightness(0.97);
+    }
+
+    /* ========================================
+   FINAL ROW
+======================================== */
+    .leaderboard-score-table .final-row td {
+        padding-top: 18px;
+        font-weight: 900;
+        background: #d1d5db !important;
+    }
+
+    /* ========================================
+   TOTAL ROW
+======================================== */
+    .leaderboard-score-table .total-row td {
+        color: #020617;
+        font-size: 20px;
+        font-weight: 900;
+        background: white !important;
+        border-top: 3px solid #0f172a;
+    }
+
+    .leaderboard-score-table .total-row .stage-name {
+        font-size: 20px;
+    }
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+.leaderboard-empty {
+    padding: 34px;
+    text-align: center;
+    color: #64748b;
+}
+
+    .leaderboard-empty h2 {
+        margin: 0 0 8px;
+        color: #0f172a;
+        font-weight: 900;
+    }
+
+    .leaderboard-empty p {
+        margin: 0;
+    }
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 1000px) {
+
+    .leaderboard-hero {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .leaderboard-hero-actions {
+        width: 100%;
+    }
+
+    .leaderboard-game-form {
+        min-width: 100%;
+    }
+
+    .leaderboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+
+    .leaderboard-page {
+        padding: 14px;
+    }
+
+    .leaderboard-hero,
+    .leaderboard-card {
+        padding: 18px;
+    }
+
+    .leaderbord-title h1 {
+        font-size: 26px;
+    }
+
+    .leaderboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-score-table {
+        min-width: 620px;
+    }
+
+        .leaderboard-score-table th,
+        .leaderboard-score-table td {
+            padding: 7px 8px;
+            font-size: 13px;
+        }
+
+        .leaderboard-score-table .total-row td,
+        .leaderboard-score-table .total-row .stage-name {
+            font-size: 17px;
+        }
+}

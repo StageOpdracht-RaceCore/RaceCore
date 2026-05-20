@@ -1,0 +1,233 @@
+﻿@model List<StageProject_RaceCore.Models.Cyclist>
+@using StageProject_RaceCore.Models
+
+@{
+    ViewData["Title"] = "Cyclists";
+    Layout = "~/Views/Shared/_CleanLayout.cshtml";
+
+    string currentSearch = ViewBag.Search as string ?? "";
+    string currentStatus = ViewBag.Status as string ?? "";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int pageSize = ViewBag.PageSize ?? 25;
+    int cyclistCount = ViewBag.CyclistCount ?? 0;
+
+    var startPage = Math.Max(1, currentPage - 2);
+    var endPage = Math.Min(totalPages, startPage + 4);
+
+    if (endPage - startPage < 4)
+    {
+        startPage = Math.Max(1, endPage - 4);
+    }
+}
+
+<link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/Cyclist.css" asp-append-version="true" />
+
+<section class="cyclist-page">
+
+    <!-- HEADER -->
+    <section class="cyclist-header-card">
+        <div class="cyclist-header-copy">
+            <p class="cyclist-page-kicker">RaceCore</p>
+            <h1 class="cyclist-page-title">Cyclists</h1>
+            <p class="cyclist-page-subtitle">
+                View all cyclists, their team, status and participation.
+            </p>
+        </div>
+
+        <div class="cyclist-header-actions">
+
+            <a asp-action="Create" asp-controller="Cyclist" class="cyclist-add-btn">
+                + Add Cyclist
+            </a>
+
+            <a asp-controller="Dashboard" asp-action="Index" class="cyclist-dashboard-white-btn">
+                Dashboard
+            </a>
+
+        </div>
+    </section>
+
+    <!-- TOASTS -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-success">
+            ✓ @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["CreateError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["CreateError"]
+        </div>
+    }
+
+    @if (TempData["DatabaseError"] != null)
+    {
+        <div class="cyclist-toast cyclist-toast-error">
+            ✕ @TempData["DatabaseError"]
+        </div>
+    }
+
+    <!-- FILTERS -->
+    <section class="cyclist-filter-card">
+
+        <form method="get" asp-action="Index" asp-controller="Cyclist" class="cyclist-filter-form">
+
+            <div class="cyclist-form-group">
+                <label>Search</label>
+                <input type="text" name="search" class="cyclist-input" value="@currentSearch" />
+            </div>
+
+            <div class="cyclist-form-group">
+                <label>Status</label>
+                <select name="status" class="cyclist-input">
+                    <option value="" selected="@(string.IsNullOrEmpty(currentStatus))">All</option>
+                    <option value="active" selected="@(currentStatus == "active")">Active</option>
+                    <option value="inactive" selected="@(currentStatus == "inactive")">Inactive</option>
+                </select>
+            </div>
+
+            <div class="cyclist-button-group">
+                <button type="submit" class="cyclist-primary-btn">Search</button>
+
+                <a asp-action="Index" class="cyclist-reset-btn">
+                    Reset
+                </a>
+            </div>
+
+        </form>
+
+        <div class="cyclist-count">
+            Total Cyclists: <strong>@cyclistCount</strong>
+        </div>
+
+    </section>
+
+    <!-- TABLE -->
+    <section class="cyclist-table-card">
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="cyclist-table-wrapper">
+                <table class="cyclist-table">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var cyclist in Model)
+                        {
+                            <tr>
+                                <td>@cyclist.FirstName</td>
+                                <td>@cyclist.LastName</td>
+
+                                <td>
+                                    @(cyclist.Team != null ? cyclist.Team.Name : "No team")
+                                </td>
+
+                                <td>
+                                    @if (cyclist.IsActive)
+                                    {
+                                        <span class="cyclist-status status-active">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cyclist-status status-inactive">Inactive</span>
+                                    }
+                                </td>
+
+                                <td style="display:flex; gap:8px; align-items:center;">
+
+                                    <form method="post" asp-action="ToggleActive" asp-controller="Cyclist">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@cyclist.Id" />
+
+                                        <button type="submit"
+                                                class="cyclist-delete-btn"
+                                                style="background:@(cyclist.IsActive ? "#ffd6d6" : "#dcfce7");
+                                            color:@(cyclist.IsActive ? "#bd1919" : "#166534");">
+                                            @(cyclist.IsActive ? "Inactive" : "Active")
+                                        </button>
+                                    </form>
+
+                                    <form method="post" asp-action="Delete" asp-controller="Cyclist">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@cyclist.Id" />
+
+                                        <button type="submit" class="cyclist-delete-btn">
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="cyclist-pagination">
+
+                @if (currentPage > 1)
+                {
+                    <a asp-action="Index"
+                       asp-route-page="1"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&lt;&lt;</a>
+
+                    <a asp-action="Index"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&lt;</a>
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <a asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn @(i == currentPage ? "active" : "")">
+                        @i
+                    </a>
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <a asp-action="Index"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&gt;</a>
+
+                    <a asp-action="Index"
+                       asp-route-page="@totalPages"
+                       asp-route-search="@currentSearch"
+                       asp-route-status="@currentStatus"
+                       class="cyclist-page-btn">&gt;&gt;</a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="cyclist-empty">
+                No cyclists found.
+            </div>
+        }
+
+    </section>
+
+</section>

@@ -1,0 +1,2265 @@
+:root {
+    --bg-body: #eef3f8;
+    --bg-card: #ffffff;
+    --bg-surface: #f8fafc;
+    --text-primary: #111827;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color: #e5e7eb;
+    --border-soft: #e2e8f0;
+    --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    --topbar-bg: rgba(255, 255, 255, 0.9);
+    --topbar-border: #dbe4ee;
+    --table-header-bg: #f8fafc;
+    --table-row-border: #e5e7eb;
+    --table-cell-color: #111827;
+    --table-header-color: #6b7280;
+    --hover-brightness: 0.95;
+}
+
+html.dark-mode {
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-surface: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --border-soft: #334155;
+    --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #0f172a 100%);
+    --topbar-bg: rgba(30, 41, 59, 0.95);
+    --topbar-border: #334155;
+    --table-header-bg: #1e293b;
+    --table-row-border: #334155;
+    --table-cell-color: #e2e8f0;
+    --table-header-color: #94a3b8;
+    --hover-brightness: 1.1;
+}
+
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.dashboard-body {
+    margin: 0;
+    background: linear-gradient(180deg, #e9f1fb 0%, #f4f7fb 250px);
+    overflow: hidden;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 248px;
+    min-width: 248px;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: white;
+    padding: 18px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+}
+
+.sidebar-logo {
+    margin-bottom: 22px;
+    position: relative;
+    z-index: 1100;
+}
+
+    .sidebar-logo h2 {
+        margin: 0;
+        font-size: 24px;
+        color: white;
+    }
+
+    .sidebar-logo p {
+        margin-top: 5px;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+.sidebar-nav {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .sidebar-nav a {
+        color: #e5e7eb;
+        text-decoration: none;
+        padding: 11px 13px;
+        border-radius: 10px;
+        transition: 0.2s ease;
+        font-weight: 600;
+        font-size: 15px;
+        display: block;
+    }
+
+        .sidebar-nav a:hover {
+            background-color: #1f2937;
+            color: white;
+        }
+
+    .sidebar-nav .dark-toggle-btn {
+        margin-top: 8px;
+        background: none;
+        border: 1px solid rgba(255,255,255,.15);
+        color: #e5e7eb;
+        padding: 11px 13px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s ease;
+    }
+
+        .sidebar-nav .dark-toggle-btn:hover {
+            background-color: #1f2937;
+            color: white;
+        }
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* MAIN */
+.main-area {
+    margin-left: 248px;
+    width: calc(100% - 248px);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.topbar {
+    height: 72px;
+    min-height: 72px;
+    background: var(--topbar-bg);
+    border-bottom: 1px solid var(--topbar-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    backdrop-filter: blur(8px);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--text-primary);
+}
+
+.topbar-right {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dark-toggle-header {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: 0.2s ease;
+    line-height: 1;
+}
+
+    .dark-toggle-header:hover {
+        background: var(--bg-surface);
+    }
+
+.mobile-menu-btn {
+    display: none;
+    border: none;
+    background: #0f172a;
+    color: white;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-window {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 9px 7px;
+    text-align: left;
+    border-bottom: 1px solid var(--table-row-border);
+    font-size: 14px;
+}
+
+th {
+    color: var(--table-header-color);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+td {
+    color: var(--table-cell-color);
+}
+
+html.dark-mode th,
+html.dark-mode td {
+    border-bottom-color: var(--table-row-border);
+}
+
+/* MOBILE LAYOUT */
+@media (max-width: 768px) {
+    .dashboard-body {
+        overflow: auto;
+    }
+
+    .dashboard-wrapper {
+        height: auto;
+    }
+
+    .sidebar {
+        left: -270px;
+        width: 250px;
+        min-width: 250px;
+        transition: left 0.25s ease;
+        height: 100vh;
+        position: fixed;
+    }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        z-index: 999;
+        display: none;
+    }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+    .main-area {
+        margin-left: 0;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .topbar {
+        padding: 14px 16px;
+        height: auto;
+        min-height: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .topbar-left {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .topbar h1 {
+        font-size: 20px;
+    }
+
+    .topbar-right {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: inline-flex;
+    }
+
+    .content-window {
+        overflow: visible;
+        padding: 14px;
+    }
+}
+/* GLOBAL EXTRA COMPACT PAGES */
+.content-window {
+    padding: 12px;
+}
+
+/* Page padding */
+.player-page,
+.player-form-page,
+.player-details-page,
+.cyclists-page,
+.race-page,
+.result-page,
+.stage-page,
+.team-page,
+.scoring-page,
+.history-page-container,
+.draft-page,
+.new-game-page {
+    padding: 14px !important;
+}
+
+/* Main cards / panels */
+.player-header-card,
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.result-header-card,
+.result-race-card,
+.result-stage-card,
+.result-item-card,
+.result-race-card,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-header-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-details-hero,
+.race-form-card,
+.stage-header-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.team-header-card,
+.team-toolbar-card,
+.team-table-card,
+.team-card,
+.history-card,
+.player-table-card,
+.game-panel,
+.game-stat-card,
+.draft-main-card,
+.draft-side-card,
+.draft-stat-card {
+    border-radius: 14px !important;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Header hero cards */
+.player-header-card,
+.result-header-card,
+.race-header-card,
+.race-details-hero,
+.stage-header-card,
+.team-header-card,
+.draft-page-header,
+.game-hero {
+    padding: 20px 24px !important;
+    margin-bottom: 14px !important;
+    border-radius: 18px !important;
+}
+
+    /* Titles */
+    .player-page-title,
+    .player-form-header h1,
+    .player-details-hero h1,
+    .result-page-title,
+    .race-page-title,
+    .stage-page-title,
+    .team-page-title,
+    .game-title,
+    .draft-page-header h1 {
+        font-size: 26px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .player-page-subtitle,
+    .result-page-subtitle,
+    .race-page-subtitle,
+    .stage-page-subtitle,
+    .team-page-subtitle,
+    .game-subtitle,
+    .draft-page-header p {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+    }
+
+.player-page-kicker,
+.result-page-kicker,
+.race-page-kicker,
+.stage-page-kicker,
+.team-page-kicker,
+.game-kicker,
+.draft-page-kicker {
+    font-size: 10px !important;
+    margin-bottom: 5px !important;
+}
+
+/* Section cards */
+.player-toolbar-card,
+.player-table-card,
+.player-form-card,
+.player-detail-card,
+.player-stat-card,
+.player-details-hero,
+.cyclists-filter-card,
+.cyclists-table-card,
+.race-table-card,
+.race-detail-card,
+.race-stat-card,
+.race-form-card,
+.stage-filter-card,
+.stage-table-card,
+.stage-card,
+.result-race-card,
+.result-stage-card,
+.team-toolbar-card,
+.team-table-card,
+.team-body,
+.team-management,
+.game-panel,
+.draft-side-card {
+    padding: 16px !important;
+}
+
+/* Card titles */
+.player-form-header,
+.race-form-header {
+    margin-bottom: 14px !important;
+}
+
+.player-detail-card h3,
+.cyclists-filter-title,
+.cyclists-card-title,
+.race-card-title,
+.stage-card-title,
+.result-stage-title,
+.game-panel-title,
+.draft-card-header h2 {
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Stats */
+.player-stats-grid,
+.race-stats-grid,
+.game-stats-grid,
+.draft-stats-grid {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+}
+
+.player-stat-card,
+.race-stat-card,
+.game-stat-card,
+.draft-stat-card {
+    padding: 13px 15px !important;
+    min-height: 72px !important;
+}
+
+.player-stat-label,
+.race-stat-label,
+.game-stat-label,
+.draft-stat-label {
+    font-size: 11px !important;
+    margin-bottom: 3px !important;
+}
+
+.player-stat-value,
+.race-stat-value,
+.game-stat-value,
+.draft-stat-value {
+    font-size: 22px !important;
+}
+
+.game-stat-icon,
+.draft-stat-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+}
+
+/* Forms / buttons */
+.player-btn,
+.race-btn,
+.result-btn,
+.team-btn,
+.add-cyclist-btn,
+.stage-race-btn,
+.cyclists-btn,
+.pagination-btn,
+.game-btn,
+.draft-pick-button,
+.player-btn-white,
+.btn-details {
+    min-height: 38px !important;
+    padding: 0 13px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+.player-search-input,
+.player-form-input,
+.race-form-input,
+.cyclists-input,
+.cyclists-select,
+.team-search-input,
+.add-cyclist-select,
+.add-cyclist-status,
+.game-input,
+.draft-search-input {
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+}
+
+/* Tables */
+.player-table thead th,
+.race-table thead th,
+.cyclists-table thead th,
+.result-table thead th,
+.history-table th {
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+}
+
+.player-table tbody td,
+.race-table tbody td,
+.cyclists-table tbody td,
+.result-table tbody td,
+.history-table td {
+    padding: 11px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Lists / rows */
+.result-item-card,
+.player-empty-state,
+.race-empty-state,
+.result-empty-state,
+.stage-empty-state,
+.empty-state {
+    padding: 20px !important;
+}
+
+.player-avatar,
+.player-details-avatar,
+.race-avatar,
+.team-avatar,
+.draft-player-avatar,
+.player-pick-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 16px !important;
+}
+
+.player-details-avatar,
+.race-avatar {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+}
+
+/* Team cards */
+.teams-grid {
+    column-gap: 16px !important;
+}
+
+.team-card {
+    margin-bottom: 16px !important;
+}
+
+.team-header {
+    min-height: 105px !important;
+    padding: 16px 18px !important;
+    gap: 14px !important;
+}
+
+.team-name {
+    font-size: 17px !important;
+}
+
+.team-cyclist-count,
+.team-counts {
+    font-size: 13px !important;
+}
+
+.team-points {
+    min-width: 120px !important;
+    font-size: 15px !important;
+    padding: 6px 12px !important;
+}
+
+.cyclist-list {
+    max-height: 250px !important;
+}
+
+/* Draft page */
+.draft-card-header {
+    padding: 16px 18px !important;
+}
+
+.draft-table-head,
+.draft-row {
+    padding: 12px 18px !important;
+}
+
+    .draft-row.active {
+        padding-left: 13px !important;
+    }
+
+.draft-current-turn-box {
+    padding: 14px !important;
+    border-radius: 14px !important;
+}
+
+.draft-current-turn-name {
+    font-size: 20px !important;
+}
+
+.draft-info-item {
+    padding: 10px 0 !important;
+    font-size: 13px !important;
+}
+
+/* New game */
+.game-layout {
+    gap: 14px !important;
+}
+
+.players-grid {
+    gap: 10px !important;
+}
+
+.player-pick-card {
+    padding: 10px !important;
+    border-radius: 12px !important;
+}
+
+.game-draft-summary,
+.game-warning-box,
+.game-info-item {
+    padding: 11px !important;
+    border-radius: 12px !important;
+}
+
+/* History */
+.history-header {
+    margin-bottom: 14px !important;
+}
+
+.history-title {
+    font-size: 24px !important;
+}
+
+.stage-number-circle {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+/* ── Dark mode overrides ───────────────────────────────────────────────── */
+html.dark-mode .navbar.bg-white {
+    background: var(--bg-card) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+html.dark-mode .navbar-light .navbar-brand,
+html.dark-mode .navbar-light .nav-link {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .navbar-light .navbar-brand:hover,
+html.dark-mode .navbar-light .nav-link:hover {
+    color: var(--text-primary) !important;
+    opacity: 0.8;
+}
+
+html.dark-mode footer.border-top.footer {
+    background: var(--bg-card);
+    border-top-color: var(--border-color) !important;
+}
+
+html.dark-mode footer .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+html.dark-mode .card,
+html.dark-mode .player-team-card,
+html.dark-mode .team-overview-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .stat-box {
+    background: var(--bg-card);
+    border-color: var(--border-soft);
+}
+
+    html.dark-mode .stat-box strong {
+        color: var(--text-primary);
+    }
+
+    html.dark-mode .stat-box span {
+        color: var(--text-secondary);
+    }
+
+html.dark-mode .player-team-header {
+    background: var(--bg-card);
+    border-bottom-color: var(--border-color);
+}
+
+html.dark-mode .player-team-identity h2 {
+    color: var(--text-primary);
+}
+
+html.dark-mode .player-team-identity p {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .team-completion {
+    color: var(--text-primary);
+}
+
+html.dark-mode .team-completion-bar {
+    background: var(--border-color);
+}
+
+html.dark-mode .info-box {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .info-box span {
+        color: var(--text-secondary);
+    }
+
+    html.dark-mode .info-box strong {
+        color: var(--text-primary);
+    }
+
+html.dark-mode .player-roster-table thead th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+html.dark-mode .player-roster-table th,
+html.dark-mode .player-roster-table td {
+    border-bottom-color: var(--table-row-border);
+}
+
+html.dark-mode .rider-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .rider-team {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .roster-row.empty-slot {
+    background: transparent;
+}
+
+    html.dark-mode .roster-row.empty-slot .rider-name,
+    html.dark-mode .roster-row.empty-slot .rider-team {
+        color: var(--text-muted);
+    }
+
+html.dark-mode .roster-row.bench-rider {
+    background: #1e293b;
+    border-left-color: #475569;
+}
+
+html.dark-mode .roster-row.active-rider {
+    border-left-color: var(--player-color, #2563eb);
+}
+
+html.dark-mode .slot-number {
+    color: var(--text-muted);
+}
+
+html.dark-mode .team-swap-hint {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.25);
+    color: var(--text-primary);
+}
+
+html.dark-mode .roster-section-row.bench-section th {
+    color: var(--text-primary);
+    background: #334155;
+}
+
+html.dark-mode .roster-section-row.disqualified-section th {
+    color: #ffffff;
+    background: linear-gradient(90deg, #dc2626, #991b1b);
+}
+
+html.dark-mode .roster-row.disqualified-rider {
+    background: #1c1917;
+    border-left-color: #991b1b;
+}
+
+    html.dark-mode .roster-row.disqualified-rider .rider-name {
+        color: #fca5a5;
+    }
+
+html.dark-mode .status-pill.bench {
+    color: #cbd5e1;
+    background: #475569;
+}
+
+html.dark-mode .team-btn-primary {
+    background: #2563eb;
+}
+
+    html.dark-mode .team-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+html.dark-mode .team-dashboard-white-btn {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+html.dark-mode .player-table-card,
+html.dark-mode .player-form-card,
+html.dark-mode .player-detail-card,
+html.dark-mode .player-stat-card,
+html.dark-mode .cyclists-filter-card,
+html.dark-mode .cyclists-table-card,
+html.dark-mode .race-header-card,
+html.dark-mode .race-table-card,
+html.dark-mode .race-detail-card,
+html.dark-mode .race-stat-card,
+html.dark-mode .race-details-hero,
+html.dark-mode .race-form-card,
+html.dark-mode .stage-header-card,
+html.dark-mode .stage-filter-card,
+html.dark-mode .stage-table-card,
+html.dark-mode .stage-card,
+html.dark-mode .team-header-card,
+html.dark-mode .team-toolbar-card,
+html.dark-mode .team-table-card,
+html.dark-mode .team-card,
+html.dark-mode .history-card,
+html.dark-mode .game-panel,
+html.dark-mode .game-stat-card,
+html.dark-mode .draft-main-card,
+html.dark-mode .draft-side-card,
+html.dark-mode .draft-stat-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .info-grid {
+    border-top-color: var(--border-color);
+}
+
+html.dark-mode .new-game-page .card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .game-input,
+html.dark-mode .player-search-input,
+html.dark-mode .player-form-input,
+html.dark-mode .race-form-input,
+html.dark-mode .cyclists-input,
+html.dark-mode .cyclists-select,
+html.dark-mode .team-search-input,
+html.dark-mode .add-cyclist-select,
+html.dark-mode .add-cyclist-status,
+html.dark-mode .draft-search-input {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+html.dark-mode .game-layout label,
+html.dark-mode .player-page-title,
+html.dark-mode .player-form-header h1,
+html.dark-mode .player-details-hero h1,
+html.dark-mode .result-page-title,
+html.dark-mode .race-page-title,
+html.dark-mode .stage-page-title,
+html.dark-mode .team-page-title,
+html.dark-mode .game-title,
+html.dark-mode .draft-page-header h1,
+html.dark-mode .player-page-subtitle,
+html.dark-mode .result-page-subtitle,
+html.dark-mode .race-page-subtitle,
+html.dark-mode .stage-page-subtitle,
+html.dark-mode .team-page-subtitle,
+html.dark-mode .game-subtitle,
+html.dark-mode .draft-page-header p,
+html.dark-mode .draft-current-turn-name {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .player-card,
+html.dark-mode .player-pick-card,
+html.dark-mode .player-form-card,
+html.dark-mode .player-detail-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .player-avatar,
+html.dark-mode .player-details-avatar,
+html.dark-mode .race-avatar,
+html.dark-mode .team-avatar,
+html.dark-mode .draft-player-avatar,
+html.dark-mode .player-pick-avatar {
+    color: #ffffff !important;
+}
+
+html.dark-mode .game-stat-label,
+html.dark-mode .draft-stat-label {
+    color: var(--text-secondary) !important;
+}
+
+html.dark-mode .game-stat-value,
+html.dark-mode .draft-stat-value {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .draft-row,
+html.dark-mode .draft-table-head {
+    border-bottom-color: var(--table-row-border) !important;
+}
+
+html.dark-mode .draft-card-header {
+    border-bottom-color: var(--border-color) !important;
+}
+
+html.dark-mode .draft-current-turn-box {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .draft-table-head {
+    color: var(--table-header-color) !important;
+    background: var(--table-header-bg) !important;
+}
+
+html.dark-mode .draft-row {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .player-btn,
+html.dark-mode .race-btn,
+html.dark-mode .result-btn,
+html.dark-mode .team-btn,
+html.dark-mode .add-cyclist-btn,
+html.dark-mode .stage-race-btn,
+html.dark-mode .cyclists-btn,
+html.dark-mode .pagination-btn,
+html.dark-mode .game-btn,
+html.dark-mode .draft-pick-button,
+html.dark-mode .player-btn-white,
+html.dark-mode .btn-details {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .history-page-container .card,
+html.dark-mode .history-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .history-title {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .team-empty-state h2 {
+    color: var(--text-primary);
+}
+
+html.dark-mode .team-empty-state p {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .stage-page .card,
+html.dark-mode .race-page .card,
+html.dark-mode .result-race-card,
+html.dark-mode .result-stage-card,
+html.dark-mode .result-item-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+html.dark-mode tr[data-cyclist-id]:hover {
+    filter: brightness(var(--hover-brightness));
+}
+
+/* ── Team.css ─────────────────────────────────────────────────────────── */
+html.dark-mode .team-dashboard-white-btn {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+    html.dark-mode .team-dashboard-white-btn:hover {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+    }
+
+html.dark-mode .stat-icon {
+    opacity: 0.9;
+}
+
+html.dark-mode .blue .stat-icon {
+    background: #1e3a5f;
+    color: #60a5fa;
+}
+
+html.dark-mode .orange .stat-icon {
+    background: #422006;
+    color: #fb923c;
+}
+
+html.dark-mode .purple .stat-icon {
+    background: #2e1065;
+    color: #a78bfa;
+}
+
+html.dark-mode .roster-row.disqualified-rider .rider-team {
+    color: var(--text-muted);
+}
+
+/* ── Draft.css ────────────────────────────────────────────────────────── */
+html.dark-mode .draft-page {
+    background: var(--bg-body);
+}
+
+html.dark-mode .draft-stat-card,
+html.dark-mode .draft-main-card,
+html.dark-mode .draft-side-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .draft-card-header {
+    background: var(--bg-card) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+html.dark-mode .draft-side-highlight {
+    background: var(--bg-card) !important;
+}
+
+html.dark-mode .draft-header-btn-white {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .draft-pick-button {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: #ffffff !important;
+}
+
+html.dark-mode .draft-search-input,
+html.dark-mode .draft-combobox-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .draft-search-input:focus,
+    html.dark-mode .draft-combobox-input:focus {
+        background: var(--bg-card);
+    }
+
+html.dark-mode .draft-search-dropdown,
+html.dark-mode .draft-combobox-list {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .draft-stat-icon {
+    background: #1e293b !important;
+}
+
+html.dark-mode .draft-card-header-badge {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-table-head {
+    background: var(--table-header-bg) !important;
+    color: var(--table-header-color) !important;
+    border-bottom-color: var(--table-row-border) !important;
+}
+
+html.dark-mode .draft-row {
+    border-bottom-color: var(--table-row-border) !important;
+    color: var(--text-primary) !important;
+}
+
+    html.dark-mode .draft-row:hover {
+        background: #1e293b !important;
+    }
+
+    html.dark-mode .draft-row.active {
+        background: #1e3a5f !important;
+    }
+
+    html.dark-mode .draft-row.completed {
+        background: #0f172a !important;
+    }
+
+html.dark-mode .draft-inline-badge.active {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-inline-badge.picked {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .draft-inline-badge.waiting {
+    background: #334155;
+    color: #cbd5e1;
+}
+
+html.dark-mode .draft-position-badge {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-player-name,
+html.dark-mode .draft-side-card-header h3,
+html.dark-mode .draft-page-section-title h2 {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .draft-search-toggle:hover {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-search-option {
+    color: var(--text-primary);
+}
+
+    html.dark-mode .draft-search-option:hover {
+        background: #1e293b;
+    }
+
+html.dark-mode .draft-search-option-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .draft-picked-name {
+    color: #86efac;
+}
+
+html.dark-mode .draft-picked-icon {
+    background: #14532d;
+}
+
+html.dark-mode .draft-mini-status.live {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .draft-mini-status.done {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-info-item {
+    color: var(--text-secondary);
+}
+
+    html.dark-mode .draft-info-item strong {
+        color: var(--text-primary);
+    }
+
+html.dark-mode .draft-tip-card {
+    background: #1c1917 !important;
+    border-color: #713f12 !important;
+}
+
+html.dark-mode .draft-progress-bar {
+    background: #334155;
+}
+
+html.dark-mode .draft-page-section-title span {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .draft-combobox-option {
+    color: var(--text-primary);
+}
+
+    html.dark-mode .draft-combobox-option:hover {
+        background: #1e293b;
+        color: #93c5fd;
+    }
+
+html.dark-mode .draft-table {
+    background: var(--bg-card);
+}
+
+html.dark-mode .draft-current-turn-box td {
+    color: var(--text-primary) !important;
+}
+
+/* ── NewGame.css ──────────────────────────────────────────────────────── */
+html.dark-mode .new-game-page {
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+html.dark-mode .game-stat-card,
+html.dark-mode .game-panel {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .game-btn-start {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+    html.dark-mode .game-btn-start:hover {
+        background: #15803d;
+    }
+
+html.dark-mode .game-btn-light {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .game-alert-danger {
+    background: #450a0a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+html.dark-mode .game-alert-success {
+    background: #14532d;
+    color: #86efac;
+    border-color: #166534;
+}
+
+html.dark-mode .game-icon-blue {
+    background: #1e3a5f;
+}
+
+html.dark-mode .game-icon-purple {
+    background: #2e1065;
+}
+
+html.dark-mode .game-icon-green {
+    background: #14532d;
+}
+
+html.dark-mode .game-icon-orange {
+    background: #431407;
+}
+
+html.dark-mode .game-panel-icon {
+    background: #1e3a5f;
+}
+
+html.dark-mode .game-stat-label {
+    color: var(--text-secondary) !important;
+}
+
+html.dark-mode .game-stat-value {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .game-panel-text {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .player-pick-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .player-pick-meta {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .game-info-item {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .game-warning-box {
+    background: #1e3a5f;
+    border-color: #1e40af;
+}
+
+html.dark-mode .game-empty-state {
+    background: transparent;
+}
+
+    html.dark-mode .game-empty-state h3 {
+        color: var(--text-primary);
+    }
+
+    html.dark-mode .game-empty-state p {
+        color: var(--text-secondary);
+    }
+
+html.dark-mode .game-draft-summary {
+    background: #1e293b;
+    border-color: var(--border-color);
+}
+
+html.dark-mode .game-modal {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .game-modal h2 {
+        color: var(--text-primary);
+    }
+
+    html.dark-mode .game-modal p {
+        color: var(--text-secondary);
+    }
+
+/* ── Dashboard.css ────────────────────────────────────────────────────── */
+html.dark-mode .dashboard-body {
+    background: var(--bg-body);
+}
+
+html.dark-mode .alert-warning {
+    background: #422006;
+    color: #fde68a;
+    border-color: #713f12;
+}
+
+html.dark-mode .alert-error {
+    background: #450a0a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+html.dark-mode .alert-success {
+    background: #14532d;
+    color: #86efac;
+    border-color: #166534;
+}
+
+html.dark-mode .panel-title h2 {
+    color: var(--text-primary);
+}
+
+html.dark-mode .ranking-row,
+html.dark-mode .simple-row {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .ranking-number {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .player-name,
+html.dark-mode .simple-row strong {
+    color: var(--text-primary);
+}
+
+html.dark-mode .points {
+    color: var(--text-primary);
+}
+
+html.dark-mode .simple-row span {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .mission-box div {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .mission-box strong {
+    color: var(--text-primary);
+}
+
+html.dark-mode .draft-progress-box {
+    background: #1e293b;
+    border-color: var(--border-color);
+}
+
+html.dark-mode .empty-box {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .jersey-yellow {
+    background: #713f12;
+}
+
+html.dark-mode .jersey-green {
+    background: #14532d;
+}
+
+html.dark-mode .jersey-red {
+    background: #7f1d1d;
+}
+
+html.dark-mode .jersey-blue {
+    background: #1e3a5f;
+}
+
+html.dark-mode .jersey-white {
+    background: #334155;
+}
+
+html.dark-mode .jersey-polka {
+    background: #450a0a;
+}
+
+html.dark-mode .jersey-default {
+    background: #334155;
+}
+
+html.dark-mode .game-menu-card:nth-child(5),
+html.dark-mode .game-menu-card:nth-child(6),
+html.dark-mode .game-menu-card:nth-child(7) {
+    background: #1e293b !important;
+    color: var(--text-primary) !important;
+    border-color: #334155 !important;
+}
+
+    html.dark-mode .game-menu-card:nth-child(5):hover,
+    html.dark-mode .game-menu-card:nth-child(6):hover,
+    html.dark-mode .game-menu-card:nth-child(7):hover {
+        background: #334155 !important;
+    }
+
+    html.dark-mode .game-menu-card:nth-child(5) strong,
+    html.dark-mode .game-menu-card:nth-child(6) strong,
+    html.dark-mode .game-menu-card:nth-child(7) strong {
+        color: var(--text-primary) !important;
+    }
+
+    html.dark-mode .game-menu-card:nth-child(5) small,
+    html.dark-mode .game-menu-card:nth-child(6) small,
+    html.dark-mode .game-menu-card:nth-child(7) small {
+        color: var(--text-secondary) !important;
+    }
+
+    html.dark-mode .game-menu-card:nth-child(5) span,
+    html.dark-mode .game-menu-card:nth-child(6) span,
+    html.dark-mode .game-menu-card:nth-child(7) span {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: var(--text-primary) !important;
+    }
+
+    html.dark-mode .game-menu-card:nth-child(5)::after,
+    html.dark-mode .game-menu-card:nth-child(6)::after,
+    html.dark-mode .game-menu-card:nth-child(7)::after {
+        color: var(--text-muted) !important;
+    }
+
+html.dark-mode .progress-bar {
+    background: #334155;
+}
+
+/* ── Cyclist.css ──────────────────────────────────────────────────────── */
+html.dark-mode .cyclist-filter-card,
+html.dark-mode .cyclist-table-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .cyclist-card-title h2 {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .cyclist-form-group label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .cyclist-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .cyclist-table th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+html.dark-mode .cyclist-table td {
+    color: var(--text-primary);
+}
+
+html.dark-mode .cyclist-table tbody tr:hover {
+    background: #1e293b;
+}
+
+html.dark-mode .cyclist-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .cyclist-count {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .status-active {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .status-inactive {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+html.dark-mode .race-yes {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .race-no {
+    background: #334155;
+    color: var(--text-muted);
+}
+
+html.dark-mode .cyclist-empty {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .cyclist-dashboard-white-btn {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .cyclist-dashboard-white-btn:hover {
+        background: var(--bg-surface);
+    }
+
+html.dark-mode .cyclist-primary-btn,
+html.dark-mode .cyclist-page-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+    html.dark-mode .cyclist-primary-btn:hover {
+        background: #1d4ed8;
+    }
+
+html.dark-mode .cyclist-reset-btn {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+    html.dark-mode .cyclist-reset-btn:hover {
+        background: #7f1d1d;
+    }
+
+html.dark-mode .cyclist-page-btn {
+    background: #1e293b;
+    color: var(--text-primary);
+}
+
+    html.dark-mode .cyclist-page-btn:hover {
+        background: #334155;
+    }
+
+html.dark-mode .cyclist-modal {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .cyclist-modal-header h2 {
+    color: var(--text-primary);
+}
+
+html.dark-mode .cyclist-modal-close {
+    background: #334155;
+    color: var(--text-primary);
+}
+
+    html.dark-mode .cyclist-modal-close:hover {
+        background: #475569;
+        color: var(--text-primary);
+    }
+
+html.dark-mode .cyclist-delete-btn {
+    background: #475569;
+    color: #f1f5f9;
+}
+
+    html.dark-mode .cyclist-delete-btn:hover {
+        background: #64748b;
+    }
+
+html.dark-mode .cyclist-danger-btn {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+    html.dark-mode .cyclist-danger-btn:hover {
+        background: #b91c1c;
+    }
+
+html.dark-mode .cyclist-delete-confirm-text {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .cyclist-toast-success {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .cyclist-toast-error {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+html.dark-mode ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+/* ── Leaderboard.css ──────────────────────────────────────────────────── */
+html.dark-mode .leaderboard-stat-card,
+html.dark-mode .leaderboard-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .leaderboard-stat-card strong {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .leaderboard-card-header h2 {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .leaderboard-score-table {
+    background: var(--bg-card);
+}
+
+html.dark-mode .leaderboard-score-table .stage-column,
+html.dark-mode .stage-name,
+html.dark-mode tbody td:nth-child(odd) {
+    background: var(--bg-surface) !important;
+}
+
+html.dark-mode thead th:nth-child(2),
+html.dark-mode thead th:nth-child(4),
+html.dark-mode thead th:nth-child(6),
+html.dark-mode tbody td:nth-child(even) {
+    background: #1e293b !important;
+}
+
+html.dark-mode thead th:nth-child(3),
+html.dark-mode thead th:nth-child(5),
+html.dark-mode thead th:nth-child(7) {
+    background: #0f172a !important;
+}
+
+html.dark-mode .final-row td {
+    background: #334155 !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .total-row td {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .leaderboard-game-form option {
+    color: var(--text-primary);
+    background: var(--bg-card);
+}
+
+html.dark-mode .leaderboard-empty h2 {
+    color: var(--text-primary);
+}
+
+/* ── Scoring.css ──────────────────────────────────────────────────────── */
+html.dark-mode .scoring-page {
+    background: var(--bg-body);
+}
+
+html.dark-mode .scoring-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .scoring-dashboard-btn,
+html.dark-mode .scoring-publish-btn,
+html.dark-mode .scoring-load-btn {
+    background: var(--bg-card);
+    color: #ffffff;
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .scoring-dashboard-btn:hover,
+    html.dark-mode .scoring-publish-btn:hover,
+    html.dark-mode .scoring-load-btn:hover {
+        background: #1e293b;
+    }
+
+html.dark-mode .scoring-field label {
+    color: var(--text-primary);
+}
+
+html.dark-mode .scoring-field select,
+html.dark-mode .scoring-rider-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .scoring-field select:focus,
+    html.dark-mode .scoring-rider-input:focus {
+        background: var(--bg-card);
+    }
+
+    html.dark-mode .scoring-rider-input.is-invalid {
+        background: #450a0a;
+        border-color: #ef4444;
+    }
+
+html.dark-mode .scoring-result-row {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .scoring-result-row:hover {
+        background: #1e293b;
+    }
+
+html.dark-mode .scoring-position {
+    background: #1e293b;
+    color: var(--text-primary);
+}
+
+html.dark-mode .scoring-alert-error {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+html.dark-mode .scoring-alert-success {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .outside-jersey-label {
+    color: var(--text-primary);
+}
+
+/* ── Race.css ─────────────────────────────────────────────────────────── */
+html.dark-mode .race-table-card,
+html.dark-mode .race-filter-card,
+html.dark-mode .race-form-card,
+html.dark-mode .race-detail-card,
+html.dark-mode .race-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .race-card-header h2 {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .race-form-group label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .race-input,
+html.dark-mode .race-form-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .race-btn-done {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+    html.dark-mode .race-btn-done:hover {
+        background: #15803d;
+    }
+
+html.dark-mode .race-primary-btn,
+html.dark-mode .save-race-btn,
+html.dark-mode .add-stage-btn {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+    html.dark-mode .race-primary-btn:hover {
+        background: #1d4ed8;
+    }
+
+html.dark-mode .race-light-btn,
+html.dark-mode .cancel-btn {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+    html.dark-mode .race-light-btn:hover {
+        background: #334155;
+    }
+
+html.dark-mode .race-danger-btn {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+    html.dark-mode .race-danger-btn:hover {
+        background: #b91c1c;
+    }
+
+html.dark-mode .small-action-btn {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+    html.dark-mode .small-action-btn:hover {
+        background: #334155;
+    }
+
+    html.dark-mode .small-action-btn.danger {
+        background: #450a0a;
+        color: #fca5a5;
+    }
+
+        html.dark-mode .small-action-btn.danger:hover {
+            background: #7f1d1d;
+        }
+
+html.dark-mode .remove-stage-btn {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+    html.dark-mode .remove-stage-btn:hover {
+        background: #7f1d1d;
+    }
+
+html.dark-mode .cyclist-list {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .cyclist-item {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .cyclist-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .cyclist-team {
+    background: #334155;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .selected-item {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .stage-row,
+html.dark-mode .stage-item {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .stage-number {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .race-modern-info-item {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .race-modern-info-item strong {
+        color: var(--text-primary);
+    }
+
+html.dark-mode .race-modern-stage-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .race-modern-stage-card strong {
+        color: var(--text-primary);
+    }
+
+html.dark-mode .race-modern-cyclist-item {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .race-modern-cyclist-item:hover {
+        background: #1e293b;
+    }
+
+    html.dark-mode .race-modern-cyclist-item strong {
+        color: var(--text-primary);
+    }
+
+html.dark-mode .race-modern-cyclist-content span {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+html.dark-mode .race-pro-empty {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .validation-summary {
+    background: #450a0a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+
+/* ── Player.css / Results.css ─────────────────────────────────────────── */
+html.dark-mode .player-toolbar-card,
+html.dark-mode .player-table-card,
+html.dark-mode .player-form-card,
+html.dark-mode .player-detail-card,
+html.dark-mode .player-stat-card,
+html.dark-mode .player-details-hero {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .player-stat-label {
+    color: var(--text-secondary) !important;
+}
+
+html.dark-mode .player-stat-value {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .player-search-group label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .player-search-input,
+html.dark-mode .player-form-input {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .player-search-input:focus,
+    html.dark-mode .player-form-input:focus {
+        background: var(--bg-card);
+    }
+
+html.dark-mode .player-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+    html.dark-mode .player-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+html.dark-mode .player-btn-light {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+    html.dark-mode .player-btn-light:hover {
+        background: #334155;
+    }
+
+html.dark-mode .player-btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+    html.dark-mode .player-btn-danger:hover {
+        background: #b91c1c;
+    }
+
+html.dark-mode .player-btn-done {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+    html.dark-mode .player-btn-done:hover {
+        background: #15803d;
+    }
+
+html.dark-mode .player-alert-success {
+    background: #14532d;
+    color: #86efac;
+}
+
+html.dark-mode .player-alert-danger {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+html.dark-mode .player-table thead th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+html.dark-mode .player-table tbody tr:hover {
+    background: #1e293b;
+}
+
+html.dark-mode .player-name {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .player-badge-draft {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+html.dark-mode .player-empty-state h3,
+html.dark-mode .player-detail-card h3,
+html.dark-mode .player-delete-alert h3 {
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode .player-detail-list strong {
+    color: var(--text-primary);
+}
+
+html.dark-mode .player-delete-alert {
+    background: #450a0a;
+    border-color: #7f1d1d;
+}
+
+/* ── history.css ──────────────────────────────────────────────────────── */
+html.dark-mode .player-page.scoring-page {
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+html.dark-mode .scoring-label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .scoring-stage-select {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .scoring-stage-select:focus {
+        background: var(--bg-card);
+    }
+
+html.dark-mode .history-table thead th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+html.dark-mode .history-table tbody tr:hover {
+    background: #1e293b;
+}
+
+html.dark-mode .stage-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .stage-date {
+    background: #1e293b;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .winner-name {
+    color: var(--text-primary);
+}
+
+html.dark-mode .top-player-badge {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+html.dark-mode .player-points {
+    color: var(--text-primary);
+}
+
+html.dark-mode .btn-details {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* ── StageResult.css ──────────────────────────────────────────────────── */
+html.dark-mode .result-race-card,
+html.dark-mode .result-stage-card,
+html.dark-mode .result-item-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .result-stage-title {
+    color: var(--text-primary);
+}
+
+html.dark-mode .result-empty-state {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .result-history-btn,
+html.dark-mode .result-dashboard-white-btn {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .result-history-btn:hover,
+    html.dark-mode .result-dashboard-white-btn:hover {
+        background: var(--bg-surface);
+    }
+
+html.dark-mode .race-select-group label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .app-select {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .app-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+    html.dark-mode .app-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+html.dark-mode .result-table th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+html.dark-mode .result-table tbody tr:hover {
+    background: #1e293b;
+}
+
+/* ── Stage.css ────────────────────────────────────────────────────────── */
+html.dark-mode .stage-filter-card,
+html.dark-mode .stage-table-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark-mode .stage-dashboard-white-btn {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .stage-dashboard-white-btn:hover {
+        background: var(--bg-surface);
+    }
+
+html.dark-mode .stage-table th {
+    background: var(--table-header-bg);
+    color: var(--table-header-color);
+}
+
+/* ── Main.css ─────────────────────────────────────────────────────────── */
+html.dark-mode .formStyle label {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .select {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+    html.dark-mode .select:focus {
+        background: var(--bg-card);
+    }
